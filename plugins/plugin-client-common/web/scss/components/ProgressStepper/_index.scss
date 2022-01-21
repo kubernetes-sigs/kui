@@ -16,11 +16,8 @@
 
 @use 'sass:math';
 @import 'mixins';
+@import 'constants';
 @import '../Terminal/mixins';
-
-$major-step-size: 1.5rem;
-$minor-step-size: 0.6875rem;
-$minor-step-color: var(--color-base05);
 
 @include ProgressStepper {
   &.pf-c-progress-stepper {
@@ -71,6 +68,10 @@ $minor-step-color: var(--color-base05);
     @include Main {
       margin-top: math.div($minor-step-size, -4);
     }
+  }
+
+  @include IconLink {
+    display: contents;
   }
 }
 

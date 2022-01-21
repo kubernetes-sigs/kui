@@ -463,7 +463,7 @@ body {
   /** This group of rules override default user-agent stylings */
   ol,
   ul {
-    &:not(.pf-c-list) {
+    &:not(.pf-c-wizard__nav-list):not(.pf-c-list) {
       margin: 0;
       padding-inline-start: 0;
       & > li {

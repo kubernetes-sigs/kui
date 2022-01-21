@@ -17,7 +17,7 @@
 import { START_OF_TIP, END_OF_TIP } from '../rehype-tip'
 
 // const RE_TAB = /^(.|[\n\r])*===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
-const RE_TAB = /^===\s+"(.+)"/
+const RE_TAB = /^===\s+"([^"]+)"/
 
 const START_OF_TAB = `<!-- ____KUI_START_OF_TAB____ -->`
 const PUSH_TABS = `<!-- ____KUI_NESTED_TABS____ -->`
@@ -108,7 +108,10 @@ export default function plugin(/* options */) {
                     tagName: 'span', // do not use 'li'
                     // here. something after us seems
                     // to join nested tabs together
-                    properties: { title: startMatch[1], depth: tabStack.length },
+                    properties: {
+                      title: startMatch[1],
+                      depth: tabStack.length
+                    },
                     children: rest ? [{ type: 'text', value: rest }] : [],
                     position
                   })
@@ -144,6 +147,10 @@ export default function plugin(/* options */) {
     }
     return tree
   }
+}
+
+function XOR(a: boolean, b: boolean) {
+  return (a || b) && !(a && b)
 }
 
 /**
@@ -200,7 +207,15 @@ export function hackIndentation(source: string): string {
       const indentDepth = indentDepthOfContent[indentDepthOfContent.length - 1] || 0
       const thisIndentDepth = !thisIndentation ? 1 : ~~(thisIndentation.length / 4) + 1
 
-      const possibleEndTab = !(inTab && indentDepth > thisIndentDepth) ? '' : pop(line, 1)
+      const currentEndMarker = endMarkers.length === 0 ? undefined : endMarkers[endMarkers.length - 1]
+      const endMarker = tabStartMatch ? END_OF_TAB : END_OF_TIP
+
+      const possibleEndTab =
+        indentDepth === thisIndentDepth && XOR(currentEndMarker === END_OF_TIP, endMarker === END_OF_TIP)
+          ? pop(line, 0)
+          : !(inTab && indentDepth > thisIndentDepth)
+          ? ''
+          : pop(line, 1)
 
       const possibleNesting = !(
         inTab &&
@@ -214,7 +229,6 @@ export function hackIndentation(source: string): string {
       const startMarker = tabStartMatch ? START_OF_TAB : START_OF_TIP
 
       if (endMarkers.length === 0 || thisIndentDepth > indentDepth) {
-        const endMarker = tabStartMatch ? END_OF_TAB : END_OF_TIP
         endMarkers.push(endMarker)
         indentDepthOfContent.push(thisIndentDepth)
       }

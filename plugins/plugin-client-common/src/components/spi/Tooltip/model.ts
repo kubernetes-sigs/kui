@@ -44,6 +44,9 @@ type CommonProps = {
   /** If true, tries to keep the tooltip in view by flipping it if necessary */
   enableFlip?: boolean
 
+  /** Maximum width of the tooltip (default 18.75rem) */
+  maxWidth?: string
+
   /** Orienation of the tooltip relative to the tooltiped element */
   position?:
     | 'auto'

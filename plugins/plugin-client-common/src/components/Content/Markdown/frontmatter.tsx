@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,26 @@ export function encodePriorResponses(responses: CodeBlockResponse[]): string {
   )
 }
 
+export type SplitPosition = 'left' | 'bottom' | 'default' | 'wizard'
+type SplitPositionObj = { position: SplitPosition; placeholder?: string; maximized?: boolean | 'true' | 'false' }
+type SplitPositionSpec = SplitPosition | SplitPositionObj
+
+export type PositionProps = {
+  'data-kui-split': SplitPosition
+}
+
+function isValidPosition(position: SplitPositionSpec): position is SplitPosition {
+  return (
+    typeof position === 'string' &&
+    (position === 'default' || position === 'left' || position === 'bottom' || position === 'wizard')
+  )
+}
+
+function isValidPositionObj(position: SplitPositionSpec): position is SplitPositionObj {
+  const pos = position as SplitPositionObj
+  return typeof pos === 'object' && typeof pos.position === 'string'
+}
+
 interface KuiFrontmatter {
   /** Title of the Notebook */
   title?: string
@@ -75,11 +95,7 @@ interface KuiFrontmatter {
   /**
    * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
    */
-  layout?: {
-    left?: number
-    right?: number
-    bottom?: number
-  }
+  layout?: 'wizard' | Record<number, SplitPositionSpec>
 }
 
 export function splitTarget(node) {
@@ -91,10 +107,6 @@ export function splitTarget(node) {
   }
 }
 
-function isValid(position: string) {
-  return position === 'default' || position === 'left' || position === 'right' || position === 'bottom'
-}
-
 /** Parse out the frontmatter at the top of a markdown file */
 export function kuiFrontmatter(opts: { tab: Tab }) {
   return tree => {
@@ -104,19 +116,20 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
     let frontmatter: KuiFrontmatter
 
     const newSection = (sectionIdx: number) => {
-      const positionAsGiven =
-        typeof frontmatter.layout[sectionIdx] === 'object'
-          ? frontmatter.layout[sectionIdx].position
-          : frontmatter.layout[sectionIdx]
-      const position = !isValid(positionAsGiven) ? 'default' : positionAsGiven
+      const positionAsGiven = frontmatter.layout === 'wizard' ? 'wizard' : frontmatter.layout[sectionIdx]
+
+      const position = isValidPosition(positionAsGiven)
+        ? positionAsGiven
+        : !isValidPositionObj(positionAsGiven)
+        ? 'default'
+        : positionAsGiven.position
 
       // text to place in empty sections
-      const placeholder =
-        typeof frontmatter.layout[sectionIdx] === 'object' ? frontmatter.layout[sectionIdx].placeholder : undefined
+      const placeholder = isValidPositionObj(positionAsGiven) ? positionAsGiven.placeholder : undefined
 
       const maximized =
-        typeof frontmatter.layout[sectionIdx] === 'object' &&
-        (frontmatter.layout[sectionIdx].maximized === true || frontmatter.layout[sectionIdx].maximized === 'true')
+        isValidPositionObj(positionAsGiven) &&
+        (positionAsGiven.maximized === true || positionAsGiven.maximized === 'true')
 
       const count = frontmatter.layoutCount[position] || 0
       frontmatter.layoutCount[position] = count + 1

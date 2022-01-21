@@ -57,6 +57,16 @@ layout:
     commentary --send playground -f /kui/code-blocks.md
     ```
 
+=== "Wizards"
+    ```bash
+    ---
+    execute: now
+    maximize: true
+    outputOnly: true
+    ---
+    commentary --send playground -f /kui/wizard.md
+    ```
+
 
 ---
 

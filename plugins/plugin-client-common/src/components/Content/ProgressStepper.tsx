@@ -60,8 +60,42 @@ type ProgressStepProps = React.PropsWithChildren<{
   liveStatusChannel?: string
 }>
 
-interface ProgressStepState {
+export interface ProgressStepState {
   status: Status
+}
+
+export function statusFromStatusVector(statusVector: number[], isMinor: boolean) {
+  return statusVector[0] !== 0
+    ? 'success'
+    : statusVector[1] !== 0
+    ? 'error'
+    : statusVector[2] !== 0
+    ? 'in-progress'
+    : isMinor
+    ? 'minor'
+    : 'blank'
+}
+
+export function statusToClassName(status: Status) {
+  return [`pf-m-${status}`]
+}
+
+const icons: Record<Status, { icon: SupportedIcon | ''; className?: string }> = {
+  info: { icon: 'Info' },
+  minor: { icon: '' },
+  blank: { icon: '' },
+  success: { icon: 'Checkmark' },
+  warning: { icon: 'Warning', className: 'yellow-text' },
+  error: { icon: 'Error', className: 'red-text' },
+  unknown: { icon: 'Unknown', className: 'yellow-text' },
+  current: { icon: 'Current' },
+  pending: { icon: undefined },
+  'in-progress': { icon: 'InProgress', className: 'kui--spin-animation yellow-text' }
+}
+
+export function statusToIcon(status: Status) {
+  const { icon, className } = icons[status]
+  return icon && <Icons icon={icon} className={className} />
 }
 
 export class ProgressStep extends React.PureComponent<ProgressStepProps, ProgressStepState> {
@@ -82,46 +116,21 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
     }
   }
 
-  private readonly icons: Record<Status, { icon: SupportedIcon | ''; className?: string }> = {
-    info: { icon: 'Info' },
-    minor: { icon: '' },
-    blank: { icon: '' },
-    success: { icon: 'Checkmark' },
-    warning: { icon: 'Warning', className: 'yellow-text' },
-    error: { icon: 'Error', className: 'red-text' },
-    unknown: { icon: 'Unknown', className: 'yellow-text' },
-    current: { icon: 'Current' },
-    pending: { icon: undefined },
-    'in-progress': { icon: 'InProgress', className: 'kui--spin-animation yellow-text' }
-  }
-
-  private status() {
-    return [`pf-m-${this.state.status}`]
+  private get status() {
+    return statusToClassName(this.state.status)
   }
 
   private icon() {
     if (this.props.customIcon) {
       return this.props.customIcon
+    } else {
+      return statusToIcon(this.state.status)
     }
-
-    const { icon, className } = this.icons[this.state.status]
-    return icon && <Icons icon={icon} className={className} />
   }
 
   private readonly _statusUpdateHandler = (statusVector: number[]) => {
     this.setState(curState => {
-      const status =
-        statusVector[0] !== 0
-          ? 'success'
-          : statusVector[1] !== 0
-          ? 'error'
-          : statusVector[2] !== 0
-          ? 'in-progress'
-          : curState.status === 'minor'
-          ? 'minor'
-          : 'blank'
-
-      return { status }
+      return { status: statusFromStatusVector(statusVector, curState.status === 'minor') }
     })
   }
 
@@ -142,7 +151,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
   public render() {
     return (
       <li
-        className={['pf-c-progress-stepper__step', 'kui--progress-step', ...this.status()].join(' ')}
+        className={['pf-c-progress-stepper__step', 'kui--progress-step', ...this.status].join(' ')}
         aria-label="completed step,"
       >
         <div className="pf-c-progress-stepper__step-connector">

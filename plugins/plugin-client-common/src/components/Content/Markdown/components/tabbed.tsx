@@ -19,16 +19,20 @@
 import React from 'react'
 import Slugger from 'github-slugger'
 import { EventEmitter } from 'events'
-import { Tab, Tabs, TabsProps, TabTitleText } from '@patternfly/react-core'
+import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 
 import Card from '../../../spi/Card'
 
 type Props = {
   depth: number
-  children: { props: { title: string; children?: React.ReactNode[] } }[]
+  children: {
+    props: { title: string; children?: React.ReactNode[] }
+  }[]
 }
 
-type State = Pick<TabsProps, 'activeKey'>
+type State = {
+  activeKey: number
+}
 
 const activateEvents = new EventEmitter()
 export function activateTab(slug: string, evt?: React.MouseEvent) {
@@ -69,13 +73,18 @@ class LinkableTabs extends React.PureComponent<Props, State> {
     this.cleaners.forEach(_ => _())
   }
 
-  private readonly onSelect = (_, tabIndex: number | string) => {
+  private readonly onSelect = (_, tabIndex: number) => {
     this.setState({
       activeKey: tabIndex
     })
   }
 
   public render() {
+    return this.asTabs()
+  }
+
+  /** Render as a Tabs UI */
+  private asTabs() {
     return (
       <Tabs
         className="kui--markdown-tabs paragraph"

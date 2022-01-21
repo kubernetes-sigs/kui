@@ -1,117 +1,142 @@
 ---
-title: Iter8 Tutorial 1
-layout:
-  1: left
+title: Iter8 &mdash; Getting Started
+layout: wizard
 ---
 
-# Application Upgrade versus SLOs
+# Iter8: Kubernetes Release Engineering
 
-A new version of your application is ready. It has passed its unit and
-functional test cases, but is it ready to deploy to production? We
-must first ensure that the new version meets our expected _service
-level objectives_, such as acceptable error rate or mean request
-latency.
-
-Iter8 helps you gain confidence in upgrades by performing **rigorous
-statistical analysis** of these metrics.
-
-In this guide, we dark launch the new version and use Iter8 to
-determine with statistical confidence if SLOs are met.
-
-### Activities
-
-- **[Deploy the candidate application](#kui-link-ad06f8b4-bd31-40cf-98af-e6417f306a1a)** _blank_ We use a hello world app.
-- **[Start the Iter8 experiment](#kui-link-8747f6df-3926-4e90-a75b-febced2dd1cd)** _blank_ Define **success metrics**, and initiate an _Iter8 Experiment_. Iter8 will drive load, and track the success metrics for us.
-- **Monitor progress** _minor_ Live views help you track the experiment.
-- **[Understand Iter8's recommendation](#kui-link-94e4c2c8-bd90-4467-b569-610510ed1269)** _blank_ When the evaluation period ends and the success metrics have been met, Iter8 marks the Experiment as successful.
-- **Optionally promote the candidate** _minor_ If you are content with the results of the Experiment, you may promote the candidate to production.
+[Iter8](https://iter8.tools) helps you safely roll out new versions of applications and ML models, and to maximize business value with each release.
 
 ---
 
-> What you will learn:
->
-> - How Iter8 helps you upgrade an application so that it **continues to satisfy SLOs**
-> - How to create an Iter8 **Experiment** that initiates such a validation check
+## Introduction
 
-## Deploy the candidate application
+This tutorial uses an [Iter8 experiment](concepts.md#what-is-an-iter8-experiment) to load test https://example.com and validate latency and error-related service level objectives (SLOs).
 
-First, we use kubectl apply to deploy the candidate version of our
-sample application.
-
-```bash
 ---
-id: ad06f8b4-bd31-40cf-98af-e6417f306a1a
+
+## Install the CLI: The iter8 CLI gives you an easy way to manage your experiments
+
+=== "Mac"
+
+    On macOS, [Homebrew](https://brew.sh) makes it easy to install the `iter8` CLI.
+
+    ```shell
+    ---
+    id: install-iter8-cli
+    validate: brew info iter8
+    ---
+    brew tap iter8-tools/iter8
+    brew install iter8
+    ```
+    
+=== "Go 1.16+"
+    Install Iter8 using [Go 1.16+](https://golang.org/) as follows.
+
+    ```shell
+    ---
+    id: install-iter8-cli
+    before: export PATH=~/${GOPATH-~/go}/bin:$PATH
+    validate: iter8 -v
+    ---
+    go install github.com/iter8-tools/iter8@latest
+    ```
+
+=== "Binaries"
+    Pre-compiled Iter8 binaries for many platforms are available [here](https://github.com/iter8-tools/iter8/releases). Uncompress the iter8-X-Y.tar.gz archive for your platform, and move the iter8 binary to any folder in your PATH.
+
 ---
-k apply -f https://raw.githubusercontent.com/kalantar/iter8/cil/samples/cil/first-exp/hello-candidate.yaml
+
+## Download experiment: You may craft an experiment by hand, or, as we do here, you may use iter8 to download a previously constructed experiment definition
+
+Download the `load-test` experiment folder from [Iter8 hub](../user-guide/topics/iter8hub.md) as follows.
+
+```shell
+---
+id: download-load-test
+validate: "[[ -f /tmp/load-test/values.yaml ]] && [[ -f /tmp/load-test/Chart.yaml ]] || exit 1"
+status: done
+---
+cd /tmp && iter8 hub -e load-test
 ```
 
-## Start the Iter8 experiment
-
-We run an Iter8 experiment to verify that the candidate version
-satisfies a set of service level objectives (SLOs). In this case, we
-are focus on the metrics below, but these can be any in-built or
-_user-defined_ metrics.
-
-1. Mean latency for application requests should be < **500**
-2. 95th percentile latency should be less than **1000**
-3. Error rate to should be less than **0.01**
-
-Our **Iter8 experiment** will generate traffic to the
-_hello-candidate_ version of the application and will monitor the
-metrics that get generated as a result of this traffic. If the metrics
-satisfy the SLOs defined then we can go ahead and promote this
-version.
-
-```bash
 ---
-id: 8747f6df-3926-4e90-a75b-febced2dd1cd
+
+## Run experiment: Run load against the application, and monitor error rate and response time
+
+[Iter8 experiments](concepts.md#what-is-an-iter8-experiment) are specified using the `experiment.yaml` file. The `iter8 run` command reads this file, runs the specified experiment, and writes the results of the experiment into the `result.yaml` file.
+
+Run the experiment you downloaded above as follows.
+
+```shell
 ---
-k apply -f https://raw.githubusercontent.com/kalantar/iter8/cil/samples/cil/first-exp/experiment.yaml
+id: run-experiment
+validate: "[[ -f /tmp/load-test/experiment/values.yaml ]] || exit 1"
+---
+cd /tmp/load-test && iter8 run --set url=https://example.com
 ```
 
-> As part of an **experiment definition**, Iter8 lets you define a set
-> of **objectives** and **indicators**. If you click to expand the
-> "Show experiment.yaml" above, you will see that this experiment
-> defines three metrics under criteria: mean-latency, error-rate, and
-> latency-95th-percentile. In addition, you can specify the bounds of
-> acceptable values for each metric. For example, this experiment
-> specifies a maximum mean-latency of 500 milliseconds.
+??? note "Look inside experiment.yaml"
 
-## Monitor the progress of the experiment
+    This experiment contains the [`gen-load-and-collect-metrics` task](../user-guide/tasks/collect.md) for generating load and collecting metrics, and the [`assess-app-versions` task](../user-guide/tasks/assess.md) for validating SLOs.
 
-This notebook automatically watches the progress of `kubectl`
-commands. See above. In your terminal, you may monitor the status of a
-running experiment using `kubectl get experiment hello-experiment --watch`
+    ```yaml
+    # task 1: generate HTTP requests for https://example.com and
+    # collect Iter8's built-in latency and error-related metrics
+    - task: gen-load-and-collect-metrics
+      with:
+        versionInfo:
+        - url: https://example.com
+    # task 2: validate if the app (hosted at https://example.com) satisfies 
+    # service level objectives (SLOs)
+    # this task uses the built-in metrics collected by task 1 for validation
+    - task: assess-app-versions
+      with:
+        SLOs:
+          # error rate must be 0
+        - metric: built-in/error-rate
+          upperLimit: 0
+          # 95th percentile latency must be under 100 msec
+        - metric: built-in/p95.0
+          upperLimit: 100
+    ```
 
-```bash
+??? note "Iter8 and Helm"
+
+    If you are familiar with Helm, you probably noticed that the load-test folder resembles a Helm chart. This is because, Iter8 experiment charts are Helm charts under the covers. The iter8 run command used above combines the experiment chart with values to generate the experiments.yaml file, much like how Helm charts can be combined with values to produce Kubernetes manifests.
+
+## Assert outcomes
+
+Assert that the experiment completed without any failures and SLOs are satisfied
+
+```shell
 ---
-id: 94e4c2c8-bd90-4467-b569-610510ed1269
+id: assert-success
 ---
-kubectl get experiment hello-experiment --watch
+cd /tmp/load-test && iter8 assert -c completed -c nofailure -c slos
 ```
 
-## Understanding Iter8's recommendation
+## Generate report
 
-When an experiment finishes, its status is set to **Completed**. The
-message will indicate whether or not it has **Failed**. If it
-completes without failure, Iter8 will recommend whether or not the
-version should be promoted or not depending on whether or not it
-satisfies the required SLOs. You can execute the below command to get
-details of the observed metrics and which satisfied their objectives.
+Generate a report of the experiment in HTML or text formats as follows.
 
-```bash
-iter8ctl describe hello-experiment
-```
+=== "HTML"
 
-> When running locally in your terminal you will need to instal the
-> **iter8ctl** using `GOBIN=/usr/local/bin go install github.com/iter8-tools/etc3/iter8ctl@latest`
+    ```shell
+    iter8 report -o html > report.html
+    # open report.html with a browser. In MacOS, you can use the command:
+    # open report.html
+    ```
 
-## Optionally, promote the candidate version
+    ???+ note "The HTML report looks as follows"
 
-Once an experiment has finished, you can go ahead and promote this
-candidate. This can be done using any existing delivery pipeline, by
-applying the manifest (`kubectl apply -f <yaml for the latest candidate>`), or by using a _task_ specified in the Iter8
-experiment. Iter8 provides a facility to execute tasks when the
-experiment finishes. For example, the following task might be
-used. See, for example,
-[this](https://iter8.tools/0.7/reference/tasks/run/) task.
+        ![HTML report](https://iter8.tools/0.8/getting-started/images/report.html.png)
+
+=== "Text"
+
+    ```shell
+    ---
+    id: generate-text-report
+    ---
+    cd /tmp/load-test && iter8 report -o text
+    ```

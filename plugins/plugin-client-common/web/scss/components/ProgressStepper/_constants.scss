@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-@mixin EditorContainer {
-  .monaco-editor-wrapper {
-    @content;
-  }
-}
-
-@mixin EditorBackground {
-  .monaco-editor,
-  .monaco-editor .margin,
-  .monaco-editor-background {
-    @content;
-  }
-}
-
-@mixin EditorInMarkdown {
-  .kui--code--editor {
-    @content;
-  }
-}
+$major-step-size: 1.5rem;
+$minor-step-size: 0.6875rem;
+$minor-step-color: var(--color-base05);

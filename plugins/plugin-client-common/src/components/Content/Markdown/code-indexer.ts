@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { visit } from 'unist-util-visit'
-import { CodeProps } from 'react-markdown/lib/ast-to-react'
+import { visitParents as visit } from 'unist-util-visit-parents'
 
-export function isExecutableCodeBlock(props: CodeProps) {
-  // react-markdown v6+ places the language in the className
-  const match = /language-(\w+)/.exec(props.className || '')
-  const language = match ? match[1] : undefined
+import { tryFrontmatter } from './frontmatter'
 
+function isExecutableCodeBlock(language: string) {
   return /^(bash|sh|shell)$/.test(language)
 }
 
@@ -32,17 +29,36 @@ export function isExecutableCodeBlock(props: CodeProps) {
 function transformer(ast) {
   let codeIdx = 0
 
-  function visitor(node) {
-    if (node.tagName === 'code' && isExecutableCodeBlock(node.properties)) {
-      node.properties.codeIdx = codeIdx++
+  function visitor(node, ancestors) {
+    if (node.tagName === 'code') {
+      // react-markdown v6+ places the language in the className
+      const match = /language-(\w+)/.exec(node.properties.className || '')
+      const language = match ? match[1] : undefined
+
+      if (isExecutableCodeBlock(language)) {
+        node.properties.codeIdx = codeIdx++
+
+        if (node.children.length === 1 && node.children[0].type === 'text') {
+          const code = String(node.children[0].value).trim()
+          const { body, attributes } = tryFrontmatter(code)
+
+          if (attributes.id) {
+            ancestors.forEach(_ => {
+              if (_.properties && Array.isArray(_.properties.containedCodeBlocks)) {
+                _.properties.containedCodeBlocks.push(
+                  Buffer.from(JSON.stringify(Object.assign({ body, language }, attributes))).toString('base64')
+                )
+              }
+            })
+          }
+        }
+      }
     }
   }
 
   visit(ast, 'element', visitor)
 }
 
-function plugin() {
+export default function plugin() {
   return transformer
 }
-
-export default plugin
