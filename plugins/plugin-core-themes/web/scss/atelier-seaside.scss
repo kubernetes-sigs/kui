@@ -42,10 +42,16 @@ body[kui-theme='Atelier'] {
   --color-base0F: #e619c3;
 
   --color-base0B-rgb: 41, 163, 41;
-  --color-base08-rgb: 230, 25, 60;
-
-  --color-green-rgb: var(--color-base0B-rgb);
   --color-red-rgb: var(--color-base08-rgb);
+
+  --color-base08-rgb: 230, 25, 60;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 134, 157, 249;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 178, 178, 31;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-ui-06: hsla(120, 8%, 14%, 1);
 

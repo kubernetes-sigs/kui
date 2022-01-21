@@ -319,22 +319,16 @@ body[kui-theme-style='light'] {
   }
 }
 
-@mixin InvertedTipAndTab {
-  @include MarkdownTip {
-    color: var(--color-base00);
-  }
+@mixin InvertedTab {
   @include MarkdownActiveTabButton {
     color: var(--color-text-01);
   }
 }
 @include InvertedColors {
-  @include InvertedTipAndTab;
+  @include InvertedTab;
 }
 body[kui-theme-style='dark'] {
-  @include InvertedTipAndTab;
-  @include ExpandableSectionToggle {
-    color: var(--pf-global--active-color--400);
-  }
+  @include InvertedTab;
   @include ExpandableSectionButtonIcon {
     color: inherit;
   }
@@ -345,13 +339,53 @@ body[kui-theme-style='dark'] {
   }
 }
 @include MarkdownTip {
-  background-color: #e7f1fa;
+  $tip-toggle-opacity: 0.3;
+  $tip-toggle-opacity-2: 0.9;
 
   @include ExpandableSectionToggle {
     width: 100%;
+    font-weight: 500;
     padding-top: 0.6875em;
     padding-bottom: 0.6875em;
-    mix-blend-mode: multiply;
+    background-color: #e7f1fa;
+  }
+  @include ExpandableSectionToggleText {
+    color: var(--color-text-01);
+  }
+  @include MarkdownTipVariant(success) {
+    $bgcolor: var(--color-base0B-rgb);
+    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+    @include ExpandableSectionToggle {
+      background-color: rgba($bgcolor, $tip-toggle-opacity);
+    }
+  }
+  @include MarkdownTipVariant(warning) {
+    $bgcolor: var(--color-yellow-rgb);
+    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+    @include ExpandableSectionToggle {
+      background-color: rgba($bgcolor, $tip-toggle-opacity);
+    }
+  }
+  @include MarkdownTipVariant(todo) {
+    $bgcolor: var(--color-blue-rgb);
+    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+    @include ExpandableSectionToggle {
+      background-color: rgba($bgcolor, $tip-toggle-opacity);
+    }
+  }
+  @include MarkdownTipVariant(note) {
+    $bgcolor: var(--color-yellow-rgb);
+    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+    @include ExpandableSectionToggle {
+      background-color: rgba($bgcolor, $tip-toggle-opacity);
+    }
+  }
+  @include MarkdownTipVariant(bug) {
+    $bgcolor: var(--color-red-rgb);
+    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+    @include ExpandableSectionToggle {
+      background-color: rgba($bgcolor, $tip-toggle-opacity);
+    }
   }
 }
 

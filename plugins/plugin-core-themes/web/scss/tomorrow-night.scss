@@ -49,8 +49,15 @@ body[kui-theme='tomorrow-night'] {
 
   --color-base08-rgb: 204, 102, 102;
   --color-red-rgb: var(--color-base08-rgb);
+
   --color-base0B-rgb: 181, 189, 104;
   --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 129, 162, 190;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 240, 198, 116;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-error-cell-bg: var(--color-base0E);
   --color-error-cell-text: var(--color-base00);

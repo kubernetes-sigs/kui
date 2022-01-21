@@ -41,11 +41,17 @@ body[kui-theme='Dracula'] {
   --color-base0E: #b45bcf;
   --color-base0F: #00f769;
 
-  --color-base0A-rgb: 0, 247, 105;
   --color-base08-rgb: 234, 81, 178;
-
-  --color-green-rgb: var(--color-base0A-rgb);
   --color-red-rgb: var(--color-base08-rgb);
+
+  --color-base0B-rgb: 0, 247, 105;
+  --color-green-rgb: var(--color-base0A-rgb);
+
+  --color-base0D-rgb: 98, 214, 232;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 235, 255, 135;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-green: var(--color-base0A);
   --color-yellow: var(--color-base0B);

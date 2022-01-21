@@ -43,11 +43,17 @@ body[kui-theme='Dark'] {
 
   --color-light-blue: #c8dfff;
 
-  --color-base0B-rgb: 61, 187, 97;
+  --color-red-rgb: var(--color-base08-rgb);
   --color-base08-rgb: 251, 75, 83;
 
+  --color-base0B-rgb: 61, 187, 97;
   --color-green-rgb: var(--color-base0B-rgb);
-  --color-red-rgb: var(--color-base08-rgb);
+
+  --color-base0D-rgb: 151, 193, 255;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 253, 209, 58;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-table-border1: #616466;
   --color-table-border2: #4d5358;

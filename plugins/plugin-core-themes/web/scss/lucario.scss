@@ -44,9 +44,16 @@ body[kui-theme='Lucario'] {
   --color-base0F: #e6b5ff;
 
   --color-base08-rgb: 255, 108, 96;
-  --color-green-rgb: var(--color-base0B-rgb);
-  --color-base0B-rgb: 142, 228, 120;
   --color-red-rgb: var(--color-base08-rgb);
+
+  --color-base0B-rgb: 142, 228, 120;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 87, 150, 237;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 255, 255, 182;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-ui-06: hsla(209, 25%, 22%, 1);
 

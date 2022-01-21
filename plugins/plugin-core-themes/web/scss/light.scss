@@ -118,10 +118,17 @@ body[kui-theme='Light'] {
 
   --color-light-blue: #edf4ff;
 
-  --color-base0B-rgb: 29, 189, 90;
-  --color-green-rgb: var(--color-base0B-rgb);
   --color-base08-rgb: 231, 29, 50;
   --color-red-rgb: var(--color-base08-rgb);
+
+  --color-base0B-rgb: 29, 189, 90;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 0, 114, 195;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 176, 138, 12;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);

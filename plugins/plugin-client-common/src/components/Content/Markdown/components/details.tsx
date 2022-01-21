@@ -24,13 +24,14 @@ export function tipProps(expanded: boolean) {
   return { isWidthLimited: true, expanded }
 }
 
+/** This feeds off our rehype-tip AST decorations */
 export function tip(props: React.DetailsHTMLAttributes<HTMLElement>) {
+  const className = ['kui--markdown-tip', 'kui--markdown-major-paragraph']
+    .concat((props.className ? props.className.split(/\s+/) : []).map(_ => `kui--markdown-tip_${_}`))
+    .join(' ')
+
   return (
-    <ExpandableSection
-      className="kui--markdown-tip kui--markdown-major-paragraph"
-      showMore={props.title}
-      {...tipProps(props.open)}
-    >
+    <ExpandableSection className={className} showMore={props.title} {...tipProps(props.open)}>
       {props.children}
     </ExpandableSection>
   )
