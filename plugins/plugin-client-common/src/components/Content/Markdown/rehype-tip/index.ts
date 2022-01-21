@@ -18,8 +18,8 @@ import { i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common', 'markdown')
 
-const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)(\s+"(.+)"\s*)?(\n(.|[\n\r])*)?$/
-const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)(\s+"(.+))?$/
+const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|todo|bug|info|note|warning)(\s+"(.+)"\s*)?(\n(.|[\n\r])*)?$/
+const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|todo|bug|info|note|warning)(\s+"(.+))?$/
 const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
 
 export const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
