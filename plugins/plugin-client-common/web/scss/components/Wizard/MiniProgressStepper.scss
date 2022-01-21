@@ -1,0 +1,64 @@
+/*
+ * Copyright 2022 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../ProgressStepper/mixins';
+
+$small: 0.5625rem;
+$regular: 1rem;
+
+@include MiniProgressStepper {
+  --pf-c-progress-stepper__step-icon--Width: #{$regular};
+
+  @include Connector {
+    align-items: center;
+    height: $regular;
+  }
+  @include Icon {
+    font-size: $regular;
+  }
+  @include ConnectorUI {
+    --pf-c-progress-stepper__step-connector--before--Left: 6px;
+  }
+
+  @include ProgressStep {
+    display: block; /* Rather than `contents`, so we can wrap a Tooltip */
+    @include NotBlank {
+      @include Icon {
+        border: none;
+      }
+    }
+    @include Blank {
+      @include Icon {
+        width: $small;
+        height: $small;
+        font-size: $small;
+      }
+    }
+  }
+}
+
+@include MiniProgressStepper {
+  --pf-c-progress-stepper--GridTemplateRows: max-content;
+  --pf-c-progress-stepper--GridTemplateColumns: max-content;
+  grid-gap: 3px;
+  grid-auto-columns: max-content;
+}
+
+@include MiniProgressStepper {
+  @include ProgressStep {
+    margin: 0;
+  }
+}

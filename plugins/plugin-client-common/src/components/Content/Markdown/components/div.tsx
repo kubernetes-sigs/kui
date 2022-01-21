@@ -20,16 +20,23 @@ import { TextContent } from '@patternfly/react-core'
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
+import { PositionProps } from '../frontmatter'
+
+import { isWizard } from './Wizard/rehype-wizard'
+const Wizard = React.lazy(() => import('./Wizard'))
+
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
 export default function div(uuid: string) {
-  return (props: React.HTMLAttributes<HTMLDivElement>) => {
+  return (props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps>) => {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const placeholder = props['data-kui-placeholder']
     const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
 
-    if (!position || (position === 'default' && count === 0 && !maximized && !placeholder)) {
+    if (isWizard(props)) {
+      return <Wizard {...props} />
+    } else if (!position || (position === 'default' && count === 0 && !maximized && !placeholder)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path

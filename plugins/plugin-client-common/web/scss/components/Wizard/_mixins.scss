@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,84 +14,69 @@
  * limitations under the License.
  */
 
-@mixin ProgressStepper {
-  .kui--progress-stepper {
+@mixin Wizard {
+  .kui--wizard {
     @content;
   }
 }
 
-@mixin ProgressStep {
-  .kui--progress-step {
+@mixin WizardHeader {
+  .pf-c-wizard__header {
     @content;
   }
 }
 
-@mixin Connector {
-  .pf-c-progress-stepper__step-connector {
+@mixin WizardDescription {
+  .pf-c-wizard__description {
     @content;
   }
 }
 
-@mixin ConnectorUI {
-  @include Connector {
-    &:before {
-      @content;
-    }
-  }
-}
-
-@mixin Title {
-  .pf-c-progress-stepper__step-title {
+@mixin WizardBody {
+  .pf-c-wizard__main-body {
     @content;
   }
 }
 
-@mixin Description {
-  .pf-c-progress-stepper__step-description {
+@mixin WizardNav {
+  .pf-c-wizard__nav {
     @content;
   }
 }
 
-@mixin Minor {
-  &.pf-m-minor {
+@mixin WizardNavItem {
+  .pf-c-wizard__nav-link {
     @content;
   }
 }
 
-@mixin NotBlank {
-  &:not(.pf-m-blank) {
+@mixin NotCurrent {
+  &:not(.pf-m-current) {
     @content;
   }
 }
 
-@mixin Blank {
-  &.pf-m-blank {
+/* Wizard nav counter element (1) (2) etc. */
+@mixin Counter {
+  &:before {
     @content;
   }
 }
 
-@mixin Icon {
-  .pf-c-progress-stepper__step-icon {
+@mixin WizardNavItemDescription {
+  .kui--wizard-nav-item-description {
     @content;
   }
 }
 
-@mixin IconLink {
-  .kui--progress-step-status-icon-link {
+@mixin HideCancel {
+  &[data-hide-cancel] {
     @content;
   }
 }
 
-@mixin Main {
-  .pf-c-progress-stepper__step-main {
+@mixin CancelButton {
+  .pf-c-wizard__footer-cancel {
     @content;
-  }
-}
-
-@mixin MiniProgressStepper {
-  @include ProgressStepper {
-    &[data-mini] {
-      @content;
-    }
   }
 }

@@ -16,9 +16,11 @@
 
 import SidebarApi from './Sidebar'
 import MarkdownApi from './Markdown'
+import WizardApi from './Wizard'
 
 export const Sidebar = new SidebarApi()
 export const Markdown = new MarkdownApi()
+export const Wizard = new WizardApi()
 
 /* eslint-disable @typescript-eslint/camelcase */
 export const TOP_TAB = '.kui--tab-list > .kui--tab'

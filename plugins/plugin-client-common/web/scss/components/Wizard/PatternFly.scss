@@ -1,0 +1,79 @@
+/*
+ * Copyright 2022 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'mixins';
+
+@include Wizard {
+  @include WizardHeader {
+    background-color: var(--color-base06);
+    color: var(--color-base00);
+
+    a {
+      color: var(--color-base0C);
+    }
+  }
+
+  @include WizardDescription {
+    color: var(--color-base00);
+  }
+
+  @include WizardBody {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .pf-c-wizard__outer-wrap {
+    padding-left: 0;
+  }
+  .pf-c-wizard__inner-wrap {
+    flex-direction: row;
+  }
+  @include WizardNav {
+    position: unset;
+    min-width: var(--pf-c-wizard__nav--Width);
+  }
+}
+
+@include WizardNavItem {
+  /* These two rules override default user agent styling on button */
+  padding: 0;
+  font-size: inherit;
+  background: none;
+
+  @include NotCurrent {
+    color: inherit;
+
+    @include Counter {
+      color: var(--color-text-02);
+    }
+  }
+}
+
+@include Wizard {
+  @include WizardNavItemDescription {
+    margin: 0;
+    color: var(--color-text-02);
+    font-size: var(--pf-global--FontSize--sm);
+  }
+}
+
+@include Wizard {
+  @include HideCancel {
+    @include CancelButton {
+      display: none;
+    }
+  }
+}

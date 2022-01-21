@@ -38,13 +38,14 @@ import tabbed, { hackIndentation } from './rehype-tabbed'
 
 import components from './components'
 import codeIndexer from './code-indexer'
+import wizard from './components/Wizard/rehype-wizard'
 import { CodeBlockResponse } from './components/code'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 import { kuiFrontmatter, encodePriorResponses } from './frontmatter'
-const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, codeIndexer, rehypeRaw, rehypeSlug]
+const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, wizard, codeIndexer, rehypeRaw, rehypeSlug]
 const remarkPlugins: (tab: KuiTab) => Options['plugins'] = tab => [
   gfm,
   [frontmatter, ['yaml', 'toml']],
@@ -58,6 +59,9 @@ export interface Props {
 
   /** Source content */
   source: string
+
+  /** Render executable code blocks with the executable code block component [Default: true] */
+  executableCodeBlocks?: boolean
 
   /** Has the user clicked to execute a code block? */
   codeBlockResponses?: CodeBlockResponse[]

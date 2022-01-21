@@ -40,8 +40,7 @@ export default function code(
     }
 
     const code = String(props.children).trim()
-    const fm = tryFrontmatter(code)
-    const { body, attributes } = fm
+    const { body, attributes } = tryFrontmatter(code)
 
     const tabUUID = mdprops.tab ? getPrimaryTabId(mdprops.tab) : undefined
 
@@ -49,7 +48,7 @@ export default function code(
     const match = /language-(\w+)/.exec(props.className || '')
     const language = match ? match[1] : undefined
 
-    if (mdprops.nested && props.codeIdx) {
+    if (mdprops.nested && props.codeIdx && mdprops.executableCodeBlocks !== false) {
       // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
       const myCodeIdx = parseInt(props.codeIdx)
 
@@ -94,7 +93,7 @@ export default function code(
       )
     } else {
       return (
-        <div className="paragraph">
+        <div className={'paragraph' + (mdprops.executableCodeBlocks === false ? ' kui--inverted-color-context' : '')}>
           {!language ? (
             <pre>
               <code>{code}</code>

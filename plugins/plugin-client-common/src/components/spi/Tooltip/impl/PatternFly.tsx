@@ -30,6 +30,7 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
     <Tooltip
       className="kui--tooltip"
       enableFlip={props.enableFlip}
+      maxWidth={props.maxWidth}
       isContentLeftAligned={isMarkdown}
       position={props.position || 'auto'}
       entryDelay={props.entryDelay || 200}
@@ -40,7 +41,7 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
           props.children
         ) : isMarkdownProps(props) ? (
           <React.Suspense fallback={<div />}>
-            <Markdown nested source={props.markdown} />
+            <Markdown nested executableCodeBlocks={false} source={props.markdown} />
           </React.Suspense>
         ) : (
           props.content

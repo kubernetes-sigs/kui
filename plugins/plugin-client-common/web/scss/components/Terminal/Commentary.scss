@@ -36,7 +36,7 @@ body[kui-theme-style] {
   @include TextContent {
     color: inherit;
 
-    ol,
+    ol:not(.pf-c-wizard__nav-list):not(.pf-c-list),
     ul {
       margin: 0;
     }
@@ -181,6 +181,10 @@ body[kui-theme-style] {
         min-width: 0;
       }
     }
+  }
+
+  span.paragraph {
+    display: block;
   }
 }
 @include CommentaryCard {

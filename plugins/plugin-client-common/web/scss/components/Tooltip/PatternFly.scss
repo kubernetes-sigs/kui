@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@import '../Editor/mixins';
+
 $color: var(--color-base00);
 $bgcolor: var(--color-base06);
 
@@ -22,6 +24,13 @@ $bgcolor: var(--color-base06);
   background-color: $bgcolor;
 
   &[data-is-markdown] {
+    @include EditorInMarkdown {
+      background: transparent !important;
+    }
+    @include EditorBackground {
+      background: transparent !important;
+    }
+
     .pf-c-content {
       font-size: inherit;
     }
