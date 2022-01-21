@@ -36,11 +36,17 @@
   --color-base0E: #fa75a6;
   --color-base0F: #d4bbff;
 
-  --color-base0B-rgb: 36, 161, 72;
   --color-base08-rgb: 255, 131, 137;
-
-  --color-green-rgb: var(--color-base0B-rgb);
   --color-red-rgb: var(--color-base08-rgb);
+
+  --color-base0B-rgb: 36, 161, 72;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 69, 137, 255;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 241, 194, 27;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-confirm-background: var(--color-sidecar-header);
   --color-confirm-foreground: var(--color-base06);
@@ -101,10 +107,16 @@
   --color-base0F: #8a3ffc;
 
   --color-base0B-rgb: 25, 128, 56;
-  --color-base08-rgb: 218, 30, 40;
+  --color-red-rgb: var(--color-base08-rgb);
 
   --color-green-rgb: var(--color-base0B-rgb);
-  --color-red-rgb: var(--color-base08-rgb);
+  --color-base08-rgb: 218, 30, 40;
+
+  --color-base0D-rgb: 5, 74, 218;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 142, 105, 38;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-red-sidecar: #fb4b53;
   --color-yellow-sidecar: #fdd13a;

@@ -43,8 +43,15 @@ body[kui-theme='Monokai'] {
 
   --color-base08-rgb: 249, 38, 114;
   --color-red-rgb: var(--color-base08-rgb);
+
   --color-base0B-rgb: 166, 226, 46;
   --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 102, 217, 239;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 244, 191, 117;
+  --color-yellow-rgb: var(--color-base0A-rgb);
 
   --color-error-cell-bg: var(--color-base0E);
   --color-error-cell-text: var(--color-base00);

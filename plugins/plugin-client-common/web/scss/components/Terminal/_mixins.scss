@@ -15,6 +15,7 @@
  */
 
 @use 'sass:math';
+@import '../ExpandableSection/mixins';
 
 /** Terminal font size */
 $terminal-font-size: 0.875rem;
@@ -577,6 +578,11 @@ $action-hover-delay: 210ms;
 
 @mixin MarkdownTip {
   .kui--markdown-tip {
+    @content;
+  }
+}
+@mixin MarkdownTipVariant($variant) {
+  &.kui--markdown-tip_#{$variant} {
     @content;
   }
 }

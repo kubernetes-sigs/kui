@@ -18,8 +18,8 @@ import { i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common', 'markdown')
 
-const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|todo|bug|info|note|warning)(\s+"(.+)"\s*)?(\n(.|[\n\r])*)?$/
-const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|todo|bug|info|note|warning)(\s+"(.+))?$/
+const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|todo|bug|info|note|warning|success)(\s+"(.+)"\s*)?(\n(.|[\n\r])*)?$/
+const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|todo|bug|info|note|warning|success)(\s+"(.+))?$/
 const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
 
 export const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
@@ -99,6 +99,7 @@ export default function plugin(/* options */) {
                     type: 'element',
                     tagName: 'tip',
                     properties: {
+                      className: startMatch[3], // e.g. tip, todo, bug, warning, ...
                       title: startMatch[5] || strings(startMatch[3]),
                       open: !!startMatch[2] || startMatch[1] === '!!!'
                     },
@@ -117,6 +118,7 @@ export default function plugin(/* options */) {
                       type: 'element',
                       tagName: 'tip',
                       properties: {
+                        className: startMatch[3], // e.g. tip, todo, bug, warning, ...
                         title: startMatch[5] || strings(startMatch[3]),
                         open: !!startMatch[2] || startMatch[1] === '!!!',
                         partial: true

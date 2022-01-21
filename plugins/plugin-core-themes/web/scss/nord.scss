@@ -47,11 +47,19 @@ body[kui-theme='Nord'] {
   --color-red: var(--color-base0B);
   --color-green: var(--color-base0E);
   --color-yellow: var(--color-base0D);
+  --color-blue: var(--color-base0A);
+
+  --color-base0B-rgb: 191, 97, 106;
+  --color-red-rgb: var(--color-base0B-rgb);
 
   --color-base0E-rgb: 163, 190, 140;
   --color-green-rgb: var(--color-base0E-rgb);
-  --color-base0B-rgb: 191, 97, 106;
-  --color-red-rgb: var(--color-base0B-rgb);
+
+  --color-base0A-rgb: 144, 168, 198;
+  --color-blue-rgb: var(--color-base0A-rgb);
+
+  --color-base0D-rgb: 235, 203, 139;
+  --color-yellow-rgb: var(--color-base0D-rgb);
 
   --color-latency-0: #4575b4;
   --color-latency-1: #91bfdb;
