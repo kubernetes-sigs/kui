@@ -46,7 +46,7 @@ import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 import { kuiFrontmatter, encodePriorResponses } from './frontmatter'
 const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, wizard, codeIndexer, rehypeRaw, rehypeSlug]
-const remarkPlugins: (tab: KuiTab) => Options['plugins'] = tab => [
+const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = tab => [
   gfm,
   [frontmatter, ['yaml', 'toml']],
   [kuiFrontmatter, { tab }],
@@ -222,7 +222,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
       <React.Suspense fallback={<div />}>
         <TextContent>
           <ReactMarkdown
-            plugins={remarkPlugins(this.props.tab)}
+            remarkPlugins={remarkPlugins(this.props.tab)}
             rehypePlugins={rehypePlugins}
             components={this._components()}
             data-is-nested={this.props.nested || undefined}
