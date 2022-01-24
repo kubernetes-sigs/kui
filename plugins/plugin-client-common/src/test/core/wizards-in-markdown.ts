@@ -16,33 +16,45 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/notebooks/wizard.md')), '..')
 
+const steps = [
+  {
+    name: 'Step1Title',
+    description: 'Step1Description',
+    body: 'Step1Body',
+    codeBlocks: [{ index: 0, output: 'aaa' }]
+  },
+  {
+    name: 'Step2Title',
+    description: 'Step2Description',
+    body: 'Step2Body',
+    codeBlocks: [
+      { index: 0, output: 'bbb' },
+      { index: 1, output: 'ccc' }
+    ]
+  }
+]
+
 const IN1 = {
-  input: join(ROOT, 'notebooks', 'wizard.md'),
+  input: join(ROOT, 'notebooks/wizard.md'),
   title: 'WizardTitle',
   description: 'WizardDescription',
-  steps: [
-    {
-      name: 'Step1Title',
-      description: 'Step1Description',
-      body: 'Step1Body',
-      codeBlocks: [{ index: 0, output: 'aaa' }]
-    },
-    {
-      name: 'Step2Title',
-      description: 'Step2Description',
-      body: 'Step2Body',
-      codeBlocks: [
-        { index: 0, output: 'bbb' },
-        { index: 1, output: 'ccc' }
-      ]
-    }
-  ]
+  steps,
+  expectedSplitCount: 1
 }
-;[IN1].forEach(markdown => {
+
+// make sure we can display wizards in tabs with splits
+const IN2 = {
+  input: join(ROOT, 'tests/data/wizard-with-splits.md'),
+  title: 'WizardTitleWithSplits',
+  description: 'WizardDescriptionWithSplits',
+  steps,
+  expectedSplitCount: 2
+}
+;[IN1, IN2].forEach(markdown => {
   describe(`wizards in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
@@ -78,6 +90,8 @@ const IN1 = {
         await Common.oops(this, true)(err)
       }
     })
+
+    it(`should have ${markdown.expectedSplitCount} splits`, () => ReplExpect.splitCount(markdown.expectedSplitCount))
 
     markdown.steps.forEach((step, idx) => {
       if (idx === 0) {

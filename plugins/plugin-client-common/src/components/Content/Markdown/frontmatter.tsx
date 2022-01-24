@@ -95,7 +95,7 @@ interface KuiFrontmatter {
   /**
    * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
    */
-  layout?: 'wizard' | Record<number, SplitPositionSpec>
+  layout?: 'wizard' | Record<number | 'default', SplitPositionSpec>
 }
 
 export function splitTarget(node) {
@@ -115,8 +115,15 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
 
     let frontmatter: KuiFrontmatter
 
+    // e.g.
+    // layout:
+    //    1: left
+    //    default: wizard
+    const defaultPosition = () => (frontmatter && frontmatter.layout ? frontmatter.layout['default'] : undefined)
+
     const newSection = (sectionIdx: number) => {
-      const positionAsGiven = frontmatter.layout === 'wizard' ? 'wizard' : frontmatter.layout[sectionIdx]
+      const positionAsGiven =
+        frontmatter.layout === 'wizard' ? 'wizard' : frontmatter.layout[sectionIdx] || defaultPosition()
 
       const position = isValidPosition(positionAsGiven)
         ? positionAsGiven
