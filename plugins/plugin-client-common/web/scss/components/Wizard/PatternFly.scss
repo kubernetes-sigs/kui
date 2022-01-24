@@ -72,6 +72,11 @@
     margin: 0;
     color: var(--color-text-02);
     font-size: var(--pf-global--FontSize--sm);
+
+    .paragraph {
+      word-wrap: normal;
+      word-break: normal;
+    }
   }
 }
 
