@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.1.0](https://github.com/IBM/kui/compare/v4.5.0...v11.1.0) (2022-01-24)
+
+### Bug Fixes
+
+- dockerized proxy installs incorrect version of node-pty ([f1d53bb](https://github.com/IBM/kui/commit/f1d53bb))
+- **packages/builder:** fixes for building kui on windows ([7b636cc](https://github.com/IBM/kui/commit/7b636cc)), closes [#4920](https://github.com/IBM/kui/issues/4920)
+- **packages/proxy:** Docker builds broken after recent update to node:12-bullseye-slim update ([a1b74a4](https://github.com/IBM/kui/commit/a1b74a4)), closes [#8083](https://github.com/IBM/kui/issues/8083)
+- **packages/proxy:** docker+proxy build fails ([37e5d6a](https://github.com/IBM/kui/commit/37e5d6a)), closes [#7639](https://github.com/IBM/kui/issues/7639)
+- **packages/proxy:** dockerized kui may fail with permissions denied on the nginx directories ([2bcf8bd](https://github.com/IBM/kui/commit/2bcf8bd)), closes [#7658](https://github.com/IBM/kui/issues/7658)
+- **packages/proxy:** kui-build-docker-with-proxy has several bugs ([eeb21dc](https://github.com/IBM/kui/commit/eeb21dc)), closes [#7085](https://github.com/IBM/kui/issues/7085)
+- **packages/proxy:** kui-build-proxy-with-docker fails if dist/webpack directory does not exist ([689b015](https://github.com/IBM/kui/commit/689b015)), closes [#5728](https://github.com/IBM/kui/issues/5728)
+- **packages/proxy:** nginx+kui docker container should run nginx on non-privileged port ([b24416c](https://github.com/IBM/kui/commit/b24416c)), closes [#7643](https://github.com/IBM/kui/issues/7643)
+- **packages/proxy:** oc does not work in kui-build-docker-with-proxy image ([b0460b8](https://github.com/IBM/kui/commit/b0460b8)), closes [#7088](https://github.com/IBM/kui/issues/7088)
+- **packages/proxy:** proxy docker container needs style-src: 'unsafe-inline' ([89c33e2](https://github.com/IBM/kui/commit/89c33e2)), closes [#4261](https://github.com/IBM/kui/issues/4261)
+- **packages/proxy:** proxy does not properly run in external clients ([168fb3f](https://github.com/IBM/kui/commit/168fb3f))
+- **packages/proxy:** signedCookie not a function ([9e89138](https://github.com/IBM/kui/commit/9e89138))
+- **plugins/plugin-bash-like:** cd /tmp && ... does not handle streaming ([b78ba53](https://github.com/IBM/kui/commit/b78ba53))
+- in browser+proxy mode, initial directory is / but \$HOME shows the correct value ([648a2fe](https://github.com/IBM/kui/commit/648a2fe)), closes [#7467](https://github.com/IBM/kui/issues/7467)
+- proxy still runs http-allocate-cert even if NO_DOCKER is set ([5267e52](https://github.com/IBM/kui/commit/5267e52)), closes [#4137](https://github.com/IBM/kui/issues/4137)
+- simplify handling of opengraph META ([ff3c0de](https://github.com/IBM/kui/commit/ff3c0de)), closes [#4288](https://github.com/IBM/kui/issues/4288)
+
+### Features
+
+- **packages/proxy:** add curl, sed, and git to the kuishell/kui image ([e61d749](https://github.com/IBM/kui/commit/e61d749))
+- **packages/proxy:** add iter8ctl to the docker base image ([625f352](https://github.com/IBM/kui/commit/625f352)), closes [#8000](https://github.com/IBM/kui/issues/8000)
+- **packages/proxy:** dockerized kui hard-wires ContentSecurityPolicy ([efd20b2](https://github.com/IBM/kui/commit/efd20b2)), closes [#8055](https://github.com/IBM/kui/issues/8055)
+- **packages/proxy:** pass through KUI\_ env vars from proxy container to user ([cb0c729](https://github.com/IBM/kui/commit/cb0c729)), closes [#8120](https://github.com/IBM/kui/issues/8120)
+- Add support to Kui proxy for pre-shared-key authorization ([2412a72](https://github.com/IBM/kui/commit/2412a72)), closes [#7772](https://github.com/IBM/kui/issues/7772)
+- proxy nginx should support serving gzip_static content ([f592fc7](https://github.com/IBM/kui/commit/f592fc7)), closes [#4252](https://github.com/IBM/kui/issues/4252)
+- simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
 # [11.0.0](https://github.com/IBM/kui/compare/v4.5.0...v11.0.0) (2022-01-18)
 
 ### Bug Fixes
