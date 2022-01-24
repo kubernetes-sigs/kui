@@ -5,13 +5,23 @@ layout: wizard
 
 # Iter8: Kubernetes Release Engineering
 
-[Iter8](https://iter8.tools) helps you safely roll out new versions of applications and ML models, and to maximize business value with each release.
+[Iter8](https://iter8.tools) is the **release engineering** platform
+for Kubernetes applications and ML models.
+
+Iter8 is designed for DevOps and MLOps teams interested in maximizing
+release velocity and business value with their apps/ML models while
+protecting end-user experience. Use Iter8 for SLO validation, A/B
+testing and progressive rollouts of K8s apps/ML models.
 
 ---
 
 ## Introduction
 
 This tutorial uses an [Iter8 experiment](concepts.md#what-is-an-iter8-experiment) to load test https://example.com and validate latency and error-related service level objectives (SLOs).
+
+> ### What is an Iter8 experiment?
+>
+> An Iter8 experiment is a sequence of tasks that produce metrics-driven insights for your app/ML model versions, validates them, and optionally performs a rollout. Iter8 provides a set of pre-defined and customizable tasks.
 
 ---
 
