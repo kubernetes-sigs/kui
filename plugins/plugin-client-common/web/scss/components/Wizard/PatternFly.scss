@@ -42,9 +42,14 @@
     flex-direction: row;
   }
   @include WizardNav {
+    width: auto;
     position: unset;
-    min-width: var(--pf-c-wizard__nav--Width);
+    max-width: var(--pf-c-wizard__nav--Width);
   }
+}
+
+@include WizardFooter {
+  justify-content: flex-end;
 }
 
 @include WizardNavItem {
