@@ -6,8 +6,8 @@ layout:
 
 # Iter8: The Release Engineering Platform for Kubernetes
 
-Iter8 is the **release engineering** platform for Kubernetes
-applications and ML models.
+[Iter8](https://iter8.tools) is the **release engineering** platform
+for Kubernetes applications and ML models.
 
 Iter8 is designed for DevOps and MLOps teams interested in maximizing
 release velocity and business value with their apps/ML models while
