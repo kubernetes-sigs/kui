@@ -43,8 +43,9 @@
   }
   @include WizardNav {
     width: auto;
+    min-width: 16rem;
+    max-width: 30rem;
     position: unset;
-    max-width: var(--pf-c-wizard__nav--Width);
   }
 }
 
