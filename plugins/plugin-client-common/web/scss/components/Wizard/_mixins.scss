@@ -38,6 +38,12 @@
   }
 }
 
+@mixin WizardFooter {
+  .pf-c-wizard__footer {
+    @content;
+  }
+}
+
 @mixin WizardNav {
   .pf-c-wizard__nav {
     @content;
