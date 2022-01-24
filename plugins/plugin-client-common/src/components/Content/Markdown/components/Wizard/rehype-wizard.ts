@@ -77,7 +77,9 @@ function transformer(ast) {
       delete node.properties['data-kui-split']
 
       if (wizard.steps.length === 0 && !wizard.title) {
-        wizard.title = node.properties['data-kui-title']
+        wizard.title =
+          node.properties['data-kui-title'] +
+          (node.properties['data-kui-description'] ? ': ' + node.properties['data-kui-description'] : '')
 
         // Ugh, work around nested <p>. The div comes from us, so that
         // part is safe (sections in the markdown become this div; and
