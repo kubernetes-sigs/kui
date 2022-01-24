@@ -45,7 +45,7 @@ export type WizardProps = Title & {
 function transformer(ast) {
   /** Treat headings that parents of nodes marked as Wizards as wizard steps */
   function headingVisitor(node, ancestors) {
-    if (ancestors.length > 0) {
+    if (/^h\d+/.test(node.tagName) && ancestors.length > 0) {
       const parent = ancestors[ancestors.length - 1]
       if (
         parent.tagName === 'div' &&

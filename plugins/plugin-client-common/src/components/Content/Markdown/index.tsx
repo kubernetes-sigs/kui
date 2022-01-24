@@ -45,7 +45,7 @@ import { CodeBlockResponse } from './components/code'
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 import { kuiFrontmatter, encodePriorResponses } from './frontmatter'
-const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, wizard, codeIndexer, rehypeRaw, rehypeSlug]
+const rehypePlugins: Options['rehypePlugins'] = [wizard, tabbed, tip, codeIndexer, rehypeRaw, rehypeSlug]
 const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) => [
   gfm,
   [frontmatter, ['yaml', 'toml']],
