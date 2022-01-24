@@ -29,7 +29,7 @@ click**.
     kubectl kui get pods
     ```
 
-=== "Linux and Windows"
+=== "Linux/Windows"
     
     [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
