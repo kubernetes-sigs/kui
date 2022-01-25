@@ -28,6 +28,8 @@ const ReactMarkdown = React.lazy(() => import('react-markdown'))
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
 
+import inlineSnippets from '../../../controller/snippets'
+
 import emojis from 'remark-emoji'
 import frontmatter from 'remark-frontmatter'
 
@@ -89,6 +91,9 @@ export interface Props {
   /** Base HTTP Url? */
   baseUrl?: string
 
+  /** Support for pymdownx.snippets */
+  snippetBasePath?: string
+
   onRender?: () => void
 }
 
@@ -110,18 +115,40 @@ export default class Markdown extends React.PureComponent<Props, State> {
     this.initSnapshotEvents()
   }
 
+  public componentDidUpdate(prevProps) {
+    if (prevProps.source !== this.props.source) {
+      this.prepareSource()
+    }
+  }
+
+  private prepareSource() {
+    const sourcePriorToInlining = Markdown.source(this.props)
+
+    if (this.props.tab && this.props.tab.REPL) {
+      setTimeout(async () => {
+        const source = await inlineSnippets(this.props.snippetBasePath)(sourcePriorToInlining, this.props.filepath, {
+          REPL: this.repl
+        })
+        this.setState({ source: Markdown.hackSource(source), codeBlockResponses: [] })
+      })
+    } else {
+      this.setState({ source: Markdown.hackSource(sourcePriorToInlining), codeBlockResponses: [] })
+    }
+  }
+
   private initSnapshotEvents() {
     const { filepath, execUUID } = this.props
 
     if (filepath && execUUID) {
       const onSnapshot = async () => {
-        if (this.state.codeBlockResponses.find(_ => _ !== undefined)) {
+        const codeBlockResponses = this.codeBlockResponses()
+        if (codeBlockResponses.find(_ => _ !== undefined)) {
           const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${encodeComponent(filepath)}`)).content
 
           if (Array.isArray(stats) && stats.length === 1 && stats[0].dirent.mount.isLocal) {
             const fp = encodeComponent(filepathForResponses(filepath))
             await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, {
-              data: encodePriorResponses(this.state.codeBlockResponses)
+              data: encodePriorResponses(codeBlockResponses)
             })
           }
         }
@@ -131,12 +158,32 @@ export default class Markdown extends React.PureComponent<Props, State> {
     }
   }
 
-  private codeBlockHasBeenReplayed(codeBlockIdx: number) {
-    const replayed =
-      this.props.codeBlockResponses &&
-      this.state.codeBlockResponses[codeBlockIdx] === this.props.codeBlockResponses[codeBlockIdx]
+  /**
+   * @return the combined state and props of codeBlockResponses,
+   * favoring any overrides in state, because those result from
+   * executions in this session, whereas props come from pre-recorded output
+   *
+   */
+  private codeBlockResponses() {
+    return (this.props.codeBlockResponses || [])
+      .slice()
+      .map((fromProps, idx) => this.state.codeBlockResponses[idx] || fromProps)
+  }
 
-    return Object.assign({ replayed }, this.state.codeBlockResponses[codeBlockIdx])
+  private codeBlockHasBeenReplayed(codeBlockIdx: number) {
+    const fromProps = this.props.codeBlockResponses ? this.props.codeBlockResponses[codeBlockIdx] : undefined
+    const fromState = this.state.codeBlockResponses[codeBlockIdx]
+
+    // replayed if we have a response in props, because the commentary
+    // controller has fetched this from a json from that stores
+    // pre-recorded output
+    const replayed = !!fromProps
+
+    // the current response to be displayed favors state, as these
+    // come from re-executions in this session
+    const response = fromState || fromProps || undefined
+
+    return Object.assign({ replayed }, response)
   }
 
   private readonly _components = components({
@@ -149,25 +196,21 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    this.state = Markdown.getDerivedStateFromProps(props)
+    this.state = {
+      source: '',
+      codeBlockResponses: []
+    }
+    setTimeout(() => this.prepareSource())
   }
 
-  public static getDerivedStateFromProps(props: Props, state?: State) {
-    if (
-      state &&
-      state.source === Markdown.source(props) &&
-      state.codeBlockResponses.findIndex(_ => _ !== undefined) >= 0
-    ) {
-      return state
-    } else if (!state || state.source !== props.source) {
+  /* public static getDerivedStateFromProps(props: Props, state: State) {
+    if (props.codeBlockResponses !== state.codeBlockResponses) {
       return {
-        source: Markdown.source(props),
-        codeBlockResponses: (state && state.codeBlockResponses) || props.codeBlockResponses || []
+        codeBlockResponses: props.codeBlockResponses || []
       }
-    } else {
-      return state
     }
-  }
+    return null
+  } */
 
   private get repl() {
     return this.props.tab ? this.props.tab.REPL : undefined
@@ -181,10 +224,15 @@ export default class Markdown extends React.PureComponent<Props, State> {
       td.use(gfm)
       return td.turndown(props.source)
     } else {
-      return hackIndentation(props.source)
-        .trim()
-        .replace(/\){target=[^}]+}/g, ')')
+      return props.source
     }
+  }
+
+  /** Deal with pymdown indentation garbage */
+  private static hackSource(source: string) {
+    return hackIndentation(source)
+      .trim()
+      .replace(/\){target=[^}]+}/g, ')')
   }
 
   private spliceInCodeExecution(
