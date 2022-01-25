@@ -19,11 +19,11 @@ import { Capabilities, Events, KResponse, ParsedOptions, Registrar, encodeCompon
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
 /** For the Kui command registration: enforce one mandatory positional parameter */
-const required = [{ name: '<filepath>', docs: 'path to saved snapshot' }]
+// const required = [{ name: '<filepath>', docs: 'path to saved snapshot' }]
 
 /** Usage for the replay command */
 const replayUsage = {
-  usage: {
+  /* usage: {
     strict: 'replay',
     required,
     optional: [
@@ -31,7 +31,7 @@ const replayUsage = {
       { name: '--replace-current-tab', alias: '-r', boolean: true, docs: 'Replace the content of the current tab' },
       { name: '--status-stripe', docs: 'Modify status stripe', allowed: ['default', 'blue', 'yellow', 'red'] }
     ]
-  },
+  }, */
   flags: {
     alias: { 'new-window': ['w'], 'replace-current-tab': ['r'] },
     boolean: ['new-window', 'w', 'replace-current-tab', 'r']
@@ -41,6 +41,9 @@ const replayUsage = {
 interface ReplayOptions extends ParsedOptions {
   'new-window': boolean
   'status-stripe': Events.StatusStripeChangeEvent['type']
+
+  /** Support for pymdownx.snippets */
+  'snippet-base-path': string
 }
 
 /** Format a Markdown string that describes the given snapshot */
@@ -61,7 +64,11 @@ export default function(registrar: Registrar) {
         // avoid pulling in electron for purely browser-based clients
         return REPL.qexec(`replay-electron ${filepaths}`)
       } else {
-        const cmdline = (filepath: string) => `commentary --readonly -f ${encodeComponent(filepath)}`
+        const snippetBasePath = parsedOptions['snippet-base-path']
+          ? ` --snippet-base-path ${encodeComponent(parsedOptions['snippet-base-path'])}`
+          : ''
+
+        const cmdline = (filepath: string) => `commentary --readonly ${snippetBasePath} -f ${encodeComponent(filepath)}`
 
         await Promise.all([
           parsedOptions.r ? REPL.pexec(cmdline(filepaths[0]), { noHistory: true }) : true,

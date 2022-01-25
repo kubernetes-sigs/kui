@@ -55,6 +55,9 @@ export type CommentaryResponse = {
     /** Prefix for image URLs */
     baseUrl?: string
 
+    /** Support for pymdownx.snippets */
+    snippetBasePath?: string
+
     /** [Optional] REPL controller, but required if you want your Card
      * to have functional kuiexec?command=... links via Markdown */
     repl?: REPL

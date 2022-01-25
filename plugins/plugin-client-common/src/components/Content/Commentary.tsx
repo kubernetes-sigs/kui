@@ -244,6 +244,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
           source={this.state.textValue}
           codeBlockResponses={this.props.codeBlockResponses}
           baseUrl={this.props.baseUrl}
+          snippetBasePath={this.props.snippetBasePath}
           tab={this.props.tab}
         />
       )
