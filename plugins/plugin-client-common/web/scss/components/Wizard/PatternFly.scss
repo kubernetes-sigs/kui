@@ -42,8 +42,8 @@
     flex-direction: row;
   }
   @include WizardNav {
-    width: auto;
-    min-width: 14rem;
+    width: 18rem;
+    min-width: 18rem;
     max-width: 18rem;
     position: unset;
   }
