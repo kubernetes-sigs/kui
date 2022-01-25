@@ -31,6 +31,7 @@ $regular: 1rem;
   }
   @include ConnectorUI {
     --pf-c-progress-stepper__step-connector--before--Left: 6px;
+    top: 8px !important; /* ugh, we conflict with the stock PatternFly rules here */
   }
 
   @include ProgressStep {
