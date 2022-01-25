@@ -311,7 +311,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
           simple
           wordWrap="on"
           onSave={this._onSaveFromEditor}
-          onCancel={this._onCancelFromEditor}
+          onCancel={!this.isCoupled && this._onCancelFromEditor}
           onContentChange={this._onContentChange}
           contentType="markdown"
           scrollIntoView={false}
