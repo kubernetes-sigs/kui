@@ -38,7 +38,7 @@ import Status from './CodeBlockStatus'
 import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
-import { MutabilityContext } from '../../../Client/MutabilityContext'
+import { MutabilityContext, MutabilityState } from '../../../Client/MutabilityContext'
 
 import { linkUpdateChannel, linkGetChannel } from '../../../Content/LinkStatus'
 import { ProgressStepper, ProgressStep } from '../../../Content/ProgressStepper'
@@ -247,8 +247,8 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     }
   }
 
-  private actions() {
-    if (this.props.readonly !== true) {
+  private actions(mutability: MutabilityState) {
+    if (this.props.readonly !== true && mutability.executable) {
       if (this.state.execution === 'processing') {
         return <Spinner />
       } else {
@@ -262,7 +262,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     this.setState({ codeSnippetValue })
   }
 
-  private input() {
+  private input(mutability: MutabilityState) {
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
         {this.timer()}
@@ -277,7 +277,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
           />
         </div>
-        {this.actions()}
+        {this.actions(mutability)}
       </div>
     )
   }
@@ -433,7 +433,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             data-is-output-only={this.outputOnly || undefined}
             {...dataProps}
           >
-            {!this.outputOnly && this.input()}
+            {!this.outputOnly && this.input(mutability)}
             {!this.outputOnly && this.sourceRef()}
             {this.output()}
           </li>
