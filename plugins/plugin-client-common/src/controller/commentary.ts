@@ -17,15 +17,7 @@
 import { format } from 'url'
 import { basename, dirname, join } from 'path'
 
-import {
-  Arguments,
-  CommentaryResponse,
-  Events,
-  ParsedOptions,
-  Registrar,
-  UsageModel,
-  getPrimaryTabId
-} from '@kui-shell/core'
+import { Arguments, CommentaryResponse, Events, ParsedOptions, Registrar, getPrimaryTabId } from '@kui-shell/core'
 
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
@@ -39,6 +31,9 @@ type CommentaryOptions = ParsedOptions &
     title: string
     'base-url': string
 
+    /** Support for pymdownx.snippets */
+    'snippet-base-path': string
+
     /** Toggle the tab to be in readonly mode */
     readonly: boolean
   }
@@ -46,7 +41,7 @@ type CommentaryOptions = ParsedOptions &
 /**
  * commentary command usage
  */
-const usage: UsageModel = {
+/* const usage: UsageModel = {
   command: 'commentary',
   strict: 'commentary',
   example: 'commentary -f [<markdown file path>]',
@@ -96,7 +91,7 @@ const usage: UsageModel = {
       docs: 'File that contains the texts'
     }
   ]
-}
+} */
 
 export function filepathForResponses(filepath: string) {
   return join(dirname(filepath), basename(filepath).replace(/\..*$/, '') + '.json')
@@ -138,6 +133,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
     edit: _edit,
     header: _header,
     preview: _preview,
+    'snippet-base-path': snippetBasePath,
     receive,
     send,
     title,
@@ -194,6 +190,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           replace,
           receive,
           send,
+          snippetBasePath,
           title,
           children: '',
           baseUrl
@@ -210,6 +207,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           replace,
           receive,
           send,
+          snippetBasePath,
           title,
           filepath,
           children: data,
@@ -234,6 +232,6 @@ export default function registerCommentaryController(commandTree: Registrar) {
     boolean: ['edit', 'header', 'preview', 'readonly', 'replace']
   }
 
-  commandTree.listen('/commentary', addComment, { usage, outputOnly: true, flags })
-  commandTree.listen('/#', addComment, { usage, outputOnly: true, noCoreRedirect: true, flags })
+  commandTree.listen('/commentary', addComment, { outputOnly: true, flags })
+  commandTree.listen('/#', addComment, { outputOnly: true, noCoreRedirect: true, flags })
 }
