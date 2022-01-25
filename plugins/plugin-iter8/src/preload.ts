@@ -27,7 +27,11 @@ export default async (registrar: PreloadRegistrar) => {
     notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/iter8'] })
     notebookVFS.cp(
       undefined,
-      ['plugin://plugin-iter8/notebooks/welcome.md', 'plugin://plugin-iter8/notebooks/tutorial1.md'],
+      [
+        'plugin://plugin-iter8/notebooks/welcome.md',
+        'plugin://plugin-iter8/notebooks/tutorial1.md',
+        'plugin://plugin-iter8/notebooks/tutorial1.json'
+      ],
       '/kui/iter8/'
     )
   }
