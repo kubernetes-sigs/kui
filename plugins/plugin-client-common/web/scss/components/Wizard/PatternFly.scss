@@ -18,16 +18,12 @@
 
 @include Wizard {
   @include WizardHeader {
-    background-color: var(--color-base06);
-    color: var(--color-base00);
-
-    a {
-      color: var(--color-base0C);
-    }
+    background-color: var(--color-sidecar-background-01);
+    color: inherit;
   }
 
   @include WizardDescription {
-    color: var(--color-base00);
+    color: inherit;
   }
 
   @include WizardBody {
