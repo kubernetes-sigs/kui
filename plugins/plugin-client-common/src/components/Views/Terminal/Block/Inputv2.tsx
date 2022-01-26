@@ -126,6 +126,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   public componentDidMount() {
     this.initLinkEvents()
     this.initWatchEvents()
+    this.doValidate()
 
     if (this.props.executeImmediately && !this.props.response) {
       setTimeout(this._onRun)
@@ -134,6 +135,30 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
+  }
+
+  public componentDidUpdate(prevProps: Props) {
+    if (prevProps.validate !== this.props.validate) {
+      this.doValidate()
+    }
+  }
+
+  private doValidate() {
+    if (this.props.blockId && this.props.validate) {
+      setTimeout(async () => {
+        try {
+          // .toString() in case of e.g. `validate: true` which yaml
+          // parsers pass to us as a boolean
+          this.emitLinkStatus('processing')
+          await pexecInCurrentTab(this.props.validate.toString(), undefined, true, true)
+          this.emitLinkStatus('done')
+          this.setState({ validated: true })
+        } catch (err) {
+          this.emitLinkStatus('not-yet')
+          this.setState({ validated: false })
+        }
+      }, 1000)
+    }
   }
 
   /**
@@ -178,22 +203,6 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       const emit = this.emitLinkStatus.bind(this)
       Events.eventChannelUnsafe.on(get, emit)
       this.cleaners.push(() => Events.eventChannelUnsafe.off(get, emit))
-
-      if (this.props.validate) {
-        setTimeout(async () => {
-          try {
-            // .toString() in case of e.g. `validate: true` which yaml
-            // parsers pass to us as a boolean
-            emit('processing')
-            await pexecInCurrentTab(this.props.validate.toString(), undefined, true, true)
-            emit('done')
-            this.setState({ validated: true })
-          } catch (err) {
-            emit('not-yet')
-            this.setState({ validated: false })
-          }
-        }, 1000)
-      }
     }
   }
 

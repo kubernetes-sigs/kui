@@ -31,6 +31,7 @@ export { CodeBlockResponse }
 
 export default function code(
   mdprops: Props,
+  uuid: string,
   codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean },
   spliceInCodeExecution: (status: 'done' | 'error', response: KResponse, codeIdx: number) => void
 ) {
@@ -68,6 +69,8 @@ export default function code(
       // TODO: we should also look at the command registration, for the command that was executed
       const outputOnly = attributes.outputOnly === true || attributes.outputOnly === 'true'
 
+      const blockId = attributes.id || `${uuid}-${myCodeIdx}`
+
       return (
         <React.Fragment>
           {attributes.id && <a id={`kui-link-${attributes.id}`} />}
@@ -78,7 +81,7 @@ export default function code(
             value={body}
             watch={attributes.watch}
             language={language}
-            blockId={attributes.id}
+            blockId={blockId}
             validate={attributes.validate === '$body' ? body : attributes.validate}
             response={response}
             status={statusConsideringReplay}
