@@ -182,8 +182,10 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       if (this.props.validate) {
         setTimeout(async () => {
           try {
+            // .toString() in case of e.g. `validate: true` which yaml
+            // parsers pass to us as a boolean
             emit('processing')
-            await pexecInCurrentTab(this.props.validate, undefined, true, true)
+            await pexecInCurrentTab(this.props.validate.toString(), undefined, true, true)
             emit('done')
             this.setState({ validated: true })
           } catch (err) {
