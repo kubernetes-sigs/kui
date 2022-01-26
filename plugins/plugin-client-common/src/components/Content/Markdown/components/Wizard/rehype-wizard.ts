@@ -109,7 +109,7 @@ function transformer(ast) {
   visitParents(ast, 'element', headingVisitor)
   visitParents(ast, 'element', stepsVisitor)
 
-  if (wizard.steps.length > 0) {
+  if (wizard.steps.length > 0 || wizard.title.trim() || wizard.description) {
     ast.children.push(
       u(
         'element',
