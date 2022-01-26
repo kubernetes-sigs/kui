@@ -23,8 +23,12 @@ const debug = Debug('plugin-client-common/markdown/snippets')
 
 const RE_SNIPPET = /^--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?$/
 
+function isUrl(a: string) {
+  return /^https?:/.test(a)
+}
+
 function join(a: string, b: string) {
-  if (/^https?:/.test(a)) {
+  if (isUrl(a)) {
     const url = new URL(a)
     url.pathname = join(url.pathname, b)
     return url.toString()
@@ -34,7 +38,11 @@ function join(a: string, b: string) {
 }
 
 function isAbsolute(uri: string): boolean {
-  return /^https?:/.test(uri) || pathIsAbsolute(uri)
+  return isUrl(uri) || pathIsAbsolute(uri)
+}
+
+function toString(data: string | object) {
+  return typeof data === 'string' ? data : JSON.stringify(data)
 }
 
 /**
@@ -42,7 +50,7 @@ function isAbsolute(uri: string): boolean {
  * https://facelessuser.github.io/pymdown-extensions/extensions/snippets/.
  */
 export default function inlineSnippets(snippetBasePath?: string) {
-  return async (data: string, srcFilePath, args: Pick<Arguments, 'REPL'>): Promise<string> =>
+  return async (data: string, srcFilePath: string, args: Pick<Arguments, 'REPL'>): Promise<string> =>
     Promise.all(
       data.split(/\n/).map(async line => {
         const match = line.match(RE_SNIPPET)
@@ -63,25 +71,34 @@ export default function inlineSnippets(snippetBasePath?: string) {
             ? [snippetBasePath]
             : ['./', '../', '../snippets', '../../snippets']
 
-          const snippetData = (
-            await Promise.all(
-              candidates
-                .map(getBasePath)
-                .filter(Boolean)
-                .map(mySnippetBasePath =>
-                  loadNotebook(join(mySnippetBasePath, snippetFileName), args).catch(err => {
-                    debug('Warning: could not fetch inlined content', mySnippetBasePath, err)
-                    return ''
-                  })
-                )
-            ).then(_ => _.filter(Boolean))
-          )[0]
+          const snippetData = isUrl(snippetFileName)
+            ? await loadNotebook(snippetFileName, args)
+                .then(data => inlineSnippets(snippetBasePath)(toString(data), snippetFileName, args))
+                .catch(err => {
+                  debug('Warning: could not fetch inlined content', snippetFileName, err)
+                  return ''
+                })
+            : (
+                await Promise.all(
+                  candidates
+                    .map(getBasePath)
+                    .filter(Boolean)
+                    .map(mySnippetBasePath =>
+                      loadNotebook(join(mySnippetBasePath, snippetFileName), args)
+                        .then(data => inlineSnippets(mySnippetBasePath)(toString(data), snippetFileName, args))
+                        .catch(err => {
+                          debug('Warning: could not fetch inlined content', mySnippetBasePath, err)
+                          return ''
+                        })
+                    )
+                ).then(_ => _.filter(Boolean))
+              )[0]
 
           if (!snippetData) {
             return line
           } else {
             debug('successfully fetched inlined content')
-            return typeof snippetData === 'string' ? snippetData : JSON.stringify(snippetData)
+            return toString(snippetData)
           }
         }
       })
