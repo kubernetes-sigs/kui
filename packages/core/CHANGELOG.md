@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.2](https://github.com/IBM/kui/compare/v11.1.1...v11.1.2) (2022-01-26)
+
+### Features
+
+- initial support for snippets (hash include) in markdown ([9b1bb20](https://github.com/IBM/kui/commit/9b1bb20))
+
 ## [11.1.1](https://github.com/IBM/kui/compare/v11.1.0...v11.1.1) (2022-01-25)
 
 **Note:** Version bump only for package @kui-shell/core

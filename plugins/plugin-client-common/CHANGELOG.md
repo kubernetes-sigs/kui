@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.2](https://github.com/IBM/kui/compare/v11.1.1...v11.1.2) (2022-01-26)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** allow code block id to be optional ([638403f](https://github.com/IBM/kui/commit/638403f))
+- **plugins/plugin-client-common:** blank heading lines in markdown cause internal exception ([1204263](https://github.com/IBM/kui/commit/1204263))
+- **plugins/plugin-client-common:** code block run button should not be visible in offline clients ([f9c075a](https://github.com/IBM/kui/commit/f9c075a))
+- **plugins/plugin-client-common:** code blocks with validate: true do not validate ([af0e3bb](https://github.com/IBM/kui/commit/af0e3bb))
+- **plugins/plugin-client-common:** in some browsers, hovering in wizard mini step oddly moves elements ([d706379](https://github.com/IBM/kui/commit/d706379))
+- **plugins/plugin-client-common:** markdown tabs may drop/misplace text near tab title ([26dc363](https://github.com/IBM/kui/commit/26dc363))
+- **plugins/plugin-client-common:** markdown tip parsing may not recognize elements after "bug" ([d301b70](https://github.com/IBM/kui/commit/d301b70))
+- **plugins/plugin-client-common:** more nav width tweaks ([740e9b8](https://github.com/IBM/kui/commit/740e9b8))
+- **plugins/plugin-client-common:** sigh more tweaks to wizard nav width ([f2cf6ba](https://github.com/IBM/kui/commit/f2cf6ba))
+- **plugins/plugin-client-common:** snippet inclusion does not support full urls or recursive inclusion ([9fb0278](https://github.com/IBM/kui/commit/9fb0278))
+- **plugins/plugin-client-common:** wizard behaves poorly when empty ([930da77](https://github.com/IBM/kui/commit/930da77))
+- **plugins/plugin-client-common:** wizards with emtpy 1st section have empty header UI ([2b8cc03](https://github.com/IBM/kui/commit/2b8cc03))
+- **plugins/plugin-client-common:** wizards with no title render as "undefined" in the UI ([fd4f8c6](https://github.com/IBM/kui/commit/fd4f8c6))
+- color contrast fixes for Sidebar and Wizard header ([26aeab0](https://github.com/IBM/kui/commit/26aeab0))
+- **plugins/plugin-client-common:** yet more tweaks to wizard nav width ([ee2d451](https://github.com/IBM/kui/commit/ee2d451))
+
+### Features
+
+- **plugins/plugin-client-common:** allow snippet base path to be specified in topmatter ([fc56fd8](https://github.com/IBM/kui/commit/fc56fd8))
+- initial support for snippets (hash include) in markdown ([9b1bb20](https://github.com/IBM/kui/commit/9b1bb20))
+
 ## [11.1.1](https://github.com/IBM/kui/compare/v11.1.0...v11.1.1) (2022-01-25)
 
 ### Bug Fixes
