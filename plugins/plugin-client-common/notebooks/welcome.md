@@ -22,7 +22,6 @@ click**.
 
     ```bash
     ---
-    id: kui-installation-mac
     validate: brew info kui
     ---
     brew install kui

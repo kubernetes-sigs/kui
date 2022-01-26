@@ -8,9 +8,6 @@ when linking code blocks into [Progress Step
 Lists](#progress-step-lists).
 
 ```bashy
----
-id: my-first-command
----
 echo hello
 ```
 
@@ -35,7 +32,6 @@ And another example:
 ```bash
 ---
 id: my-second-command
-response: world
 ---
 echo world
 ```
