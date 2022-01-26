@@ -84,7 +84,7 @@ export default function(registrar: Registrar) {
             const bg = parsedOptions.r ? '--bg' : ''
 
             await REPL.qexec(
-              `tab new ${bg} --cmdline "${cmdline(filepath)}" ${titleProps} --status-stripe-type ${parsedOptions[
+              `tab new ${bg} --cmdline '${cmdline(filepath)}' ${titleProps} --status-stripe-type ${parsedOptions[
                 'status-stripe'
               ] || 'blue'}`,
               undefined,
