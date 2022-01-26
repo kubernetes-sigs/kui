@@ -26,37 +26,46 @@ interface Input {
   tips?: { title: string; content: string }[]
 }
 
+const aContent = '222'
+const bContent = '333'
+const cContent = `TipTitle
+TipContent`
+
 const IN1: Input = {
   input: join(ROOT, 'data', 'snippet1.md'),
   content: `aaa
-222
+${aContent}
 bbb
-333
+${bContent}
 ccc`
+}
+
+const IN1viaUrl: Input = {
+  input: join(ROOT, 'data', 'snippet-via-url.md'),
+  content: IN1.content
 }
 
 const IN2: Input = {
   input: join(ROOT, 'data', 'snippet2.md'),
   content: `aaa
-222
-222
+${aContent}
+${aContent}
 bbb
-333
-333
+${bContent}
+${bContent}
 ccc`
 }
 
 const IN3: Input = {
   input: join(ROOT, 'data', 'snippet3.md'),
   content: `aaa
-222
+${aContent}
 bbb
-TipTitle
-TipContent
+${cContent}
 ccc`,
   tips: [{ title: 'TipTitle', content: 'TipContent' }]
 }
-;[IN3, IN1, IN2].forEach(markdown => {
+;[IN1, IN1viaUrl, IN2, IN3].forEach(markdown => {
   describe(`markdown snippets hash include ${markdown.input} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
