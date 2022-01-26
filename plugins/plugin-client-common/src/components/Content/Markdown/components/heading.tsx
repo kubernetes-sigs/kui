@@ -24,10 +24,11 @@ export function anchorFrom(uuid: string, txt: string): string {
 
 export default function heading(uuid: string) {
   return function Heading(props: HeadingProps) {
-    const valueChild =
-      props.children && props.children.length === 1
+    const valueChild = props.children
+      ? props.children.length === 1
         ? props.children[0]
         : props.children.find(_ => typeof _ === 'string')
+      : '' // empty heading e.g. just "#" on its own line
 
     const anchor =
       !valueChild || typeof valueChild !== 'string'
