@@ -18,6 +18,7 @@
 @import 'common';
 @import 'dark';
 @import 'light';
+@import '@kui-shell/plugin-client-common/web/scss/components/Wizard/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
 
 body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
@@ -31,6 +32,9 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
     @include InvertLightToDark;
   }
   @include CommentaryEditor {
+    @include InvertLightToDark;
+  }
+  @include WizardHeader {
     @include InvertLightToDark;
   }
 }

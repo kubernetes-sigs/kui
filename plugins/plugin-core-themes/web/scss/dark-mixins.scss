@@ -1,0 +1,74 @@
+/*
+ * Copyright 2020 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@mixin Dark {
+  @include kui-patternfly-alignment-dark;
+
+  --color-base00: #13171a; /* Default Background */
+  --color-base01: #202529; /* Lighter Background (Used for status bars) */
+  --color-base02: #272c30; /* Selection Background */
+  --color-base03: #373d42;
+  --color-base04: #8d8d8d; /* Dark Foreground (Used for status bars) */
+  --color-base05: #9fa5ad; /* Default Foreground, Caret, Delimiters, Operators */
+  --color-base06: #f2f4f8; /* Light Foreground (Not often used) */
+  --color-base07: #ffffff; /* Light Background (Not often used) */
+  --color-base08: #fb4b53; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+  --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+  --color-base0A: #fdd13a; /* YELLOW: Classes, Markup Bold, Search Text Background */
+  --color-base0B: #3dbb61; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+  --color-base0C: #6ccaff; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+  --color-base0D: #97c1ff; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+  --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+  --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+  --color-light-blue: #c8dfff;
+
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base08-rgb: 251, 75, 83;
+
+  --color-base0B-rgb: 61, 187, 97;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-base0D-rgb: 151, 193, 255;
+  --color-blue-rgb: var(--color-base0D-rgb);
+
+  --color-base0A-rgb: 253, 209, 58;
+  --color-yellow-rgb: var(--color-base0A-rgb);
+
+  --color-table-border1: #616466;
+  --color-table-border2: #4d5358;
+  --color-table-border3: #565151;
+
+  --color-sidecar-header: var(--color-base03);
+  --color-sidecar-border: #1a2024;
+
+  --color-stripe-01: #4f565c;
+  --color-sidecar-toolbar-background: #d7dce3;
+  --color-sidecar-toolbar-foreground: var(--color-base02);
+
+  --color-brand-03: #418cff;
+  --color-tag-beta-fill: #202529;
+  --color-tag-beta-text: var(--color-text-01);
+  --color-text-02: #b3bac1;
+
+  --color-confirm-background: #272c30;
+  --color-confirm-danger: #da1e28;
+
+  /* table header row */
+  --color-ui-06: #1a2024;
+
+  --active-tab-color: var(--color-brand-03);
+}
