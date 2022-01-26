@@ -90,7 +90,7 @@ export default class Wizard extends React.PureComponent<WizardProps> {
         className="kui--wizard"
         data-hide-cancel={true}
         footer={this.footer()}
-        title={this.props['data-kui-title']}
+        title={this.props['data-kui-title'].trim()}
         description={this.props.children[0]}
       />
     )
