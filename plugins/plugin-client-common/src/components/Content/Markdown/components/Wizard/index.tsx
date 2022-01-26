@@ -86,7 +86,7 @@ export default class Wizard extends React.PureComponent<WizardProps> {
     return (
       <PatternFlyWizard
         hideClose
-        steps={steps}
+        steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
         className="kui--wizard"
         data-hide-cancel={true}
         footer={this.footer()}
