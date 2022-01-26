@@ -46,7 +46,8 @@ import { CodeBlockResponse } from './components/code'
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
-import { kuiFrontmatter, encodePriorResponses } from './frontmatter'
+import { kuiFrontmatter, tryFrontmatter, encodePriorResponses } from './frontmatter'
+
 const rehypePlugins: Options['rehypePlugins'] = [wizard, tabbed, tip, codeIndexer, rehypeRaw, rehypeSlug]
 const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) => [
   gfm,
@@ -107,26 +108,61 @@ interface State {
 export default class Markdown extends React.PureComponent<Props, State> {
   private readonly cleaners: (() => void)[] = []
 
+  public constructor(props: Props) {
+    super(props)
+    this.state = {
+      source: '',
+      codeBlockResponses: []
+    }
+    setTimeout(() => this.prepareSource())
+  }
+
+  /** We are going away. Invoke cleaners */
   public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
   }
 
+  /** We are coming to life */
   public componentDidMount() {
     this.initSnapshotEvents()
   }
 
+  /** New props, so re-fetch inlined source if needed */
   public componentDidUpdate(prevProps) {
     if (prevProps.source !== this.props.source) {
       this.prepareSource()
     }
   }
 
+  /**
+   * Base path for snippet inlining. Prefer `this.props`, which comes
+   * from user/command line. Otherwise, look in the top matter of the
+   * document.  Later, in `inlineSnippets` we will also look in each
+   * include line in the document, which may also specify a
+   * line-specific base path.
+   */
+  private get snippetBasePath() {
+    if (this.props.snippetBasePath) {
+      return this.props.snippetBasePath
+    } else {
+      const fm = tryFrontmatter(this.props.source)
+      if (fm.attributes && fm.attributes.snippets && fm.attributes.snippets.basePath) {
+        return fm.attributes.snippets.basePath
+      }
+    }
+  }
+
+  /**
+   * To support snippet inlining (which may require an async file
+   * fetch), we need to prepare the source from props into state. Yay
+   * react.
+   */
   private prepareSource() {
     const sourcePriorToInlining = Markdown.source(this.props)
 
     if (this.props.tab && this.props.tab.REPL) {
       setTimeout(async () => {
-        const source = await inlineSnippets(this.props.snippetBasePath)(sourcePriorToInlining, this.props.filepath, {
+        const source = await inlineSnippets(this.snippetBasePath)(sourcePriorToInlining, this.props.filepath, {
           REPL: this.repl
         })
         this.setState({ source: Markdown.hackSource(source), codeBlockResponses: [] })
@@ -136,6 +172,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     }
   }
 
+  /** Handle requests to save codeBlockResponses to disk */
   private initSnapshotEvents() {
     const { filepath, execUUID } = this.props
 
@@ -186,6 +223,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     return Object.assign({ replayed }, response)
   }
 
+  /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
     mdprops: this.props,
     repl: this.repl,
@@ -194,24 +232,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     codeBlockResponses: this.codeBlockHasBeenReplayed.bind(this)
   })
 
-  public constructor(props: Props) {
-    super(props)
-    this.state = {
-      source: '',
-      codeBlockResponses: []
-    }
-    setTimeout(() => this.prepareSource())
-  }
-
-  /* public static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.codeBlockResponses !== state.codeBlockResponses) {
-      return {
-        codeBlockResponses: props.codeBlockResponses || []
-      }
-    }
-    return null
-  } */
-
+  /** `exec` controller */
   private get repl() {
     return this.props.tab ? this.props.tab.REPL : undefined
   }
@@ -228,13 +249,17 @@ export default class Markdown extends React.PureComponent<Props, State> {
     }
   }
 
-  /** Deal with pymdown indentation garbage */
+  /**
+   * Deal with pymdown indentation syntax, and other not-worth-parsing
+   * syntax from pymdown (such as target=_blank for links).
+   */
   private static hackSource(source: string) {
     return hackIndentation(source)
       .trim()
       .replace(/\){target=[^}]+}/g, ')')
   }
 
+  /** We got a code block response from execution in this session */
   private spliceInCodeExecution(
     status: CodeBlockResponse['status'],
     response: CodeBlockResponse['response'],
@@ -252,9 +277,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
       }
     })
   }
-
-  /** Helps with tests... */
-  private codeIdx: number
 
   public render() {
     if (this.props.onRender) {
