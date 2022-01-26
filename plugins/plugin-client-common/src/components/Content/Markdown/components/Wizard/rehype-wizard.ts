@@ -78,7 +78,7 @@ function transformer(ast) {
 
       if (wizard.steps.length === 0 && !wizard.title) {
         wizard.title =
-          node.properties['data-kui-title'] +
+          (node.properties['data-kui-title'] || ' ') +
           (node.properties['data-kui-description'] ? ': ' + node.properties['data-kui-description'] : '')
 
         // Ugh, work around nested <p>. The div comes from us, so that
