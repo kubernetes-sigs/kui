@@ -48,7 +48,14 @@ import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 import { kuiFrontmatter, tryFrontmatter, encodePriorResponses } from './frontmatter'
 
-const rehypePlugins: Options['rehypePlugins'] = [wizard, tabbed, tip, codeIndexer, rehypeRaw, rehypeSlug]
+const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
+  wizard,
+  tabbed,
+  tip,
+  [codeIndexer, uuid],
+  rehypeRaw,
+  rehypeSlug
+]
 const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) => [
   gfm,
   [frontmatter, ['yaml', 'toml']],
@@ -223,11 +230,13 @@ export default class Markdown extends React.PureComponent<Props, State> {
     return Object.assign({ replayed }, response)
   }
 
+  private readonly uuid = uuid()
+
   /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
     mdprops: this.props,
     repl: this.repl,
-    uuid: uuid(),
+    uuid: this.uuid,
     spliceInCodeExecution: this.spliceInCodeExecution.bind(this),
     codeBlockResponses: this.codeBlockHasBeenReplayed.bind(this)
   })
@@ -293,7 +302,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
         <TextContent>
           <ReactMarkdown
             remarkPlugins={remarkPlugins(this.props.tab)}
-            rehypePlugins={rehypePlugins}
+            rehypePlugins={rehypePlugins(this.uuid)}
             components={this._components()}
             data-is-nested={this.props.nested || undefined}
             className={

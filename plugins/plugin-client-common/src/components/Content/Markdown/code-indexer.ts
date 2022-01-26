@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Parent } from 'unist'
+import { Element, Root } from 'hast'
 import { visitParents as visit } from 'unist-util-visit-parents'
 
 import { tryFrontmatter } from './frontmatter'
@@ -22,43 +24,49 @@ function isExecutableCodeBlock(language: string) {
   return /^(bash|sh|shell)$/.test(language)
 }
 
+function isElementWithProperties(_: Parent): _ is Element {
+  const elt = _ as Element
+  return typeof elt.tagName === 'string' && elt.properties !== undefined
+}
+
 /**
  * This rehype plugin adds a unique codeIdx ordinal property to each
  * executable code block.
  */
-function transformer(ast) {
-  let codeIdx = 0
+export default function plugin(uuid: string) {
+  return (ast: Root) => {
+    let codeIdx = 0
 
-  function visitor(node, ancestors) {
-    if (node.tagName === 'code') {
-      // react-markdown v6+ places the language in the className
-      const match = /language-(\w+)/.exec(node.properties.className || '')
-      const language = match ? match[1] : undefined
+    visit<Element>(ast, 'element', function visitor(node, ancestors) {
+      if (node.tagName === 'code') {
+        // react-markdown v6+ places the language in the className
+        const match = node.properties.className ? /language-(\w+)/.exec(node.properties.className.toString()) : ''
+        const language = match ? match[1] : undefined
 
-      if (isExecutableCodeBlock(language)) {
-        node.properties.codeIdx = codeIdx++
+        if (isExecutableCodeBlock(language)) {
+          const myCodeIdx = codeIdx++
+          node.properties.codeIdx = myCodeIdx
 
-        if (node.children.length === 1 && node.children[0].type === 'text') {
-          const code = String(node.children[0].value).trim()
-          const { body, attributes } = tryFrontmatter(code)
+          if (node.children.length === 1 && node.children[0].type === 'text') {
+            const code = String(node.children[0].value).trim()
+            const { body, attributes } = tryFrontmatter(code)
 
-          if (attributes.id) {
+            if (typeof attributes === 'object' && !attributes.id) {
+              // assign a codeBlockId if the author did not specify one
+              attributes.id = `${uuid}-${myCodeIdx}`
+            }
+
+            const codeBlockProps = Buffer.from(JSON.stringify(Object.assign({ body, language }, attributes))).toString(
+              'base64'
+            )
             ancestors.forEach(_ => {
-              if (_.properties && Array.isArray(_.properties.containedCodeBlocks)) {
-                _.properties.containedCodeBlocks.push(
-                  Buffer.from(JSON.stringify(Object.assign({ body, language }, attributes))).toString('base64')
-                )
+              if (isElementWithProperties(_) && Array.isArray(_.properties.containedCodeBlocks)) {
+                _.properties.containedCodeBlocks.push(codeBlockProps)
               }
             })
           }
         }
       }
-    }
+    })
   }
-
-  visit(ast, 'element', visitor)
-}
-
-export default function plugin() {
-  return transformer
 }
