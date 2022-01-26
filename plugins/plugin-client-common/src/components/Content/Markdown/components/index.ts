@@ -49,7 +49,7 @@ function typedComponents(args: Args): Components {
   const a = _a(mdprops, uuid, repl)
   const div = _div(uuid)
   const img = _img(mdprops)
-  const code = _code(mdprops, codeBlockResponses, spliceInCodeExecution)
+  const code = _code(mdprops, uuid, codeBlockResponses, spliceInCodeExecution)
   const heading = _heading(uuid)
 
   return {
