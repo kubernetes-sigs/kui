@@ -103,11 +103,18 @@ class LinkableTabs extends React.PureComponent<Props, State> {
             className="kui--markdown-tab"
             title={<TabTitleText>{_.props.title}</TabTitleText>}
           >
-            <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
+            <Card className="kui--markdown-tab-card">
+              <React.Fragment>{_.props && _.props.children}</React.Fragment>
+            </Card>
           </Tab>
         ))}
       </Tabs>
     )
+
+    // re: the <React.Fragment> wrapper around props.children; this is
+    // to avoid Card's PatternFly impl creating a separate Markdown
+    // component for every child. We know here that all of the children are part
+    // of the same contiguous stretch of text.
   }
 }
 
