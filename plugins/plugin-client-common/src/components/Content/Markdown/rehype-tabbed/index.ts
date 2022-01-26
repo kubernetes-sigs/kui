@@ -116,13 +116,15 @@ export default function plugin(/* options */) {
                     position
                   })
                   return newChildren
-                } else if (currentTabs.length > 0) {
-                  return addToTab(pchild)
                 }
               }
 
-              newChildren.push(pchild)
-              return newChildren
+              if (currentTabs.length > 0) {
+                return addToTab(pchild)
+              } else {
+                newChildren.push(pchild)
+                return newChildren
+              }
             }, [])
           }
           if (currentTabs.length > 0) {
