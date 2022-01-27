@@ -167,7 +167,7 @@ body[kui-theme-style] {
   flex: 1;
   display: flex;
   justify-content: flex-start;
-  max-width: 960px;
+  max-width: $max-column-width;
 
   /* This helps with monaco-editor reactive width, e.g. when adding or removing splits */
   min-width: 0;

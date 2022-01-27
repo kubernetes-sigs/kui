@@ -17,6 +17,9 @@
 @use 'sass:math';
 @import '../ExpandableSection/mixins';
 
+/* For commentary, to avoid super wide lines of text in large windows.  */
+$max-column-width: 66em;
+
 /** Terminal font size */
 $terminal-font-size: 0.875rem;
 
