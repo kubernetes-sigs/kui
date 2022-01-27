@@ -46,7 +46,9 @@ import { CodeBlockResponse } from './components/code'
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
-import { kuiFrontmatter, tryFrontmatter, encodePriorResponses } from './frontmatter'
+
+import encodePriorResponses from './codeblocks/encoding'
+import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
 const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
   wizard,

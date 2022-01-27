@@ -17,7 +17,7 @@
 import { u } from 'unist-builder'
 import { visitParents } from 'unist-util-visit-parents'
 
-import { PositionProps } from '../../frontmatter'
+import { PositionProps } from '../../KuiFrontmatter'
 
 interface Primordial {
   title: string

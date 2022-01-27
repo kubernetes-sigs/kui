@@ -54,7 +54,19 @@ const IN2 = {
   steps,
   expectedSplitCount: 2
 }
-;[IN1, IN2].forEach(markdown => {
+
+// make sure we can display wizards in tabs with splits
+const IN3 = {
+  input: join(ROOT, 'tests/data/wizard-steps-in-topmatter.md'),
+  title: 'Getting Started with Knative',
+  description: '',
+  expectedSplitCount: 1,
+  steps: [
+    { name: 'Before you begin', body: 'Before you can get started', description: '', codeBlocks: [] },
+    { name: 'Prepare local Kubernetes cluster', body: 'You can use', description: '', codeBlocks: [] }
+  ]
+}
+;[IN1, IN2, IN3].forEach(markdown => {
   describe(`wizards in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
