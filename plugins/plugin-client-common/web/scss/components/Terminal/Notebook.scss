@@ -30,7 +30,7 @@ $margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-eleme
 
 @include Block {
   @include NotEditable {
-    max-width: 960px;
+    max-width: $max-column-width;
   }
 }
 
