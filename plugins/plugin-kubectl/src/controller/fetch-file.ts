@@ -68,6 +68,22 @@ async function fetchKustomizeString(
   }
 }
 
+async function fetchFileController(args: Arguments<Options>) {
+  const { argvNoOptions, parsedOptions, execOptions } = args
+
+  const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
+  const opts = Object.assign(
+    { tryFetchEvenInBrowser: true },
+    typeof execOptions.data === 'object' && !Buffer.isBuffer(execOptions.data) ? execOptions.data : undefined
+  )
+
+  if (!parsedOptions.kustomize) {
+    return { mode: 'raw', content: await fetchFile(args, uri, opts) }
+  } else {
+    return { mode: 'raw', content: await fetchKustomizeString(args, uri) }
+  }
+}
+
 /**
  * A server-side shim to allow browser-based clients to fetch `-f`
  * file content.
@@ -115,21 +131,15 @@ export default (registrar: Registrar) => {
     { requiresLocal: true }
   )
 
-  registrar.listen(
-    `/_fetchfile`,
-    async (args: Arguments<Options>) => {
-      const { argvNoOptions, parsedOptions, execOptions } = args
+  /**
+   * WARNING: called **internally** by util/fetch-file.ts to
+   * facilitate the browser-to-proxy hand-off.
+   */
+  registrar.listen(`/_fetchfile`, fetchFileController, { requiresLocal: true, flags: { boolean: ['kustomize'] } })
 
-      const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
-      const opts =
-        typeof execOptions.data === 'object' && !Buffer.isBuffer(execOptions.data) ? execOptions.data : undefined
-
-      if (!parsedOptions.kustomize) {
-        return { mode: 'raw', content: await fetchFile(args, uri, opts) }
-      } else {
-        return { mode: 'raw', content: await fetchKustomizeString(args, uri) }
-      }
-    },
-    { requiresLocal: true, flags: { boolean: ['kustomize'] } }
-  )
+  /**
+   * Called by anyone; note the requiresLocal difference here. This is
+   * to allow fetches from a browser when CORS supports it.
+   */
+  registrar.listen(`/vfs/_fetchfile`, fetchFileController, { flags: { boolean: ['kustomize'] } })
 }
