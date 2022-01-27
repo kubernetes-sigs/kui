@@ -74,6 +74,7 @@ export default async (registrar: PreloadRegistrar) => {
   notebookVFS.cp(
     undefined,
     [
+      'plugin://plugin-kubectl/notebooks/knative-getting-started.md',
       'plugin://plugin-kubectl/notebooks/create-jobs.md',
       'plugin://plugin-kubectl/notebooks/create-jobs.json',
       'plugin://plugin-kubectl/notebooks/crud-operations.md',

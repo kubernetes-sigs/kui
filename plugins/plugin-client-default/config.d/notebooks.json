@@ -24,6 +24,10 @@
         { "notebook": "Welcome to Iter8", "filepath": "/kui/iter8/welcome.md" },
         { "notebook": "Tutorial 1", "filepath": "/kui/iter8/tutorial1.md" }
       ]
+    },
+    {
+      "label": "Knative",
+      "submenu": [{ "notebook": "Getting Started", "filepath": "/kui/kubernetes/knative-getting-started.md" }]
     }
   ]
 }
