@@ -129,6 +129,7 @@ interface FetchOptions<Data extends BodyData | BodyData[]> {
   data?: Data
   headers?: Record<string, string>
   method?: 'get' | 'put' | 'post' | 'delete'
+  tryFetchEvenInBrowser?: boolean
 }
 
 export async function _needle(
@@ -137,7 +138,7 @@ export async function _needle(
   opts?: FetchOptions<BodyData>,
   retryCount = 0
 ): Promise<{ statusCode: number; body: string | object }> {
-  if (!Capabilities.inBrowser()) {
+  if (!Capabilities.inBrowser() || (opts && opts.tryFetchEvenInBrowser)) {
     const method = (opts && opts.method) || 'get'
     const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
     debug('fetch via needle', method, headers, url)
