@@ -20,7 +20,7 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
 import open from './open'
-import saveAsNotebook from './save'
+import saveAsGuidebook from './save'
 import tellRendererToExecute from './tell'
 import { openNotebook, loadClientNotebooksMenuDefinition, clientNotebooksDefinitionToElectron } from './notebooks'
 import { isOfflineClient, isReadOnlyClient } from '..'
@@ -92,8 +92,8 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         // TODO find exactly what keyboard shortcut => accelerator: 'CommandOrControl+E'
       },
       {
-        label: 'Save as Notebook...',
-        click: saveAsNotebook,
+        label: 'Save as Guidebook',
+        click: saveAsGuidebook,
         accelerator: 'CommandOrControl+S'
       },
       { type: 'separator' },
