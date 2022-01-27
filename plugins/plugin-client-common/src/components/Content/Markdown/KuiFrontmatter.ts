@@ -17,7 +17,15 @@
 export interface WizardSteps {
   /** An alternate way to define the steps of a wizard layout */
   wizard: {
-    steps: string[]
+    /** Optional subtitle in the wizard header */
+    description?: string
+
+    /**
+     * Specification of the steps, each of which is the name of a
+     * heading in the markdown source. Optionally, a step description
+     * may be overlaid
+     */
+    steps: (string | { name: string; description: string })[]
   }
 }
 
