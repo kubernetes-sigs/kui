@@ -1,8 +1,10 @@
 ---
 wizard:
+    description: WizardDescriptionInTopmatter
     steps:
         - Before you begin
-        - Prepare local Kubernetes cluster
+        - name: Prepare local Kubernetes cluster
+          description: TestDescription2
         - Install the Kubernetes CLI
         - Install the Knative CLI
         - Install the Knative "Quickstart" environment
