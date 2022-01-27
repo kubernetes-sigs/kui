@@ -35,7 +35,8 @@ export default async () => {
         'plugin://plugin-client-common/notebooks/playground.md',
         'plugin://plugin-client-common/notebooks/wizard.md',
         'plugin://plugin-client-common/notebooks/make-notebook.md',
-        'plugin://plugin-client-common/notebooks/make-notebook.json'
+        'plugin://plugin-client-common/notebooks/make-notebook.json',
+        'plugin://plugin-kubectl/notebooks/getting-started-knative.md'
       ],
       '/kui'
     )
