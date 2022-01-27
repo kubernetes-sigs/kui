@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.3](https://github.com/IBM/kui/compare/v11.1.2...v11.1.3) (2022-01-27)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** guidebooks render poorly in big windows with large fonts ([ce519b5](https://github.com/IBM/kui/commit/ce519b5))
+- **plugins/plugin-client-common:** saving code block responses is broken ([a699266](https://github.com/IBM/kui/commit/a699266))
+
+### Features
+
+- **plugins/plugin-client-common:** allow topmatter wizard steps to define a step description ([46a55d8](https://github.com/IBM/kui/commit/46a55d8))
+- **plugins/plugin-client-common:** allow wizard steps to be specified in topmatter ([60a5c24](https://github.com/IBM/kui/commit/60a5c24))
+
 ## [11.1.2](https://github.com/IBM/kui/compare/v11.1.1...v11.1.2) (2022-01-26)
 
 ### Bug Fixes
