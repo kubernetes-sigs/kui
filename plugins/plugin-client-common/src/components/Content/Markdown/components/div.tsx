@@ -20,7 +20,7 @@ import { TextContent } from '@patternfly/react-core'
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
-import { PositionProps } from '../frontmatter'
+import { PositionProps } from '../KuiFrontmatter'
 
 import { isWizard } from './Wizard/rehype-wizard'
 const Wizard = React.lazy(() => import('./Wizard'))
