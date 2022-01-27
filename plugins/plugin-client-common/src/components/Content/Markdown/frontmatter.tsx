@@ -17,7 +17,7 @@
 import { Heading } from 'mdast'
 import { u } from 'unist-builder'
 import { visit } from 'unist-util-visit'
-import { Literal, Node, Root } from 'hast'
+import { Literal, Node, Root, Text } from 'hast'
 import { visitParents } from 'unist-util-visit-parents'
 
 import { Tab } from '@kui-shell/core'
@@ -52,6 +52,10 @@ function isLiteral(node: Node): node is Literal {
   return typeof (node as Literal).value === 'string'
 }
 
+function isText(node: Node): node is Text {
+  return node.type === 'text' && typeof (node as Text).value === 'string'
+}
+
 /** Parse out the frontmatter at the top of a markdown file */
 function extractKuiFrontmatter(tree): KuiFrontmatter {
   // e.g.
@@ -83,19 +87,35 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
       frontmatter.layout = 'wizard'
     }
 
+    let nth = 0
     visitParents<Heading>(tree, 'heading', (node, ancestors) => {
-      if (
-        node.children &&
-        node.children[0] &&
-        node.children[0].type === 'text' &&
-        ancestors.length > 0 &&
-        frontmatter.wizard.steps.includes(node.children[0].value)
-      ) {
-        const parent = ancestors[ancestors.length - 1]
-        const childIdx = parent.children.findIndex(_ => _ === node)
-        if (childIdx >= 0) {
-          if (parent.children[childIdx - 1].type !== 'thematicBreak') {
-            parent.children.splice(childIdx, 0, u('thematicBreak'))
+      if (ancestors.length > 0 && node.children && node.children[0]) {
+        const firstChild = node.children[0]
+
+        if (isText(firstChild)) {
+          const parent = ancestors[ancestors.length - 1]
+          const childIdx = parent.children.findIndex(_ => _ === node)
+
+          const matchingStep = frontmatter.wizard.steps.find(step =>
+            typeof step === 'string' ? step === firstChild.value : step.name === firstChild.value
+          )
+
+          const headingIdx = nth++
+          if (matchingStep) {
+            if (childIdx >= 0) {
+              if (parent.children[childIdx - 1].type !== 'thematicBreak') {
+                // splice in a ---, which below we use to indicate steps
+                parent.children.splice(childIdx, 0, u('thematicBreak'))
+
+                // splice in a description? below, this will be parsed
+                // out as Title: Description
+                if (typeof matchingStep !== 'string' && matchingStep.description) {
+                  firstChild.value = firstChild.value + ': ' + matchingStep.description
+                }
+              }
+            }
+          } else if (childIdx >= 0 && headingIdx === 0 && frontmatter.wizard.description) {
+            parent.children.splice(childIdx + 1, 0, u('paragraph', [u('text', frontmatter.wizard.description)]))
           }
         }
       }

@@ -59,11 +59,11 @@ const IN2 = {
 const IN3 = {
   input: join(ROOT, 'tests/data/wizard-steps-in-topmatter.md'),
   title: 'Getting Started with Knative',
-  description: '',
+  description: 'WizardDescriptionInTopmatter',
   expectedSplitCount: 1,
   steps: [
     { name: 'Before you begin', body: 'Before you can get started', description: '', codeBlocks: [] },
-    { name: 'Prepare local Kubernetes cluster', body: 'You can use', description: '', codeBlocks: [] }
+    { name: 'Prepare local Kubernetes cluster', body: 'You can use', description: 'TestDescription2', codeBlocks: [] }
   ]
 }
 ;[IN1, IN2, IN3].forEach(markdown => {
