@@ -186,6 +186,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     if (filepath && execUUID) {
       const onSnapshot = async () => {
         const codeBlockResponses = this.codeBlockResponses()
+        console.error('!!!!!!!!', codeBlockResponses, this.props.codeBlockResponses, this.state.codeBlockResponses)
         if (codeBlockResponses.find(_ => _ !== undefined)) {
           const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${encodeComponent(filepath)}`)).content
 
@@ -209,9 +210,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
    *
    */
   private codeBlockResponses() {
-    return (this.props.codeBlockResponses || [])
-      .slice()
-      .map((fromProps, idx) => this.state.codeBlockResponses[idx] || fromProps)
+    const fromProps = this.props.codeBlockResponses || []
+    const fromState = this.state.codeBlockResponses || []
+
+    return Array(Math.max(fromProps.length, fromState.length))
+      .fill(undefined)
+      .map((_, idx) => fromState[idx] || fromProps[idx])
   }
 
   private codeBlockHasBeenReplayed(codeBlockIdx: number) {
