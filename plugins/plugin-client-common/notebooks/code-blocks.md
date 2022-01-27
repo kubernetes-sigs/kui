@@ -11,7 +11,7 @@ Lists](#progress-step-lists).
 echo hello
 ```
 
-<!-- Hello viewers of the source to this notebook! Note that we have
+<!-- Hello viewers of the source to this guidebook! Note that we have
 used a language of `bashy` here, to prevent Kui from rendering this as
 an executable code block. -->
 

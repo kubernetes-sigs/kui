@@ -1,10 +1,10 @@
 ---
-title: Make Your Own Notebook
+title: Make Your Own Guidebook
 layout:
   1: left
 ---
 
-# Authoring Kui Notebooks
+# Authoring Kui Guidebooks
 
 Kui interprets and displays markdown source. Kui has special
 interpretation for a some of the common bits of markdown syntax,
@@ -23,11 +23,11 @@ allowing you to author:
   guide the user through a list of code executions
   
 In addition, you can define the metadata and structure of your
-notebook:
+guidebook:
 
-- [Set a title](#setting-a-title) for your notebook
+- [Set a title](#setting-a-title) for your guidebook
 - Define the [_split layout_](#creating-a-split-layout) for your
-  notebook
+  guidebook
 
 ---
 
@@ -111,7 +111,7 @@ id: my-first-command
 echo hello
 ```
 
-<!-- Hello viewers of the source to this notebook! Note that we have
+<!-- Hello viewers of the source to this guidebook! Note that we have
 used a language of `bashy` here, to prevent Kui from rendering this as
 an executable code block. -->
 

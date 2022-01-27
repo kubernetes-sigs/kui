@@ -17,7 +17,7 @@
 import tellRendererToExecute from './tell'
 
 /**
- * Save the current tab as a Notebook
+ * Save the current tab as a Guidebook
  *
  */
 export default async function saveAsNotebook() {
