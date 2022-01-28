@@ -1,6 +1,7 @@
 ---
 title: Knative &mdash; Getting Started
 wizard:
+    description: Kubernetes-based platform to deploy and manage modern serverless workloads
     steps:
         - Before you begin
         - name: Prepare local Kubernetes cluster
@@ -15,6 +16,6 @@ codeblocks:
       validate: brew info kn
 ---
 
-<!-- This is a demonstration of including unmodified markdown content, and overlaying a wizard -->
-
 --8<-- "https://raw.githubusercontent.com/knative/docs/main/docs/getting-started/README.md"
+
+<!-- This is a demonstration of including unmodified markdown content, and overlaying a wizard -->
