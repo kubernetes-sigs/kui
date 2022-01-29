@@ -18,7 +18,12 @@ import { Common, CLI, Selectors } from '@kui-shell/test'
 
 type Position = typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_BOTTOM
 
-interface Block {
+interface Validation {
+  /** Is the block expected to show as valid/invalid (true/false) on initial render? */
+  valid?: boolean
+}
+
+export type Block = Partial<Validation> & {
   index: number
   output: string
 
@@ -35,6 +40,10 @@ interface Block {
   }
 }
 
+export function hasValidation(block: Block): block is Block & Required<Validation> {
+  return typeof block.valid === 'boolean'
+}
+
 export interface Input {
   /** Path to input file */
   input: string
@@ -49,6 +58,16 @@ export interface Input {
     contentBlockIndex?: number
     blocks?: Block[]
   }[]
+}
+
+export async function checkBlockValidation(ctx: Common.ISuite, split: Position, block: Block & Required<Validation>) {
+  const codeBlock = await ctx.app.client.$(`${split()} .kui--code-block-in-markdown[data-code-index="${block.index}"]`)
+  await codeBlock.waitForDisplayed({ timeout: CLI.waitTimeout })
+
+  const icon = block.valid ? 'Checkmark' : 'Error'
+  await codeBlock
+    .$(`.kui--code-block-status [icon="${icon}"]`)
+    .then(_ => _.waitForDisplayed({ timeout: CLI.waitTimeout }))
 }
 
 export async function clickToExecuteBlock(this: Common.ISuite, split: Position, block: Block) {
