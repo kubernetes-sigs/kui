@@ -270,7 +270,8 @@ body[kui-theme-style='light'] {
     }
 
     @include MarkdownMajorParagraph {
-      margin: 1.5em 0;
+      margin-top: 1.5em;
+      margin-bottom: 1.5em;
 
       &:first-child {
         margin-top: 0;
@@ -297,6 +298,7 @@ body[kui-theme-style='light'] {
 
   @include ExpandableSection {
     font-size: 0.875rem;
+    margin-right: 3px; /* room for box shadow */
   }
   @include ExpandableSectionContent {
     margin-top: 1em;
