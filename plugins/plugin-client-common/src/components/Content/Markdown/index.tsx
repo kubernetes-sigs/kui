@@ -39,15 +39,16 @@ import tip from './rehype-tip'
 import tabbed, { hackIndentation } from './rehype-tabbed'
 
 import components from './components'
-import codeIndexer from './code-indexer'
 import wizard from './components/Wizard/rehype-wizard'
+
 import { CodeBlockResponse } from './components/code'
+import codeIndexer from './components/code/rehype-code-indexer'
+import encodePriorResponses from './components/code/encoding'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 
-import encodePriorResponses from './codeblocks/encoding'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
 const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [

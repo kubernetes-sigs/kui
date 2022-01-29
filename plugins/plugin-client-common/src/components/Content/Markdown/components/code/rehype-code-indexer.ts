@@ -18,7 +18,7 @@ import { Parent } from 'unist'
 import { Element, Root } from 'hast'
 import { visitParents as visit } from 'unist-util-visit-parents'
 
-import { tryFrontmatter } from './frontmatter'
+import { tryFrontmatter } from '../../frontmatter'
 
 function isExecutableCodeBlock(language: string) {
   return /^(bash|sh|shell)$/.test(language)
