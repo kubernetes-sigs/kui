@@ -29,17 +29,26 @@ export interface WizardSteps {
   }
 }
 
-type KuiFrontmatter = Partial<WizardSteps> & {
-  /** Title of the Notebook */
-  title?: string
-
-  layoutCount?: Record<string, number>
-
-  /**
-   * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
-   */
-  layout?: 'wizard' | Record<number | 'default', SplitPositionSpec>
+interface CodeBlocks {
+  codeblocks: {
+    match: string
+    language?: string
+    validate?: string
+  }[]
 }
+
+type KuiFrontmatter = Partial<WizardSteps> &
+  Partial<CodeBlocks> & {
+    /** Title of the Notebook */
+    title?: string
+
+    layoutCount?: Record<string, number>
+
+    /**
+     * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
+     */
+    layout?: 'wizard' | Record<number | 'default', SplitPositionSpec>
+  }
 
 export function hasWizardSteps(frontmatter: KuiFrontmatter): frontmatter is KuiFrontmatter & Required<WizardSteps> {
   return (
@@ -48,6 +57,10 @@ export function hasWizardSteps(frontmatter: KuiFrontmatter): frontmatter is KuiF
     Array.isArray(frontmatter.wizard.steps) &&
     frontmatter.wizard.steps.length > 0
   )
+}
+
+export function hasCodeBlocks(frontmatter: KuiFrontmatter): frontmatter is KuiFrontmatter & Required<CodeBlocks> {
+  return frontmatter.codeblocks && Array.isArray(frontmatter.codeblocks) && frontmatter.codeblocks.length > 0
 }
 
 type SplitPosition = 'left' | 'bottom' | 'default' | 'wizard'

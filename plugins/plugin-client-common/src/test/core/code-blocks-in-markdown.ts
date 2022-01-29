@@ -18,16 +18,34 @@ import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
 import { Common, CLI, Selectors } from '@kui-shell/test'
 
-import { clickToExecuteBlock } from './markdown-helpers'
+import { Block, hasValidation, checkBlockValidation, clickToExecuteBlock } from './markdown-helpers'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/code-block1.md')), '..')
 
-const IN1 = {
-  input: join(ROOT, 'data', 'code-block1.md'),
-  blocks: [{ index: 0, output: 'hi' }]
+interface Input {
+  input: string
+  blocks: Block[]
 }
 
-const IN2 = {
+// with validation inline with the code block
+const IN1a: Input = {
+  input: join(ROOT, 'data', 'code-block1.md'),
+  blocks: [{ index: 0, output: 'hi', valid: true }]
+}
+
+// with validation in the topmatter, in the same file
+const IN1b: Input = {
+  input: join(ROOT, 'data', 'code-block1-validate-in-topmatter.md'),
+  blocks: IN1a.blocks
+}
+
+// with validation in the topmatter, in a separate file
+const IN1c: Input = {
+  input: join(ROOT, 'data', 'code-block1-validate-in-topmatter-via-snippet.md'),
+  blocks: IN1a.blocks
+}
+
+const IN2: Input = {
   input: join(ROOT, 'data', 'code-block2.md'),
   blocks: [
     { index: 0, output: 'AAA' },
@@ -37,7 +55,7 @@ const IN2 = {
     { index: 4, output: 'EEE' }
   ]
 }
-;[IN1, IN2].forEach(markdown => {
+;[IN1a, IN1b, IN1c, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
     describe(`execute code blocks in markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
       .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -48,10 +66,16 @@ const IN2 = {
         try {
           await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
 
-          const blocks = blockExecutionOrder === 'forward' ? markdown.blocks : markdown.blocks.slice().reverse()
+          // check validation bits on initial render
+          await Util.promiseEach(markdown.blocks, block => {
+            if (hasValidation(block)) {
+              return checkBlockValidation(this, Selectors.SPLIT_DEFAULT, block)
+            }
+          })
 
-          const executeBlock = clickToExecuteBlock.bind(this, Selectors.SPLIT_DEFAULT)
-          await Util.promiseEach(blocks, executeBlock)
+          // now click to execute the blocks
+          const blocks = blockExecutionOrder === 'forward' ? markdown.blocks : markdown.blocks.slice().reverse()
+          await Util.promiseEach(blocks, clickToExecuteBlock.bind(this, Selectors.SPLIT_DEFAULT))
         } catch (err) {
           await Common.oops(this, true)(err)
         }
