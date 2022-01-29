@@ -18,13 +18,12 @@ import React from 'react'
 import { CodeProps } from 'react-markdown/lib/ast-to-react'
 import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
 
-import { Props } from '../../Markdown'
-import { tryFrontmatter } from '../frontmatter'
+import { Props } from '../../../Markdown'
+import { tryFrontmatter } from '../../frontmatter'
 
-import Input from '../../../Views/Terminal/Block/Inputv2'
-// const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
+import Input from '../../../../Views/Terminal/Block/Inputv2'
 
-const SimpleEditor = React.lazy(() => import('../../Editor/SimpleEditor'))
+const SimpleEditor = React.lazy(() => import('../../../Editor/SimpleEditor'))
 
 type CodeBlockResponse = CommentaryResponse['props']['codeBlockResponses'][0]
 export { CodeBlockResponse }
