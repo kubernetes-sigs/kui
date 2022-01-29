@@ -234,7 +234,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     return (
       this.state.startTime &&
       !this.state.endTime && (
-        <span className="kui--code-block-actions" data-align="top-right">
+        <span className="kui--code-block-actions" data-align="top-left">
           <Badge>
             <Timer startTime={this.state.startTime} endTime={this.state.endTime} status={this.state.execution} />
           </Badge>
@@ -249,7 +249,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
     if (execution === 'done' || execution === 'error') {
       return (
-        <div className="kui--code-block-actions flex-layout" data-align="top-right">
+        <div className="kui--code-block-actions flex-layout" data-align="top-left">
           <ProgressStepper className="kui--code-block-status">
             <ProgressStep title="" defaultStatus={execution === 'done' ? 'success' : 'error'} />
           </ProgressStepper>
