@@ -17,6 +17,7 @@
 @import 'mixins';
 @import '../Card/mixins';
 @import '../Editor/mixins';
+@import '../Wizard/mixins';
 @import '../Sidecar/mixins';
 @import '../common/narrow-window';
 @import '../ProgressStepper/mixins';
@@ -25,6 +26,7 @@
 @import 'BlockLinks';
 
 $marginTop: 0.5em;
+$box-shadow-margin: 4px; /* room for box shadow */
 
 @mixin TextContent {
   .pf-c-content {
@@ -296,9 +298,12 @@ body[kui-theme-style='light'] {
     }
   } */
 
+  @include WizardHeader {
+    margin-right: $box-shadow-margin; /* room for box shadow */
+  }
   @include ExpandableSection {
     font-size: 0.875rem;
-    margin-right: 3px; /* room for box shadow */
+    margin-right: $box-shadow-margin; /* room for box shadow */
   }
   @include ExpandableSectionContent {
     margin-top: 1em;
@@ -476,7 +481,7 @@ pre {
 @include CodeBlock {
   &:hover {
     @include CodeBlockActions {
-      opacity: 1;
+      filter: none;
     }
   }
 
@@ -487,15 +492,17 @@ pre {
 @include CodeBlockActions {
   position: absolute;
 
+  &[data-align='top-left'],
+  &[data-align='top-right'] {
+    filter: grayscale(0.15) opacity(0.9);
+  }
   &[data-align='top-left'] {
-    left: -1em;
-    top: -1em;
-    opacity: 0.8;
+    left: -0.6875em;
+    top: -0.6875em;
   }
   &[data-align='top-right'] {
     right: -1em;
     top: -1em;
-    opacity: 0.8;
   }
 
   .kui--tag {
