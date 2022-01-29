@@ -29,6 +29,7 @@
   @include WizardBody {
     padding-top: 0;
     padding-bottom: 0;
+    padding-right: 0;
   }
 
   .pf-c-wizard__outer-wrap {
@@ -38,6 +39,7 @@
     flex-direction: row;
   }
   @include WizardNav {
+    height: auto;
     width: auto;
     min-width: 14rem;
     max-width: 16rem;
