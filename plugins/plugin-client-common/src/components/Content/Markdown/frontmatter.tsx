@@ -22,6 +22,7 @@ import { visitParents } from 'unist-util-visit-parents'
 
 import { Tab } from '@kui-shell/core'
 
+import preprocessCodeBlocks from './components/code/remark-codeblocks-topmatter'
 import KuiFrontmatter, { hasWizardSteps, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
 
 export function tryFrontmatter(
@@ -204,6 +205,7 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
         setTimeout(() => opts.tab.setTitle(frontmatter.title))
       }
 
+      preprocessCodeBlocks(tree, frontmatter)
       preprocessWizardSteps(tree, frontmatter)
       extractSplitsAndSections(tree, frontmatter)
     }
