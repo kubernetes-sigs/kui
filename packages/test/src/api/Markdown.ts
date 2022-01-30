@@ -16,6 +16,8 @@
 
 export default class Markdown {
   public readonly tip = '.kui--markdown-tip'
+  public readonly tabs = '.kui--markdown-tabs'
+  public readonly tab = `${this.tabs} .kui--markdown-tab button`
 
   public tipWithTitle(title: string) {
     return `${this.tip}[data-title="${title}"]`
@@ -23,5 +25,9 @@ export default class Markdown {
 
   public tipContent(baseSelector = this.tip) {
     return `${baseSelector} > div`
+  }
+
+  public tabWithTitle(title: string) {
+    return `${this.tab}[data-title="${title}"]`
   }
 }
