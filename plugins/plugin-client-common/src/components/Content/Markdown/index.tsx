@@ -28,6 +28,12 @@ const ReactMarkdown = React.lazy(() => import('react-markdown'))
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
 
+// ==foo== -> <mark>foo</mark>
+import hackMarks from './remark-mark'
+
+// ++ctrl+alt+delete++== -> <kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>delete</kbd>
+import hackKeys from './remark-keys'
+
 import inlineSnippets from '../../../controller/snippets'
 
 import emojis from 'remark-emoji'
@@ -63,6 +69,7 @@ const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) =
   gfm,
   [frontmatter, ['yaml', 'toml']],
   [kuiFrontmatter, { tab }],
+
   emojis // [emojis, { emoticon: true }]
 ]
 
@@ -189,7 +196,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
     if (filepath && execUUID) {
       const onSnapshot = async () => {
         const codeBlockResponses = this.codeBlockResponses()
-        console.error('!!!!!!!!', codeBlockResponses, this.props.codeBlockResponses, this.state.codeBlockResponses)
         if (codeBlockResponses.find(_ => _ !== undefined)) {
           const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${encodeComponent(filepath)}`)).content
 
@@ -270,7 +276,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * syntax from pymdown (such as target=_blank for links).
    */
   private static hackSource(source: string) {
-    return hackIndentation(source)
+    return hackKeys(hackMarks(hackIndentation(source)))
       .trim()
       .replace(/\){target=[^}]+}/g, ')')
   }
