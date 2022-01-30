@@ -356,54 +356,74 @@ body[kui-theme-style='dark'] {
     }
   }
 }
-@include MarkdownTip {
-  $tip-toggle-opacity: 0.3;
-  $tip-toggle-opacity-2: 0.9;
 
+$tip-toggle-opacity: 0.3;
+$tip-toggle-opacity-2: 0.9;
+
+@mixin GreenTip {
+  $bgcolor: var(--color-base0B-rgb);
+  --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+  @include ExpandableSectionToggle {
+    background-color: rgba($bgcolor, $tip-toggle-opacity);
+  }
+}
+
+@mixin YellowTip {
+  $bgcolor: var(--color-yellow-rgb);
+  --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+  @include ExpandableSectionToggle {
+    background-color: rgba($bgcolor, $tip-toggle-opacity);
+  }
+}
+
+@mixin BlueTip {
+  $bgcolor: var(--color-blue-rgb);
+  --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+  @include ExpandableSectionToggle {
+    background-color: rgba($bgcolor, $tip-toggle-opacity);
+  }
+}
+
+@mixin RedTip {
+  $bgcolor: var(--color-red-rgb);
+  --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
+  @include ExpandableSectionToggle {
+    background-color: rgba($bgcolor, $tip-toggle-opacity);
+  }
+}
+
+@include MarkdownTip {
   @include ExpandableSectionToggle {
     width: 100%;
     font-weight: 500;
     padding-top: 0.6875em;
     padding-bottom: 0.6875em;
     background-color: #e7f1fa;
+
+    /* Some expandable section toggles in markdown have long urls,
+   e.g. https://knative.dev/docs/getting-started/first-service/ */
+    word-break: break-all;
   }
   @include ExpandableSectionToggleText {
     color: var(--color-text-01);
   }
   @include MarkdownTipVariant(success) {
-    $bgcolor: var(--color-base0B-rgb);
-    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
-    @include ExpandableSectionToggle {
-      background-color: rgba($bgcolor, $tip-toggle-opacity);
-    }
+    @include GreenTip;
+  }
+  @include MarkdownTipVariant(question) {
+    @include GreenTip;
   }
   @include MarkdownTipVariant(warning) {
-    $bgcolor: var(--color-yellow-rgb);
-    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
-    @include ExpandableSectionToggle {
-      background-color: rgba($bgcolor, $tip-toggle-opacity);
-    }
+    @include YellowTip;
   }
   @include MarkdownTipVariant(todo) {
-    $bgcolor: var(--color-blue-rgb);
-    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
-    @include ExpandableSectionToggle {
-      background-color: rgba($bgcolor, $tip-toggle-opacity);
-    }
+    @include BlueTip;
   }
   @include MarkdownTipVariant(note) {
-    $bgcolor: var(--color-yellow-rgb);
-    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
-    @include ExpandableSectionToggle {
-      background-color: rgba($bgcolor, $tip-toggle-opacity);
-    }
+    @include YellowTip;
   }
   @include MarkdownTipVariant(bug) {
-    $bgcolor: var(--color-red-rgb);
-    --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
-    @include ExpandableSectionToggle {
-      background-color: rgba($bgcolor, $tip-toggle-opacity);
-    }
+    @include RedTip;
   }
 }
 
