@@ -91,7 +91,13 @@ export default function inlineSnippets(snippetBasePath?: string) {
           // fetches other files. We also may need to reroute relative
           // image links according to the given `basePath`.
           const recurse = (basePath: string, data: string) => {
-            return inlineSnippets(basePath)(rerouteImageLinks(basePath, data), snippetFileName, args)
+            // Note: intentionally using `snippetBasePath` for the
+            // first argument, as this represents the "root" base
+            // path, either from the URL of the original filepath (we
+            // may be recursing here) or from the command line or from
+            // the topmatter of the original document. The second
+            // represents the current base path in the recursion.
+            return inlineSnippets(snippetBasePath)(rerouteImageLinks(basePath, data), snippetFileName, args)
           }
 
           const candidates = match[5]
@@ -104,7 +110,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
             ? await loadNotebook(snippetFileName, args)
                 .then(data => recurse(snippetBasePath || dirname(snippetFileName), toString(data)))
                 .catch(err => {
-                  debug('Warning: could not fetch inlined content', snippetFileName, err)
+                  debug('Warning: could not fetch inlined content 1', snippetBasePath, snippetFileName, err)
                   return ''
                 })
             : (
@@ -116,7 +122,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
                       loadNotebook(join(mySnippetBasePath, snippetFileName), args)
                         .then(data => recurse(mySnippetBasePath, toString(data)))
                         .catch(err => {
-                          debug('Warning: could not fetch inlined content', mySnippetBasePath, err)
+                          debug('Warning: could not fetch inlined content 2', mySnippetBasePath, mySnippetBasePath, err)
                           return ''
                         })
                     )
@@ -126,7 +132,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
           if (!snippetData) {
             return line
           } else {
-            debug('successfully fetched inlined content')
+            debug('successfully fetched inlined content', snippetFileName)
 
             // for now, we completely strip off the topmatter from
             // snippets. TODO?
