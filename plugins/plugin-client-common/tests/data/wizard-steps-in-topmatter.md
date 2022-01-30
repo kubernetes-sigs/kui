@@ -2,7 +2,8 @@
 wizard:
     description: WizardDescriptionInTopmatter
     steps:
-        - Before you begin
+        - match: Before you begin
+          name: TestRewritingOfStepName
         - name: Prepare local Kubernetes cluster
           description: TestDescription2
         - Install the Kubernetes CLI
