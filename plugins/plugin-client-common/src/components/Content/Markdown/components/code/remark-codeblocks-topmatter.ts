@@ -28,7 +28,9 @@ function isCode(node: Node): node is Code {
 /** Scan and process the `codeblocks` schema of the given `frontmatter` */
 export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiFrontmatter) {
   if (hasCodeBlocks(frontmatter)) {
-    const codeblocks = frontmatter.codeblocks.map(_ => Object.assign({}, _, { match: new RegExp(_.match) }))
+    const codeblocks = frontmatter.codeblocks.map(_ =>
+      Object.assign({}, _, { match: new RegExp(_.match.replace(/\./g, '\\.')) })
+    )
 
     visit(tree, 'code', node => {
       if (isCode(node)) {

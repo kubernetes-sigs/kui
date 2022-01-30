@@ -62,7 +62,7 @@ const IN3 = {
   description: 'WizardDescriptionInTopmatter',
   expectedSplitCount: 1,
   steps: [
-    { name: 'Before you begin', body: 'Before you can get started', description: '', codeBlocks: [] },
+    { name: 'TestRewritingOfStepName', body: 'Before you can get started', description: '', codeBlocks: [] },
     { name: 'Prepare local Kubernetes cluster', body: 'You can use', description: 'TestDescription2', codeBlocks: [] }
   ]
 }
