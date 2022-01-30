@@ -131,11 +131,13 @@ export default class Sidebar extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <PageSidebar
-        nav={this.props.isOpen && this.nav()}
-        isNavOpen={this.props.isOpen}
-        className="kui--tab-container-sidebar"
-      />
+      Array.isArray(this.props.guidebooks) && (
+        <PageSidebar
+          nav={this.props.isOpen && this.nav()}
+          isNavOpen={this.props.isOpen}
+          className="kui--tab-container-sidebar"
+        />
+      )
     )
   }
 }
