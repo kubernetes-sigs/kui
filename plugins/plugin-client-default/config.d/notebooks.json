@@ -27,7 +27,16 @@
     },
     {
       "label": "Knative",
-      "submenu": [{ "notebook": "Getting Started", "filepath": "/kui/kubernetes/knative-getting-started.md" }]
+      "submenu": [
+        { "notebook": "Getting Started", "filepath": "/kui/kubernetes/knative-getting-started.md" },
+        {
+          "label": "Serving",
+          "submenu": [
+            { "notebook": "First Knative Service", "filepath": "/kui/kubernetes/knative-first-service.md" },
+            { "notebook": "Scaling to Zero", "filepath": "/kui/kubernetes/knative-first-autoscale.md" }
+          ]
+        }
+      ]
     }
   ]
 }
