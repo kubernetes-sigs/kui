@@ -60,8 +60,10 @@ function toString(data: string | object) {
 /** Rewrite any relative image links to use the given basePath */
 function rerouteImageLinks(basePath: string, data: string) {
   return data.replace(
-    /\[(.+)\]\((.+)\)/g, // e.g. [linky](https://linky.com)
-    (_, p1, p2) => `[${p1}](${join(basePath, p2)})`
+    /\[([^\]]+)\]\(([^)]+)\)/g, // e.g. [linky](https://linky.com)
+    (_, p1, p2) => {
+      return `[${p1}](${isAbsolute(p2) ? p2 : join(basePath, p2)})`
+    }
   )
 }
 
@@ -89,7 +91,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
           // fetches other files. We also may need to reroute relative
           // image links according to the given `basePath`.
           const recurse = (basePath: string, data: string) => {
-            return inlineSnippets(basePath)(rerouteImageLinks(basePath, toString(data)), snippetFileName, args)
+            return inlineSnippets(basePath)(rerouteImageLinks(basePath, data), snippetFileName, args)
           }
 
           const candidates = match[5]
