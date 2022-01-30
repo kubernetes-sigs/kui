@@ -25,7 +25,7 @@ export interface WizardSteps {
      * heading in the markdown source. Optionally, a step description
      * may be overlaid
      */
-    steps: (string | { name: string; description: string })[]
+    steps: (string | { match?: string; name: string; description: string })[]
   }
 }
 
