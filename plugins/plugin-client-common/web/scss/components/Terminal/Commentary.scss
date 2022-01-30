@@ -34,6 +34,17 @@ $box-shadow-margin: 4px; /* room for box shadow */
   }
 }
 
+@mixin CodeBlock {
+  .kui--code-block-in-markdown {
+    @content;
+  }
+}
+@mixin CodeBlockActions {
+  .kui--code-block-actions {
+    @content;
+  }
+}
+
 body[kui-theme-style] {
   @include TextContent {
     color: inherit;
@@ -292,12 +303,6 @@ body[kui-theme-style='light'] {
 }
 
 @include Commentary {
-  /* .marked-content {
-    pre {
-      margin: 0;
-    }
-  } */
-
   @include WizardHeader {
     margin-right: $box-shadow-margin; /* room for box shadow */
   }
@@ -305,6 +310,10 @@ body[kui-theme-style='light'] {
     font-size: 0.875rem;
     margin-right: $box-shadow-margin; /* room for box shadow */
   }
+  @include CodeBlock {
+    margin-right: $box-shadow-margin; /* room for box shadow */
+  }
+
   @include ExpandableSectionContent {
     margin-top: 1em;
     max-width: unset;
@@ -436,23 +445,20 @@ body[kui-theme-style='dark'] {
   }
 }
 
-@mixin CodeBlock {
-  .kui--code-block-in-markdown {
-    @content;
-  }
-}
-@mixin CodeBlockActions {
-  .kui--code-block-actions {
-    @content;
-  }
-}
-
 /** Markdown-rendered content not in a Commentary */
 pre {
   @include TextContent {
     font-size: inherit;
     p {
       white-space: pre-wrap;
+    }
+  }
+}
+@include Commentary {
+  @include TextContent {
+    p {
+      /* See the white-space: pre-wrap rule just above */
+      white-space: normal;
     }
   }
 }
