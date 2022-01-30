@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-const RE_MARK = /([^=])?==([^=]+)==([^=])/g
-
 /**
  * Allows us to support pymdown's `==hello==` which they transform to
  * HTML5 <mark>hello</mark> which seems to generally be presented with
  * highlighter background.
  */
 export default function plugin(markdownText: string) {
-  return markdownText.replace(RE_MARK, '$1<mark>$2</mark>$3')
+  const RE_MARK_BASE = '==([^=]+)==([^=])'
+  const RE_MARK = new RegExp(`([^=])${RE_MARK_BASE}`, 'g')
+  const RE_MARK_AT_TOP = new RegExp(`^${RE_MARK_BASE}`, 'g')
+
+  return markdownText.replace(RE_MARK_AT_TOP, '<mark>$1</mark>$2').replace(RE_MARK, '$1<mark>$2</mark>$3')
 }
