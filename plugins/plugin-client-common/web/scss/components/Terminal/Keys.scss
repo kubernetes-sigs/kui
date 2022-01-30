@@ -1,0 +1,71 @@
+/*
+ * Copyright 2022 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'mixins';
+
+@include Commentary {
+  kbd {
+    background-color: var(--color-base01);
+    border-radius: 0.1rem;
+    box-shadow: 0 0.1rem 0 0.05rem var(--color-base02), 0 0.1rem 0 var(--color-base02),
+      0 -0.1rem 0.2rem var(--color-base02) inset;
+    display: inline-block;
+    font-size: 0.75em;
+    padding: 0 0.6666666667em;
+    vertical-align: text-top;
+    word-break: break-word;
+  }
+
+  .kui--markdown-keys span {
+    color: var(--color-text-02);
+    padding: 0 0.2em;
+  }
+}
+
+@mixin SpecialKey($key) {
+  text-transform: capitalize;
+
+  &:before {
+    content: $key;
+    padding-right: 0.4em;
+  }
+}
+
+.kui--markdown-key--ctrl,
+.kui--markdown-key--control,
+.kui--markdown-key--Ctrl,
+.kui--markdown-key--Control {
+  @include SpecialKey('⌃');
+}
+
+.kui--markdown-key--alt,
+.kui--markdown-key--Alt {
+  @include SpecialKey('⎇');
+}
+
+.kui--markdown-key--del,
+.kui--markdown-key--Del,
+.kui--markdown-key--delete,
+.kui--markdown-key--Delete {
+  @include SpecialKey('⌦');
+}
+
+.kui--markdown-key--cmd,
+.kui--markdown-key--Cmd,
+.kui--markdown-key--command,
+.kui--markdown-key--Command {
+  @include SpecialKey('⌘');
+}
