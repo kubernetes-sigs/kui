@@ -15,9 +15,11 @@
  */
 
 import Debug from 'debug'
-import { isAbsolute as pathIsAbsolute, join as pathJoin } from 'path'
+import { isAbsolute as pathIsAbsolute, dirname as pathDirname, join as pathJoin } from 'path'
 import { Arguments } from '@kui-shell/core'
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
+
+import { stripFrontmatter } from '../components/Content/Markdown/frontmatter'
 
 const debug = Debug('plugin-client-common/markdown/snippets')
 
@@ -25,6 +27,16 @@ const RE_SNIPPET = /^--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?$/
 
 function isUrl(a: string) {
   return /^https?:/.test(a)
+}
+
+function dirname(a: string) {
+  if (isUrl(a)) {
+    const url = new URL(a)
+    url.pathname = pathDirname(url.pathname)
+    return url.toString()
+  } else {
+    return pathDirname(a)
+  }
 }
 
 function join(a: string, b: string) {
@@ -43,6 +55,14 @@ function isAbsolute(uri: string): boolean {
 
 function toString(data: string | object) {
   return typeof data === 'string' ? data : JSON.stringify(data)
+}
+
+/** Rewrite any relative image links to use the given basePath */
+function rerouteImageLinks(basePath: string, data: string) {
+  return data.replace(
+    /\[(.+)\]\((.+)\)/g, // e.g. [linky](https://linky.com)
+    (_, p1, p2) => `[${p1}](${join(basePath, p2)})`
+  )
 }
 
 /**
@@ -65,6 +85,13 @@ export default function inlineSnippets(snippetBasePath?: string) {
             return isAbsolute(basePath) ? basePath : srcFilePath ? join(srcFilePath, basePath) : undefined
           }
 
+          // Call ourselves recursively, in case a fetched snippet
+          // fetches other files. We also may need to reroute relative
+          // image links according to the given `basePath`.
+          const recurse = (basePath: string, data: string) => {
+            return inlineSnippets(basePath)(rerouteImageLinks(basePath, toString(data)), snippetFileName, args)
+          }
+
           const candidates = match[5]
             ? [match[5]]
             : snippetBasePath
@@ -73,7 +100,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
 
           const snippetData = isUrl(snippetFileName)
             ? await loadNotebook(snippetFileName, args)
-                .then(data => inlineSnippets(snippetBasePath)(toString(data), snippetFileName, args))
+                .then(data => recurse(snippetBasePath || dirname(snippetFileName), toString(data)))
                 .catch(err => {
                   debug('Warning: could not fetch inlined content', snippetFileName, err)
                   return ''
@@ -85,7 +112,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
                     .filter(Boolean)
                     .map(mySnippetBasePath =>
                       loadNotebook(join(mySnippetBasePath, snippetFileName), args)
-                        .then(data => inlineSnippets(mySnippetBasePath)(toString(data), snippetFileName, args))
+                        .then(data => recurse(mySnippetBasePath, toString(data)))
                         .catch(err => {
                           debug('Warning: could not fetch inlined content', mySnippetBasePath, err)
                           return ''
@@ -98,7 +125,10 @@ export default function inlineSnippets(snippetBasePath?: string) {
             return line
           } else {
             debug('successfully fetched inlined content')
-            return toString(snippetData)
+
+            // for now, we completely strip off the topmatter from
+            // snippets. TODO?
+            return stripFrontmatter(toString(snippetData))
           }
         }
       })

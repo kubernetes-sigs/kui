@@ -40,6 +40,11 @@ export function tryFrontmatter(
   }
 }
 
+/** In case you only want the body part of a `markdownText` */
+export function stripFrontmatter(markdownText: string) {
+  return tryFrontmatter(markdownText).body
+}
+
 export function splitTarget(node) {
   if (node.type === 'raw') {
     const match = node.value.match(/<!-- ____KUI__SECTION_START____ (.*)/)
@@ -88,6 +93,15 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
       frontmatter.layout = 'wizard'
     }
 
+    // since the user defined wizard steps in the topmatter, we need
+    // to remove existing thematicBreaks, for now
+    visitParents(tree, 'thematicBreak', (node, ancestors) => {
+      const parent = ancestors[ancestors.length - 1]
+      const childIdx = parent.children.findIndex(_ => _ === node)
+
+      parent.children.splice(childIdx, 1)
+    })
+
     let nth = 0
     visitParents<Heading>(tree, 'heading', (node, ancestors) => {
       if (ancestors.length > 0 && node.children && node.children[0]) {
@@ -98,7 +112,11 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
           const childIdx = parent.children.findIndex(_ => _ === node)
 
           const matchingStep = frontmatter.wizard.steps.find(step =>
-            typeof step === 'string' ? step === firstChild.value : step.name === firstChild.value
+            typeof step === 'string'
+              ? step === firstChild.value
+              : step.match
+              ? new RegExp(step.match.replace(/\./g, '\\.')).test(firstChild.value)
+              : step.name === firstChild.value
           )
 
           const headingIdx = nth++
@@ -107,12 +125,14 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
               if (parent.children[childIdx - 1].type !== 'thematicBreak') {
                 // splice in a ---, which below we use to indicate steps
                 parent.children.splice(childIdx, 0, u('thematicBreak'))
+              }
 
-                // splice in a description? below, this will be parsed
-                // out as Title: Description
-                if (typeof matchingStep !== 'string' && matchingStep.description) {
-                  firstChild.value = firstChild.value + ': ' + matchingStep.description
-                }
+              // splice in a description? below, this will be parsed
+              // out as Title: Description
+              if (typeof matchingStep !== 'string') {
+                firstChild.value =
+                  (matchingStep.name || firstChild.value) +
+                  (matchingStep.description ? ': ' + matchingStep.description : '')
               }
             }
           } else if (childIdx >= 0 && headingIdx === 0 && frontmatter.wizard.description) {
