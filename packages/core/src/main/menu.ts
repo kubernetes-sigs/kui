@@ -22,7 +22,8 @@ import { Menu, MenuItemConstructorOptions } from 'electron'
 import open from './open'
 import saveAsGuidebook from './save'
 import tellRendererToExecute from './tell'
-import { openNotebook, loadClientNotebooksMenuDefinition, clientNotebooksDefinitionToElectron } from './notebooks'
+import loadClientNotebooksMenuDefinition from './load'
+import { openNotebook, clientNotebooksDefinitionToElectron } from './notebooks'
 import { isOfflineClient, isReadOnlyClient } from '..'
 
 const isDev = false

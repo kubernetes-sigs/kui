@@ -106,7 +106,13 @@ export default class Sidebar extends React.PureComponent<Props, State> {
           {_.notebook}
         </NavItem>
       ) : isMenu(_) ? (
-        <NavExpandable key={idx} isExpanded title={_.label} className="kui--sidebar-nav-menu" data-title={_.label}>
+        <NavExpandable
+          key={idx}
+          isExpanded={_.expanded !== false}
+          title={_.label}
+          className="kui--sidebar-nav-menu"
+          data-title={_.label}
+        >
           {_.submenu.map(renderItem)}
         </NavExpandable>
       ) : (
