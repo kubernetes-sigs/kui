@@ -1,5 +1,5 @@
 ---
-title: Iter8 &mdash; Getting Started
+title: Iter8 &mdash; Load testing with SLO validation
 wizard:
     steps:
         - Introduction

@@ -22,10 +22,7 @@
     {
       "label": "Iter8",
       "expanded": false,
-      "submenu": [
-        { "notebook": "Welcome to Iter8", "filepath": "/kui/iter8/welcome.md" },
-        { "notebook": "Tutorial 1", "filepath": "/kui/iter8/tutorial1.md" }
-      ]
+      "submenu": [{ "notebook": "Load testing with SLO validation", "filepath": "/kui/iter8/tutorial1.md" }]
     },
     {
       "label": "Knative",
