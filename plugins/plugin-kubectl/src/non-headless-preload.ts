@@ -77,6 +77,7 @@ export default async (registrar: PreloadRegistrar) => {
       'plugin://plugin-kubectl/notebooks/knative-getting-started.md',
       'plugin://plugin-kubectl/notebooks/knative-first-service.md',
       'plugin://plugin-kubectl/notebooks/knative-first-autoscale.md',
+      'plugin://plugin-kubectl/notebooks/knative-traffic-splitting.md',
       'plugin://plugin-kubectl/notebooks/create-jobs.md',
       'plugin://plugin-kubectl/notebooks/create-jobs.json',
       'plugin://plugin-kubectl/notebooks/crud-operations.md',

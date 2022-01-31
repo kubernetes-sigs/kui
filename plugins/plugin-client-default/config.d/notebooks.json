@@ -33,7 +33,8 @@
           "label": "Serving",
           "submenu": [
             { "notebook": "First Knative Service", "filepath": "/kui/kubernetes/knative-first-service.md" },
-            { "notebook": "Scaling to Zero", "filepath": "/kui/kubernetes/knative-first-autoscale.md" }
+            { "notebook": "Scaling to Zero", "filepath": "/kui/kubernetes/knative-first-autoscale.md" },
+            { "notebook": "Traffic Splitting", "filepath": "/kui/kubernetes/knative-traffic-splitting.md" }
           ]
         }
       ]
