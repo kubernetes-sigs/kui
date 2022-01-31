@@ -76,7 +76,10 @@ function transformer(ast) {
     if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && ancestors.length > 0) {
       delete node.properties['data-kui-split']
 
-      if (wizard.steps.length === 0 && !wizard.title) {
+      if (!node.properties['data-kui-title']) {
+        // spurious case, problem some blank newlines
+        return
+      } else if (wizard.steps.length === 0 && !wizard.title) {
         wizard.title =
           (node.properties['data-kui-title'] || ' ') +
           (node.properties['data-kui-description'] ? ': ' + node.properties['data-kui-description'] : '')
@@ -92,6 +95,7 @@ function transformer(ast) {
             ? child
             : Object.assign({}, child, { tagName: 'span', properties: { className: 'paragraph' } })
         )
+
         wizard.description = node
       } else {
         node.properties.containedCodeBlocks = []
