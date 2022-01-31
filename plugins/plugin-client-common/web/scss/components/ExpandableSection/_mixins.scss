@@ -30,9 +30,15 @@ $expandablesection--spacing: 0.125rem;
   }
 }
 
+@mixin ExpandableSectionContentElement {
+  .pf-c-expandable-section__content {
+    @content;
+  }
+}
+
 @mixin ExpandableSectionContent {
   @include ExpandableSection {
-    .pf-c-expandable-section__content {
+    @include ExpandableSectionContentElement {
       @content;
     }
   }

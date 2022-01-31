@@ -485,6 +485,22 @@ pre {
 }
 
 @include Commentary {
+  @include Admonition {
+    width: 15em;
+
+    &.kui--float-left {
+      margin-right: 0.8rem;
+    }
+    &.kui--float-right {
+      margin-left: 0.8rem;
+    }
+
+    @include ExpandableSectionContentElement {
+      font-size: 0.875em;
+    }
+  }
+}
+@include Commentary {
   /* needed to override Editor stylings */
   @include CodeBlock {
     @include BlockOutput {
