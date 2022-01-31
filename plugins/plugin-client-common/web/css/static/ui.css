@@ -116,6 +116,9 @@ body.still-loading .repl {
 }
 
 /* generic */
+.kui--float-left {
+  float: left;
+}
 .kui--float-right {
   float: right;
 }

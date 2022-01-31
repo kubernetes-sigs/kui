@@ -25,9 +25,10 @@ export function tipProps(expanded: boolean) {
 }
 
 /** This feeds off our rehype-tip AST decorations */
-export function tip(props: React.DetailsHTMLAttributes<HTMLElement>) {
+export function tip(props: React.DetailsHTMLAttributes<HTMLElement> & { float?: 'left' | 'right' }) {
   const className = ['kui--markdown-tip', 'kui--markdown-major-paragraph']
     .concat((props.className ? props.className.split(/\s+/) : []).map(_ => `kui--markdown-tip_${_}`))
+    .concat(props.float ? [`kui--float-${props.float}`, 'kui--admonition'] : [])
     .join(' ')
 
   return (
