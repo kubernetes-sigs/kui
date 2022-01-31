@@ -15,7 +15,7 @@
  */
 
 type Guidebook = { notebook: string; filepath: string }
-type Menu = { label: string; submenu: MenuItem[] }
+type Menu = { label: string; submenu: MenuItem[]; expanded?: boolean }
 export type MenuItem = Guidebook | Menu | object
 
 export function isGuidebook(item: MenuItem): item is Guidebook {
