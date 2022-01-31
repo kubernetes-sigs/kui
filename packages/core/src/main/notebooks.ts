@@ -18,26 +18,11 @@ import { MenuItemConstructorOptions, webContents } from 'electron'
 
 import tellRendererToExecute from './tell'
 import encodeComponent from '../repl/encode'
+import { NotebooksMenu, isMenu, isLeaf } from './load'
 
 interface OpenNotebookItem {
   label: string
   click: () => void
-}
-
-interface NotebookDefinitionMenuItem {
-  notebook: string
-  filepath: string
-}
-
-interface SeparatorMenuItem {
-  type: 'separator'
-}
-
-type NotebookMenuItem = NotebooksMenu | NotebookDefinitionMenuItem | SeparatorMenuItem
-
-interface NotebooksMenu {
-  label: string
-  submenu: NotebookMenuItem[]
 }
 
 /** Open a new window or tab and replay the contents of the given `filepath` */
@@ -67,16 +52,6 @@ export function openNotebook(
   }
 }
 
-function isNotebooksMenu(item: NotebookMenuItem): item is NotebooksMenu {
-  const menu = item as NotebooksMenu
-  return typeof menu.label === 'string' && Array.isArray(menu.submenu)
-}
-
-function isNotebookDefinitionMenuItem(item: NotebookMenuItem): item is NotebookDefinitionMenuItem {
-  const nbItem = item as NotebookDefinitionMenuItem
-  return typeof nbItem.notebook === 'string' && typeof nbItem.filepath === 'string'
-}
-
 /** We only need to replace the NotebookDefinitionMenuItem with calls to our `notebook` helper */
 export function clientNotebooksDefinitionToElectron(
   defn: NotebooksMenu,
@@ -88,9 +63,9 @@ export function clientNotebooksDefinitionToElectron(
       {
         label: defn.label,
         submenu: defn.submenu.map(item => {
-          if (isNotebooksMenu(item)) {
+          if (isMenu(item)) {
             return clientNotebooksDefinitionToElectron(item, notebook)
-          } else if (isNotebookDefinitionMenuItem(item)) {
+          } else if (isLeaf(item)) {
             // this is the only mogrifier
             return notebook(item.notebook, item.filepath)
           } else {
@@ -100,14 +75,5 @@ export function clientNotebooksDefinitionToElectron(
         })
       }
     )
-  }
-}
-
-/** @return the client's definition of a Notebooks menu */
-export function loadClientNotebooksMenuDefinition(): NotebooksMenu {
-  try {
-    return require('@kui-shell/client/config.d/notebooks.json') as NotebooksMenu
-  } catch (err) {
-    return undefined
   }
 }

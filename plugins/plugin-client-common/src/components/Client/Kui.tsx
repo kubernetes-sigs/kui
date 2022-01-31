@@ -19,7 +19,10 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { Capabilities, Events, i18n, REPL, pexecInCurrentTab, encodeComponent, Themes } from '@kui-shell/core'
+
+import { Capabilities, Client, Events, i18n, REPL, pexecInCurrentTab, encodeComponent, Themes } from '@kui-shell/core'
+
+import automount from '../../mount'
 
 import KuiContext from './context'
 import CommonClientProps from './props/Common'
@@ -87,6 +90,8 @@ export class Kui extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
+    this.mountGuidebooks()
+
     // refresh the UI after user changes settings overrides
     onUserSettingsChange(evt => {
       this.setState(curState => {
@@ -123,6 +128,16 @@ export class Kui extends React.PureComponent<Props, State> {
     }
 
     let commandLine = this.props.commandLine
+
+    // If props did not specify a commandLine, perhaps the client
+    // wishes us to auto-play a guidebook?
+    if (!commandLine && Client.singletonGuidebooks() && Client.showGuidebooksSidebar()) {
+      const autoplay = Client.firstOpenGuidebook()
+      if (autoplay) {
+        commandLine = ['replay', '-r', autoplay]
+      }
+    }
+
     let quietExecCommand = this.props.quietExecCommand !== undefined ? this.props.quietExecCommand : !this.props.isPopup
 
     if (Capabilities.inBrowser()) {
@@ -168,6 +183,30 @@ export class Kui extends React.PureComponent<Props, State> {
     }
   }
 
+  /** Mount any guidebooks referenced by the `@kui-shell/client/config.d/notebooks.json` model */
+  private mountGuidebooks() {
+    // FIXME: require versus import; fixing this will require some
+    // refactoring of the plugin-core-support logic
+    const { notebookVFS } = require('@kui-shell/plugin-core-support')
+
+    // notebooks hosted by plugin-client-common; we need to defer this
+    // a bit, to help with bootstrapping issues
+    debug('Mounting plugin-client-common guidebooks', automount)
+    notebookVFS.cp(undefined, automount, '/kui')
+
+    const guidebooks = Client.clientGuidebooks()
+    if (guidebooks && Array.isArray(guidebooks)) {
+      debug('Mounting client guidebooks', guidebooks)
+
+      notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/client'] })
+      notebookVFS.cp(
+        undefined,
+        guidebooks.map(filename => `plugin://client/notebooks/${filename}`),
+        '/kui/client'
+      )
+    }
+  }
+
   private defaultLoading() {
     return (
       <Loading className="somewhat-larger-text" description={strings('Please wait while we connect to your cluster')} />
@@ -189,7 +228,9 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private defaultLoadingDone() {
-    return (repl: REPL) => (!Capabilities.inBrowser() ? undefined : <LoadingCard repl={repl} />)
+    return Client.isOffline()
+      ? null
+      : (repl: REPL) => (!Capabilities.inBrowser() ? undefined : <LoadingCard repl={repl} />)
   }
 
   private defaultLoadingError() {
@@ -296,15 +337,18 @@ export class Kui extends React.PureComponent<Props, State> {
               <TabContainer
                 productName={this.props.productName}
                 version={this.props.version}
-                noActiveInput={this.props.noActiveInput || !!this.props.bottomInput}
+                noActiveInput={this.props.noActiveInput || !!this.props.bottomInput || Client.isOffline()}
                 bottom={bottom}
-                title={this.props.initialTabTitle}
+                title={this.props.initialTabTitle || (Client.isOffline() ? ' ' : undefined)}
                 onTabReady={this.state.commandLine && this._onTabReady}
                 closeableTabs={this.props.closeableTabs}
-                noTopTabs={this.props.noTopTabs}
-                guidebooks={this.props.guidebooks}
-                guidebooksCommand={this.props.guidebooksCommand}
-                guidebooksExpanded={this.props.guidebooksExpanded}
+                noTopTabs={this.props.noTopTabs || Client.singletonGuidebooks()}
+                guidebooks={this.props.guidebooks || Client.guidebooksMenu()}
+                guidebooksCommand={
+                  this.props.guidebooksCommand ||
+                  (Client.singletonGuidebooks() ? 'commentary --replace --readonly -f' : undefined)
+                }
+                guidebooksExpanded={this.props.guidebooksExpanded || Client.showGuidebooksSidebar()}
               ></TabContainer>
               {this.props.toplevel}
               {this.props.statusStripe !== false && (

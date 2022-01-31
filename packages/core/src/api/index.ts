@@ -28,3 +28,6 @@ export { Settings }
 
 import * as Capabilities from './Capabilities'
 export { Capabilities }
+
+import * as Client from './Client'
+export { Client }
