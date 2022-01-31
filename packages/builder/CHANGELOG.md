@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.4](https://github.com/IBM/kui/compare/v11.1.3...v11.1.4) (2022-01-31)
+
+### Features
+
+- `<Kui/>` component should automate more of guidebook mounting ([eaba19f](https://github.com/IBM/kui/commit/eaba19f))
+
 ## [11.1.3](https://github.com/IBM/kui/compare/v11.1.2...v11.1.3) (2022-01-27)
 
 **Note:** Version bump only for package @kui-shell/builder

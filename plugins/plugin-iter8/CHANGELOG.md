@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.4](https://github.com/kubernetes-sigs/kui/compare/v11.1.3...v11.1.4) (2022-01-31)
+
+### Features
+
+- when inlining guidebook snippets, rewrite relative image links ([17d7232](https://github.com/kubernetes-sigs/kui/commit/17d7232))
+
 ## [11.1.3](https://github.com/kubernetes-sigs/kui/compare/v11.1.2...v11.1.3) (2022-01-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-iter8

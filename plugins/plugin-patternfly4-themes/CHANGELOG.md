@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.4](https://github.com/IBM/kui/compare/v11.1.3...v11.1.4) (2022-01-31)
+
+### Bug Fixes
+
+- **plugins/plugin-patternfly4-themes:** improve "warning" color in guidebooks for pf4-light theme ([0bbdc39](https://github.com/IBM/kui/commit/0bbdc39))
+
 ## [11.1.3](https://github.com/IBM/kui/compare/v11.1.2...v11.1.3) (2022-01-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-patternfly4-themes

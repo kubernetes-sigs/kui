@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.4](https://github.com/IBM/kui/compare/v11.1.3...v11.1.4) (2022-01-31)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** a few small spacing tweaks to Guidebooks ([7eefe81](https://github.com/IBM/kui/commit/7eefe81))
+- **plugins/plugin-client-common:** another tweak for right-alignment of markdown ([24ac2bb](https://github.com/IBM/kui/commit/24ac2bb))
+- **plugins/plugin-client-common:** avoid pre-wrap in guidebook paragraphs ([3be7f72](https://github.com/IBM/kui/commit/3be7f72))
+- **plugins/plugin-client-common:** if client does not define notebooks, Sidebar crashes on Escape ([b660eba](https://github.com/IBM/kui/commit/b660eba))
+- **plugins/plugin-client-common:** markdown expandable sections can have double margins ([9508f4a](https://github.com/IBM/kui/commit/9508f4a))
+- **plugins/plugin-client-common:** markdown mark tags sometimes confused with tabbed ([352829d](https://github.com/IBM/kui/commit/352829d))
+- **plugins/plugin-client-common:** recursive snippet inlining does not properly handle base path ([e98e9c6](https://github.com/IBM/kui/commit/e98e9c6))
+- **plugins/plugin-client-common:** snippet inliner image link rewriter does not handle two links on one line ([1e086ae](https://github.com/IBM/kui/commit/1e086ae))
+- **plugins/plugin-client-common:** use inner scrolling of nav for sidebar ([d8d8be2](https://github.com/IBM/kui/commit/d8d8be2))
+- **Plugins/plugin-client-common:** saving guidebook fails with subset of responses ([7dde418](https://github.com/IBM/kui/commit/7dde418))
+- fetchfile controller refuses any in-browser fetch, even if CORS would allow it ([8802995](https://github.com/IBM/kui/commit/8802995))
+
+### Features
+
+- `<Kui/>` component should automate more of guidebook mounting ([eaba19f](https://github.com/IBM/kui/commit/eaba19f))
+- **plugins/plugin-client-common:** support for "question" tips in markdown ([51abe74](https://github.com/IBM/kui/commit/51abe74))
+- **plugins/plugin-client-common:** support for markdown `<mark>` and `<kbd>` syntax ([fc72a5c](https://github.com/IBM/kui/commit/fc72a5c))
+- allow markdown guidebooks to define code block metadata in topmatter ([5589c6d](https://github.com/IBM/kui/commit/5589c6d))
+- when inlining guidebook snippets, rewrite relative image links ([17d7232](https://github.com/IBM/kui/commit/17d7232))
+
 ## [11.1.3](https://github.com/IBM/kui/compare/v11.1.2...v11.1.3) (2022-01-27)
 
 ### Bug Fixes
