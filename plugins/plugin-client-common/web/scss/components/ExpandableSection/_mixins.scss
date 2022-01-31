@@ -58,9 +58,21 @@ $expandablesection--spacing: 0.125rem;
   }
 }
 
+@mixin ExpandableSectionToggleIcon {
+  .pf-c-expandable-section__toggle-icon {
+    @content;
+  }
+}
+
+@mixin ExpandableSectionToggleText {
+  .pf-c-expandable-section__toggle-text {
+    @content;
+  }
+}
+
 @mixin ExpandableSectionButtonIcon {
   @include ExpandableSectionButton {
-    .pf-c-expandable-section__toggle-icon {
+    @include ExpandableSectionToggleIcon {
       @content;
     }
   }
@@ -68,7 +80,7 @@ $expandablesection--spacing: 0.125rem;
 
 @mixin ExpandableSectionButtonText {
   @include ExpandableSectionButton {
-    .pf-c-expandable-section__toggle-text {
+    @include ExpandableSectionToggleText {
       @content;
     }
   }

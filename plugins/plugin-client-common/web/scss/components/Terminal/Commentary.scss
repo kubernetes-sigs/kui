@@ -417,6 +417,9 @@ $tip-toggle-opacity-2: 0.9;
   @include ExpandableSectionToggleText {
     color: var(--color-text-01);
   }
+  @include MarkdownTipVariant(tip) {
+    @include BlueTip;
+  }
   @include MarkdownTipVariant(success) {
     @include GreenTip;
   }

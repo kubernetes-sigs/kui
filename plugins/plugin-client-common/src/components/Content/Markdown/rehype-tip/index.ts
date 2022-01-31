@@ -51,14 +51,19 @@ export default function plugin(/* options */) {
           return newChildren
         } else if (
           child.type === 'element' &&
-          (child.tagName === 'div' || child.tagName === 'span' || child.tagName === 'tabbed')
+          (child.tagName === 'div' ||
+            child.tagName === 'tabbed' ||
+            (child.tagName === 'span' && child.properties.className !== 'paragraph'))
         ) {
           const newChild = Object.assign({}, child, { children: [] })
           const children = currentTipLevel === level ? currentTip.children : newChildren
           children.push(newChild)
           newChild.children = process(child.children, level + 1)
           return newChildren
-        } else if (child.type === 'element' && child.tagName === 'p') {
+        } else if (
+          child.type === 'element' &&
+          (child.tagName === 'p' || (child.tagName === 'span' && child.properties.className === 'paragraph')) // e.g. see rehype-wizard
+        ) {
           if (child.children.length > 0) {
             if (
               currentTipLevel === level &&
