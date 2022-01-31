@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Capabilities } from '@kui-shell/core'
-
-// This whole file is a hack until we fix the problem with
-// plugin-client-common importing notebookVFS from plugin-core-support (cyclic dependence)
-const guidebooks = [
+/**
+ * List of notebooks hosted by plugin-client-common
+ *
+ */
+export default [
   'plugin://plugin-client-common/notebooks/code-blocks.md',
   'plugin://plugin-client-common/notebooks/expandable-section.md',
   'plugin://plugin-client-common/notebooks/hints.md',
@@ -30,15 +30,3 @@ const guidebooks = [
   'plugin://plugin-client-common/notebooks/make-notebook.md',
   'plugin://plugin-client-common/notebooks/make-notebook.json'
 ]
-
-/**
- * Register the welcome notebook
- *
- */
-export default async () => {
-  // for now, we only need to do this in the proxy
-  if (Capabilities.inProxy()) {
-    const { notebookVFS } = await import('@kui-shell/plugin-core-support')
-    notebookVFS.cp(undefined, guidebooks, '/kui')
-  }
-}

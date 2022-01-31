@@ -36,3 +36,12 @@ if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
     echo "compiling plugin registry $CLIENT_HOME"
     node ./node_modules/@kui-shell/builder/dist/bin/compile.js
 fi
+
+# generate the index.json in @kui-shell/client/notebooks/index.json
+if [ -d node_modules/@kui-shell/client/notebooks ]; then
+    echo "Generating client-guidebooks.json"
+    if [ ! -d node_modules/@kui-shell/build/ ]; then
+        mkdir node_modules/@kui-shell/build
+    fi
+    (echo -n "["; for file in node_modules/@kui-shell/client/notebooks/*.{md,json}; do echo -n "\"$(basename $file)\","; done; echo -n "]") | sed 's/\,]/]/' > node_modules/@kui-shell/build/client-guidebooks.json
+fi

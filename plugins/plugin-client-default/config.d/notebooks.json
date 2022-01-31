@@ -11,6 +11,7 @@
     },
     {
       "label": "Kubernetes",
+      "expanded": false,
       "submenu": [
         { "notebook": "Dashboard", "filepath": "/kui/kubernetes/dashboard1.md" },
         { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.md" },
@@ -20,6 +21,7 @@
     },
     {
       "label": "Iter8",
+      "expanded": false,
       "submenu": [
         { "notebook": "Welcome to Iter8", "filepath": "/kui/iter8/welcome.md" },
         { "notebook": "Tutorial 1", "filepath": "/kui/iter8/tutorial1.md" }
@@ -27,6 +29,7 @@
     },
     {
       "label": "Knative",
+      "expanded": false,
       "submenu": [
         { "notebook": "Getting Started", "filepath": "/kui/kubernetes/knative-getting-started.md" },
         {

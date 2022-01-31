@@ -275,13 +275,19 @@ export {
 
 export { default as teeToFile } from './util/tee'
 
-// Client API
+// Client API these are deprecated, adn will be removed in kui
+// 12. Please use the Client.___ form instead
 export {
+  /** @deprecated @see Client.isOffline */
   isOfflineClient,
+  /** @deprecated @see Client.isReadonly */
   isReadOnlyClient,
+  /** @deprecated @see Client.isExecutable */
   isExecutableClient,
+  /** @deprecated @see Client.executeSequentially */
   executeSequentially,
+  /** @deprecated @see Client.hideReplayOutput */
   hideReplayOutput
-} from './api/client'
+} from './api/Client'
 
 export * from './api/window-events'
