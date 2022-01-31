@@ -612,3 +612,9 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin Admonition {
+  .kui--admonition {
+    @content;
+  }
+}
