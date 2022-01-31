@@ -38,7 +38,9 @@ function reactRedactor(key: string, value: any) {
 export default function encodePriorResponses(responses: CodeBlockResponse[]): string {
   return JSON.stringify(
     responses.map(response => {
-      if (response.response.constructor === Error) {
+      if (typeof response === 'undefined') {
+        return response
+      } else if (response.response.constructor === Error) {
         return Object.assign({}, response, { response: stringifyError(response.response) })
       } else if (isWatchable(response.response)) {
         delete response.response.watch
