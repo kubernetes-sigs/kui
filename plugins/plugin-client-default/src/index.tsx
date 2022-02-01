@@ -79,6 +79,7 @@ export default function renderMain(props: KuiProps) {
 
   return (
     <Kui
+      noHelp
       version={version}
       productName={productName}
       lightweightTables

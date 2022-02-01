@@ -23,28 +23,6 @@ body td {
   transition-timing-function: var(--transition-timing-function);
 }
 
-a.bx--tabs__nav-link:focus,
-a.bx--tabs__nav-link:active {
-  outline-color: var(--color-brand-01);
-}
-
-/* mimic bx--tabs__navlink:focus */
-.kui-tab.left-tab-stripe-button:focus,
-a.kui--tab-navigatable:focus {
-  outline: 2px solid var(--color-brand-03);
-  outline-offset: -2px;
-}
-
-a.kui-new-tab__plus:focus,
-a.kui-new-tab__plus:active,
-.kui--sidecar a.graphical-icon:focus,
-.kui--sidecar a.graphical-icon:active,
-.sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:focus,
-.sidecar-bottom-stripe-toolbar a.kui--tab-navigatable:active {
-  outline: 2px solid var(--color-brand-03);
-  outline-offset: -2px;
-}
-
 body[kui-theme-style] .bx--link {
   pointer-events: unset;
   touch-action: unset;
