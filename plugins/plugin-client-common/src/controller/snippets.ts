@@ -54,7 +54,7 @@ function isAbsolute(uri: string): boolean {
 }
 
 function toString(data: string | object) {
-  return typeof data === 'string' ? data : JSON.stringify(data)
+  return (typeof data === 'string' ? data : JSON.stringify(data)).replace(/\n$/, '')
 }
 
 /** Rewrite any relative image links to use the given basePath */
