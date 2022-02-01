@@ -45,7 +45,7 @@ function handleImage(mdprops: Props, props: ImgProps, key?: string) {
     src = `${mdprops.baseUrl}${!/\/$/.test(mdprops.baseUrl) ? '/' : ''}${src}`
   }
 
-  const style = props ? { float: props.align } : undefined
+  const style = props && props.align ? { float: props.align } : undefined
   return <img key={key} src={src} height={props.height} width={props.width} style={style} data-float={props.align} />
 }
 
