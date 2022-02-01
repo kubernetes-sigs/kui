@@ -15,7 +15,8 @@
  */
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
-describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+/** xdescribe because the default client does show the <?> icon (`noHelp`) */
+xdescribe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()

@@ -192,7 +192,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
       <Masthead className="kui--top-tab-stripe-header">
         {this.sidebarToggle()}
         <MastheadMain className="kui--top-tab-stripe-header--main">
-          <MastheadBrand component="span" className="kui--top-tab-stripe-header--brand">
+          <MastheadBrand component="span" className="kui--top-tab-stripe-header--brand" tabIndex={-1}>
             {this.headerName()}
           </MastheadBrand>
           <MastheadContent className="kui--top-tab-stripe-header--content">{this.tabs()}</MastheadContent>
