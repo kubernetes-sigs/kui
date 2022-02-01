@@ -124,7 +124,6 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
       }
     })
 
-    let nth = 0
     visitParents<Heading>(tree, 'heading', (node, ancestors) => {
       if (ancestors.length > 0 && node.children && node.children[0]) {
         const firstChild = node.children[0]
@@ -141,7 +140,6 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
               : step.name === firstChild.value
           )
 
-          const headingIdx = nth++
           if (matchingStep) {
             if (childIdx >= 0) {
               if (parent.children[childIdx - 1].type !== 'thematicBreak') {
@@ -157,8 +155,6 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
                   (matchingStep.description ? ': ' + matchingStep.description : '')
               }
             }
-          } else if (childIdx >= 0 && headingIdx === 0 && frontmatter.wizard.description) {
-            parent.children.splice(childIdx + 1, 0, u('paragraph', [u('text', frontmatter.wizard.description)]))
           }
         }
       }
@@ -225,6 +221,28 @@ function extractSplitsAndSections(tree /*: Root */, frontmatter: KuiFrontmatter)
   }
 }
 
+/**
+ * If `frontmatter.wizard` specifies a `description` overlay, smash it
+ * in! This must be run *after* `extractSplitsAndSections`.
+ */
+function smashInWizardDescription(tree, frontmatter: KuiFrontmatter) {
+  if (frontmatter.wizard && frontmatter.wizard.description) {
+    const firstWizardSection = tree.children.find(
+      _ => _.data && _.data.hProperties && _.data.hProperties['data-kui-split'] === 'wizard'
+    )
+    if (firstWizardSection && Array.isArray(firstWizardSection.children)) {
+      const firstHeadingIdx = firstWizardSection.children.findIndex(_ => _.type === 'heading')
+      if (firstHeadingIdx >= 0) {
+        firstWizardSection.children.splice(
+          firstHeadingIdx + 1,
+          0,
+          u('paragraph', [u('text', frontmatter.wizard.description)])
+        )
+      }
+    }
+  }
+}
+
 /** Look for frontmatter and sections */
 export function kuiFrontmatter(opts: { tab: Tab }) {
   return (tree: Root) => {
@@ -241,6 +259,7 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
       preprocessCodeBlocks(tree, frontmatter)
       preprocessWizardSteps(tree, frontmatter)
       extractSplitsAndSections(tree, frontmatter)
+      smashInWizardDescription(tree, frontmatter)
     }
   }
 }
