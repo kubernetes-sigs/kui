@@ -26,16 +26,7 @@
   "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
-  "dependencies": {
-    "@kui-shell/core": "^8.0.6",
-    "@kui-shell/plugin-bash-like": "^8.0.6",
-    "@kui-shell/plugin-core-support": "^8.0.6",
-    "@kui-shell/plugin-editor": "^8.0.6",
-    "@IBM/kui": "*",
-    "ansi_up": "4.0.4",
-    "debug": "4.1.1",
-    "js-yaml": "4.1.0"
-  },
+  "dependencies": {},
   "krew": {
     "commandPrefix": "kubeui"
   },
