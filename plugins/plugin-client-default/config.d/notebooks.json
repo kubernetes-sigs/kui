@@ -43,6 +43,10 @@
             {
               "notebook": "Introducing Knative Eventing",
               "filepath": "/kui/kubernetes/knative-introducing-eventing.md"
+            },
+            {
+              "notebook": "Sources, Brokers, Triggers, Sinks",
+              "filepath": "/kui/kubernetes/knative-eventing-components.md"
             }
           ]
         }
