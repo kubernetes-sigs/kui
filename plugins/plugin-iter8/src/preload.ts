@@ -28,6 +28,7 @@ export default async (registrar: PreloadRegistrar) => {
     notebookVFS.cp(
       undefined,
       [
+        'plugin://plugin-iter8/notebooks/iter8-what-is-it-good-for.md',
         'plugin://plugin-iter8/notebooks/welcome.md',
         'plugin://plugin-iter8/notebooks/tutorial1.md',
         'plugin://plugin-iter8/notebooks/tutorial1.json'

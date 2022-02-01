@@ -1,5 +1,8 @@
 ---
 title: Iter8 &mdash; Load testing with SLO validation
+layout:
+    1: left
+    default: wizard
 wizard:
     steps:
         - Introduction
@@ -25,19 +28,17 @@ codeblocks:
       validate: "[[ -f /tmp/load-test/experiment/values.yaml ]] || exit 1"
 ---
 
-# Iter8: Kubernetes Release Engineering
+--8<-- "iter8-what-is-it-good-for.md"
 
-[Iter8](https://iter8.tools) is the **release engineering** platform
-for Kubernetes applications and ML models.
+---
 
-Iter8 is designed for DevOps and MLOps teams interested in maximizing
-release velocity and business value with their apps/ML models while
-protecting end-user experience. Use Iter8 for SLO validation, A/B
-testing and progressive rollouts of K8s apps/ML models.
-
-## Introduction
+# Load testing with SLO validation
 
 This tutorial uses an [Iter8 experiment](concepts.md#what-is-an-iter8-experiment) to load test https://example.com and validate latency and error-related service level objectives (SLOs).
+
+---
+
+## Introduction
 
 > ### What is an Iter8 experiment?
 >
