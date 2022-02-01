@@ -58,7 +58,7 @@
 @include Block {
   @include InputWrapper {
     border: $input-border;
-    border-radius: 6px;
+    border-radius: 1px;
     &[data-is-reedit] {
       border-color: $input-border-editing;
     }

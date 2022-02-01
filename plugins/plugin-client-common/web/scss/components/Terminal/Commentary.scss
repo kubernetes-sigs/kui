@@ -367,8 +367,8 @@ body[kui-theme-style='dark'] {
   }
 }
 
-$tip-toggle-opacity: 0.3;
-$tip-toggle-opacity-2: 0.9;
+$tip-toggle-opacity: 0.125;
+$tip-toggle-opacity-2: 0.6;
 
 @mixin GreenTip {
   $bgcolor: var(--color-base0B-rgb);
@@ -448,6 +448,9 @@ $tip-toggle-opacity-2: 0.9;
 }
 
 @mixin ParagraphBoundaryMargins {
+  & > pre:not(:first-child) {
+    margin-top: $inset;
+  }
   & > p:first-child {
     margin-top: 0;
   }
