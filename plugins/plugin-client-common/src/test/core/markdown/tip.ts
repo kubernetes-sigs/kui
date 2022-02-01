@@ -29,7 +29,23 @@ const IN2 = {
   input: join(ROOT, 'data', 'tip-no-title.md'),
   tips: [{ title: 'Warning', content: 'YYYY' }]
 }
-;[IN1, IN2].forEach(markdown => {
+
+const IN3 = {
+  input: join(ROOT, 'data', 'tip-after-tip.md'),
+  tips: [
+    { title: 'Warning', content: 'XXXX' },
+    {
+      title: 'TTTT',
+      content: `YYYY
+ZZZZ`
+    }
+  ]
+}
+const IN4 = {
+  input: join(ROOT, 'data', 'tip-after-tip-in-tab.md'),
+  tips: IN3.tips
+}
+;[IN1, IN2, IN3, IN4].forEach(markdown => {
   describe(`markdown expandable section ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
