@@ -130,7 +130,7 @@ describe('tab navigation', function(this: Common.ISuite) {
     testSelector(TAB_BUTTON_N(1), undefined, undefined, true)
     testSelector(TAB_BUTTON_N(2))
     testSelector(tabButtonSelector)
-    testSelector('#help-button', false, undefined, true)
+    // testSelector('#help-button', false, undefined, true)
     testPromptIsSelected(true) // <-- true means we hit tab first
     it('should be the end of the full cycle', promptBetterBeFocused)
   }
@@ -154,7 +154,8 @@ describe('tab navigation', function(this: Common.ISuite) {
   /* testSelector(TAB_BUTTON_N(1))
   testSelector(TAB_BUTTON_N(2))
   testSelector(tabButtonSelector) */
+  /* removing about button
   testSelector('#help-button', true, undefined, true)
   it('should have a new About Kui top tab', () =>
-    this.app.client.$(Selectors.TOP_TAB_WITH_TITLE('Welcome to Kui')).then(_ => _.waitForDisplayed({ timeout: 5000 })))
+    this.app.client.$(Selectors.TOP_TAB_WITH_TITLE('Welcome to Kui')).then(_ => _.waitForDisplayed({ timeout: 5000 }))) */
 })
