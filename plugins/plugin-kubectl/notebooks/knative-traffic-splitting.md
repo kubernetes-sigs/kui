@@ -1,9 +1,13 @@
 ---
 title: Traffic Splitting
+layout:
+    1: left
+    default: wizard
 wizard:
     description: Kubernetes-based platform to deploy and manage modern serverless workloads
     steps:
-        - Basics of Traffic Splitting
+        - match: Basics of Traffic Splitting
+          name: Introduction
         - Creating a new Revision
         - Splitting Traffic
         - name: Clean Up
@@ -13,7 +17,13 @@ codeblocks:
       match: ^kn service update hello
       validate: kn revisions hello
 ---
-Traffic Splitting
+
+--8<-- "knative-what-is-it-good-for.md"
+
+---
+
+# How Knative enables Powerful Traffic Splitting
+
 ---
 
 --8<-- "https://raw.githubusercontent.com/knative/docs/main/docs/getting-started/first-traffic-split.md"
