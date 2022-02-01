@@ -86,6 +86,23 @@ function extractKuiFrontmatter(tree): KuiFrontmatter {
   return frontmatter
 }
 
+function defaultPosition(frontmatter: KuiFrontmatter) {
+  return frontmatter && frontmatter.layout ? frontmatter.layout['default'] : undefined
+}
+
+function positionOf(sectionIdx: number, frontmatter: KuiFrontmatter) {
+  const positionAsGiven =
+    frontmatter.layout === 'wizard' ? 'wizard' : frontmatter.layout[sectionIdx] || defaultPosition(frontmatter)
+
+  const position = isValidPosition(positionAsGiven)
+    ? positionAsGiven
+    : !isValidPositionObj(positionAsGiven)
+    ? 'default'
+    : positionAsGiven.position
+
+  return { positionAsGiven, position }
+}
+
 /** Scan and process the `wizard` schema of the given `frontmatter` */
 function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
   if (hasWizardSteps(frontmatter)) {
@@ -95,11 +112,16 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
 
     // since the user defined wizard steps in the topmatter, we need
     // to remove existing thematicBreaks, for now
+    let sectionIdx = 1
     visitParents(tree, 'thematicBreak', (node, ancestors) => {
-      const parent = ancestors[ancestors.length - 1]
-      const childIdx = parent.children.findIndex(_ => _ === node)
+      const { position } = positionOf(sectionIdx++, frontmatter)
 
-      parent.children.splice(childIdx, 1)
+      if (position === 'wizard') {
+        const parent = ancestors[ancestors.length - 1]
+        const childIdx = parent.children.findIndex(_ => _ === node)
+
+        parent.children.splice(childIdx, 1)
+      }
     })
 
     let nth = 0
@@ -149,17 +171,8 @@ function extractSplitsAndSections(tree /*: Root */, frontmatter: KuiFrontmatter)
   let sectionIdx = 1
   let currentSection // : { type: 'kui-split', value: string, children: [] }
 
-  const defaultPosition = () => (frontmatter && frontmatter.layout ? frontmatter.layout['default'] : undefined)
-
   const newSection = (sectionIdx: number) => {
-    const positionAsGiven =
-      frontmatter.layout === 'wizard' ? 'wizard' : frontmatter.layout[sectionIdx] || defaultPosition()
-
-    const position = isValidPosition(positionAsGiven)
-      ? positionAsGiven
-      : !isValidPositionObj(positionAsGiven)
-      ? 'default'
-      : positionAsGiven.position
+    const { positionAsGiven, position } = positionOf(sectionIdx, frontmatter)
 
     // text to place in empty sections
     const placeholder = isValidPositionObj(positionAsGiven) ? positionAsGiven.placeholder : undefined
