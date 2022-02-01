@@ -74,6 +74,7 @@ export default async (registrar: PreloadRegistrar) => {
   notebookVFS.cp(
     undefined,
     [
+      'plugin://plugin-kubectl/notebooks/knative-what-is-it-good-for.md',
       'plugin://plugin-kubectl/notebooks/knative-getting-started.md',
       'plugin://plugin-kubectl/notebooks/knative-first-service.md',
       'plugin://plugin-kubectl/notebooks/knative-first-autoscale.md',
