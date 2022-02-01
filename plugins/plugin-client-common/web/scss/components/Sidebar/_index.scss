@@ -77,11 +77,6 @@ body[kui-theme-style='light'] {
   }
 }
 
-/* Sidebar width */
-@include Sidebar {
-  max-width: 15rem;
-}
-
 /* Coloring of bottom-aligned text */
 @include Sidebar {
   @include SidebarBottomAlignedContent {
