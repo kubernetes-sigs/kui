@@ -1,5 +1,8 @@
 ---
 title: Knative &mdash; Getting Started
+layout:
+    1: left
+    default: wizard
 wizard:
     description: Kubernetes-based platform to deploy and manage modern serverless workloads
     steps:
@@ -14,6 +17,10 @@ codeblocks:
     - language: bash
       match: ^brew install kn$
       validate: brew info kn
+---
+
+--8<-- "knative-what-is-it-good-for.md"
+
 ---
 
 --8<-- "https://raw.githubusercontent.com/knative/docs/main/docs/getting-started/README.md"
