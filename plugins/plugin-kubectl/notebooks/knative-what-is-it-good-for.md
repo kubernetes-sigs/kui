@@ -15,6 +15,6 @@ deploying and managing cloud native services so you don't have to.
 
 <!-- oof, there is no great way of using markdown to specify a desired image size -->
 
-<a href="https://github.com/knative/docs/">
+<a href="https://github.com/knative">
   <img alt="Github Logo" src="https://avatars.githubusercontent.com/u/26377421?v=4" width="40">
 </a>
