@@ -40,8 +40,8 @@
   }
   @include WizardNav {
     height: auto;
-    width: auto;
-    min-width: 14rem;
+    width: 16rem;
+    min-width: 16rem;
     max-width: 16rem;
     position: unset;
   }
