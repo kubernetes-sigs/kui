@@ -151,10 +151,6 @@ export default function plugin(/* options */) {
   }
 }
 
-function XOR(a: boolean, b: boolean) {
-  return (a || b) && !(a && b)
-}
-
 /**
  * pymdown uses indentation to define tab content; remark-parse seems
  * to turn these into <pre> blocks before we get control; hack it for
@@ -213,7 +209,7 @@ export function hackIndentation(source: string): string {
       const endMarker = tabStartMatch ? END_OF_TAB : END_OF_TIP
 
       const possibleEndTab =
-        indentDepth === thisIndentDepth && XOR(currentEndMarker === END_OF_TIP, endMarker === END_OF_TIP)
+        (indentDepth === thisIndentDepth && currentEndMarker === END_OF_TIP) || endMarker === END_OF_TIP
           ? pop(line, 0)
           : !(inTab && indentDepth > thisIndentDepth)
           ? ''

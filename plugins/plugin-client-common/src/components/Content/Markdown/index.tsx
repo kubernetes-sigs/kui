@@ -279,6 +279,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     return hackKeys(hackMarks(hackIndentation(source)))
       .trim()
       .replace(/\){target=[^}]+}/g, ')')
+      .replace(/{draggable=(false|true)}/g, '')
   }
 
   /** We got a code block response from execution in this session */
