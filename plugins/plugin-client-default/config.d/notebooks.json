@@ -36,6 +36,15 @@
             { "notebook": "Scaling to Zero", "filepath": "/kui/kubernetes/knative-first-autoscale.md" },
             { "notebook": "Traffic Splitting", "filepath": "/kui/kubernetes/knative-traffic-splitting.md" }
           ]
+        },
+        {
+          "label": "Eventing",
+          "submenu": [
+            {
+              "notebook": "Introducing Knative Eventing",
+              "filepath": "/kui/kubernetes/knative-introducing-eventing.md"
+            }
+          ]
         }
       ]
     }
