@@ -39,7 +39,15 @@ export function tr(props: TableRowProps) {
 }
 
 export function th(props: TableCellProps) {
-  return <Th className={props.className}>{props.children}</Th>
+  // hmm, without modifier=wrap, PatternFly (or is it electron
+  // 13?)... if the td content is narrower than the th content, they
+  // seem to favor favor ellipsis for that wider column header. This
+  // looks especially bad if the td content is quite narrow.
+  return (
+    <Th className={props.className} modifier="wrap">
+      {props.children}
+    </Th>
+  )
 }
 
 export function td(props: TableCellProps) {
