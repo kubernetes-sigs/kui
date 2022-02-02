@@ -884,19 +884,6 @@ $kui--page-content-paragraph-padding: 0.375em;
 .page-content .paragraph {
   padding: $kui--page-content-paragraph-padding 0;
 }
-.page-content .kui--structured-list {
-  tr {
-    border-bottom: 1px solid var(--color-table-border3);
-  }
-  th {
-    height: 2.5em;
-    font-weight: bold;
-    padding: 1em 1em 0.5em;
-  }
-  td {
-    padding: 1em 1em 1.5em;
-  }
-}
 .page-content img {
   max-width: 100%;
   object-position: left center;
