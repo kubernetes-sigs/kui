@@ -15,15 +15,33 @@
  */
 
 import React from 'react'
+import { TableRowProps, TableCellProps } from 'react-markdown/lib/ast-to-react'
+import { TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
 
 export function table(props: React.TableHTMLAttributes<HTMLTableElement>) {
-  return <table className={props.className + ' kui--table-like kui--structured-list'}>{props.children}</table>
+  return (
+    <TableComposable variant="compact" className={props.className + ' kui--table-like'}>
+      {props.children}
+    </TableComposable>
+  )
 }
 
 export function thead(props: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={props.className + ' kui--structured-list-thead'}>{props.children}</thead>
+  return <Thead className={props.className}>{props.children}</Thead>
 }
 
 export function tbody(props: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <tbody className={props.className + ' kui--structured-list-tbody'}>{props.children}</tbody>
+  return <Tbody className={props.className}>{props.children}</Tbody>
+}
+
+export function tr(props: TableRowProps) {
+  return <Tr className={props.className}>{props.children}</Tr>
+}
+
+export function th(props: TableCellProps) {
+  return <Th className={props.className}>{props.children}</Th>
+}
+
+export function td(props: TableCellProps) {
+  return <Td className={props.className}>{props.children}</Td>
 }

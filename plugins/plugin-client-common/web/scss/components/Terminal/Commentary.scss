@@ -274,6 +274,12 @@ body[kui-theme-style='light'] {
   }
 }
 
+@include Commentary {
+  .kui--table-like {
+    border-collapse: collapse;
+  }
+}
+
 @include Scrollback {
   @include Commentary {
     margin: 0 0.5em;
