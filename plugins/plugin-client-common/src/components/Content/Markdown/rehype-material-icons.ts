@@ -22,7 +22,10 @@ import '@mdi/font/css/materialdesignicons.min.css'
 
 export default function plugin() {
   const transformer: Transformer = ast => {
-    const RE_ICON = /^\s*:material-([^:]+):\s*$/
+    // capture the :material-(xxx):(trailing whitespace)
+    // as match[1] and match[2], respectively
+    const RE_ICON = /^\s*:material-([^:]+):(\s*)$/
+
     visit(ast, 'text', function() {
       // ugh, typescript bug
       // https://github.com/microsoft/TypeScript/issues/46900 and we
@@ -32,12 +35,16 @@ export default function plugin() {
 
       const match = node.value.match(RE_ICON)
       if (match) {
-        parent.children[childIdx] = u('element', {
-          tagName: 'span',
-          properties: {
-            className: `mdi mdi-${match[1]}`
-          }
-        })
+        parent.children[childIdx] = u(
+          'element',
+          {
+            tagName: 'span',
+            properties: {
+              className: `mdi mdi-${match[1]}`
+            }
+          },
+          match[2] ? [u('text', match[2])] : undefined
+        ) // trailing whitespace...
       }
     })
   }
