@@ -25,25 +25,7 @@ import { Tab } from '@kui-shell/core'
 import preprocessCodeBlocks from './components/code/remark-codeblocks-topmatter'
 import KuiFrontmatter, { hasWizardSteps, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
 
-export function tryFrontmatter(
-  value: string
-): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes'> {
-  try {
-    const frontmatter = require('front-matter')
-    return frontmatter(value)
-  } catch (err) {
-    console.error('Error parsing frontmatter', err)
-    return {
-      body: value,
-      attributes: {}
-    }
-  }
-}
-
-/** In case you only want the body part of a `markdownText` */
-export function stripFrontmatter(markdownText: string) {
-  return tryFrontmatter(markdownText).body
-}
+export { tryFrontmatter } from './frontmatter-parser'
 
 export function splitTarget(node) {
   if (node.type === 'raw') {
