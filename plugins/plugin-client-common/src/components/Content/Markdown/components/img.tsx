@@ -33,16 +33,18 @@ function allContentIsRemote(props: Props): boolean {
 function handleImage(mdprops: Props, props: ImgProps, key?: string) {
   let { src } = props
 
-  const isHttp = /^http/i.test(src)
+  const baseUrlIsHttp = mdprops.baseUrl && /http/i.test(mdprops.baseUrl)
+  const srcIsHttp = /^http/i.test(src)
+  const isHttp = srcIsHttp || baseUrlIsHttp
   const isLocal = !isHttp && !allContentIsRemote(mdprops)
+
   if (isLocal) {
     const absoluteSrc = isAbsolute(src)
       ? src
       : join(mdprops.fullpath ? dirname(mdprops.fullpath) : mdprops.baseUrl || process.cwd(), src)
     src = absoluteSrc
-  } else if (!isHttp && mdprops.baseUrl) {
-    // then this is a relative path against
-    src = `${mdprops.baseUrl}${!/\/$/.test(mdprops.baseUrl) ? '/' : ''}${src}`
+  } else if (!srcIsHttp && mdprops.baseUrl) {
+    src = mdprops.baseUrl.replace(/{filename}/g, src)
   }
 
   const style = props && props.align ? { float: props.align } : undefined
