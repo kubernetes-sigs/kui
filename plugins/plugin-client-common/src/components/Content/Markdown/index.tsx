@@ -55,6 +55,7 @@ import encodePriorResponses from './components/code/encoding'
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 
+import materialIcons from './rehype-material-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
 const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
@@ -62,6 +63,7 @@ const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
   tabbed,
   tip,
   [codeIndexer, uuid],
+  materialIcons,
   rehypeRaw,
   rehypeSlug
 ]
@@ -69,7 +71,6 @@ const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) =
   gfm,
   [frontmatter, ['yaml', 'toml']],
   [kuiFrontmatter, { tab }],
-
   emojis // [emojis, { emoticon: true }]
 ]
 

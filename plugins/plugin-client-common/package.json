@@ -21,6 +21,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
+    "@mdi/font": "6.5.95",
     "@patternfly/react-charts": "6.34.1",
     "@patternfly/react-core": "4.181.1",
     "@patternfly/react-styles": "4.31.1",
