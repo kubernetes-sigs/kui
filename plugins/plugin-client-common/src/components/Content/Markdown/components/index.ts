@@ -26,7 +26,7 @@ import _heading from './heading'
 import blockquote from './blockquote'
 import { list, li } from './list'
 import { details, tip } from './details'
-import { table, thead, tbody } from './table'
+import { table, thead, tbody, tr, th, td } from './table'
 import _code, { CodeBlockResponse } from './code'
 
 import { Props } from '../../Markdown'
@@ -71,6 +71,9 @@ function typedComponents(args: Args): Components {
     table,
     thead,
     tbody,
+    tr,
+    th,
+    td,
     ul: list
   }
 }
