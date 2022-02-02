@@ -1,5 +1,5 @@
 ---
-title: Knaive &mdash; Eventing Components
+title: Knative &mdash; Eventing Components
 description: Eventing components
 layout:
     1: left
