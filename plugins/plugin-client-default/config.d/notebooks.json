@@ -51,6 +51,10 @@
             {
               "notebook": "Introducing the CloudEvents Player",
               "filepath": "/kui/kubernetes/knative-cloud-events-player.md"
+            },
+            {
+              "notebook": "Creating your first Trigger",
+              "filepath": "/kui/kubernetes/knative-first-trigger.md"
             }
           ]
         }
