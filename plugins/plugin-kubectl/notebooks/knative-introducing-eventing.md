@@ -1,5 +1,5 @@
 ---
-title: Introducing Eventing
+title: Knaive &mdash; Introducing Eventing
 layout:
     1: left
 ---
