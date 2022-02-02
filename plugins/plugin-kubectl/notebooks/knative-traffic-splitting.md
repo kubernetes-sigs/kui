@@ -1,5 +1,5 @@
 ---
-title: Knaive &mdash; Traffic Splitting
+title: Knative &mdash; Traffic Splitting
 layout:
     1: left
     default: wizard
