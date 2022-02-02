@@ -19,7 +19,7 @@ import { isAbsolute as pathIsAbsolute, dirname as pathDirname, join as pathJoin 
 import { Arguments } from '@kui-shell/core'
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
-import { stripFrontmatter } from '../components/Content/Markdown/frontmatter'
+import { stripFrontmatter } from '../components/Content/Markdown/frontmatter-parser'
 
 const debug = Debug('plugin-client-common/markdown/snippets')
 
