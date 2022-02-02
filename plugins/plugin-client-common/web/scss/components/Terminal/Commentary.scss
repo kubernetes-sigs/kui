@@ -433,7 +433,7 @@ $tip-toggle-opacity-2: 0.6;
     @include BlueTip;
   }
   @include MarkdownTipVariant(note) {
-    @include YellowTip;
+    @include BlueTip;
   }
   @include MarkdownTipVariant(bug) {
     @include RedTip;
