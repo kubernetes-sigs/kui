@@ -55,7 +55,7 @@ import encodePriorResponses from './components/code/encoding'
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 
-import materialIcons from './rehype-material-icons'
+import icons from './rehype-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
 const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
@@ -63,7 +63,7 @@ const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
   tabbed,
   tip,
   [codeIndexer, uuid],
-  materialIcons,
+  icons,
   rehypeRaw,
   rehypeSlug
 ]
