@@ -55,6 +55,10 @@
             {
               "notebook": "Creating your first Trigger",
               "filepath": "/kui/kubernetes/knative-first-trigger.md"
+            },
+            {
+              "notebook": "Clean Up",
+              "filepath": "/kui/kubernetes/knative-clean-up.md"
             }
           ]
         }
