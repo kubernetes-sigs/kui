@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-common",
-  "version": "11.1.5",
+  "version": "11.1.6",
   "description": "Kui plugin that offers stylesheets",
   "license": "Apache-2.0",
   "author": "Mengting Yan",
@@ -100,5 +100,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "581021e87880d7adf58af05e2df7a12f85c99847"
 }

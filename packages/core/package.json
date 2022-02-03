@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/core",
-  "version": "11.1.5",
+  "version": "11.1.6",
   "description": "An Electron-based shell for cloud-native development",
   "homepage": "https://github.com/IBM/kui#readme",
   "license": "Apache-2.0",
@@ -51,7 +51,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32",
+  "gitHead": "581021e87880d7adf58af05e2df7a12f85c99847",
   "overrides": {
     "colors": "1.40.0"
   }

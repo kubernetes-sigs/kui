@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-electron-components",
-  "version": "11.1.5",
+  "version": "11.1.6",
   "description": "Kui plugin that houses electron-specific React components",
   "license": "Apache-2.0",
   "author": "@starpit",
@@ -25,5 +25,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "581021e87880d7adf58af05e2df7a12f85c99847"
 }
