@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { strictEqual } from 'assert'
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
@@ -78,23 +77,36 @@ ${IN4.text}`,
           ReplExpect.okWithString(markdown.text)
         )
 
-        const actualIcons = await this.app.client.$$('.kui--markdown-icon')
         const expectedIcons = markdown.icons
 
-        strictEqual(actualIcons.length, expectedIcons.length)
+        await this.app.client.waitUntil(
+          async () => {
+            const actualIcons = await this.app.client.$$('.kui--markdown-icon')
+            return actualIcons.length === expectedIcons.length
+          },
+          { timeout: CLI.waitTimeout }
+        )
 
         await Promise.all(
-          actualIcons.map(async (actualIcon, idx) => {
-            const expectedIcon = expectedIcons[idx]
+          expectedIcons.map(async (expectedIcon, idx) =>
+            this.app.client.waitUntil(
+              async () => {
+                const actualIcon = (await this.app.client.$$('.kui--markdown-icon'))[idx]
 
-            const actualTagName = await actualIcon.getTagName()
-            const expectedTagName = expectedIcon.tagName
-            strictEqual(actualTagName, expectedTagName)
+                const actualTagName = await actualIcon.getTagName()
+                const expectedTagName = expectedIcon.tagName
 
-            const actualClassName = (await actualIcon.getAttribute('class')).replace(/\s*kui--markdown-icon\s*/g, '')
-            const expectedClassName = expectedIcon.className
-            strictEqual(actualClassName, expectedClassName)
-          })
+                const actualClassName = (await actualIcon.getAttribute('class')).replace(
+                  /\s*kui--markdown-icon\s*/g,
+                  ''
+                )
+                const expectedClassName = expectedIcon.className
+
+                return actualTagName === expectedTagName && actualClassName === expectedClassName
+              },
+              { timeout: CLI.waitTimeout }
+            )
+          )
         )
       } catch (err) {
         await Common.oops(this, true)(err)
