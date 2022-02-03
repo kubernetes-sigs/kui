@@ -15,12 +15,15 @@
  */
 
 import React from 'react'
-import { dirname, isAbsolute, join, relative } from 'path'
+import { dirname, join, relative } from 'path'
 import { REPL, maybeKuiLink, pexecInCurrentTab } from '@kui-shell/core'
 
 import { Props } from '../../Markdown'
 import { anchorFrom } from './heading'
 import { activateTab } from './tabbed'
+
+// TODO find better home
+import { isAbsolute } from '../../../../controller/snippets'
 
 const Tooltip = React.lazy(() => import('../../../spi/Tooltip'))
 
@@ -109,17 +112,18 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
 
       const kuiLink = maybeKuiLink(props.href)
 
+      const href =
+        isKuiCommand || isNotebook
+          ? '#'
+          : !isKuiBlockLink && mdprops.baseUrl && !isAbsolute(props.href)
+          ? mdprops.baseUrl.replace('{filename}', props.href.replace(/^\s*\.\//g, ''))
+          : props.href
+
       return (
         <Tooltip markdown={tip}>
           <a
             title={props.title}
-            href={
-              isKuiCommand || isNotebook
-                ? '#'
-                : !isKuiBlockLink && mdprops.baseUrl
-                ? mdprops.baseUrl.replace('{filename}', props.href.replace(/^\s*\.\//g, ''))
-                : props.href
-            }
+            href={href}
             target={target}
             onClick={onClick}
             className={kuiLink ? 'kui--link-status' : ''}

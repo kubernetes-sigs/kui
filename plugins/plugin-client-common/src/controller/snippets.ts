@@ -49,7 +49,7 @@ function join(a: string, b: string) {
   }
 }
 
-function isAbsolute(uri: string): boolean {
+export function isAbsolute(uri: string): boolean {
   return isUrl(uri) || pathIsAbsolute(uri)
 }
 
@@ -57,8 +57,8 @@ function toString(data: string | object) {
   return (typeof data === 'string' ? data : JSON.stringify(data)).replace(/\n$/, '')
 }
 
-/** Rewrite any relative image links to use the given basePath */
-function rerouteImageLinks(basePath: string, data: string) {
+/** Rewrite any relative <img> and <a> links to use the given basePath */
+function rerouteLinks(basePath: string, data: string) {
   return data.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g, // e.g. [linky](https://linky.com)
     (_, p1, p2) => {
@@ -89,7 +89,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
 
           // Call ourselves recursively, in case a fetched snippet
           // fetches other files. We also may need to reroute relative
-          // image links according to the given `basePath`.
+          // <img> and <a> links according to the given `basePath`.
           const recurse = (basePath: string, data: string) => {
             // Note: intentionally using `snippetBasePath` for the
             // first argument, as this represents the "root" base
@@ -97,7 +97,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
             // may be recursing here) or from the command line or from
             // the topmatter of the original document. The second
             // represents the current base path in the recursion.
-            return inlineSnippets(snippetBasePath)(rerouteImageLinks(basePath, data), snippetFileName, args)
+            return inlineSnippets(snippetBasePath)(rerouteLinks(basePath, data), snippetFileName, args)
           }
 
           const candidates = match[5]
