@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.5](https://github.com/IBM/kui/compare/v11.1.4...v11.1.5) (2022-02-03)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** fontawesome; fix for multiple icons per paragraph ([78f1c37](https://github.com/IBM/kui/commit/78f1c37))
+- **plugins/plugin-client-common:** markdown "note" tips should be blue ([2680012](https://github.com/IBM/kui/commit/2680012))
+- **plugins/plugin-client-common:** markdown material-icons do not preserve trailing whitespace ([df60e84](https://github.com/IBM/kui/commit/df60e84))
+- **plugins/plugin-client-common:** markdown tables can have odd ellipsis ([1b22daa](https://github.com/IBM/kui/commit/1b22daa))
+- **plugins/plugin-client-common:** minor fix to avoid `float: undefined` ([20fc4ef](https://github.com/IBM/kui/commit/20fc4ef))
+- **plugins/plugin-client-common:** mis-parsing of wizard headers ([8126253](https://github.com/IBM/kui/commit/8126253))
+- **plugins/plugin-client-common:** reduce saturation of tip headers ([d74992e](https://github.com/IBM/kui/commit/d74992e))
+- **plugins/plugin-client-common:** replay against files with relative image links fail to load image ([73624c0](https://github.com/IBM/kui/commit/73624c0))
+- **plugins/plugin-client-common:** tip-after-tip in markdown fails to render second tip ([3b680d2](https://github.com/IBM/kui/commit/3b680d2))
+- **plugins/plugin-client-common:** use standard patternfly tables for markdown tables ([cb007ab](https://github.com/IBM/kui/commit/cb007ab))
+- **plugins/plugin-client-common:** when including snippets, ignore trailing newlines ([6384bc6](https://github.com/IBM/kui/commit/6384bc6))
+- **plugins/plugin-client-common:** wizard description overlay can be misplaced ([80a8e96](https://github.com/IBM/kui/commit/80a8e96))
+- **plugins/plugin-client-common:** wizards with left splits and headers not possible ([21ead92](https://github.com/IBM/kui/commit/21ead92))
+- **plugins/plugin-client-default:** don't show ? icon in default client ([f72f3c0](https://github.com/IBM/kui/commit/f72f3c0))
+- **plugins/plugin-kubectl:** Adding first draft of Knative Traffic Splitting guidebook ([8e5cc22](https://github.com/IBM/kui/commit/8e5cc22))
+- **plugins/plugin-kubectl:** Creating first Trigger guidebook ([90e9662](https://github.com/IBM/kui/commit/90e9662))
+- **plugins/plugin-kubectl:** Eventing Components guidebook ([20929b9](https://github.com/IBM/kui/commit/20929b9))
+- **plugins/plugin-kubectl:** First draft of Knative Eventing guidebook ([15382f0](https://github.com/IBM/kui/commit/15382f0))
+- **plugins/plugin-kubectl:** missing wizard title in knative guidebook ([93cc1ba](https://github.com/IBM/kui/commit/93cc1ba))
+
+### Features
+
+- initial support for material-... icons in markdown ([9017426](https://github.com/IBM/kui/commit/9017426))
+- inline markdown snippet inclusions at build time ([1dab6d0](https://github.com/IBM/kui/commit/1dab6d0))
+- **plugins/plugin-client-common:** add support for "inline/inline-end" tips ([e0fa1b8](https://github.com/IBM/kui/commit/e0fa1b8))
+
 ## [11.1.4](https://github.com/IBM/kui/compare/v11.1.3...v11.1.4) (2022-01-31)
 
 ### Bug Fixes

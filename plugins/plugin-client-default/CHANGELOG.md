@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.5](https://github.com/IBM/kui/compare/v11.1.4...v11.1.5) (2022-02-03)
+
+### Bug Fixes
+
+- **plugins/plugin-client-default:** don't show ? icon in default client ([f72f3c0](https://github.com/IBM/kui/commit/f72f3c0))
+- **plugins/plugin-kubectl:** Adding first draft of Knative Traffic Splitting guidebook ([8e5cc22](https://github.com/IBM/kui/commit/8e5cc22))
+- **plugins/plugin-kubectl:** Creating first Trigger guidebook ([90e9662](https://github.com/IBM/kui/commit/90e9662))
+- **plugins/plugin-kubectl:** Eventing Components guidebook ([20929b9](https://github.com/IBM/kui/commit/20929b9))
+- **plugins/plugin-kubectl:** First draft of Knative Eventing guidebook ([15382f0](https://github.com/IBM/kui/commit/15382f0))
+
 ## [11.1.4](https://github.com/IBM/kui/compare/v11.1.3...v11.1.4) (2022-01-31)
 
 ### Features
