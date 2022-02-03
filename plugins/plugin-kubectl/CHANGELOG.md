@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.7](https://github.com/IBM/kui/compare/v11.1.6...v11.1.7) (2022-02-03)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** broken link to knative.dev ([9d88f01](https://github.com/IBM/kui/commit/9d88f01))
+- **plugins/plugin-kubectl:** First Pass Clean Up Guidebook ([b88c4e4](https://github.com/IBM/kui/commit/b88c4e4))
+- **plugins/plugin-kubectl:** What's Next guidebook ([fc32819](https://github.com/IBM/kui/commit/fc32819))
+
 ## [11.1.6](https://github.com/IBM/kui/compare/v11.1.5...v11.1.6) (2022-02-03)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

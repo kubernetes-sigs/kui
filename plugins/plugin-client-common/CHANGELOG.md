@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.1.7](https://github.com/IBM/kui/compare/v11.1.6...v11.1.7) (2022-02-03)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** external links in markdown broken ([9d1df2f](https://github.com/IBM/kui/commit/9d1df2f))
+- **plugins/plugin-client-common:** markdown icons test has timing-related failures ([fd335c2](https://github.com/IBM/kui/commit/fd335c2))
+
 ## [11.1.6](https://github.com/IBM/kui/compare/v11.1.5...v11.1.6) (2022-02-03)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common
