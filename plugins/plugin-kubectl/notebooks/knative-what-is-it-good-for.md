@@ -2,7 +2,7 @@
 
 # Knative
 
-[Knative]((https://knative.dev)) is enterprise-grade Serverless on
+[Knative](https://knative.dev) is enterprise-grade Serverless on
 your own terms, a Kubernetes-based platform to deploy and manage
 modern serverless workloads.
 
