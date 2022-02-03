@@ -62,7 +62,7 @@
             }
           ]
         },
-        { "notebook": "What's Next?", "filepath": "/kui/kubernetes/knative-whats-next.md" }
+        { "notebook": "What's Next with Knative?", "filepath": "/kui/kubernetes/knative-whats-next.md" }
       ]
     }
   ]
