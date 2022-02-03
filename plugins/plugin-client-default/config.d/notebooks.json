@@ -61,7 +61,8 @@
               "filepath": "/kui/kubernetes/knative-clean-up.md"
             }
           ]
-        }
+        },
+        { "notebook": "What's Next?", "filepath": "/kui/kubernetes/knative-whats-next.md" }
       ]
     }
   ]
