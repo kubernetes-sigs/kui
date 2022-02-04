@@ -35,16 +35,24 @@ export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiF
     visit(tree, 'code', node => {
       if (isCode(node)) {
         const matched = codeblocks.find(_ => _.match.test(node.value))
+
         if (matched) {
           if (matched.language) {
             // smash in a code block language (this would be the ```${language} part of the text)
             node.lang = matched.language
           }
-          if (matched.validate) {
-            // smash in validation logic; this is done in the
-            // topmatter of the code block, and parsed out by rehype-code-indexer
+
+          if (matched.optional !== undefined || matched.validate) {
             const { body, attributes } = tryFrontmatter(node.value)
-            attributes.validate = matched.validate
+
+            attributes.optional = matched.optional
+
+            if (matched.validate) {
+              // smash in validation logic; this is done in the
+              // topmatter of the code block, and parsed out by rehype-code-indexer
+              attributes.validate = matched.validate
+            }
+
             node.value = `
 ---
 ${require('js-yaml').dump(attributes)}
