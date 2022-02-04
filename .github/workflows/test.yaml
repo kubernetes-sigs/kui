@@ -157,7 +157,7 @@ jobs:
         NEEDS_K8S: true
         NEEDS_OC: true
         NEEDS_TOP: true
-      run: ./tools/travis/install.sh && npx concurrently -n K8S3 'npm run test1 k8s3' && npx concurrently -n K8S4 'npm run test2 k8s4' && npx concurrently -n K8S2 'npm run test1 k8s2'
+      run: ./tools/travis/install.sh && npx concurrently -n K8S3 'npm run test1 k8s3' && npx concurrently -n K8S4 'npm run test1 k8s4' && npx concurrently -n K8S2 'npm run test1 k8s2'
 
   k8s-chaos:
     runs-on: ubuntu-latest
@@ -211,7 +211,7 @@ jobs:
         NEEDS_HELM: true
         TEST_FROM_BUILD: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
         KUI_DIST_PATH: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
-      run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1 'npm run test1 k8s1' && npx concurrently -n LOGS 'npm run test2 logs' && npx concurrently -n HELM 'npm run test3 helm' 
+      run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1 'npm run test1 k8s1' && npx concurrently -n LOGS 'npm run test1 logs' && npx concurrently -n HELM 'npm run test1 helm'
 
   osx:
     runs-on: macos-10.15
