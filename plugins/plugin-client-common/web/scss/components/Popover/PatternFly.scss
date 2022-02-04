@@ -24,10 +24,9 @@
 
   &.kui--popover-select {
     .pf-c-popover__content {
-      width: $popover-width;
+      max-width: $popover-width;
       .pf-c-select__menu {
-        top: 4px;
-        position: relative;
+        position: static;
       }
     }
   }

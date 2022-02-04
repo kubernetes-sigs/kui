@@ -206,15 +206,6 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     )
   }
 
-  private switchNamespaceDescription() {
-    const key =
-      this.state.allNamespaces.length === 0
-        ? 'Please wait, while we find your namespaces'
-        : 'To change, select from the following list of all known namespaces.'
-
-    return <span className="sub-text bottom-pad">{strings(key)}</span>
-  }
-
   /** @return the options model for the given namespace named `ns` */
   private optionFor(ns: string) {
     const isSelected = ns === this.state.currentNamespace
@@ -254,7 +245,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
         <Select
           key={this.state.currentNamespace /* pf 4.152.4 regression? "This is the current" does not show on change */}
           variant="typeahead"
-          maxHeight="11rem"
+          maxHeight="15rem"
           selected={this.state.currentNamespace}
           options={options}
           groups={groups}
@@ -266,12 +257,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   }
 
   private popoverBody() {
-    return (
-      <div className="top-pad bottom-pad">
-        {this.switchNamespaceDescription()}
-        {this.switchNamespace()}
-      </div>
-    )
+    return <div className="top-pad bottom-pad">{this.switchNamespace()}</div>
   }
 
   private popover() {

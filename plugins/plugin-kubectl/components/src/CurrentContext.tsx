@@ -244,7 +244,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
         <Select
           isOpen
           isClosable={false}
-          maxHeight="11rem"
+          maxHeight="15rem"
           variant="typeahead"
           options={this.state.options}
           selected={this.state.currentContext}
@@ -254,23 +254,9 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     )
   }
 
-  private switchContextDescription() {
-    const key =
-      this.state.allContexts.length === 0
-        ? 'Please wait, while we find your contexts'
-        : 'To change, select from the following list of all known contexts.'
-
-    return <span className="sub-text">{strings(key)}</span>
-  }
-
   /** @return the body for the Popover component */
   private popoverBody() {
-    return (
-      <div className="top-pad bottom-pad">
-        {this.switchContextDescription()}
-        {this.switchContext()}
-      </div>
-    )
+    return <div className="top-pad bottom-pad">{this.switchContext()}</div>
   }
 
   /** @return desired Popover model */
