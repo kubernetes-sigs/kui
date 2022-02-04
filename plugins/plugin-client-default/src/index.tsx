@@ -20,6 +20,8 @@ import { Capabilities } from '@kui-shell/core'
 import {
   Kui,
   KuiProps,
+  Settings,
+  GitHubIcon,
   ContextWidgets,
   MeterWidgets,
   CurrentWorkingDirectory,
@@ -80,6 +82,7 @@ export default function renderMain(props: KuiProps) {
   return (
     <Kui
       noHelp
+      noSettings
       version={version}
       productName={productName}
       lightweightTables
@@ -123,6 +126,8 @@ export default function renderMain(props: KuiProps) {
         {/* !isPopup && <OpenWhiskGridWidget /> */}
         {Capabilities.inBrowser() && <ProxyOfflineIndicator />}
         {!isPopup && !Capabilities.inBrowser() && <UpdateChecker />}
+        <Settings />
+        <GitHubIcon />
       </MeterWidgets>
     </Kui>
   )
