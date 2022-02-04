@@ -4,15 +4,18 @@ layout:
     1: left
     default: wizard
 wizard:
-    description: Kubernetes-based platform to deploy and manage modern serverless workloads
     steps:
+        - match: Install Knative using quickstart
+          name: Introduction
         - Before you begin
         - name: Prepare local Kubernetes cluster
           description: Using kind or minikube can help you isolate your Knative learning experiments.
-        - Install the Kubernetes CLI
         - Install the Knative CLI
-        - name: Install the Knative "Quickstart" environment
-          description: The kn quickstart plugin can quickly set up Knative against kind of minikube
+        - name: Install the Knative quickstart plugin
+          description: This gives you a kn quickstart command
+        - name: Run the Knative quickstart plugin
+          description: This will quickly set up Knative against kind or minikube
+        - Next steps
 codeblocks:
     - language: bash
       match: ^brew install kn$
@@ -23,6 +26,12 @@ codeblocks:
 
 ---
 
---8<-- "https://raw.githubusercontent.com/knative/docs/main/docs/getting-started/README.md"
+# Getting started with Knative
+
+This guidebook helps you install Knative on a `kind` or `minikube` cluster.
+
+---
+
+--8<-- "https://raw.githubusercontent.com/knative/docs/main/docs/getting-started/quickstart-install.md"
 
 <!-- This is a demonstration of including unmodified markdown content, and overlaying a wizard -->
