@@ -31,10 +31,10 @@
     "kui": "bin/kui"
   },
   "dependencies": {
-    "@electron/remote": "2.0.1",
+    "@electron/remote": "2.0.4",
     "ansi-to-html": "0.7.2",
     "colors": "1.4.0",
-    "columnify": "1.5.4",
+    "columnify": "1.6.0",
     "debug": "4.3.3",
     "fs-extra": "10.0.0",
     "mkdirp": "1.0.4",
@@ -43,7 +43,7 @@
     "properties-parser": "0.3.1",
     "readline": "1.3.0",
     "tmp": "0.2.1",
-    "trie-search": "1.3.5",
+    "trie-search": "1.3.6",
     "uuid": "8.3.2",
     "word-wrap": "1.2.3",
     "yargs-parser": "21.0.0"

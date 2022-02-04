@@ -18,12 +18,12 @@ import React from 'react'
 import {
   Nav,
   NavList,
+  Button,
   Masthead,
   MastheadMain,
   MastheadBrand,
   MastheadContent,
-  MastheadToggle,
-  PageToggleButton
+  MastheadToggle
 } from '@patternfly/react-core'
 import { Capabilities, KeyCodes, isReadOnlyClient } from '@kui-shell/core'
 
@@ -124,6 +124,9 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     }
   }
 
+  private readonly closeTab = (idx: number) => this.props.onCloseTab(idx)
+  private readonly switchTab = (idx: number) => this.props.onSwitchTab(idx)
+
   /** Render tabs */
   private tabs() {
     return (
@@ -140,8 +143,8 @@ export default class TopTabStripe extends React.PureComponent<Props> {
                   title={tab.title}
                   closeable={this.props.closeableTabs}
                   active={idx === this.props.activeIdx}
-                  onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
-                  onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
+                  onCloseTab={this.closeTab}
+                  onSwitchTab={this.switchTab}
                 />
               ))}
             </NavList>
@@ -173,23 +176,33 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     return (
       this.props.needsSidebar && (
         <MastheadToggle className="kui--top-tab-stripe-header--toggle">
-          <PageToggleButton
-            className="kui--top-tab-stripe-header--toggle-button"
+          <Button
             variant="plain"
             aria-label="Global navigation"
-            isNavOpen={this.props.isSidebarOpen}
-            onNavToggle={this.props.onToggleSidebar}
+            className="kui--top-tab-stripe-header--toggle-button"
+            onClick={this.props.onToggleSidebar}
           >
             <Icons icon="Hamburger" className="kui--top-tab-stripe-header--toggle-button-icon" />
-          </PageToggleButton>
+          </Button>
         </MastheadToggle>
       )
     )
   }
 
+  /** <Masthead/> property */
+  private readonly inset = { default: 'insetLg' as const }
+
+  /** <Masthead/> property */
+  private readonly display = { default: 'inline' as const }
+
   private header() {
+    // Note: with @patternfly/react-core version 4.192.15, we have to
+    // explicitly choose display and inset properties. Otherwise, the
+    // Masthead component seems to determine these asynchronous, after
+    // the initial render! Ugh, this results in an odd shifting
+    // pattern after a few hundred milliseconds.
     return (
-      <Masthead className="kui--top-tab-stripe-header">
+      <Masthead className="kui--top-tab-stripe-header" display={this.display} inset={this.inset}>
         {this.sidebarToggle()}
         <MastheadMain className="kui--top-tab-stripe-header--main">
           <MastheadBrand component="span" className="kui--top-tab-stripe-header--brand" tabIndex={-1}>
