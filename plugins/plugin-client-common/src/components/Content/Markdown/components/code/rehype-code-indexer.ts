@@ -30,6 +30,14 @@ function isElementWithProperties(_: Parent): _ is Element {
 }
 
 /**
+ * Heuristic: Code Blocks inside of closed "tips" (i.e. default-closed
+ * expandable sections) are optional in terms of ultimate success of
+ * the enclosing guidebook */
+function isImplicitlyOptional(_: Parent): _ is Element {
+  return isElementWithProperties(_) && _.tagName === 'tip' && _.properties.open === false
+}
+
+/**
  * This rehype plugin adds a unique codeIdx ordinal property to each
  * executable code block.
  */
@@ -51,19 +59,42 @@ export default function plugin(uuid: string) {
             const code = String(node.children[0].value).trim()
             const { body, attributes } = tryFrontmatter(code)
 
-            if (typeof attributes === 'object' && !attributes.id) {
-              // assign a codeBlockId if the author did not specify one
-              attributes.id = `${uuid}-${myCodeIdx}`
-            }
-
-            const codeBlockProps = Buffer.from(JSON.stringify(Object.assign({ body, language }, attributes))).toString(
-              'base64'
-            )
-            ancestors.forEach(_ => {
-              if (isElementWithProperties(_) && Array.isArray(_.properties.containedCodeBlocks)) {
-                _.properties.containedCodeBlocks.push(codeBlockProps)
+            if (typeof attributes === 'object') {
+              if (!attributes.id) {
+                // assign a codeBlockId if the author did not specify one
+                attributes.id = `${uuid}-${myCodeIdx}`
               }
-            })
+
+              if (attributes.optional !== true) {
+                const codeBlockProps = Buffer.from(
+                  JSON.stringify(Object.assign({ body, language }, attributes))
+                ).toString('base64')
+
+                // go from parent on top, which is in reverse order
+                for (let idx = ancestors.length - 1; idx >= 0; idx--) {
+                  const _ = ancestors[idx]
+
+                  if (!attributes.validcate && isImplicitlyOptional(_)) {
+                    // don't propagate code blocks out of implicitly
+                    // optional elements, unless the code block has an
+                    // associated validator. The idea is that if the
+                    // author went through the trouble of writing a
+                    // validator for a code block, it probably isn't
+                    // optional. If the absence of a validator, then
+                    // we should stop propagating the code block
+                    // upwards if we reach some element that seems
+                    // indicative of blocking out an optional area,
+                    // e.g. an expandable section that is
+                    // default-closed
+                    break
+                  }
+
+                  if (isElementWithProperties(_) && Array.isArray(_.properties.containedCodeBlocks)) {
+                    _.properties.containedCodeBlocks.push(codeBlockProps)
+                  }
+                }
+              }
+            }
           }
         }
       }

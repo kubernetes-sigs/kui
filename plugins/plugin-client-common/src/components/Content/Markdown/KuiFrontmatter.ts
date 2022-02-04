@@ -31,9 +31,29 @@ export interface WizardSteps {
 
 interface CodeBlocks {
   codeblocks: {
+    /** A string that will be interpreted as regular expression. Any
+    markdown code blocks whose body matches this pattern will be seen
+    as instances of the rules below (e.g. `language`, `validate`,
+    etc.) */
     match: string
+
+    /** Override any `language` property of the matched code block */
     language?: string
+
+    /**
+     * If given, this command line will be executed. If it exits with
+     * exit code 0, then the code block will be seen as "already
+     * executed", and thus represent a valid state. Non-zero exit
+     * codes will not be seen as errors, but rather as representative
+     * of a default state.
+     */
     validate?: string
+
+    /**
+     * Is successful execution of this code block seen as necessary
+     * for overall successful completion of the enclosing
+     * guidebook? */
+    optional?: boolean
   }[]
 }
 

@@ -17,9 +17,12 @@ wizard:
           description: This will quickly set up Knative against kind or minikube
         - Next steps
 codeblocks:
-    - language: bash
-      match: ^brew install kn$
+    - match: ^brew install kn$
       validate: brew info kn
+    - match: ^brew install knative-sandbox/kn-plugins/quickstart$
+      validate: kn quickstart --help
+    - match: kn quickstart --help
+      optional: true
 ---
 
 --8<-- "knative-what-is-it-good-for.md"
