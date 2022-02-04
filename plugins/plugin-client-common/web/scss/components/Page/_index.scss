@@ -22,29 +22,11 @@
     @content;
   }
 }
-@mixin KuiSidebarMaximized {
-  .kui--sidebar-maximized {
-    @content;
-  }
-}
 
 @include KuiTabContainer {
   /* PatternFly has height: 100% */
   flex: 1;
   height: auto;
-}
-
-/** Managed width of the non-sidebar page content */
-@include KuiTabContainerMainContent {
-  flex: 1;
-}
-@include KuiSidebarMaximized {
-  flex: 1;
-  @include KuiTabContainerMainContent {
-    + & {
-      flex: 0;
-    }
-  }
 }
 
 body[kui-theme-style='light'] {

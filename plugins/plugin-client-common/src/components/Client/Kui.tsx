@@ -114,7 +114,7 @@ export class Kui extends React.PureComponent<Props, State> {
       )
       this.setState(curState => {
         const stateWithThemeProps = Object.assign({}, theme, curState)
-        debug('state with theme props', stateWithThemeProps)
+        debug('state with theme props', theme, curState)
         return stateWithThemeProps
       })
     })
