@@ -208,37 +208,6 @@ export function hackIndentation(source: string): string {
       const currentEndMarker = endMarkers.length === 0 ? undefined : endMarkers[endMarkers.length - 1]
       const endMarker = tabStartMatch ? END_OF_TAB : END_OF_TIP
 
-      if (line === '=== "Using a binary"')
-        console.error(
-          '!!!!!!!!!!!!!!AA',
-          indentDepth,
-          thisIndentDepth,
-          currentEndMarker,
-          endMarker,
-          line,
-          endMarkers.slice()
-        )
-      if (line === '    ??? bug "Having issues upgrading `kn` using Homebrew?"')
-        console.error(
-          '!!!!!!!!!!!!!!BB',
-          indentDepth,
-          thisIndentDepth,
-          currentEndMarker,
-          endMarker,
-          line,
-          endMarkers.slice()
-        )
-      if (line === '    !!! note')
-        console.error(
-          '!!!!!!!!!!!!!!CC',
-          indentDepth,
-          thisIndentDepth,
-          currentEndMarker,
-          endMarker,
-          line,
-          endMarkers.slice()
-        )
-
       const possibleEndTab =
         (indentDepth === thisIndentDepth && currentEndMarker === END_OF_TIP) || endMarker === END_OF_TIP
           ? pop(line, 0)
