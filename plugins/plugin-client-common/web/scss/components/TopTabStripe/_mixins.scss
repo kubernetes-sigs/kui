@@ -30,6 +30,12 @@ $height: 3em;
   }
 }
 
+@mixin TopTabStripeTabOverflowButton {
+  .pf-c-nav__scroll-button {
+    @content;
+  }
+}
+
 @mixin TopTabStripe_Main {
   .kui--top-tab-stripe-header--main {
     @content;
