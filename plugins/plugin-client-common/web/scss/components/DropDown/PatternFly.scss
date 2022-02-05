@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+@import 'mixins';
 @import '../StatusStripe/mixins';
 @import '../Terminal/mixins';
+
+@include StatusStripeWhenDisplayingGuidebook {
+  @include StatusStripeElement {
+    @include DropdownToggleIcon {
+      color: var(--color-base04);
+    }
+  }
+}
 
 body[kui-theme-style] {
   @include BlockOutput {
@@ -36,9 +45,10 @@ body[kui-theme-style] {
         }
       }
     }
-    .pf-c-dropdown__toggle-icon {
+    @include DropdownToggleIcon {
       margin-left: 0.5rem;
       margin-right: 0;
+      color: var(--color-text-02);
     }
   }
 

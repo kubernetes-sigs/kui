@@ -1108,6 +1108,11 @@ body {
   --color-ui-05: var(--color-base04);
   --color-ui-06: var(--color-base02);
 
+  --color-sidecar-header: var(--color-base03);
+  --color-sidecar-background: var(--color-base01);
+  --color-sidecar-background-01: var(--color-base01);
+  --color-sidecar-background-02: var(--color-base03);
+
   /** Themes really should define these. But we can provide a rough approximation. */
   --color-light-red: rgba(var(--color-red-rgb), 0.9);
   --color-light-green: rgba(var(--color-red-green), 0.9);

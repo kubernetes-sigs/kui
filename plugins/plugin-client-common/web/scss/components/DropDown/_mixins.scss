@@ -26,6 +26,12 @@
   }
 }
 
+@mixin DropdownToggleIcon {
+  .pf-c-dropdown__toggle-icon {
+    @content;
+  }
+}
+
 @mixin DropdownList {
   @include Dropdown {
     ul {

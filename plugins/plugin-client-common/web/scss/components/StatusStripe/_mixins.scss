@@ -46,6 +46,14 @@ $status-stripe-hover-bg-color: var(--color-table-border3);
   }
 }
 
+@mixin StatusStripeWhenDisplayingGuidebook {
+  @include StatusStripe {
+    &[data-type='blue'] {
+      @content;
+    }
+  }
+}
+
 @mixin StatusStripeElementHiddenInGuidebook {
   @include StatusStripeElement {
     &.kui--hide-in-guidebook {
