@@ -56,6 +56,39 @@ const notarize = require('./notarize')
 const nodePty = 'node-pty'
 
 /**
+ * Ignore these files when bundling the ASAR (this is a regexp, not
+ * glob pattern) see the electron-packager docs for --ignore
+ */
+const ignore = [
+  /~$/,
+  /\.ts$/,
+  /\.vscode/,
+  /\.github/,
+  /\.git/,
+  /lerna\.json/,
+  /@types/,
+  /tsconfig\.json/,
+  /webpack\.config\.json/,
+  /\.cache/,
+  /\.map$/,
+  /bak\.json/,
+  /packages/,
+  /plugins/,
+  /\.scss$/,
+  /\.woff$/,
+  /tmp\//,
+  /CHANGELOG\.md/,
+  /tsconfig\..*/,
+  /package-lock\.json/,
+  /\/docs/,
+  /\/node_modules\/(?!(@electron|@electron\/remote|node-pty\/build|@kui-shell\/build))/,
+  /\/tools/,
+  /\/bin/,
+  /\/design/,
+  /\/dist\/webpack/
+]
+
+/**
  * afterCopy hook to build webpack bundles.
  *
  * @param this baseArgs from package() below
@@ -197,7 +230,7 @@ function package(baseArgs /*: { dir: string, name: string, platform: string, arc
 
     // a regexp that will let us exclude specified files from the
     // final tarball
-    ignore: process.env.IGNORE,
+    ignore,
 
     // default settings
     overwrite: true,

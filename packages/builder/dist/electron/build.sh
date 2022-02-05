@@ -37,12 +37,6 @@ export HEADLESS_BUILDDIR="$CLIENT_HOME"/dist/headless
 export KUI_HEADLESS_WEBPACK
 
 #
-# ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
-# see the electron-packager docs for --ignore
-#
-export IGNORE='(~$)|(\.ts$)|(\.vscode)|(\.github)|(\.git)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(bak\.json)|(packages)|(plugins)|(\.scss$)|(\.woff$)|(tmp/)|(CHANGELOG.md)|(tsconfig.*)|(package-lock.json)|(/docs)|(/node_modules/(?!(node-pty/build|@kui-shell/build)))|(/tools)|(/bin)|(/design)|(/dist/webpack)'
-
-#
 # client version; note rcedit.exe fails if the VERSION is "dev"
 #
 export VERSION=$(node -e 'console.log(require((process.env.CLIENT_HOME || ".") + "/node_modules/@kui-shell/client/package.json").version)')

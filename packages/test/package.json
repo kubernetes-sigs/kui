@@ -16,6 +16,9 @@
     "kui-test": "./bin/runMochaLayers.sh",
     "kui-testv2": "./bin/runMochaLayersv2.sh"
   },
+  "dependencies": {
+    "@wdio/mocha-framework": "7.16.14"
+  },
   "kui": {
     "electron": false,
     "proxy": false,

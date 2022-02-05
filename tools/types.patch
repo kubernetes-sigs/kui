@@ -1,0 +1,11 @@
+--- types.d.ts	2022-02-06 14:57:43.000000000 -0500
++++ /tmp/types.d.ts	2022-02-06 14:51:55.000000000 -0500
+@@ -15,7 +15,7 @@
+ declare type ElementQueryCommands = '$' | 'custom$' | 'shadow$' | 'react$';
+ declare type ElementsQueryCommands = '$$' | 'custom$$' | 'shadow$$' | 'react$$';
+ declare type ChainablePrototype = {
+-    [K in ElementQueryCommands]: (...args: Parameters<$ElementCommands[K]>) => ChainablePromiseElement<ReturnType<$ElementCommands[K]>>;
++    [K in ElementQueryCommands]: (...args: Parameters<$ElementCommands[K]>) => ChainablePromiseElement<ThenArg<ReturnType<$ElementCommands[K]>>>;
+ } & {
+     [K in ElementsQueryCommands]: (...args: Parameters<$ElementCommands[K]>) => ChainablePromiseArray<ThenArg<ReturnType<$ElementCommands[K]>>>;
+ };

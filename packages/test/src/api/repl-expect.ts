@@ -110,7 +110,7 @@ async function expectOK<T extends number | string | boolean | ElementArray | App
             opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1, splitIndex) : Selectors.OUTPUT_N(N - 1, splitIndex)
           }${opt.selfSelector || ''} ${opt.selector || ''}`
           if (opt.elements) {
-            return app.client.$$(selector) as Promise<T>
+            return (app.client.$$(selector) as any) as Promise<T>
           } else {
             let idx = 0
             return app.client

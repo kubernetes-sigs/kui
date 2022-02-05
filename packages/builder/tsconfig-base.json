@@ -8,12 +8,13 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "target": "ES2016",
+    "target": "ES6",
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
+    "types": ["node", "webdriverio/async"],
     "lib": ["dom", "esnext", "es6", "dom.iterable", "scripthost"]
   }
 }
