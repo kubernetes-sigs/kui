@@ -54,18 +54,23 @@ body[kui-theme-style='light'] {
 
   @include SidebarNavMenuButton {
     color: var(--kui--sidebar-color-01);
+    &:hover {
+      color: var(--kui--sidebar-color-01);
+    }
   }
 
   @include SidebarNavMenu {
     @include SidebarNavItem {
       color: var(--kui--sidebar-color-02);
     }
+    @includesidebarnavitemhover;
   }
   @include SidebarNavItem {
     color: var(--kui--sidebar-color-01);
 
     a:hover {
       cursor: pointer;
+      color: var(--kui--sidebar-color-01);
     }
   }
   @include SidebarToggleButton {

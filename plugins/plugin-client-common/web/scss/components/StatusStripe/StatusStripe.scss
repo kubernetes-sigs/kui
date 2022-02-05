@@ -26,22 +26,23 @@ $element-padding: 1rem;
 /* see https://github.com/IBM/kui/issues/6880 */
 $z-index: var(--pf-global--ZIndex--xs);
 
+@include StatusStripeWhenDisplayingGuidebook {
+  color: $fg-type-blue;
+  background-color: $bg-type-blue;
+  @include StatusStripeElement {
+    color: $fg-type-blue;
+  }
+  @include StatusStripeElementHiddenInGuidebook {
+    display: none;
+  }
+}
+
 @include StatusStripe {
   display: flex;
   flex-basis: 2.25rem;
   background-color: $bg-type-default;
   color: $fg-type-default;
 
-  &[data-type='blue'] {
-    color: $fg-type-blue;
-    background-color: $bg-type-blue;
-    @include StatusStripeElement {
-      color: $fg-type-blue;
-    }
-    @include StatusStripeElementHiddenInGuidebook {
-      display: none;
-    }
-  }
   &[data-type='yellow'] {
     background-color: $bg-type-yellow;
   }
@@ -170,9 +171,12 @@ $z-index: var(--pf-global--ZIndex--xs);
       padding-left: 0;
     }
 
+    .kui--status-stripe-element + .kui--status-stripe-element {
+      border-left: none;
+    }
     .kui--status-stripe-element {
       border-left: $element-border;
-      &:not(:only-child) {
+      &:not(:only-child):not(:last-child) {
         border-right: $element-border;
       }
 

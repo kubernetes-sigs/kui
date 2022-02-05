@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-body {
-  --color-sidecar-header: var(--color-base03);
-  --color-sidecar-background: var(--color-base01);
-  --color-sidecar-background-01: var(--color-base01);
-  --color-sidecar-background-02: var(--color-base03);
-}
-
 /* see https://github.com/IBM/kui/issues/4667 */
 .kui--sidecar ::-webkit-scrollbar {
   background-color: transparent;
