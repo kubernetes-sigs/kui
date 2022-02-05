@@ -228,6 +228,13 @@ $tab-label-font-size: 0.875rem;
     padding-left: 0;
     background-color: transparent;
   }
+
+  @include TopTabStripeTabOverflowButton {
+    color: var(--color-text-01);
+    &[disabled] {
+      color: var(--color-text-02);
+    }
+  }
 }
 
 @media (max-width: 42rem) {
