@@ -17,7 +17,7 @@
 import { join, relative } from 'path'
 import * as colors from 'colors'
 import { Func, Suite, HookFunction, after as mochaAfter } from 'mocha'
-import { Application } from 'spectron'
+import { Application, ApplicationSettings } from 'spectron'
 
 import { version } from '@kui-shell/client/package.json'
 
@@ -120,6 +120,9 @@ mochaAfter(async () => {
   }
 })
 
+/** this is the "implicit wait" timeout for webdriverio */
+const waitTimeout = parseInt(process.env.TIMEOUT) || 60000
+
 /**
  * Get the electron parts set up, and return an Application
  * instance. Note that this won't actually start the electron process,
@@ -127,30 +130,24 @@ mochaAfter(async () => {
  * value of this function.
  *
  */
-
-interface SpectronOptions {
-  env: Record<string, string>
-  chromeDriverArgs: string[]
-  startTimeout: number
-  waitTimeout: number
-  port?: number
-  path?: typeof Electron | string
-  args?: string[]
-  chromeDriverLogPath?: string
-  webdriverLogPath?: string
-}
-
-const waitTimeout = parseInt(process.env.TIMEOUT) || 60000
-
 const prepareElectron = (popup: string[]) => {
   const Application = require('spectron').Application
   const electron = require('electron')
 
-  const opts: SpectronOptions = {
+  // ugh, Spectron has `env` as having type `object`, which typescript doesn't really like
+  const opts: Omit<ApplicationSettings, 'env'> & { env: Record<string, string> } = {
+    path: '',
     env: {},
     chromeDriverArgs: ['--no-sandbox'],
     chromeDriverLogPath: '/tmp/cd.log',
     webdriverLogPath: '/tmp',
+    webdriverOptions: {
+      prefs: {
+        // necessary to avoid "Failed to read the 'localStorage'
+        // property from 'Window': Access is denied for this document."
+        'profile.cookie_controls_mode': 0
+      }
+    },
     startTimeout: parseInt(process.env.TIMEOUT) || 60000, // see https://github.com/IBM/kui/issues/2227
     waitTimeout
   }
@@ -177,33 +174,33 @@ const prepareElectron = (popup: string[]) => {
 
   if (process.env.MOCHA_RUN_TARGET === 'webpack') {
     console.log(`Testing Webpack against chromium`)
-    opts['path'] = electron.toString() // this means spectron will use electron located in node_modules
-    opts['args'] = [join(process.env.TEST_SUITE_ROOT, 'core/tests/lib/main.js')]
+    opts.path = electron.toString() // this means spectron will use electron located in node_modules
+    opts.args = [join(process.env.TEST_SUITE_ROOT, 'core/tests/lib/main.js')]
   } else if (process.env.TEST_FROM_BUILD) {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
-    opts['path'] = process.env.TEST_FROM_BUILD
+    opts.path = process.env.TEST_FROM_BUILD
   } else {
     const appMain = process.env.APP_MAIN || join(process.env.TEST_SUITE_ROOT, '../..')
     console.log('Using filesystem-based assets', appMain)
-    opts['path'] = electron.toString() // this means spectron will use electron located in node_modules
-    opts['args'] = [appMain] // in this mode, we need to specify the main.js to use
+    opts.path = electron.toString() // this means spectron will use electron located in node_modules
+    opts.args = [appMain] // in this mode, we need to specify the main.js to use
   }
 
   if (process.env.CHROMEDRIVER_PORT) {
-    opts['port'] = parseInt(process.env.CHROMEDRIVER_PORT)
+    opts.port = parseInt(process.env.CHROMEDRIVER_PORT)
   }
   if (process.env.WSKNG_NODE_DEBUG) {
     // pass WSKNG_DEBUG on to NODE_DEBUG for the application
-    opts.env['NODE_DEBUG'] = process.env.WSKNG_NODE_DEBUG
+    opts.env.NODE_DEBUG = process.env.WSKNG_NODE_DEBUG
   }
   if (process.env.DEBUG) {
-    opts.env['DEBUG'] = process.env.DEBUG
+    opts.env.DEBUG = process.env.DEBUG
   }
 
   if (popup) {
     // used in spawn-electron.ts
-    opts.env['KUI_POPUP'] = JSON.stringify(popup)
-    opts.env['KUI_POPUP_WINDOW_RESIZE'] = 'true'
+    opts.env.KUI_POPUP = JSON.stringify(popup)
+    opts.env.KUI_POPUP_WINDOW_RESIZE = 'true'
   }
 
   return new Application(opts)

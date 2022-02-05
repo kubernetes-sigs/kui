@@ -342,7 +342,7 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       )
       // checking that there's no text in the input field after it's been closed
       const textInSearchBar = await this.app.client.$('#search-bar input').then(_ => _.getValue())
-      return textInSearchBar === '' && displayResults
+      return textInSearchBar === '' && !!displayResults
     })
   })
 })
