@@ -15,12 +15,23 @@
  */
 
 import React from 'react'
-import { homepage } from '@kui-shell/client/package.json'
 
 import Icons from '../../spi/Icons'
 
+function getClientHomePage() {
+  try {
+    return require('@kui-shell/client/package.json').homepage
+  } catch (err) {
+    return undefined
+  }
+}
+
 export default function GitHubIcon() {
-  return (
+  const homepage = getClientHomePage()
+
+  return !homepage ? (
+    <React.Fragment />
+  ) : (
     <a
       target="_blank"
       rel="noopener noreferrer"
