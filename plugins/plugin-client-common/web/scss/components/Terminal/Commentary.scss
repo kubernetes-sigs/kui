@@ -373,10 +373,11 @@ body[kui-theme-style='dark'] {
   }
 }
 
-$tip-toggle-opacity: 0.125;
+$tip-toggle-opacity: 0.175;
 $tip-toggle-opacity-2: 0.6;
 
 @mixin GreenTip {
+  $tip-toggle-opacity: 0.125;
   $bgcolor: var(--color-base0B-rgb);
   --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
   @include ExpandableSectionToggle {
