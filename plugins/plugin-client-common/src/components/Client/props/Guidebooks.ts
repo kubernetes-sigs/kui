@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-type Guidebook = { notebook: string; filepath: string }
+export type Guidebook = { notebook: string; filepath: string }
 type Menu = { label: string; submenu: MenuItem[]; expanded?: boolean }
 export type MenuItem = Guidebook | Menu | object
 
