@@ -24,12 +24,12 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@electron/remote": "2.0.1",
+    "@electron/remote": "2.0.4",
     "@supercharge/promise-pool": "2.1.0",
     "colors": "1.4.0",
     "debug": "4.3.3",
     "enquirer": "2.3.6",
-    "listr2": "4.0.1",
+    "listr2": "4.0.2",
     "micromatch": "4.0.4",
     "rxjs": "^7.5.2",
     "tmp": "0.2.1"
