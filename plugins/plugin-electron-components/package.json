@@ -21,7 +21,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@electron/remote": "2.0.1"
+    "@electron/remote": "2.0.4"
   },
   "publishConfig": {
     "access": "public"
