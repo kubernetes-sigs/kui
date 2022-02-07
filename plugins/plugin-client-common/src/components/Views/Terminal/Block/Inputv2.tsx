@@ -193,7 +193,8 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         ? [0, 0, 1]
         : execution === 'error'
         ? [0, 1, 0]
-        : [1, 0, 0]
+        : [1, 0, 0],
+      this.props.blockId
     )
   }
 
