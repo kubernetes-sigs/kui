@@ -86,3 +86,9 @@
     @content;
   }
 }
+
+@mixin WizardProgress {
+  .kui--wizard-progress {
+    @content;
+  }
+}

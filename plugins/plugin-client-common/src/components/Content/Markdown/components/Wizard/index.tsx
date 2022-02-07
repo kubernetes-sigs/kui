@@ -18,19 +18,15 @@ import React from 'react'
 
 import { WizardProps } from './rehype-wizard'
 
+import Progress from './Progress'
+import CodeBlockProps from './CodeBlockProps'
+
 import Card from '../../../../spi/Card'
 import { MiniProgressStepper, MiniProgressStep } from '../../../MiniProgressStepper'
 
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
-
-interface CodeBlockProps {
-  id: string
-  body: string
-  language: string
-  validate?: string
-}
 
 export default class Wizard extends React.PureComponent<WizardProps> {
   private wizardCodeBlockSteps(containedCodeBlocks: CodeBlockProps[]) {
@@ -73,8 +69,17 @@ export default class Wizard extends React.PureComponent<WizardProps> {
     return undefined
   }
 
-  public render() {
-    const steps = (this.props.children || []).slice(1).map(_ => ({
+  private progress() {
+    const codeBlocks = this.children.flatMap(_ => this.containedCodeBlocks(_))
+    return <Progress codeBlocks={codeBlocks} />
+  }
+
+  private get children() {
+    return (this.props.children || []).slice(1)
+  }
+
+  private wizard() {
+    const steps = this.children.map(_ => ({
       name: _.props['data-kui-title'],
       stepNavItemProps: {
         children: this.wizardStepDescription(_.props['data-kui-description'], this.containedCodeBlocks(_))
@@ -93,6 +98,15 @@ export default class Wizard extends React.PureComponent<WizardProps> {
         title={this.props['data-kui-title'].trim()}
         description={this.props.children[0]}
       />
+    )
+  }
+
+  public render() {
+    return (
+      <React.Fragment>
+        {this.progress()}
+        {this.wizard()}
+      </React.Fragment>
     )
   }
 }

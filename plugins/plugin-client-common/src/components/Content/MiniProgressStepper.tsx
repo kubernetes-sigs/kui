@@ -18,7 +18,7 @@ import React from 'react'
 import { i18n, pexecInCurrentTab } from '@kui-shell/core'
 
 import Tooltip from '../spi/Tooltip'
-import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
+import { emitLinkUpdate, subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
 import { ProgressStepState, statusFromStatusVector, statusToClassName, statusToIcon } from './ProgressStepper'
 
 import '../../../web/scss/components/Wizard/MiniProgressStepper.scss'
@@ -53,11 +53,11 @@ export class MiniProgressStep extends React.PureComponent<MiniProps, ProgressSte
     if (this.props.validate) {
       setTimeout(async () => {
         try {
-          this.setState({ status: 'in-progress' })
+          emitLinkUpdate(this.props.codeBlockId, 'in-progress')
           await pexecInCurrentTab(this.props.validate, undefined, true, true)
-          this.setState({ status: 'success' })
+          emitLinkUpdate(this.props.codeBlockId, 'success')
         } catch (err) {
-          this.setState({ status: 'blank' })
+          emitLinkUpdate(this.props.codeBlockId, 'blank')
         }
       })
     }

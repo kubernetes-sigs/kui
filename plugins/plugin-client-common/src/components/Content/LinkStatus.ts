@@ -16,23 +16,39 @@
 
 import { Events } from '@kui-shell/core'
 
+function strip(link: string) {
+  return link.replace(/^kui-link-/, '')
+}
+
 export function linkUpdateChannel(id: string) {
-  return `/link/status/update/${id}`
+  return `/link/status/update/${strip(id)}`
 }
 
 export function linkGetChannel(id: string) {
-  return `/link/status/get/${id}`
+  return `/link/status/get/${strip(id)}`
 }
 
-export function subscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
-  const id = link.replace(/^kui-link-/, '')
-  Events.eventChannelUnsafe.on(linkUpdateChannel(id), statusUpdateHandler)
+export function subscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[], link?: string) => void) {
+  Events.eventChannelUnsafe.on(linkUpdateChannel(link), statusUpdateHandler)
 
   // request the first update
-  Events.eventChannelUnsafe.emit(linkGetChannel(id))
+  Events.eventChannelUnsafe.emit(linkGetChannel(link))
 }
 
-export function unsubscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
-  const id = link.replace(/^kui-link-/, '')
-  Events.eventChannelUnsafe.off(linkUpdateChannel(id), statusUpdateHandler)
+export function unsubscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[], link?: string) => void) {
+  Events.eventChannelUnsafe.off(linkUpdateChannel(link), statusUpdateHandler)
+}
+
+export function emitLinkUpdate(link: string, status: 'success' | 'error' | 'in-progress' | 'blank') {
+  Events.eventChannelUnsafe.emit(
+    linkUpdateChannel(link),
+    status === 'success'
+      ? [1, 0, 0]
+      : status === 'error'
+      ? [0, 1, 0]
+      : status === 'in-progress'
+      ? [0, 0, 1]
+      : [0, 0, 0],
+    link
+  )
 }
