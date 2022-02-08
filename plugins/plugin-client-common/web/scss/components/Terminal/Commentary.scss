@@ -310,9 +310,6 @@ body[kui-theme-style='light'] {
 }
 
 @include Commentary {
-  @include WizardProgress {
-    margin-right: $box-shadow-margin; /* room for box shadow */
-  }
   @include WizardHeader {
     margin-right: $box-shadow-margin; /* room for box shadow */
   }

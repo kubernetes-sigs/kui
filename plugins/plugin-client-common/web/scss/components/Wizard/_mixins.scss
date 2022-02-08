@@ -75,6 +75,12 @@
   }
 }
 
+@mixin NoBottomMargin {
+  &[data-bottom-margin='false'] {
+    @content;
+  }
+}
+
 @mixin HideCancel {
   &[data-hide-cancel] {
     @content;

@@ -16,29 +16,6 @@
 
 @import 'mixins';
 
-/**
- * Oof, this is to get us left-right justification versus the rest of
-   the Guidebook content. These rules assume that Progress.tsx does
-   not have a `title` property (which becomes the `__description`
-   here.
- */
-@include WizardProgress {
-  display: flex;
-
-  .pf-c-progress__bar {
-    flex: 1;
-  }
-  .pf-c-progress__status {
-    order: 10;
-  }
-  .pf-c-progress__status,
-  .pf-c-progress__description {
-    &:empty {
-      display: none;
-    }
-  }
-}
-
 @include Wizard {
   @include WizardHeader {
     background-color: var(--color-sidecar-background-01);
@@ -47,6 +24,12 @@
 
   @include WizardDescription {
     color: inherit;
+  }
+
+  @include NoBottomMargin {
+    @include WizardDescription {
+      margin-bottom: 0;
+    }
   }
 
   @include WizardBody {

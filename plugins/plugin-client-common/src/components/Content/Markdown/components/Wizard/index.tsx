@@ -71,7 +71,13 @@ export default class Wizard extends React.PureComponent<WizardProps> {
 
   private progress() {
     const codeBlocks = this.children.flatMap(_ => this.containedCodeBlocks(_))
-    return <Progress codeBlocks={codeBlocks} />
+    return (
+      codeBlocks.length > 0 && (
+        <div className="kui--markdown-major-paragraph">
+          <Progress codeBlocks={codeBlocks} />
+        </div>
+      )
+    )
   }
 
   private get children() {
@@ -87,6 +93,8 @@ export default class Wizard extends React.PureComponent<WizardProps> {
       component: <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
     }))
 
+    const progress = this.progress()
+
     // onGoToStep={this._onWizardStepChange} onNext={this._onWizardStepChange} onBack={this._onWizardStepChange}
     return (
       <PatternFlyWizard
@@ -94,20 +102,21 @@ export default class Wizard extends React.PureComponent<WizardProps> {
         steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
         className="kui--wizard"
         data-hide-cancel={true}
+        data-bottom-margin={!progress /* no bottom margin if we're showing a progress bar */}
         footer={this.footer()}
         title={this.props['data-kui-title'].trim()}
-        description={this.props.children[0]}
+        description={
+          <React.Fragment>
+            {this.props.children[0]}
+            {progress}
+          </React.Fragment>
+        }
       />
     )
   }
 
   public render() {
-    return (
-      <React.Fragment>
-        {this.progress()}
-        {this.wizard()}
-      </React.Fragment>
-    )
+    return this.wizard()
   }
 }
 
