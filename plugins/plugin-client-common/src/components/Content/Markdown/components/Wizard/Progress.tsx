@@ -26,9 +26,10 @@ import { ProgressVariant } from '@patternfly/react-core'
 
 const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Progress })))
 
-const strings = i18n('plugin-client-common')
+const strings = i18n('plugin-client-common', 'code')
 
 interface Props {
+  /** The tasks to be accomplished */
   codeBlocks: CodeBlockProps[]
 }
 
@@ -97,19 +98,19 @@ export default class Progress extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const { nDone, nError, nInProgress } = this.counts()
+    const { nDone, nError /* , nInProgress */ } = this.counts()
 
-    const title = strings('Remaining tasks')
-    const label = strings('xOfy', nDone, this.nSteps)
+    const title = strings('Completed tasks')
+    const label = /* nInProgress > 0 ? strings('status.in-progress') : */ strings('xOfy', nDone, this.nSteps)
 
     const variant =
       nDone === this.nSteps
         ? ProgressVariant.success
         : nError > 0
         ? ProgressVariant.danger
-        : nInProgress > 0
-        ? ProgressVariant.warning
-        : undefined
+        : // : nInProgress > 0
+          // ? ProgressVariant.warning
+          undefined
 
     return (
       <PatternFlyProgress
@@ -121,6 +122,7 @@ export default class Progress extends React.PureComponent<Props, State> {
         title={title}
         label={label}
         valueText={label}
+        size="sm"
         variant={variant}
       />
     )
