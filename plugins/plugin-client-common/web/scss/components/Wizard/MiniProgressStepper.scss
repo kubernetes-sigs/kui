@@ -16,8 +16,8 @@
 
 @import '../ProgressStepper/mixins';
 
-$small: 0.5625rem;
-$regular: 1rem;
+$small: 0.5rem;
+$regular: 0.75rem;
 
 @include MiniProgressStepper {
   --pf-c-progress-stepper__step-icon--Width: #{$regular};
@@ -31,22 +31,33 @@ $regular: 1rem;
     font-size: $regular;
   }
   @include ConnectorUI {
-    --pf-c-progress-stepper__step-connector--before--Left: 6px;
-    top: 8px !important; /* ugh, we conflict with the stock PatternFly rules here */
+    --pf-c-progress-stepper__step-connector--before--Left: 50%;
+    --pf-c-progress-stepper__step-connector--before--Top: 50%;
+    display: none;
   }
 
   @include ProgressStep {
     display: block; /* Rather than `contents`, so we can wrap a Tooltip */
+    @include Icon {
+      border-width: 0;
+      border-radius: 0;
+      width: $small;
+      height: $small;
+      font-size: $small;
+    }
     @include NotBlank {
       @include Icon {
         border: none;
       }
     }
+    @include Success {
+      @include Icon {
+        background-color: var(--pf-global--primary-color--100);
+      }
+    }
     @include Blank {
       @include Icon {
-        width: $small;
-        height: $small;
-        font-size: $small;
+        background-color: rgba(var(--color-blue-rgb), 0.2);
       }
     }
   }
@@ -55,7 +66,7 @@ $regular: 1rem;
 @include MiniProgressStepper {
   --pf-c-progress-stepper--GridTemplateRows: max-content;
   --pf-c-progress-stepper--GridTemplateColumns: max-content;
-  grid-gap: 3px;
+  grid-gap: 0px;
   grid-auto-columns: max-content;
 }
 

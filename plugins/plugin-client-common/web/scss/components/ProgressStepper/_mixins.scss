@@ -70,6 +70,24 @@
   }
 }
 
+@mixin Success {
+  &.pf-m-success {
+    @content;
+  }
+}
+
+@mixin Warning {
+  &.pf-m-warning {
+    @content;
+  }
+}
+
+@mixin Error {
+  &.pf-m-error {
+    @content;
+  }
+}
+
 @mixin Icon {
   .pf-c-progress-stepper__step-icon {
     @content;
