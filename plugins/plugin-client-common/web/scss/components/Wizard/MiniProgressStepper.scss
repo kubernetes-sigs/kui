@@ -27,6 +27,7 @@ $regular: 1rem;
     height: $regular;
   }
   @include Icon {
+    width: auto;
     font-size: $regular;
   }
   @include ConnectorUI {

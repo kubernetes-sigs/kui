@@ -94,7 +94,7 @@ const IN3 = {
         await this.app.client.waitUntil(
           async () => {
             const actualText = await elt.getText()
-            return actualText === markdown.description
+            return actualText.includes(markdown.description)
           },
           { timeout: CLI.waitTimeout }
         )

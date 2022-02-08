@@ -15,15 +15,18 @@
  */
 
 import React from 'react'
+import { i18n } from '@kui-shell/core'
 
 import CodeBlockProps from './CodeBlockProps'
 
 import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
-import { ProgressMeasureLocation, ProgressVariant } from '@patternfly/react-core'
+import { ProgressVariant } from '@patternfly/react-core'
 
 const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Progress })))
+
+const strings = i18n('plugin-client-common')
 
 interface Props {
   codeBlocks: CodeBlockProps[]
@@ -86,6 +89,7 @@ export default class Progress extends React.PureComponent<Props, State> {
         } else if (status === 'in-progress') {
           counts.nInProgress++
         }
+
         return counts
       },
       { nDone: 0, nError: 0, nInProgress: 0 }
@@ -95,18 +99,29 @@ export default class Progress extends React.PureComponent<Props, State> {
   public render() {
     const { nDone, nError, nInProgress } = this.counts()
 
-    const measureLocation = ProgressMeasureLocation.inside
-    const variant = nError > 0 ? ProgressVariant.danger : nInProgress > 0 ? ProgressVariant.warning : undefined
+    const title = strings('Remaining tasks')
+    const label = strings('xOfy', nDone, this.nSteps)
+
+    const variant =
+      nDone === this.nSteps
+        ? ProgressVariant.success
+        : nError > 0
+        ? ProgressVariant.danger
+        : nInProgress > 0
+        ? ProgressVariant.warning
+        : undefined
 
     return (
       <PatternFlyProgress
         aria-label="wizard progress"
-        className="paragraph kui--wizard-progress"
+        className="kui--wizard-progress"
         min={0}
-        value={nDone}
         max={this.nSteps}
+        value={nDone}
+        title={title}
+        label={label}
+        valueText={label}
         variant={variant}
-        measureLocation={measureLocation}
       />
     )
   }
