@@ -76,7 +76,7 @@ export class MiniProgressStep extends React.PureComponent<MiniProps, ProgressSte
   }
 
   private icon() {
-    return statusToIcon(this.status)
+    return this.status === 'in-progress' ? statusToIcon(this.status) : <React.Fragment />
   }
 
   private get tooltipText() {
