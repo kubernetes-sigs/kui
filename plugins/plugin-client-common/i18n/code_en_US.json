@@ -1,11 +1,14 @@
 {
   "Code Block": "Code Block",
 
+  "xOfy": "{0} of {1}",
+  "Completed tasks": "Completed tasks",
+
   "status.blank": "Not yet executed",
   "status.success": "Successfully executed",
   "status.warning": "Warning",
   "status.error": "Error in execution",
   "status.pending": "Pending execution",
-  "status.in-progress": "Processing",
+  "status.in-progress": "Processing...",
   "status.unknown": "Status unknown"
 }

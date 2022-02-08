@@ -15,6 +15,7 @@
  */
 
 @import 'mixins';
+@import '../ExpandableSection/mixins';
 
 @include Wizard {
   @include WizardHeader {
@@ -24,6 +25,11 @@
 
   @include WizardDescription {
     color: inherit;
+
+    @include ExpandableSectionButton {
+      background: none;
+      color: var(--color-text-01);
+    }
   }
 
   @include NoBottomMargin {
