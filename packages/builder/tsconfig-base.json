@@ -14,7 +14,6 @@
     "declaration": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "types": ["node", "webdriverio/async"],
     "lib": ["dom", "esnext", "es6", "dom.iterable", "scripthost"]
   }
 }
