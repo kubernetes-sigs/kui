@@ -20,6 +20,9 @@ export interface WizardSteps {
     /** Optional subtitle in the wizard header */
     description?: string
 
+    /** Show progress UI that tracks execution of code blocks [default: 'bar'] */
+    progress?: 'bar' | 'none'
+
     /**
      * Specification of the steps, each of which is the name of a
      * heading in the markdown source. Optionally, a step description

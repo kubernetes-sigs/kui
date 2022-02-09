@@ -17,11 +17,12 @@
 import { u } from 'unist-builder'
 import { visitParents } from 'unist-util-visit-parents'
 
-import { PositionProps } from '../../KuiFrontmatter'
+import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
 
 interface Primordial {
   title: string
   description: string
+  progress: Required<WizardSteps['wizard']['progress']>
   steps: any[]
 }
 
@@ -69,12 +70,17 @@ function transformer(ast) {
   const wizard: Primordial = {
     title: '',
     description: '',
+    progress: 'bar',
     steps: []
   }
 
   function stepsVisitor(node, ancestors) {
     if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && ancestors.length > 0) {
       delete node.properties['data-kui-split']
+
+      if (wizard.steps.length === 0 && node.properties['data-kui-wizard-progress']) {
+        wizard.progress = node.properties['data-kui-wizard-progress']
+      }
 
       if (!node.properties['data-kui-title']) {
         // spurious case, problem some blank newlines
@@ -121,7 +127,8 @@ function transformer(ast) {
           tagName: 'div',
           properties: {
             'data-kui-split': 'wizard',
-            'data-kui-title': wizard.title
+            'data-kui-title': wizard.title,
+            'data-kui-wizard-progress': wizard.progress
           }
         },
         [wizard.description, ...wizard.steps]

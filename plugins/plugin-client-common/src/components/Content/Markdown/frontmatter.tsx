@@ -207,19 +207,25 @@ function extractSplitsAndSections(tree /*: Root */, frontmatter: KuiFrontmatter)
  * If `frontmatter.wizard` specifies a `description` overlay, smash it
  * in! This must be run *after* `extractSplitsAndSections`.
  */
-function smashInWizardDescription(tree, frontmatter: KuiFrontmatter) {
-  if (frontmatter.wizard && frontmatter.wizard.description) {
+function smashInWizardOptions(tree, frontmatter: KuiFrontmatter) {
+  if (frontmatter.wizard && (frontmatter.wizard.description || frontmatter.wizard.progress)) {
     const firstWizardSection = tree.children.find(
       _ => _.data && _.data.hProperties && _.data.hProperties['data-kui-split'] === 'wizard'
     )
-    if (firstWizardSection && Array.isArray(firstWizardSection.children)) {
-      const firstHeadingIdx = firstWizardSection.children.findIndex(_ => _.type === 'heading')
-      if (firstHeadingIdx >= 0) {
-        firstWizardSection.children.splice(
-          firstHeadingIdx + 1,
-          0,
-          u('paragraph', [u('text', frontmatter.wizard.description)])
-        )
+    if (firstWizardSection) {
+      if (frontmatter.wizard.description && Array.isArray(firstWizardSection.children)) {
+        const firstHeadingIdx = firstWizardSection.children.findIndex(_ => _.type === 'heading')
+        if (firstHeadingIdx >= 0) {
+          firstWizardSection.children.splice(
+            firstHeadingIdx + 1,
+            0,
+            u('paragraph', [u('text', frontmatter.wizard.description)])
+          )
+        }
+      }
+
+      if (frontmatter.wizard.progress) {
+        firstWizardSection.data.hProperties['data-kui-wizard-progress'] = frontmatter.wizard.progress
       }
     }
   }
@@ -241,7 +247,7 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
       preprocessCodeBlocks(tree, frontmatter)
       preprocessWizardSteps(tree, frontmatter)
       extractSplitsAndSections(tree, frontmatter)
-      smashInWizardDescription(tree, frontmatter)
+      smashInWizardOptions(tree, frontmatter)
     }
   }
 }

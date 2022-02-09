@@ -69,15 +69,18 @@ export default class Wizard extends React.PureComponent<WizardProps> {
     return undefined
   }
 
+  /** Overall progress across all steps */
   private progress() {
-    const codeBlocks = this.children.flatMap(_ => this.containedCodeBlocks(_))
-    return (
-      codeBlocks.length > 0 && (
-        <div className="kui--markdown-major-paragraph">
-          <Progress codeBlocks={codeBlocks} />
-        </div>
+    if (this.props['data-kui-wizard-progress'] === 'bar') {
+      const codeBlocks = this.children.flatMap(_ => this.containedCodeBlocks(_))
+      return (
+        codeBlocks.length > 0 && (
+          <div className="kui--markdown-major-paragraph">
+            <Progress codeBlocks={codeBlocks} />
+          </div>
+        )
       )
-    )
+    }
   }
 
   private get children() {
