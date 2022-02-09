@@ -103,9 +103,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
 
           const candidates = match[5]
             ? [match[5]]
-            : snippetBasePath
-            ? [snippetBasePath]
-            : ['./', '../', '../snippets', '../../snippets']
+            : ['./', snippetBasePath, '../', '../snippets', '../../snippets'].filter(Boolean)
 
           const snippetData = isUrl(snippetFileName)
             ? await loadNotebook(snippetFileName, args)
@@ -118,12 +116,16 @@ export default function inlineSnippets(snippetBasePath?: string) {
                 await Promise.all(
                   candidates
                     .map(getBasePath)
-                    .filter(Boolean)
-                    .map(mySnippetBasePath =>
-                      loadNotebook(join(mySnippetBasePath, snippetFileName), args)
-                        .then(data => recurse(mySnippetBasePath, toString(data)))
+                    .map(myBasePath => ({
+                      myBasePath,
+                      filepath: join(myBasePath, snippetFileName)
+                    }))
+                    .filter(_ => _ && _.filepath !== srcFilePath) // avoid cycles
+                    .map(({ myBasePath, filepath }) =>
+                      loadNotebook(filepath, args)
+                        .then(data => recurse(myBasePath, toString(data)))
                         .catch(err => {
-                          debug('Warning: could not fetch inlined content 2', mySnippetBasePath, mySnippetBasePath, err)
+                          debug('Warning: could not fetch inlined content 2', myBasePath, err)
                           return ''
                         })
                     )
