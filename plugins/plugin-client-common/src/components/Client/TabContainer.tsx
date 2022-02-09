@@ -367,6 +367,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         className="kui--tab-container-page"
         header={this.topTabStripe()}
         sidebar={this.sidebar()}
+        data-sidebar-open={this.state.isSidebarOpen || undefined}
       >
         {this.tabContent()}
       </Page>
