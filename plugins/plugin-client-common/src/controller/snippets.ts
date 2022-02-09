@@ -82,9 +82,14 @@ export default function inlineSnippets(snippetBasePath?: string) {
           const snippetFileName = match[3]
 
           const getBasePath = (snippetBasePath: string) => {
-            const basePath = match[5] || snippetBasePath
+            try {
+              const basePath = match[5] || snippetBasePath
 
-            return isAbsolute(basePath) ? basePath : srcFilePath ? join(srcFilePath, basePath) : undefined
+              return isAbsolute(basePath) ? basePath : srcFilePath ? join(srcFilePath, basePath) : undefined
+            } catch (err) {
+              debug(err)
+              return undefined
+            }
           }
 
           // Call ourselves recursively, in case a fetched snippet
@@ -116,6 +121,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
                 await Promise.all(
                   candidates
                     .map(getBasePath)
+                    .filter(Boolean)
                     .map(myBasePath => ({
                       myBasePath,
                       filepath: join(myBasePath, snippetFileName)
