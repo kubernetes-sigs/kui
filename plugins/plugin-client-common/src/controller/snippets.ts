@@ -97,7 +97,8 @@ export default function inlineSnippets(snippetBasePath?: string) {
             // may be recursing here) or from the command line or from
             // the topmatter of the original document. The second
             // represents the current base path in the recursion.
-            return inlineSnippets(snippetBasePath)(rerouteLinks(basePath, data), snippetFileName, args)
+            const base = isAbsolute(basePath) ? basePath : snippetBasePath
+            return inlineSnippets(base)(rerouteLinks(base, data), snippetFileName, args)
           }
 
           const candidates = match[5]
