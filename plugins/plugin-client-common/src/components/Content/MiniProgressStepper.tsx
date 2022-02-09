@@ -18,8 +18,9 @@ import React from 'react'
 import { i18n, pexecInCurrentTab } from '@kui-shell/core'
 
 import Tooltip from '../spi/Tooltip'
+import Spinner from '../Views/Terminal/Block/Spinner'
 import { emitLinkUpdate, subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
-import { ProgressStepState, statusFromStatusVector, statusToClassName, statusToIcon } from './ProgressStepper'
+import { ProgressStepState, statusFromStatusVector, statusToClassName } from './ProgressStepper'
 
 import '../../../web/scss/components/Wizard/MiniProgressStepper.scss'
 
@@ -76,7 +77,7 @@ export class MiniProgressStep extends React.PureComponent<MiniProps, ProgressSte
   }
 
   private icon() {
-    return this.status === 'in-progress' ? statusToIcon(this.status) : <React.Fragment />
+    return this.status === 'in-progress' ? <Spinner /> : <React.Fragment />
   }
 
   private get tooltipText() {
