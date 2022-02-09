@@ -22,6 +22,8 @@
 import React from 'react'
 import 'spinkit/spinkit.min.css'
 
+import '../../../../../web/scss/components/Terminal/Spinner.scss'
+
 interface Props {
   className?: string
 }
