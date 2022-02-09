@@ -15,22 +15,43 @@
  */
 
 @import '../mixins';
+@import '../../Page/mixins';
 @import '../../TopLevelTab/mixins';
+
+@include KuiTabContainer {
+  @include SidebarOpen {
+    @include TopLevelTab {
+      @include HasOnlyLeftStrip {
+        @include Split(2) {
+          @include Columns(4);
+          grid-template-areas: 'L1 T1 T1 T1';
+        }
+
+        @include Split(3) {
+          @include Columns(4);
+          grid-template-areas:
+            'L1 T1 T1 T1'
+            'L1 T2 T2 T2';
+        }
+      }
+    }
+  }
+}
 
 @include TopLevelTab {
   @include HasOnlyLeftStrip {
     @include Split(2) {
       @include Rows(1);
-      @include Columns(4);
-      grid-template-areas: 'L1 T1 T1 T1';
+      @include Columns(5);
+      grid-template-areas: 'L1 T1 T1 T1 T1';
     }
 
     @include Split(3) {
       @include Rows(2);
-      @include Columns(4);
+      @include Columns(5);
       grid-template-areas:
-        'L1 T1 T1 T1'
-        'L1 T2 T2 T2';
+        'L1 T1 T1 T1 T1'
+        'L1 T2 T2 T2 T2';
     }
 
     @include Split(4) {

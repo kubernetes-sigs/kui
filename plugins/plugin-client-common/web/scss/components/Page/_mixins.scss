@@ -33,3 +33,9 @@
     @content;
   }
 }
+
+@mixin SidebarOpen {
+  &[data-sidebar-open] {
+    @content;
+  }
+}
