@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-alternate",
-  "version": "11.2.1",
+  "version": "11.2.2",
   "description": "",
   "main": "dist/index.js",
   "typedocMain": "src/index.ts",
