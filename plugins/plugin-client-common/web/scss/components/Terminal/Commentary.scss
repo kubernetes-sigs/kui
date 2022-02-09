@@ -142,6 +142,18 @@ body[kui-theme-style] {
 }
 
 @include Scrollback {
+  @include LeftStrip {
+    @include Commentary {
+      p,
+      ul,
+      ol {
+        font-size: $terminal-font-size;
+      }
+    }
+  }
+}
+
+@include Scrollback {
   @include blockquote {
     border-left-color: var(--color-brand-03);
     color: var(--color-text-02);
@@ -314,7 +326,7 @@ body[kui-theme-style='light'] {
     margin-right: $box-shadow-margin; /* room for box shadow */
   }
   @include ExpandableSection {
-    font-size: 0.875rem;
+    font-size: $terminal-font-size;
     margin-right: $box-shadow-margin; /* room for box shadow */
   }
   @include CodeBlock {
@@ -331,7 +343,7 @@ body[kui-theme-style='light'] {
   }
 
   @include MarkdownTabButton {
-    font-size: 0.875rem;
+    font-size: $terminal-font-size;
   }
 
   @include Spinner {
@@ -344,7 +356,7 @@ body[kui-theme-style='light'] {
 
   @include CommandOutput {
     /* flex-direction: column; */ /* in case of multi-output, e.g. from semicolonInvoke */
-    font-size: 0.875rem;
+    font-size: $terminal-font-size;
     line-height: initial; /* PatternFly intercepts this for pf-c-content */
 
     @include Markdown {
@@ -504,7 +516,7 @@ pre {
     }
 
     @include ExpandableSectionContentElement {
-      font-size: 0.875em;
+      font-size: $terminal-font-size;
     }
   }
 }

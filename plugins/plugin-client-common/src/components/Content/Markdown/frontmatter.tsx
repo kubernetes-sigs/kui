@@ -121,7 +121,6 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
               ? new RegExp(step.match.replace(/\./g, '\\.')).test(firstChild.value)
               : step.name === firstChild.value
           )
-
           if (matchingStep) {
             if (childIdx >= 0) {
               if (parent.children[childIdx - 1].type !== 'thematicBreak') {
