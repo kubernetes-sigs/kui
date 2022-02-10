@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { isAbsolute as pathIsAbsolute, dirname as pathDirname, join as pathJoin } from 'path'
-import { Arguments } from '@kui-shell/core'
+import { Arguments, isError } from '@kui-shell/core'
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
 import { stripFrontmatter } from '../components/Content/Markdown/frontmatter-parser'
@@ -55,6 +55,13 @@ export function isAbsolute(uri: string): boolean {
 
 function toString(data: string | object) {
   return (typeof data === 'string' ? data : JSON.stringify(data)).replace(/\n$/, '')
+}
+
+function indent(str: string) {
+  return str
+    .split(/\n/)
+    .map(_ => `    ${_}`)
+    .join('\n')
 }
 
 /** Rewrite any relative <img> and <a> links to use the given basePath */
@@ -110,36 +117,44 @@ export default function inlineSnippets(snippetBasePath?: string) {
             ? [match[5]]
             : ['./', snippetBasePath, '../', '../snippets', '../../snippets'].filter(Boolean)
 
-          const snippetData = isUrl(snippetFileName)
-            ? await loadNotebook(snippetFileName, args)
-                .then(data => recurse(snippetBasePath || dirname(snippetFileName), toString(data)))
-                .catch(err => {
-                  debug('Warning: could not fetch inlined content 1', snippetBasePath, snippetFileName, err)
-                  return ''
-                })
-            : (
-                await Promise.all(
-                  candidates
-                    .map(getBasePath)
-                    .filter(Boolean)
-                    .map(myBasePath => ({
-                      myBasePath,
-                      filepath: join(myBasePath, snippetFileName)
-                    }))
-                    .filter(_ => _ && _.filepath !== srcFilePath) // avoid cycles
-                    .map(({ myBasePath, filepath }) =>
-                      loadNotebook(filepath, args)
-                        .then(data => recurse(myBasePath, toString(data)))
-                        .catch(err => {
-                          debug('Warning: could not fetch inlined content 2', myBasePath, err)
-                          return ''
-                        })
-                    )
-                ).then(_ => _.filter(Boolean))
-              )[0]
+          const snippetDatas = isUrl(snippetFileName)
+            ? [
+                await loadNotebook(snippetFileName, args)
+                  .then(data => recurse(snippetBasePath || dirname(snippetFileName), toString(data)))
+                  .catch(err => {
+                    debug('Warning: could not fetch inlined content 1', snippetBasePath, snippetFileName, err)
+                    return err
+                  })
+              ]
+            : await Promise.all(
+                candidates
+                  .map(getBasePath)
+                  .filter(Boolean)
+                  .map(myBasePath => ({
+                    myBasePath,
+                    filepath: join(myBasePath, snippetFileName)
+                  }))
+                  .filter(_ => _ && _.filepath !== srcFilePath) // avoid cycles
+                  .map(({ myBasePath, filepath }) =>
+                    loadNotebook(filepath, args)
+                      .then(data => recurse(myBasePath, toString(data)))
+                      .catch(err => {
+                        debug('Warning: could not fetch inlined content 2', myBasePath, err)
+                        return err
+                      })
+                  )
+              ).then(_ => _.filter(Boolean))
+
+          const snippetData =
+            snippetDatas.find(_ => _ && !isError(_)) ||
+            snippetDatas.find(_ => isError(_) && !/ENOTDIR/.test(_.message)) ||
+            snippetDatas[0]
 
           if (!snippetData) {
             return line
+          } else if (isError(snippetData)) {
+            return `??? bug "Could not fetch snippet ${snippetFileName}"
+${indent(snippetData.message)}`
           } else {
             debug('successfully fetched inlined content', snippetFileName)
 
