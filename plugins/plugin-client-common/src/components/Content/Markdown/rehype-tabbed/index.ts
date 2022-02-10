@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { v4 } from 'uuid'
+
+import { Element } from 'hast'
 import { START_OF_TIP, END_OF_TIP } from '../rehype-tip'
 
 // const RE_TAB = /^(.|[\n\r])*===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
@@ -22,6 +25,10 @@ const RE_TAB = /^===\s+"([^"]+)"/
 const START_OF_TAB = `<!-- ____KUI_START_OF_TAB____ -->`
 const PUSH_TABS = `<!-- ____KUI_NESTED_TABS____ -->`
 const END_OF_TAB = `<!-- ____KUI_END_OF_TAB____ -->`
+
+export function isTab(elt: Element): boolean {
+  return elt.properties['data-kui-tab-index'] !== undefined
+}
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
@@ -33,7 +40,10 @@ export default function plugin(/* options */) {
           type: 'element',
           tagName: 'tabbed',
           children: currentTabs,
-          properties: { depth: tabStack.length }
+          properties: {
+            depth: tabStack.length,
+            'data-kui-choice-group': v4()
+          }
         })
       }
 
@@ -110,7 +120,8 @@ export default function plugin(/* options */) {
                     // to join nested tabs together
                     properties: {
                       title: startMatch[1],
-                      depth: tabStack.length
+                      depth: tabStack.length,
+                      'data-kui-tab-index': currentTabs.length
                     },
                     children: rest ? [{ type: 'text', value: rest }] : [],
                     position

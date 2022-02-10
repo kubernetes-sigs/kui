@@ -26,26 +26,81 @@ import '../../../web/scss/components/Wizard/MiniProgressStepper.scss'
 
 const strings = i18n('plugin-client-common', 'code')
 
-export class MiniProgressStepper extends React.PureComponent<React.PropsWithChildren<{}>> {
-  public render() {
-    return (
-      <ol className="pf-c-progress-stepper kui--progress-stepper" data-mini={true}>
-        {this.props.children}
-      </ol>
-    )
-  }
-}
-
 type MiniProps = {
   codeBlockId: string
   body: string
   language: string
   validate?: string
+  optional?: boolean
+
+  stepIdx: number
+  setDone(stepIdx: number, isDone: boolean): void
 }
 
-export class MiniProgressStep extends React.PureComponent<MiniProps, ProgressStepState> {
+type StepperProps = { steps: Omit<MiniProps, 'stepIdx' | 'setDone'>[] }
+type StepperState = { isDone: boolean[] }
+
+export class MiniProgressStepper extends React.PureComponent<StepperProps, StepperState> {
+  public constructor(props: StepperProps) {
+    super(props)
+
+    this.state = {
+      isDone: Array(props.steps.length).fill(false)
+    }
+  }
+
+  private readonly setDone = (stepIdx: number, stepIsDone: boolean) => {
+    this.setState(curState => {
+      const isDone = curState.isDone.slice()
+      isDone[stepIdx] = stepIsDone
+
+      return {
+        isDone
+      }
+    })
+  }
+
+  private progress() {
+    const isComplete = this.isComplete()
+
+    return (
+      <ol className="pf-c-progress-stepper kui--progress-stepper" data-mini={true} data-is-complete={this.isComplete()}>
+        {this.props.steps
+          .filter(_ => !isComplete || !_.optional)
+          .map((props, idx) => (
+            <MiniProgressStep key={props.codeBlockId} {...props} stepIdx={idx} setDone={this.setDone} />
+          ))}
+      </ol>
+    )
+  }
+
+  private get nSteps() {
+    return this.props.steps.length
+  }
+
+  private get nRequiredSteps() {
+    return this.props.steps.filter(_ => !_.optional).length
+  }
+
+  private nDone() {
+    return this.state.isDone.filter(Boolean).length
+  }
+
+  private isComplete() {
+    return this.nDone() === this.nRequiredSteps
+  }
+
+  public render() {
+    return this.progress()
+  }
+}
+
+class MiniProgressStep extends React.PureComponent<MiniProps, ProgressStepState> {
   private readonly _statusUpdateHandler = (statusVector: number[]) => {
-    this.setState({ status: statusFromStatusVector(statusVector, false) })
+    const status = statusFromStatusVector(statusVector, false)
+    this.setState({ status })
+
+    this.props.setDone(this.props.stepIdx, status === 'success')
   }
 
   public componentDidMount() {
@@ -81,7 +136,7 @@ export class MiniProgressStep extends React.PureComponent<MiniProps, ProgressSte
   }
 
   private get tooltipText() {
-    const title = strings('Code Block')
+    const title = this.props.optional ? strings('Optional Code Block') : strings('Code Block')
 
     return `### ${title}
 #### Status: ${strings('status.' + this.status)}
@@ -94,7 +149,10 @@ ${this.props.body}
   public render() {
     return (
       <Tooltip markdown={this.tooltipText} maxWidth="30rem" position="bottom-start">
-        <li className={['pf-c-progress-stepper__step', 'kui--progress-step', ...this.statusClass].join(' ')}>
+        <li
+          className={['pf-c-progress-stepper__step', 'kui--progress-step', ...this.statusClass].join(' ')}
+          data-optional={this.props.optional || undefined}
+        >
           <div className="pf-c-progress-stepper__step-connector">
             <a className="kui--progress-step-status-icon-link" href={`#kui-link-${this.props.codeBlockId}`}>
               <span className="pf-c-progress-stepper__step-icon kui--progress-step-status-icon">{this.icon()}</span>

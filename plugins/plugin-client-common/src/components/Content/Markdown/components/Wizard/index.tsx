@@ -20,28 +20,66 @@ import { WizardProps } from './rehype-wizard'
 
 import Progress from './Progress'
 import CodeBlockProps from './CodeBlockProps'
+import { onTabSwitch, offTabSwitch } from '../tabbed'
+import { Graph, sequence, compile, blocks } from '../code/graph'
 
 import Card from '../../../../spi/Card'
-import { MiniProgressStepper, MiniProgressStep } from '../../../MiniProgressStepper'
+import { MiniProgressStepper } from '../../../MiniProgressStepper'
 
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
 
-export default class Wizard extends React.PureComponent<WizardProps> {
-  private wizardCodeBlockSteps(containedCodeBlocks: CodeBlockProps[]) {
+type Props = WizardProps & { uuid: string }
+
+export interface State {
+  /** Map from tab group to currently selected tab member */
+  choices: Record<string, string>
+}
+
+export default class Wizard extends React.PureComponent<Props, State> {
+  private readonly cleaners: (() => void)[] = []
+
+  public constructor(props: Props) {
+    super(props)
+
+    this.state = {
+      choices: {}
+    }
+  }
+
+  public componentDidMount() {
+    const switcher = (group: string, member: string) => {
+      this.setState(curState => ({
+        choices: Object.assign({}, curState.choices, { [group]: member })
+      }))
+    }
+
+    onTabSwitch(this.props.uuid, switcher)
+    this.cleaners.push(() => offTabSwitch(this.props.uuid, switcher))
+  }
+
+  public componentDidUnmount() {
+    this.cleaners.forEach(_ => _())
+  }
+
+  private wizardCodeBlockSteps(containedCodeBlocks: Graph) {
     return (
-      containedCodeBlocks.length > 0 && (
-        <MiniProgressStepper>
-          {containedCodeBlocks.map((_, idx) => (
-            <MiniProgressStep key={idx} codeBlockId={_.id} validate={_.validate} body={_.body} language={_.language} />
-          ))}
-        </MiniProgressStepper>
+      containedCodeBlocks && (
+        <MiniProgressStepper
+          steps={blocks(containedCodeBlocks, this.state.choices).map(_ => ({
+            codeBlockId: _.id,
+            validate: _.validate,
+            body: _.body,
+            language: _.language,
+            optional: _.optional
+          }))}
+        />
       )
     )
   }
 
-  private wizardStepDescription(description: string, containedCodeBlocks: CodeBlockProps[]) {
+  private wizardStepDescription(description: string, containedCodeBlocks: Graph) {
     return (
       <div className="kui--wizard-nav-item-description">
         {this.wizardCodeBlockSteps(containedCodeBlocks)}
@@ -50,14 +88,16 @@ export default class Wizard extends React.PureComponent<WizardProps> {
     )
   }
 
-  private containedCodeBlocks(_: WizardProps['children'][0]): CodeBlockProps[] {
+  private containedCodeBlocks(_: WizardProps['children'][0]): Graph {
     if (typeof _.props.containedCodeBlocks === 'string' && _.props.containedCodeBlocks.length > 0) {
-      return _.props.containedCodeBlocks
-        .split(' ')
-        .filter(Boolean)
-        .map(_ => JSON.parse(Buffer.from(_, 'base64').toString()) as CodeBlockProps)
+      return compile(
+        _.props.containedCodeBlocks
+          .split(' ')
+          .filter(Boolean)
+          .map(_ => JSON.parse(Buffer.from(_, 'base64').toString()) as CodeBlockProps)
+      )
     } else {
-      return []
+      return undefined
     }
   }
 
@@ -72,11 +112,11 @@ export default class Wizard extends React.PureComponent<WizardProps> {
   /** Overall progress across all steps */
   private progress() {
     if (this.props['data-kui-wizard-progress'] === 'bar') {
-      const codeBlocks = this.children.flatMap(_ => this.containedCodeBlocks(_))
+      const allCodeBlocks = sequence(this.children.flatMap(_ => this.containedCodeBlocks(_)))
       return (
-        codeBlocks.length > 0 && (
+        allCodeBlocks.sequence.length > 0 && (
           <div className="kui--markdown-major-paragraph">
-            <Progress codeBlocks={codeBlocks} />
+            <Progress choices={this.state.choices} codeBlocks={allCodeBlocks} />
           </div>
         )
       )

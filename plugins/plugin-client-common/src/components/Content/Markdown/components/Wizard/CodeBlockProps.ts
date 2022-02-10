@@ -18,5 +18,26 @@ export default interface CodeBlockProps {
   id: string
   body: string
   language: string
+  optional?: boolean
   validate?: string
+
+  /**
+   * Is this a member of a group of choices? e.g. am I `A` in a choice
+   * to do either `A+B` or `C+D`?
+   */
+  choice?: {
+    /**
+     * This option names the group, to keep it distinct from other
+     * groups of choices.
+     */
+    group?: string
+
+    /**
+     * This option names that member. e.g. if the user can choose
+     * between doing either A-and-B or C-and-D, this identifies
+     * whether we are part ofth e first choice (A+B) or the second
+     * (C+D).
+     */
+    member?: string
+  }
 }
