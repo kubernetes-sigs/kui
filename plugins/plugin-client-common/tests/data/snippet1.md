@@ -3,7 +3,9 @@
 
 aaa
 
---8<-- "snippeta.md"
+<!-- intentional trailing whitespace on line below!!! -->
+--8<-- "snippeta.md"  
+<!-- intentional trailing whitespace on the line above!!! -->
 
 bbb
 

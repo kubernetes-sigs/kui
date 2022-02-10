@@ -23,7 +23,7 @@ import { stripFrontmatter } from '../components/Content/Markdown/frontmatter-par
 
 const debug = Debug('plugin-client-common/markdown/snippets')
 
-const RE_SNIPPET = /^--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?$/
+const RE_SNIPPET = /^--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?\s*$/
 
 function isUrl(a: string) {
   return /^https?:/.test(a)
