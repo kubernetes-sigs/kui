@@ -58,6 +58,7 @@ interface Value {
 
 type Props<T1 = any, T2 = any, T3 = any> = Value &
   StreamingProps & {
+    id?: string
     className?: string
     tab: Tab
 
@@ -440,6 +441,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       <MutabilityContext.Consumer>
         {mutability => (
           <li
+            id={this.props.id}
             className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
             data-is-executable={mutability.executable}
             data-is-output-only={this.outputOnly || undefined}

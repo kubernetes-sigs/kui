@@ -35,7 +35,7 @@ export default function div(uuid: string) {
     const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
 
     if (isWizard(props)) {
-      return <Wizard {...props} />
+      return <Wizard uuid={uuid} {...props} />
     } else if (!position || (position === 'default' && count === 0 && !maximized && !placeholder)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is

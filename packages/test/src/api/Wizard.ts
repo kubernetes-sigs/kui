@@ -24,6 +24,7 @@ export default class Wizard {
   private readonly _navItemProgressStepper = '.kui--progress-stepper'
   private readonly _navItemProgressStep = '.kui--progress-step'
   private readonly _body = '.pf-c-wizard__main-body'
+  private readonly _wizardProgressMeasure = '.pf-c-progress__measure'
 
   public withTitle(title: string) {
     return `${this.wizard} ${this.title}[aria-label="${title}"]`
@@ -59,5 +60,9 @@ export default class Wizard {
 
   public navItemProgressStep(navIdx: number, stepIdx: number) {
     return `${this.navItemProgressSteps(navIdx)}:nth-child(${stepIdx + 1})`
+  }
+
+  public get progressMeasure() {
+    return `${this.wizard} ${this._wizardProgressMeasure}`
   }
 }

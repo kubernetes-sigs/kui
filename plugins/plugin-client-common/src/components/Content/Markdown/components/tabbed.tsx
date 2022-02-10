@@ -24,9 +24,18 @@ import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 import Card from '../../../spi/Card'
 
 type Props = {
+  /** markdown document id */
+  uuid: string
+
+  /** tab nesting depth */
   depth: number
+
+  /** id for this tab group */
+  'data-kui-choice-group': string
+
+  /** the tab models */
   children: {
-    props: { title: string; children?: React.ReactNode[] }
+    props: { title: string; 'data-kui-tab-index': string; children?: React.ReactNode[] }
   }[]
 }
 
@@ -37,6 +46,17 @@ type State = {
 const activateEvents = new EventEmitter()
 export function activateTab(slug: string, evt?: React.MouseEvent) {
   activateEvents.emit(slug, evt)
+}
+
+const switchEvents = new EventEmitter()
+export function onTabSwitch(uuid: string, cb: (group: string, newTabId: string) => void) {
+  switchEvents.on(uuid, cb)
+}
+export function offTabSwitch(uuid: string, cb: (group: string, newTabId: string) => void) {
+  switchEvents.off(uuid, cb)
+}
+function emitTabSwitch(uuid: string, group: string, member: string) {
+  switchEvents.emit(uuid, group, member)
 }
 
 class LinkableTabs extends React.PureComponent<Props, State> {
@@ -73,7 +93,18 @@ class LinkableTabs extends React.PureComponent<Props, State> {
     this.cleaners.forEach(_ => _())
   }
 
+  private get group() {
+    return this.props['data-kui-choice-group']
+  }
+
+  private member(tab: Props['children'][0]): string {
+    return tab.props['data-kui-tab-index']
+  }
+
   private readonly onSelect = (_, tabIndex: number) => {
+    const selectedTab = this.props.children[tabIndex]
+    emitTabSwitch(this.props.uuid, this.group, this.member(selectedTab))
+
     this.setState({
       activeKey: tabIndex
     })
@@ -118,7 +149,13 @@ class LinkableTabs extends React.PureComponent<Props, State> {
   }
 }
 
-export default function tabbed(props) {
-  // isSecondary={parseInt(props.depth, 10) > 0}
-  return <LinkableTabs depth={props.depth}>{props.children}</LinkableTabs>
+export default function tabbedWrapper(uuid: string) {
+  return function tabbed(props) {
+    // isSecondary={parseInt(props.depth, 10) > 0}
+    return (
+      <LinkableTabs uuid={uuid} depth={props.depth} data-kui-choice-group={props['data-kui-choice-group']}>
+        {props.children}
+      </LinkableTabs>
+    )
+  }
 }

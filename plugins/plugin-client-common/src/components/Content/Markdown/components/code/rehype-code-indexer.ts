@@ -18,6 +18,8 @@ import { Parent } from 'unist'
 import { Element, Root } from 'hast'
 import { visitParents as visit } from 'unist-util-visit-parents'
 
+import dump from './dump'
+import { isTab } from '../../rehype-tabbed'
 import { tryFrontmatter } from '../../frontmatter'
 
 function isExecutableCodeBlock(language: string) {
@@ -26,7 +28,7 @@ function isExecutableCodeBlock(language: string) {
 
 function isElementWithProperties(_: Parent): _ is Element {
   const elt = _ as Element
-  return typeof elt.tagName === 'string' && elt.properties !== undefined
+  return elt && typeof elt.tagName === 'string' && elt.properties !== undefined
 }
 
 /**
@@ -56,7 +58,10 @@ export default function plugin(uuid: string) {
           node.properties.codeIdx = myCodeIdx
 
           if (node.children.length === 1 && node.children[0].type === 'text') {
-            const code = String(node.children[0].value).trim()
+            // the AST node that houses this code block's string content
+            const codeValueElement = node.children[0]
+
+            const code = String(codeValueElement.value).trim()
             const { body, attributes } = tryFrontmatter(code)
 
             if (typeof attributes === 'object') {
@@ -65,31 +70,70 @@ export default function plugin(uuid: string) {
                 attributes.id = `${uuid}-${myCodeIdx}`
               }
 
-              if (attributes.optional !== true) {
-                const codeBlockProps = Buffer.from(
-                  JSON.stringify(Object.assign({ body, language }, attributes))
-                ).toString('base64')
+              const dumpCodeBlockProps = () =>
+                Buffer.from(JSON.stringify(Object.assign({ body, language }, attributes))).toString('base64')
 
-                // go from parent on top, which is in reverse order
-                for (let idx = ancestors.length - 1; idx >= 0; idx--) {
-                  const _ = ancestors[idx]
+              let codeBlockProps = dumpCodeBlockProps()
 
-                  if (!attributes.validcate && isImplicitlyOptional(_)) {
-                    // don't propagate code blocks out of implicitly
-                    // optional elements, unless the code block has an
-                    // associated validator. The idea is that if the
-                    // author went through the trouble of writing a
-                    // validator for a code block, it probably isn't
-                    // optional. If the absence of a validator, then
-                    // we should stop propagating the code block
-                    // upwards if we reach some element that seems
-                    // indicative of blocking out an optional area,
-                    // e.g. an expandable section that is
-                    // default-closed
-                    break
+              const reserialize = () => {
+                // re-serialize this update for later use
+                codeBlockProps = dumpCodeBlockProps()
+                codeValueElement.value = dump(attributes, body)
+              }
+
+              // go from parent on top, which is in reverse order
+              for (let idx = ancestors.length - 1; idx >= 0; idx--) {
+                const _ = ancestors[idx]
+
+                if (attributes.validate === '$body') {
+                  attributes.validate = body
+                  reserialize()
+                }
+
+                if (!attributes.validcate && attributes.optional !== false && isImplicitlyOptional(_)) {
+                  // don't propagate code blocks out of implicitly
+                  // optional elements, unless the code block has an
+                  // associated validator. The idea is that if the
+                  // author went through the trouble of writing a
+                  // validator for a code block, it probably isn't
+                  // optional. If the absence of a validator, then
+                  // we should stop propagating the code block
+                  // upwards if we reach some element that seems
+                  // indicative of blocking out an optional area,
+                  // e.g. an expandable section that is
+                  // default-closed
+                  attributes.optional = true
+                  reserialize()
+                }
+
+                if (isElementWithProperties(_)) {
+                  if (isTab(_)) {
+                    if (!attributes.choice || !attributes.choice.group) {
+                      // get the choice group id from the parent (which encloses the tabs... in this group)
+                      const parent = ancestors[idx - 1]
+                      if (isElementWithProperties(parent)) {
+                        const group = parent.properties['data-kui-choice-group']
+                        const member = String(_.properties['data-kui-tab-index'])
+
+                        if (!attributes.choice) {
+                          attributes.choice = {
+                            group,
+                            member
+                          }
+                        } else {
+                          attributes.group = group
+                          attributes.member = member
+                        }
+
+                        // re-serialize this update for later use
+                        reserialize()
+                      }
+                    }
                   }
 
-                  if (isElementWithProperties(_) && Array.isArray(_.properties.containedCodeBlocks)) {
+                  if (Array.isArray(_.properties.containedCodeBlocks)) {
+                    // satisify any element that has requested that
+                    // we aggregate code blocks
                     _.properties.containedCodeBlocks.push(codeBlockProps)
                   }
                 }
