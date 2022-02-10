@@ -31,10 +31,6 @@ $regular: 0.75rem;
     align-items: center;
     height: $regular;
   }
-  @include Icon {
-    width: auto;
-    font-size: $regular;
-  }
   @include ConnectorUI {
     --pf-c-progress-stepper__step-connector--before--Left: 50%;
     --pf-c-progress-stepper__step-connector--before--Top: 50%;
@@ -43,6 +39,20 @@ $regular: 0.75rem;
 
   @include ProgressStep {
     display: block; /* Rather than `contents`, so we can wrap a Tooltip */
+  }
+  @include IconLink {
+    display: block; /* Rather than `contents`, so we can wrap a Tooltip */
+  }
+
+  @include Icon {
+    width: auto;
+    font-size: $regular;
+    &:hover {
+      background-color: var(--color-table-border3);
+    }
+  }
+
+  @include ProgressStep {
     @include Icon {
       border-width: 0;
       border-radius: 0;
@@ -57,12 +67,16 @@ $regular: 0.75rem;
     }
     @include Success {
       @include Icon {
-        background-color: var(--pf-global--primary-color--100);
+        &:not(:hover) {
+          background-color: var(--pf-global--primary-color--100);
+        }
       }
     }
     @include Blank {
       @include Icon {
-        background-color: rgba(var(--color-blue-rgb), 0.2);
+        &:not(:hover) {
+          background-color: rgba(var(--color-blue-rgb), 0.2);
+        }
       }
     }
   }
