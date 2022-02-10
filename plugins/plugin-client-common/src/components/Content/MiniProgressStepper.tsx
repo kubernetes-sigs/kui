@@ -93,7 +93,7 @@ ${this.props.body}
 
   public render() {
     return (
-      <Tooltip markdown={this.tooltipText} maxWidth="30rem">
+      <Tooltip markdown={this.tooltipText} maxWidth="30rem" position="bottom-start">
         <li className={['pf-c-progress-stepper__step', 'kui--progress-step', ...this.statusClass].join(' ')}>
           <div className="pf-c-progress-stepper__step-connector">
             <a className="kui--progress-step-status-icon-link" href={`#kui-link-${this.props.codeBlockId}`}>
