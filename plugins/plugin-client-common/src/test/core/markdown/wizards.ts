@@ -43,7 +43,8 @@ const IN1 = {
   title: 'WizardTitle',
   description: 'WizardDescription',
   steps,
-  expectedSplitCount: 1
+  expectedSplitCount: 1,
+  expectedCodeBlockTasks: 3
 }
 
 // make sure we can display wizards in tabs with splits
@@ -52,7 +53,8 @@ const IN2 = {
   title: 'WizardTitleWithSplits',
   description: 'WizardDescriptionWithSplits',
   steps,
-  expectedSplitCount: 2
+  expectedSplitCount: 2,
+  expectedCodeBlockTasks: IN1.expectedCodeBlockTasks
 }
 
 // make sure we can display wizards in tabs with splits
@@ -61,6 +63,7 @@ const IN3 = {
   title: 'Getting Started with Knative',
   description: 'WizardDescriptionInTopmatter',
   expectedSplitCount: 1,
+  expectedCodeBlockTasks: 6,
   steps: [
     { name: 'TestRewritingOfStepName', body: 'This topic describes', description: '', codeBlocks: [] },
     { name: 'Before you begin', body: 'Before you can get started', description: 'TestDescription2', codeBlocks: [] }
@@ -102,6 +105,14 @@ const IN3 = {
         await Common.oops(this, true)(err)
       }
     })
+
+    it(`should show "n of ${markdown.expectedCodeBlockTasks}" in progress bar`, () =>
+      this.app.client.waitUntil(async () => {
+        const actualMeasureText = await this.app.client.$(Selectors.Wizard.progressMeasure).then(_ => _.getText())
+        const match = actualMeasureText.match(/of (\d+)/)
+
+        return match && parseInt(match[1], 10) === markdown.expectedCodeBlockTasks
+      }))
 
     it(`should have ${markdown.expectedSplitCount} splits`, () => ReplExpect.splitCount(markdown.expectedSplitCount))
 

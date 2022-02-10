@@ -26,6 +26,12 @@
   }
 }
 
+@mixin Optional {
+  &[data-optional] {
+    @content;
+  }
+}
+
 @mixin Connector {
   .pf-c-progress-stepper__step-connector {
     @content;
@@ -103,13 +109,5 @@
 @mixin Main {
   .pf-c-progress-stepper__step-main {
     @content;
-  }
-}
-
-@mixin MiniProgressStepper {
-  @include ProgressStepper {
-    &[data-mini] {
-      @content;
-    }
   }
 }

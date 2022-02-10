@@ -72,16 +72,16 @@ export default function code(
 
       return (
         <React.Fragment>
-          {attributes.id && <a id={`kui-link-${attributes.id}`} />}
           <Input
             readonly={false}
+            id={`kui-link-${blockId}`}
             className="kui--code-block-in-markdown"
             tab={mdprops.tab}
             value={body}
             watch={attributes.watch}
             language={language}
             blockId={blockId}
-            validate={attributes.validate === '$body' ? body : attributes.validate}
+            validate={attributes.validate}
             response={response}
             status={statusConsideringReplay}
             arg1={myCodeIdx}
