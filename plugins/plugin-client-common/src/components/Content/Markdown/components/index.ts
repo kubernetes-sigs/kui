@@ -83,7 +83,7 @@ function components(args: Args) {
   const components = Object.assign(
     {
       tip,
-      tabbed
+      tabbed: tabbed(args.uuid)
     },
     typedComponents(args)
   )

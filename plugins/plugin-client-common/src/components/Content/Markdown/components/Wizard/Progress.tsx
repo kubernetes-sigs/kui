@@ -17,10 +17,12 @@
 import React from 'react'
 import { i18n } from '@kui-shell/core'
 
-import CodeBlockProps from './CodeBlockProps'
+import { Graph, blocks, progress } from '../code/graph'
 
 import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
+
+import { State as WizardState } from '.'
 
 import { ProgressVariant } from '@patternfly/react-core'
 
@@ -28,9 +30,9 @@ const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').the
 
 const strings = i18n('plugin-client-common', 'code')
 
-interface Props {
+type Props = Pick<WizardState, 'choices'> & {
   /** The tasks to be accomplished */
-  codeBlocks: CodeBlockProps[]
+  codeBlocks: Graph
 }
 
 type Status = ProgressStepState['status']
@@ -65,52 +67,35 @@ export default class Progress extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    this.props.codeBlocks.forEach(_ => {
+    blocks(this.props.codeBlocks, 'all').forEach(_ => {
       subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
     })
   }
 
   public componentWillUnmount() {
-    this.props.codeBlocks.forEach(_ => {
+    blocks(this.props.codeBlocks, 'all').forEach(_ => {
       unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler)
     })
   }
 
   private get nSteps() {
-    return this.props.codeBlocks.length
+    return progress(this.props.codeBlocks, undefined, this.props.choices).nTotal
   }
 
   private counts() {
-    return Object.values(this.state.status).reduce(
-      (counts, status) => {
-        if (status === 'success') {
-          counts.nDone++
-        } else if (status === 'error') {
-          counts.nError++
-        } else if (status === 'in-progress') {
-          counts.nInProgress++
-        }
-
-        return counts
-      },
-      { nDone: 0, nError: 0, nInProgress: 0 }
-    )
+    return progress(this.props.codeBlocks, this.state.status, this.props.choices)
   }
 
   public render() {
-    const { nDone, nError /* , nInProgress */ } = this.counts()
+    const { nDone, nError } = this.counts()
 
     const title = strings('Completed tasks')
-    const label = /* nInProgress > 0 ? strings('status.in-progress') : */ strings('xOfy', nDone, this.nSteps)
+    const label =
+      nError > 0
+        ? strings(nError === 1 ? 'xOfyFailingz' : 'xOfyFailingsz', nDone, nError, this.nSteps)
+        : strings('xOfy', nDone, this.nSteps)
 
-    const variant =
-      nDone === this.nSteps
-        ? ProgressVariant.success
-        : nError > 0
-        ? ProgressVariant.danger
-        : // : nInProgress > 0
-          // ? ProgressVariant.warning
-          undefined
+    const variant = nDone === this.nSteps ? ProgressVariant.success : nError > 0 ? ProgressVariant.danger : undefined
 
     return (
       <PatternFlyProgress

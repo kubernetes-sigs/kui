@@ -1,7 +1,11 @@
 {
   "Code Block": "Code Block",
+  "Optional Code Block": "Code Block *(this code block is optional)*",
 
   "xOfy": "{0} of {1}",
+  "xOfyFailingz": "{0} of {2} ({1} failure)",
+  "xOfyFailingsz": "{0} of {2} ({1} failures)",
+
   "Completed tasks": "Completed tasks",
 
   "status.blank": "Not yet executed",

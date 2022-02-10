@@ -20,8 +20,38 @@
 $small: 0.5rem;
 $regular: 0.75rem;
 
+$blank-color: var(--color-blue-rgb);
+$hover-color: var(--color-table-border3);
+$error-color: var(--color-error);
+$success-color: var(--pf-global--primary-color--100);
+$complete-color: var(--color-ok);
+
+@mixin MiniProgressStepper {
+  @include ProgressStepper {
+    &[data-mini] {
+      @content;
+    }
+  }
+}
+
+@mixin Complete {
+  &[data-is-complete='true'] {
+    @content;
+  }
+}
+
+@mixin Incomplete {
+  &[data-is-complete='false'] {
+    @content;
+  }
+}
+
 @include MiniProgressStepper {
   --pf-c-progress-stepper__step-icon--Width: #{$regular};
+
+  height: 1.125rem;
+  display: flex;
+  align-items: center;
 
   @include Spinner {
     --sk-color: var(--color-yellow);
@@ -48,7 +78,7 @@ $regular: 0.75rem;
     width: auto;
     font-size: $regular;
     &:hover {
-      background-color: var(--color-table-border3);
+      background-color: $hover-color;
     }
   }
 
@@ -65,17 +95,52 @@ $regular: 0.75rem;
         border: none;
       }
     }
-    @include Success {
+  }
+}
+
+@include MiniProgressStepper {
+  @include Complete {
+    @include ProgressStep {
       @include Icon {
         &:not(:hover) {
-          background-color: var(--pf-global--primary-color--100);
+          background-color: $complete-color;
         }
       }
     }
-    @include Blank {
-      @include Icon {
-        &:not(:hover) {
-          background-color: rgba(var(--color-blue-rgb), 0.2);
+  }
+}
+
+@include MiniProgressStepper {
+  @include Incomplete {
+    @include ProgressStep {
+      @include Success {
+        @include Icon {
+          &:not(:hover) {
+            background-color: $success-color;
+          }
+        }
+      }
+      @include Error {
+        @include Icon {
+          &:not(:hover) {
+            background-color: $error-color;
+          }
+        }
+      }
+      @include Blank {
+        --opacity: 0.15;
+        @include Optional {
+          @include Icon {
+            &:not(:hover) {
+              --opacity: 0.05;
+              border: 1px dotted $hover-color;
+            }
+          }
+        }
+        @include Icon {
+          &:not(:hover) {
+            background-color: rgba($blank-color, var(--opacity));
+          }
         }
       }
     }

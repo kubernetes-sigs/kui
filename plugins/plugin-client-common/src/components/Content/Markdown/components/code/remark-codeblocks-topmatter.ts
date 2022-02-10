@@ -18,6 +18,7 @@ import { Node } from 'hast'
 import { Code } from 'mdast'
 import { visit } from 'unist-util-visit'
 
+import dump from './dump'
 import { tryFrontmatter } from '../../frontmatter'
 import KuiFrontmatter, { hasCodeBlocks } from '../../KuiFrontmatter'
 
@@ -53,12 +54,7 @@ export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiF
               attributes.validate = matched.validate
             }
 
-            node.value = `
----
-${require('js-yaml').dump(attributes)}
----
-${body}
-`
+            node.value = dump(attributes, body)
           }
         }
       }
