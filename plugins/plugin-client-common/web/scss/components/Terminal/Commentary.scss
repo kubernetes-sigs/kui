@@ -46,6 +46,24 @@ $box-shadow-margin: 4px; /* room for box shadow */
   }
 }
 
+@mixin Validated {
+  &[data-is-validated] {
+    @content;
+  }
+}
+
+@mixin Optional {
+  &[data-is-optional] {
+    @content;
+  }
+}
+
+@mixin GrayAction {
+  @include InputWrapper {
+    --color-for-guidebook-block-actions: var(--color-text-02);
+  }
+}
+
 body[kui-theme-style] {
   @include TextContent {
     color: inherit;
@@ -585,6 +603,38 @@ pre {
   @include TextContent {
     & > .marked-content > p {
       font-size: $terminal-font-size;
+    }
+  }
+}
+
+@include Commentary {
+  @include Block {
+    @include InputWrapper {
+      $action-size: 1.25;
+      --color-for-guidebook-block-actions: var(--color-brand-01);
+      @include Spinner {
+        padding: 0;
+        margin: 0;
+        width: calc(2em * $action-size);
+      }
+      @include BlockAction {
+        font-size: $action-size + em;
+        color: var(--color-for-guidebook-block-actions);
+      }
+    }
+
+    @include Optional {
+      &:not(:hover) {
+        filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
+      }
+      @include GrayAction;
+    }
+
+    @include Validated {
+      @include GrayAction;
+    }
+    @include Successful {
+      @include GrayAction;
     }
   }
 }

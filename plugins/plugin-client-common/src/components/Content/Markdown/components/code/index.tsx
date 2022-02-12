@@ -21,7 +21,7 @@ import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
 import { Props } from '../../../Markdown'
 import { tryFrontmatter } from '../../frontmatter'
 
-import Input from '../../../../Views/Terminal/Block/Inputv2'
+import CodeBlock from '../../../../Views/Terminal/Block/Inputv2'
 
 const SimpleEditor = React.lazy(() => import('../../../Editor/SimpleEditor'))
 
@@ -72,7 +72,7 @@ export default function code(
 
       return (
         <React.Fragment>
-          <Input
+          <CodeBlock
             readonly={false}
             id={`kui-link-${blockId}`}
             className="kui--code-block-in-markdown"
@@ -82,6 +82,7 @@ export default function code(
             language={language}
             blockId={blockId}
             validate={attributes.validate}
+            optional={attributes.optional}
             response={response}
             status={statusConsideringReplay}
             arg1={myCodeIdx}
