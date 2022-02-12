@@ -54,7 +54,11 @@
   "concurrencyColdStartInDurationSplit": "{0}-way concurrency in cold starts with execution time {1}",
   "Copy": "Copy",
   "Rerun": "Rerun",
+
+  "Execute this command": "Execute this command",
   "Re-execute this command": "Re-execute this command",
+  "Execution of this command is optional": "Execution of this command is optional",
+
   "Insert Command": "Insert Command",
   "Split the terminal": "Split the terminal {0}",
   "Output has been pinned to a watch pane": "Output has been **pinned** to a watch pane",

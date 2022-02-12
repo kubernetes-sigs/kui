@@ -43,13 +43,25 @@ import { MutabilityContext, MutabilityState } from '../../../Client/MutabilityCo
 import { linkUpdateChannel, linkGetChannel } from '../../../Content/LinkStatus'
 import { ProgressStepper, ProgressStep } from '../../../Content/ProgressStepper'
 
-const Badge = React.lazy(() => import('../../../spi/Tag'))
+const BadgeUI = React.lazy(() => import('../../../spi/Tag'))
 const SourceRef = React.lazy(() => import('../SourceRef'))
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
 const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
 
 const debug = Debug('plugin-client-common/components/Views/Terminal/Block/CodeBlock')
 const strings = i18n('plugin-client-common')
+
+/**
+ * Thin wrapper over the Badge component that places the badge in the
+ * top left of the surrounding CodeBlock component.
+ */
+function Badge(props: React.PropsWithChildren<{}>) {
+  return (
+    <span className="kui--code-block-actions" data-align="top-left">
+      <BadgeUI>{props.children}</BadgeUI>
+    </span>
+  )
+}
 
 interface Value {
   value: string
@@ -74,7 +86,10 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
     /** A command line that validates whether this command was successfully issued at some time in the past */
     validate?: string
 
-    /** Output of this Input? */
+    /** Is execution of this code block optional? */
+    optional?: boolean
+
+    /** Output of this CodeBlock? */
     response?: KResponse
 
     /** Execution status of the `response` property */
@@ -115,13 +130,13 @@ type State = Value &
     codeSnippetValue?: string
   }
 
-export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
+export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
   private readonly durationDom
   private readonly cleaners: (() => void)[] = []
 
   public constructor(props: Props<T1, T2, T3>) {
     super(props)
-    this.state = Input.getDerivedStateFromProps(props)
+    this.state = CodeBlock.getDerivedStateFromProps(props)
   }
 
   public componentDidMount() {
@@ -231,17 +246,17 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     }
   }
 
+  /** Are we in the middle of an execution of this code block? */
+  private get isExecutionInProgress() {
+    return this.state.execution === 'processing' && this.state.startTime && !this.state.endTime
+  }
+
   /** UI to denote duration of the current Run */
   private timer() {
     return (
-      this.state.startTime &&
-      !this.state.endTime && (
-        <span className="kui--code-block-actions" data-align="top-left">
-          <Badge>
-            <Timer startTime={this.state.startTime} endTime={this.state.endTime} status={this.state.execution} />
-          </Badge>
-        </span>
-      )
+      <Badge>
+        <Timer startTime={this.state.startTime} endTime={this.state.endTime} status={this.state.execution} />
+      </Badge>
     )
   }
 
@@ -257,7 +272,14 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
           </ProgressStepper>
         </div>
       )
+    } else if (this.props.optional) {
+      return <Badge>{strings('Optional')}</Badge>
     }
+  }
+
+  /** Display e.g. execution timer or optional badge */
+  private badges() {
+    return this.isExecutionInProgress ? this.timer() : this.status()
   }
 
   private actions(mutability: MutabilityState) {
@@ -265,7 +287,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       if (this.state.execution === 'processing') {
         return <Spinner />
       } else {
-        return <Run execution={this.state.execution} onRun={this._onRun} />
+        return <Run optional={this.props.optional} execution={this.state.execution} onRun={this._onRun} />
       }
     }
   }
@@ -278,8 +300,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   private input(mutability: MutabilityState) {
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
-        {this.timer()}
-        {this.state.execution !== 'processing' && this.status()}
+        {this.badges()}
         <div className="flex-fill">
           <CodeSnippet
             wordWrap="on"
@@ -445,6 +466,8 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
             data-is-executable={mutability.executable}
             data-is-output-only={this.outputOnly || undefined}
+            data-is-optional={this.props.optional || undefined}
+            data-is-validated={this.state.validated || undefined}
             {...dataProps}
           >
             {!this.outputOnly && this.input(mutability)}
@@ -457,10 +480,10 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   }
 }
 
-interface RunProps {
-  execution: State['execution']
-  onRun: () => void | Promise<void>
-}
+type RunProps = Pick<Props, 'optional'> &
+  Pick<State, 'execution'> & {
+    onRun: () => void | Promise<void>
+  }
 
 class Run extends React.PureComponent<RunProps> {
   public render() {
@@ -472,7 +495,13 @@ class Run extends React.PureComponent<RunProps> {
         onClick={this.props.onRun}
         classNameB="green-text"
         className="kui--block-action kui--block-action-run"
-        title={strings(this.props.execution === 'done' ? 'Re-execute this command' : 'Execute this command')}
+        title={strings(
+          this.props.execution === 'done'
+            ? 'Re-execute this command'
+            : this.props.optional
+            ? 'Execution of this command is optional'
+            : 'Execute this command'
+        )}
       />
     )
   }
