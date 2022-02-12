@@ -21,6 +21,8 @@ codeblocks:
       validate: brew info kn
     - match: ^brew install knative-sandbox/kn-plugins/quickstart$
       validate: kn quickstart --help
+    - match: brew upgrade
+      optional: true
     - match: kn quickstart --help
       optional: true
 ---
