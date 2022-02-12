@@ -19,6 +19,7 @@
 @import '../Editor/mixins';
 @import '../Wizard/mixins';
 @import '../Sidecar/mixins';
+@import '../Tooltip/mixins';
 @import '../common/narrow-window';
 @import '../ProgressStepper/mixins';
 @import '../ExpandableSection/mixins';
@@ -40,6 +41,13 @@ $box-shadow-margin: 4px; /* room for box shadow */
     @content;
   }
 }
+
+@mixin NotShowingSampleOutput {
+  &:not([data-is-sample-output]) {
+    @content;
+  }
+}
+
 @mixin CodeBlockActions {
   .kui--code-block-actions {
     @content;
@@ -61,6 +69,14 @@ $box-shadow-margin: 4px; /* room for box shadow */
 @mixin GrayAction {
   @include InputWrapper {
     --color-for-guidebook-block-actions: var(--color-text-02);
+  }
+}
+
+@mixin InvisibleActionExceptOnHover {
+  &:not(:hover) {
+    @include BlockAction {
+      display: none;
+    }
   }
 }
 
@@ -632,9 +648,29 @@ pre {
 
     @include Validated {
       @include GrayAction;
+      @include InvisibleActionExceptOnHover;
     }
-    @include Successful {
-      @include GrayAction;
+
+    @include NotShowingSampleOutput {
+      @include Successful {
+        @include GrayAction;
+        @include InvisibleActionExceptOnHover;
+      }
     }
+  }
+}
+
+@include Tooltip {
+  i {
+    margin-left: 0.5em;
+  }
+  .fa-dot-circle {
+    color: var(--color-warning);
+  }
+  .fa-check-circle {
+    color: var(--color-ok);
+  }
+  .fa-exclamation-circle {
+    color: var(--color-error);
   }
 }

@@ -1,6 +1,5 @@
 {
   "Code Block": "Code Block",
-  "Optional Code Block": "Code Block *(this code block is optional)*",
 
   "xOfy": "{0} of {1}",
   "xOfyFailingz": "{0} of {2} ({1} failure)",
@@ -8,10 +7,11 @@
 
   "Completed tasks": "Completed tasks",
 
+  "status.optional": "This code block is optional :fontawesome-solid-dot-circle:",
   "status.blank": "Not yet executed",
-  "status.success": "Successfully executed",
+  "status.success": "Successfully executed :fontawesome-solid-check-circle:",
   "status.warning": "Warning",
-  "status.error": "Error in execution",
+  "status.error": "Error in execution :fontawesome-solid-exclamation-circle:",
   "status.pending": "Pending execution",
   "status.in-progress": "Processing...",
   "status.unknown": "Status unknown"
