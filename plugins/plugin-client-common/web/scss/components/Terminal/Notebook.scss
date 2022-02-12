@@ -34,7 +34,7 @@ $margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-eleme
   }
 }
 
-/** These are special stylings for read only mode, for example, we don't wantt to show all block actions */
+/** These are special stylings for read only mode, for example, we don't want to show all block actions */
 @include Scrollback {
   @include FinishedBlock {
     @include NotEditableAndExecutable {
@@ -46,10 +46,6 @@ $margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-eleme
         @include Input {
           padding: #{0.875 * $input-padding} 0;
           padding-right: $input-padding;
-        }
-
-        @include Spinner {
-          margin: $margin-for-right-elements;
         }
 
         /** Adjust and always show timestamp */
@@ -77,11 +73,6 @@ $margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-eleme
             color: var(--color-gray);
           }
         }
-      }
-
-      @include BlockAction {
-        font-size: 1.375em;
-        color: var(--color-green);
       }
     }
   }

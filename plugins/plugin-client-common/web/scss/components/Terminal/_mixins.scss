@@ -373,6 +373,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin Successful {
+  &.valid-response {
+    @content;
+  }
+}
+
 /** The InputWrapper for blocks that have no output */
 @mixin InputWrapperForEmptyBlock {
   @include FinishedBlock {
