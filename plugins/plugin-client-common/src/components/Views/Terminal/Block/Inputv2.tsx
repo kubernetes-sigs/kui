@@ -372,8 +372,12 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     )
   }
 
+  private get hasOutput() {
+    return this.props.response || this.hasStreamingOutput()
+  }
+
   private output() {
-    const content = (this.props.response || this.hasStreamingOutput()) && (
+    const content = this.hasOutput && (
       <div className="repl-output repl-result-has-content">
         <div className="result-vertical">
           <div className="repl-result">
@@ -468,6 +472,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
             data-is-output-only={this.outputOnly || undefined}
             data-is-optional={this.props.optional || undefined}
             data-is-validated={this.state.validated || undefined}
+            data-is-sample-output={(this.hasOutput && this.state.execution === 'replayed') || undefined}
             {...dataProps}
           >
             {!this.outputOnly && this.input(mutability)}

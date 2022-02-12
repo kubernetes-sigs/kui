@@ -136,10 +136,11 @@ class MiniProgressStep extends React.PureComponent<MiniProps, ProgressStepState>
   }
 
   private get tooltipText() {
-    const title = this.props.optional ? strings('Optional Code Block') : strings('Code Block')
+    const title = strings('Code Block')
+    const status = this.status === 'blank' && this.props.optional ? 'optional' : this.status
 
     return `### ${title}
-#### Status: ${strings('status.' + this.status)}
+#### Status: ${strings('status.' + status)}
 
 \`\`\`${this.props.language || ''}
 ${this.props.body}
