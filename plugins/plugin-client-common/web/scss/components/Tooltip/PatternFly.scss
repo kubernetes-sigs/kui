@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+@import 'mixins';
 @import '../Editor/mixins';
 
 $color: var(--color-base00);
 $bgcolor: var(--color-base06);
 
-.kui--tooltip {
+@include Tooltip {
   color: $color;
   background-color: $bgcolor;
 
