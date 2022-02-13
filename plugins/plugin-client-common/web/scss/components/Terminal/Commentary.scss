@@ -66,9 +66,22 @@ $box-shadow-margin: 4px; /* room for box shadow */
   }
 }
 
+/** Prereqs not yet satisfied? */
+@mixin NotReady {
+  &:not([data-is-ready]) {
+    @content;
+  }
+}
+
 @mixin GrayAction {
   @include InputWrapper {
     --color-for-guidebook-block-actions: var(--color-text-02);
+  }
+}
+
+@mixin WarningAction {
+  @include InputWrapper {
+    --color-for-guidebook-block-actions: var(--color-red);
   }
 }
 
@@ -78,6 +91,11 @@ $box-shadow-margin: 4px; /* room for box shadow */
       display: none;
     }
   }
+}
+
+@mixin InvisibleActionExceptOnHoverThenWarning {
+  @include WarningAction;
+  @include InvisibleActionExceptOnHover;
 }
 
 body[kui-theme-style] {
@@ -626,7 +644,7 @@ pre {
 @include Commentary {
   @include Block {
     @include InputWrapper {
-      $action-size: 1.25;
+      $action-size: 1;
       --color-for-guidebook-block-actions: var(--color-brand-01);
       @include Spinner {
         padding: 0;
@@ -637,6 +655,10 @@ pre {
         font-size: $action-size + em;
         color: var(--color-for-guidebook-block-actions);
       }
+    }
+
+    @include NotReady {
+      @include InvisibleActionExceptOnHoverThenWarning;
     }
 
     @include Optional {

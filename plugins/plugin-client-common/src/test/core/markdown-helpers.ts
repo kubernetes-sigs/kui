@@ -71,11 +71,11 @@ export async function checkBlockValidation(ctx: Common.ISuite, split: Position, 
 }
 
 export async function clickToExecuteBlock(this: Common.ISuite, split: Position, block: Block) {
-  const codeBlockSelector = `${split()} .kui--code-block-in-markdown[data-code-index="${block.index}"]`
+  const codeBlockSelector = `${split()} ${Selectors.Markdown.codeBlock(block.index)}`
   const codeBlock = await this.app.client.$(codeBlockSelector)
   await codeBlock.waitForDisplayed({ timeout: CLI.waitTimeout })
 
-  const runAction = await codeBlock.$('.kui--block-action-run')
+  const runAction = await codeBlock.$(Selectors.Markdown.runButton)
   await codeBlock.moveTo()
   await runAction.waitForDisplayed({ timeout: CLI.waitTimeout })
 
