@@ -33,46 +33,59 @@ type Status = ProgressStepState['status']
 /* map from choice group to selected choice member */
 type ChoicesMap = Record<CodeBlockProps['choice']['group'], CodeBlockProps['choice']['member']>
 
-interface Sequence {
-  sequence: Graph[]
+/** Iteration order */
+interface Ordered {
+  order: number
 }
 
-interface Choice {
+type Unordered = Partial<Ordered>
+
+type Sequence<T extends Unordered | Ordered = Unordered> = {
+  sequence: Graph<T>[]
+}
+
+type Choice<T extends Unordered | Ordered = Unordered> = {
   group: string
 
   choices: {
     member: string
-    graph: Sequence
+    graph: Sequence<T>
   }[]
 }
 
-interface Parallel {
-  parallel: Graph[]
+type Parallel<T extends Unordered | Ordered = Unordered> = {
+  parallel: Graph<T>[]
 }
 
-export type Graph = Choice | Sequence | Parallel | CodeBlockProps
+export type Graph<T extends Unordered | Ordered = Unordered> =
+  | Choice<T>
+  | Sequence<T>
+  | Parallel<T>
+  | (CodeBlockProps & T)
 
-function isChoice(graph: Graph): graph is Choice {
+export type OrderedGraph = Graph<Ordered>
+
+function isChoice<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Choice<T> {
   return Array.isArray((graph as Choice).choices)
 }
 
-function isSequence(graph: Graph): graph is Sequence {
+function isSequence<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Sequence<T> {
   return Array.isArray((graph as Sequence).sequence)
 }
 
-function isParallel(graph: Graph): graph is Parallel {
+function isParallel<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Parallel<T> {
   return Array.isArray((graph as Parallel).parallel)
 }
 
-export function sequence(parts: Graph[]): Sequence {
+export function sequence<T extends Unordered | Ordered = Unordered>(sequence: Graph<T>[]): Sequence<T> {
   return {
-    sequence: parts
+    sequence
   }
 }
 
-export function parallel(parts: Graph[]): Parallel {
+export function parallel<T extends Unordered | Ordered = Unordered>(parallel: Graph<T>[]): Parallel<T> {
   return {
-    parallel: parts
+    parallel
   }
 }
 
@@ -127,6 +140,47 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
     : sequence(parts)
 }
 
+function orderSequence(graph: Sequence, ordinal = 0): Sequence<Ordered> {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  return sequence(graph.sequence.map((_, idx) => order(_, ordinal + idx)))
+}
+
+function orderParallel(graph: Parallel, ordinal: number): Parallel<Ordered> {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  return parallel(graph.parallel.map(_ => order(_, ordinal)))
+}
+
+function orderedChoice(choice: Choice, subgraphs: Sequence<Ordered>[]): Choice<Ordered> {
+  return {
+    group: choice.group,
+
+    choices: choice.choices.map((item, idx) => ({
+      member: item.member,
+      graph: subgraphs[idx]
+    }))
+  }
+}
+
+function orderCodeBlock(graph: CodeBlockProps, ordinal: number): CodeBlockProps & Ordered {
+  return Object.assign({}, graph, { order: ordinal })
+}
+
+// T extends Sequence ? Sequence<Ordered> : T extends Parallel ? Parallel<Ordered> : T extends Choice ? Choice<Ordered> : (CodeBlockProps & Ordered)
+export function order<T extends Graph<Unordered>>(graph: T, ordinal = 0): Graph<Ordered> {
+  if (isSequence(graph)) {
+    return orderSequence(graph, ordinal)
+  } else if (isParallel(graph)) {
+    return orderParallel(graph, ordinal)
+  } else if (isChoice(graph)) {
+    return orderedChoice(
+      graph,
+      graph.choices.map(_ => orderSequence(_.graph, ordinal))
+    )
+  } else {
+    return orderCodeBlock(graph, ordinal)
+  }
+}
+
 /**
  * @return the current choice, which defaults to the first if we are
  * not provided a set of user choices via the `choices` parameter. The
@@ -134,7 +188,10 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
  * UI, of presenting choices in a set of tabs; in a tabular UI,
  * usually the first tab is open by default.
  */
-function choose(graph: Choice, choices: 'default-path' | ChoicesMap = 'default-path'): Graph {
+function choose<T extends Unordered | Ordered = Unordered>(
+  graph: Choice<T>,
+  choices: 'default-path' | ChoicesMap = 'default-path'
+): Graph<T> {
   const selectedMember = choices !== 'default-path' ? choices[graph.group] : undefined
 
   const choice = (selectedMember && graph.choices.find(_ => _.member === selectedMember)) || graph.choices[0]
@@ -143,8 +200,11 @@ function choose(graph: Choice, choices: 'default-path' | ChoicesMap = 'default-p
 }
 
 /** @return A linearized set of code blocks in the given `graph` */
-export function blocks(graph: Graph, choices: 'all' | 'default-path' | ChoicesMap = 'default-path'): CodeBlockProps[] {
-  const subblocks = (subgraph: Graph) => blocks(subgraph, choices)
+export function blocks<T extends Unordered | Ordered = Unordered>(
+  graph: Graph<T>,
+  choices: 'all' | 'default-path' | ChoicesMap = 'default-path'
+): (CodeBlockProps & T)[] {
+  const subblocks = (subgraph: Graph<T>) => blocks(subgraph, choices)
 
   if (!graph) {
     return []
@@ -169,23 +229,25 @@ export function blocks(graph: Graph, choices: 'all' | 'default-path' | ChoicesMa
 
 /** @return progress towards success of the given `graph` */
 export function progress(
-  graph: Graph,
+  graph: Graph<Ordered>,
   statusMap?: Record<string, Status> /* map key is code block id */,
   choices?: ChoicesMap
-): { nDone: number; nError: number; nTotal: number } {
-  const zero = { nDone: 0, nError: 0, nTotal: 0 }
-  const subprogress = (subgraph: Graph) => progress(subgraph, statusMap, choices)
+): { nDone: number; nError: number; nTotal: number; nextOrdinals: number[] } {
+  const zero = { nDone: 0, nError: 0, nTotal: 0, nextOrdinals: [] }
+  const subprogress = (subgraph: Graph<Ordered>) => progress(subgraph, statusMap, choices)
 
   if (!graph) {
     return zero
   } else if (isSequence(graph) || isParallel(graph)) {
     // Sequence | Parallel => sum across parts
     const parts = (isSequence(graph) ? graph.sequence : graph.parallel).map(subprogress)
+    const nexts = parts.flatMap(_ => _.nextOrdinals)
 
     return {
       nDone: parts.reduce((N, part) => N + part.nDone, 0),
       nError: parts.reduce((N, part) => N + part.nError, 0),
-      nTotal: parts.reduce((N, part) => N + part.nTotal, 0)
+      nTotal: parts.reduce((N, part) => N + part.nTotal, 0),
+      nextOrdinals: isSequence(graph) ? [Math.min(...nexts)] : nexts
     }
   } else if (isChoice(graph)) {
     // choice => consult choices? model, otherwise assume first choice (first tab is selected)
@@ -198,10 +260,12 @@ export function progress(
     } else {
       const status: Status = (statusMap && statusMap[graph.id]) || 'blank'
 
+      const isDone = status === 'success'
       return {
-        nDone: status === 'success' ? 1 : 0,
+        nDone: isDone ? 1 : 0,
         nError: status === 'error' ? 1 : 0,
-        nTotal: 1
+        nTotal: 1,
+        nextOrdinals: isDone ? [] : [graph.order]
       }
     }
   }

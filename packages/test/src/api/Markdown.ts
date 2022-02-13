@@ -19,6 +19,9 @@ export default class Markdown {
   public readonly tabs = '.kui--markdown-tabs'
   public readonly tab = `${this.tabs} .kui--markdown-tab button`
 
+  private readonly _codeBlock = '.kui--code-block-in-markdown'
+  public readonly runButton = '.kui--block-action-run'
+
   public tipWithTitle(title: string) {
     return `${this.tip}[data-title="${title}"]`
   }
@@ -29,5 +32,9 @@ export default class Markdown {
 
   public tabWithTitle(title: string) {
     return `${this.tab}[data-title="${title}"]`
+  }
+
+  public codeBlock(index: number) {
+    return `${this._codeBlock}[data-code-index="${index}"]`
   }
 }

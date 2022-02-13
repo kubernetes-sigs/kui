@@ -37,8 +37,12 @@ import Spinner from './Spinner'
 import Status from './CodeBlockStatus'
 import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
-import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 import { MutabilityContext, MutabilityState } from '../../../Client/MutabilityContext'
+
+import Tooltip from '../../../spi/Tooltip'
+import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
+
+import { emitGetCodeBlockReadiness, onCodeBlockReadiness, offCodeBlockReadiness } from './CodeBlockEvents'
 
 import { linkUpdateChannel, linkGetChannel } from '../../../Content/LinkStatus'
 import { ProgressStepper, ProgressStep } from '../../../Content/ProgressStepper'
@@ -110,6 +114,9 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
 
 type State = Value &
   StreamingState & {
+    /** Have the prereqs been satisfied? */
+    ready: boolean
+
     /** Status of the execution of this code block */
     execution: Status
 
@@ -142,6 +149,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   public componentDidMount() {
     this.initLinkEvents()
     this.initWatchEvents()
+    this.initCodeBlockEvents()
     this.doValidate()
 
     if (this.props.executeImmediately && !this.props.response) {
@@ -183,6 +191,19 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
    *
    */
   private readonly onWatchEvent = () => this._onRun()
+
+  /** Is this code block ready for execution? E.g. perhaps the prereqs have yet to be satisfied. */
+  private readonly _updateReadiness = (ready: boolean) => {
+    this.setState({ ready })
+  }
+
+  /** Is this code block ready for execution? E.g. perhaps the prereqs have yet to be satisfied. */
+  private initCodeBlockEvents() {
+    onCodeBlockReadiness(this.props.blockId, this._updateReadiness)
+    this.cleaners.push(() => offCodeBlockReadiness(this.props.blockId, this._updateReadiness))
+
+    emitGetCodeBlockReadiness(this.props.blockId, this._updateReadiness)
+  }
 
   private initWatchEvents() {
     if (this.props.watch) {
@@ -234,6 +255,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
       const execUUID = uuid()
       return Object.assign(
         {
+          ready: true,
           execution: props.status || 'not-yet',
           value: usePropsValue ? props.value : state.codeSnippetValue || state.value,
           language: props.language,
@@ -287,7 +309,14 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
       if (this.state.execution === 'processing') {
         return <Spinner />
       } else {
-        return <Run optional={this.props.optional} execution={this.state.execution} onRun={this._onRun} />
+        return (
+          <Run
+            ready={this.state.ready}
+            optional={this.props.optional}
+            execution={this.state.execution}
+            onRun={this._onRun}
+          />
+        )
       }
     }
   }
@@ -470,6 +499,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
             className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
             data-is-executable={mutability.executable}
             data-is-output-only={this.outputOnly || undefined}
+            data-is-ready={this.state.ready || undefined}
             data-is-optional={this.props.optional || undefined}
             data-is-validated={this.state.validated || undefined}
             data-is-sample-output={(this.hasOutput && this.state.execution === 'replayed') || undefined}
@@ -486,28 +516,32 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
 }
 
 type RunProps = Pick<Props, 'optional'> &
-  Pick<State, 'execution'> & {
+  Pick<State, 'execution' | 'ready'> & {
     onRun: () => void | Promise<void>
   }
 
 class Run extends React.PureComponent<RunProps> {
   public render() {
+    const tooltip = strings(
+      !this.props.ready && this.props.execution !== 'done' && this.props.execution !== 'error'
+        ? 'Execute with caution! The pre-requisites for this code block have not yet been satisfied.'
+        : this.props.execution === 'done'
+        ? 'Re-execute this command'
+        : this.props.optional
+        ? 'Execution of this command is optional'
+        : 'Execute this command'
+    )
     return (
-      <TwoFaceIcon
-        a="Play"
-        b="Play"
-        delay={4000}
-        onClick={this.props.onRun}
-        classNameB="green-text"
-        className="kui--block-action kui--block-action-run"
-        title={strings(
-          this.props.execution === 'done'
-            ? 'Re-execute this command'
-            : this.props.optional
-            ? 'Execution of this command is optional'
-            : 'Execute this command'
-        )}
-      />
+      <Tooltip content={tooltip} position="bottom-end">
+        <TwoFaceIcon
+          a="Play"
+          b="Play"
+          delay={4000}
+          onClick={this.props.onRun}
+          classNameB="green-text"
+          className="kui--block-action kui--block-action-run"
+        />
+      </Tooltip>
     )
   }
 }

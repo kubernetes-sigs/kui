@@ -69,7 +69,7 @@ import {
   SearchIcon as Search,
   BellIcon as Notification,
   QuestionIcon as Unknown,
-  PlayCircleIcon as Play
+  PlayIcon as Play
 } from '@patternfly/react-icons'
 
 import { Props } from '..'

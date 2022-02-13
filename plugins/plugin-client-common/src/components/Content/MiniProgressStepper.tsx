@@ -19,12 +19,15 @@ import { i18n, pexecInCurrentTab } from '@kui-shell/core'
 
 import Tooltip from '../spi/Tooltip'
 import Spinner from '../Views/Terminal/Block/Spinner'
-import { emitLinkUpdate, subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
-import { ProgressStepState, statusFromStatusVector, statusToClassName } from './ProgressStepper'
+import { ProgressStepState, statusToClassName } from './ProgressStepper'
+
+import { emitLinkUpdate } from './LinkStatus'
 
 import '../../../web/scss/components/Wizard/MiniProgressStepper.scss'
 
 const strings = i18n('plugin-client-common', 'code')
+
+type Status = ProgressStepState['status']
 
 type MiniProps = {
   codeBlockId: string
@@ -33,33 +36,17 @@ type MiniProps = {
   validate?: string
   optional?: boolean
 
-  stepIdx: number
-  setDone(stepIdx: number, isDone: boolean): void
+  status: Status
 }
 
-type StepperProps = { steps: Omit<MiniProps, 'stepIdx' | 'setDone'>[] }
-type StepperState = { isDone: boolean[] }
+type StepperProps = {
+  /** The key is a codeBlockId */
+  status: Record<string, Status>
 
-export class MiniProgressStepper extends React.PureComponent<StepperProps, StepperState> {
-  public constructor(props: StepperProps) {
-    super(props)
+  steps: Omit<MiniProps, 'status'>[]
+}
 
-    this.state = {
-      isDone: Array(props.steps.length).fill(false)
-    }
-  }
-
-  private readonly setDone = (stepIdx: number, stepIsDone: boolean) => {
-    this.setState(curState => {
-      const isDone = curState.isDone.slice()
-      isDone[stepIdx] = stepIsDone
-
-      return {
-        isDone
-      }
-    })
-  }
-
+export class MiniProgressStepper extends React.PureComponent<StepperProps> {
   private progress() {
     const isComplete = this.isComplete()
 
@@ -67,8 +54,8 @@ export class MiniProgressStepper extends React.PureComponent<StepperProps, Stepp
       <ol className="pf-c-progress-stepper kui--progress-stepper" data-mini={true} data-is-complete={this.isComplete()}>
         {this.props.steps
           .filter(_ => !isComplete || !_.optional)
-          .map((props, idx) => (
-            <MiniProgressStep key={props.codeBlockId} {...props} stepIdx={idx} setDone={this.setDone} />
+          .map(props => (
+            <MiniProgressStep key={props.codeBlockId} {...props} status={this.props.status[props.codeBlockId]} />
           ))}
       </ol>
     )
@@ -83,7 +70,7 @@ export class MiniProgressStepper extends React.PureComponent<StepperProps, Stepp
   }
 
   private nDone() {
-    return this.state.isDone.filter(Boolean).length
+    return this.props.steps.filter(_ => this.props.status[_.codeBlockId] === 'success').length
   }
 
   private isComplete() {
@@ -95,17 +82,8 @@ export class MiniProgressStepper extends React.PureComponent<StepperProps, Stepp
   }
 }
 
-class MiniProgressStep extends React.PureComponent<MiniProps, ProgressStepState> {
-  private readonly _statusUpdateHandler = (statusVector: number[]) => {
-    const status = statusFromStatusVector(statusVector, false)
-    this.setState({ status })
-
-    this.props.setDone(this.props.stepIdx, status === 'success')
-  }
-
+class MiniProgressStep extends React.PureComponent<MiniProps> {
   public componentDidMount() {
-    subscribeToLinkUpdates(this.props.codeBlockId, this._statusUpdateHandler)
-
     if (this.props.validate) {
       setTimeout(async () => {
         try {
@@ -119,12 +97,8 @@ class MiniProgressStep extends React.PureComponent<MiniProps, ProgressStepState>
     }
   }
 
-  public componentWillUnmount() {
-    unsubscribeToLinkUpdates(this.props.codeBlockId, this._statusUpdateHandler)
-  }
-
-  private get status() {
-    return !this.state ? 'blank' : this.state.status
+  private get status(): Status {
+    return this.props.status || 'blank'
   }
 
   private get statusClass() {
