@@ -21,18 +21,27 @@ import { WizardProps } from './rehype-wizard'
 import Progress from './Progress'
 import CodeBlockProps from './CodeBlockProps'
 import { onTabSwitch, offTabSwitch } from '../tabbed'
-import { Graph, sequence, compile, blocks } from '../code/graph'
+import { Graph, OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
 import { MiniProgressStepper } from '../../../MiniProgressStepper'
+import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
+import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
 
+type Status = ProgressStepState['status']
+
 type Props = WizardProps & { uuid: string }
 
 export interface State {
+  codeBlocks: OrderedGraph
+
+  /** Map from codeBlock ID to execution status of that code block */
+  status: Record<string, Status>
+
   /** Map from tab group to currently selected tab member */
   choices: Record<string, string>
 }
@@ -40,15 +49,28 @@ export interface State {
 export default class Wizard extends React.PureComponent<Props, State> {
   private readonly cleaners: (() => void)[] = []
 
+  private readonly _statusUpdateHandler = (statusVector: number[], codeBlockId: string) => {
+    const status = statusFromStatusVector(statusVector, false)
+
+    this.updateStatus(codeBlockId, status)
+  }
+
   public constructor(props: Props) {
     super(props)
 
     this.state = {
-      choices: {}
+      status: {},
+      choices: {},
+      codeBlocks: order(sequence(this.children.flatMap(_ => this.containedCodeBlocks(_)).filter(Boolean)))
     }
   }
 
   public componentDidMount() {
+    blocks(this.state.codeBlocks, 'all').forEach(_ => {
+      subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
+      this.cleaners.push(() => unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler))
+    })
+
     const switcher = (group: string, member: string) => {
       this.setState(curState => ({
         choices: Object.assign({}, curState.choices, { [group]: member })
@@ -63,10 +85,20 @@ export default class Wizard extends React.PureComponent<Props, State> {
     this.cleaners.forEach(_ => _())
   }
 
+  private updateStatus(codeBlockId: string, status: Status) {
+    this.setState(curState => {
+      curState.status[codeBlockId] = status
+      return {
+        status: Object.assign({}, curState.status)
+      }
+    })
+  }
+
   private wizardCodeBlockSteps(containedCodeBlocks: Graph) {
     return (
       containedCodeBlocks && (
         <MiniProgressStepper
+          status={this.state.status}
           steps={blocks(containedCodeBlocks, this.state.choices).map(_ => ({
             codeBlockId: _.id,
             validate: _.validate,
@@ -111,14 +143,11 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   /** Overall progress across all steps */
   private progress() {
-    if (this.props['data-kui-wizard-progress'] === 'bar') {
-      const allCodeBlocks = sequence(this.children.flatMap(_ => this.containedCodeBlocks(_)))
+    if (this.props['data-kui-wizard-progress'] === 'bar' && blocks(this.state.codeBlocks).length > 0) {
       return (
-        allCodeBlocks.sequence.length > 0 && (
-          <div className="kui--markdown-major-paragraph">
-            <Progress choices={this.state.choices} codeBlocks={allCodeBlocks} />
-          </div>
-        )
+        <div className="kui--markdown-major-paragraph">
+          <Progress status={this.state.status} choices={this.state.choices} codeBlocks={this.state.codeBlocks} />
+        </div>
       )
     }
   }

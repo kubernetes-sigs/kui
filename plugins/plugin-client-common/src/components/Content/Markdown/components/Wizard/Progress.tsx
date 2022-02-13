@@ -16,93 +16,100 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-
-import { Graph, blocks, progress } from '../code/graph'
-
-import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
-import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
+import { ProgressVariant } from '@patternfly/react-core'
 
 import { State as WizardState } from '.'
 
-import { ProgressVariant } from '@patternfly/react-core'
+import {
+  ReadinessHandler,
+  emitCodeBlockReadiness,
+  onGetCodeBlockReadiness,
+  offGetCodeBlockReadiness
+} from '../../../../Views/Terminal/Block/CodeBlockEvents'
+
+import { OrderedGraph, blocks, progress } from '../code/graph'
+import { ProgressStepState } from '../../../ProgressStepper'
 
 const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Progress })))
 
 const strings = i18n('plugin-client-common', 'code')
 
-type Props = Pick<WizardState, 'choices'> & {
-  /** The tasks to be accomplished */
-  codeBlocks: Graph
-}
-
 type Status = ProgressStepState['status']
 
-interface State {
+type Props = Pick<WizardState, 'choices'> & {
+  /** The tasks to be accomplished */
+  codeBlocks: OrderedGraph
+
   /** The key is a codeBlockId */
   status: Record<string, Status>
 }
 
+type State = ReturnType<typeof progress> & {
+  nextCodeBlocks: string[]
+}
+
 export default class Progress extends React.PureComponent<Props, State> {
+  private readonly cleaners: (() => void)[] = []
+
   public constructor(props: Props) {
     super(props)
 
-    this.state = {
-      status: {}
+    this.state = Progress.getDerivedStateFromProps(props)
+  }
+
+  public static getDerivedStateFromProps(props: Props, state?: State) {
+    const prog = progress(props.codeBlocks, props.status, props.choices)
+
+    const allCodeBlocks = blocks(props.codeBlocks)
+    if (!state) {
+      // initialize all blocks as not ready
+      allCodeBlocks.forEach(_ => emitCodeBlockReadiness(_.id, false))
     }
+
+    const nextCodeBlocks = allCodeBlocks.filter(_ => prog.nextOrdinals.includes(_.order)).map(_ => _.id)
+
+    if (state) {
+      const noLongerReady = state.nextCodeBlocks.filter(_ => !nextCodeBlocks.includes(_))
+      noLongerReady.forEach(id => emitCodeBlockReadiness(id, false))
+    }
+    nextCodeBlocks.forEach(id => emitCodeBlockReadiness(id, true))
+
+    return Object.assign({}, prog, { nextCodeBlocks })
   }
 
-  private readonly _statusUpdateHandler = (statusVector: number[], codeBlockId: string) => {
-    const status = statusFromStatusVector(statusVector, false)
-
-    this.updateStatus(codeBlockId, status)
-  }
-
-  private updateStatus(codeBlockId: string, status: Status) {
-    this.setState(curState => {
-      curState.status[codeBlockId] = status
-      return {
-        status: Object.assign({}, curState.status)
-      }
-    })
+  private readonly _onGetReadiness = (handler: ReadinessHandler, codeBlockId: string) => {
+    const ready = this.state.nextCodeBlocks.includes(codeBlockId)
+    handler(ready)
   }
 
   public componentDidMount() {
-    blocks(this.props.codeBlocks, 'all').forEach(_ => {
-      subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
+    blocks(this.props.codeBlocks).forEach(({ id }) => {
+      onGetCodeBlockReadiness(id, this._onGetReadiness)
+      this.cleaners.push(() => offGetCodeBlockReadiness(id, this._onGetReadiness))
     })
   }
 
   public componentWillUnmount() {
-    blocks(this.props.codeBlocks, 'all').forEach(_ => {
-      unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler)
-    })
-  }
-
-  private get nSteps() {
-    return progress(this.props.codeBlocks, undefined, this.props.choices).nTotal
-  }
-
-  private counts() {
-    return progress(this.props.codeBlocks, this.state.status, this.props.choices)
+    this.cleaners.forEach(_ => _())
   }
 
   public render() {
-    const { nDone, nError } = this.counts()
+    const { nDone, nError, nTotal } = this.state
 
     const title = strings('Completed tasks')
     const label =
       nError > 0
-        ? strings(nError === 1 ? 'xOfyFailingz' : 'xOfyFailingsz', nDone, nError, this.nSteps)
-        : strings('xOfy', nDone, this.nSteps)
+        ? strings(nError === 1 ? 'xOfyFailingz' : 'xOfyFailingsz', nDone, nError, nTotal)
+        : strings('xOfy', nDone, nTotal)
 
-    const variant = nDone === this.nSteps ? ProgressVariant.success : nError > 0 ? ProgressVariant.danger : undefined
+    const variant = nDone === nTotal ? ProgressVariant.success : nError > 0 ? ProgressVariant.danger : undefined
 
     return (
       <PatternFlyProgress
         aria-label="wizard progress"
         className="kui--wizard-progress"
         min={0}
-        max={this.nSteps}
+        max={nTotal}
         value={nDone}
         title={title}
         label={label}
