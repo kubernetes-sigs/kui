@@ -20,6 +20,7 @@ export default class Wizard {
   private readonly _description = '.pf-c-wizard__description'
   private readonly _navItem = '.pf-c-wizard__nav-item'
   private readonly _navItemTitle = '.pf-c-wizard__nav-link'
+  public readonly isCurrentStep = 'pf-m-current'
   private readonly _navItemDescription = '.kui--wizard-nav-item-description'
   private readonly _navItemProgressStepper = '.kui--progress-stepper'
   private readonly _navItemProgressStep = '.kui--progress-step'
@@ -40,6 +41,10 @@ export default class Wizard {
 
   public navItem(idx: number) {
     return `${this.wizard} ${this._navItem}:nth-child(${idx + 1})`
+  }
+
+  public navItemSwitchToButton(idx: number) {
+    return `${this.navItem(idx)} > button`
   }
 
   public navItemTitle(idx: number) {

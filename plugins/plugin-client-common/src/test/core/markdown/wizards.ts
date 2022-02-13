@@ -32,8 +32,8 @@ const steps = [
     description: 'Step2Description',
     body: 'Step2Body',
     codeBlocks: [
-      { index: 0, output: 'bbb' },
-      { index: 1, output: 'ccc' }
+      { index: 1, output: 'bbb' },
+      { index: 2, output: 'ccc' }
     ]
   }
 ]
@@ -69,7 +69,21 @@ const IN3 = {
     { name: 'Before you begin', body: 'Before you can get started', description: 'TestDescription2', codeBlocks: [] }
   ]
 }
-;[IN1, IN2, IN3].forEach(markdown => {
+
+// sequential execution of code blocks
+const IN4 = {
+  input: join(ROOT, 'tests/data/wizard-steps-in-topmatter2.md'),
+  title: 'WizardTitle',
+  description: 'WizardDescription',
+  expectedSplitCount: 1,
+  expectedCodeBlockTasks: 3,
+  steps: [
+    { name: 'AAA', body: 'AAAContent', description: '', codeBlocks: [{ index: 0, output: '111' }] },
+    { name: 'BBB', body: 'BBBContent', description: '', codeBlocks: [{ index: 1, output: '222' }] },
+    { name: 'CCC', body: 'CCCContent', description: '', codeBlocks: [{ index: 2, output: '333' }] }
+  ]
+}
+;[IN4, IN1, IN2, IN3].forEach(markdown => {
   describe(`wizards in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
@@ -178,5 +192,72 @@ const IN3 = {
         })
       })
     })
+  })
+
+  describe(`sequential execution of code blocks in wizards in markdown ${basename(markdown.input)} ${process.env
+    .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    before(Common.before(this))
+    after(Common.after(this))
+
+    it('should load markdown and show a wizard UI', async () => {
+      try {
+        await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
+        await this.app.client.$(Selectors.Wizard.wizard).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+
+    const stepsWithCodeBlocks = markdown.steps
+      .map((step, idx) => ({ step, idx }))
+      .filter(_ => Array.isArray(_.step.codeBlocks) && _.step.codeBlocks.length > 0)
+
+    if (stepsWithCodeBlocks.length > 1) {
+      it('should show a play button for the first code blocks in the first step (with code blocks)', async () => {
+        try {
+          const firstBlockInFirstStep = stepsWithCodeBlocks[0].step.codeBlocks[0]
+          const codeBlock = await this.app.client.$(Selectors.Markdown.codeBlock(firstBlockInFirstStep.index))
+          await codeBlock.waitForExist({ timeout: CLI.waitTimeout })
+          await codeBlock.$(Selectors.Markdown.runButton).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+
+      stepsWithCodeBlocks.slice(1).forEach(({ step, idx }) => {
+        it(`should switch to step ${idx}`, async () => {
+          try {
+            const button = await this.app.client.$(Selectors.Wizard.navItemSwitchToButton(idx))
+
+            await this.app.client.waitUntil(async () => {
+              return !(await button.getAttribute('class')).includes(Selectors.Wizard.isCurrentStep)
+            })
+
+            await button.waitForExist({ timeout: CLI.waitTimeout })
+            await button.click()
+
+            await this.app.client.waitUntil(async () => {
+              return (await button.getAttribute('class')).includes(Selectors.Wizard.isCurrentStep)
+            })
+          } catch (err) {
+            await Common.oops(this, true)(err)
+          }
+        })
+
+        step.codeBlocks.forEach(block => {
+          it(`should *not* show a play button for code block ${block.index} in step ${idx}`, async () => {
+            try {
+              const codeBlock = await this.app.client.$(Selectors.Markdown.codeBlock(block.index))
+              await codeBlock.waitForExist({ timeout: CLI.waitTimeout })
+              await codeBlock
+                .$(Selectors.Markdown.runButton)
+                .then(_ => _.waitForDisplayed({ reverse: true, timeout: CLI.waitTimeout }))
+            } catch (err) {
+              await Common.oops(this, true)(err)
+            }
+          })
+        })
+      })
+    }
   })
 })
