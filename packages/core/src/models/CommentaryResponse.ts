@@ -69,11 +69,6 @@ export function isCommentaryResponse(entity: Entity): entity is CommentaryRespon
   return response.apiVersion === 'kui-shell/v1' && response.kind === 'CommentaryResponse'
 }
 
-/** is this commentary reponse be able to treated as a section break */
-export function isCommentarySectionBreak(entity: Entity): boolean {
-  return entity && isCommentaryResponse(entity) && entity.props.children === '---'
-}
-
 export function maybeKuiLink(link: string): string {
   const linkMatch = link && link.match('#kui-link-')
   if (linkMatch) {

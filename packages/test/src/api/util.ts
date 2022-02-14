@@ -331,17 +331,12 @@ export async function removeBlock(res: AppAndCount) {
   return clickBlockActionButton(res, Selectors.BLOCK_REMOVE_BUTTON(res.count))
 }
 
-/** Click the section button on a block, and expect it to be a section */
-export async function markBlockAsSection(res: AppAndCount) {
-  return clickBlockActionButton(res, Selectors.BLOCK_SECTION_BUTTON(res.count))
-}
-
-/** Click the section button on a block, and expect it to be a section */
+/** Click the block copy button */
 export async function copyBlockLink(res: AppAndCount) {
   return clickBlockActionButton(res, Selectors.BLOCK_LINK_BUTTON(res.count))
 }
 
-/** Click the section button on a block, and expect it to be a section */
+/** Click the block run button */
 export async function rerunCommand(res: AppAndCount) {
   return clickBlockActionButton(res, Selectors.COMMAND_RERUN_BUTTON(res.count))
 }

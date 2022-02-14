@@ -23,7 +23,6 @@ import {
   ScalarResponse,
   hideReplayOutput,
   isCommentaryResponse,
-  isCommentarySectionBreak,
   isError,
   Util
 } from '@kui-shell/core'
@@ -55,7 +54,6 @@ type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: true; newExecUUID: string } & WithOriginalExecUUID
 type WithReplay = { isReplay: boolean }
-type WithSectionBreak = { isSectionBreak: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -83,7 +81,6 @@ type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommandStart &
   WithCommandComplete &
   Partial<WithRerun> &
-  Partial<WithSectionBreak> &
   WithReplay &
   WithOutputOnly
 export type ProcessingBlock = WithState<BlockState.Processing> &
@@ -325,7 +322,6 @@ export function Finished(
       isExperimental: block.isExperimental,
       isReplay: _isReplay,
       execUUID: block.execUUID,
-      isSectionBreak: isCommentarySectionBreak(response),
       originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
       startTime: block.startTime,
       outputOnly,
@@ -354,11 +350,6 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
 /** @return whether the output of this command execution be redirected to a file */
 export function isOutputRedirected(block: BlockModel): boolean {
   return hasStartEvent(block) && block.startEvent.redirectDesired
-}
-
-/** @return whether the block is section break */
-export function isSectionBreak(block: BlockModel): block is CompleteBlock & WithSectionBreak {
-  return isOk(block) && block.isSectionBreak
 }
 
 /** A Block may be Rerunable. If so, then it can be transitioned to the BlockBeingRerun state. */
