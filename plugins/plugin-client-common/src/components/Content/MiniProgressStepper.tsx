@@ -39,11 +39,8 @@ type MiniProps = {
   status: Status
 }
 
-type StepperProps = {
-  /** The key is a codeBlockId */
-  status: Record<string, Status>
-
-  steps: Omit<MiniProps, 'status'>[]
+export type StepperProps = {
+  steps: MiniProps[]
 }
 
 export class MiniProgressStepper extends React.PureComponent<StepperProps> {
@@ -55,7 +52,7 @@ export class MiniProgressStepper extends React.PureComponent<StepperProps> {
         {this.props.steps
           .filter(_ => !isComplete || !_.optional)
           .map(props => (
-            <MiniProgressStep key={props.codeBlockId} {...props} status={this.props.status[props.codeBlockId]} />
+            <MiniProgressStep key={props.codeBlockId} {...props} status={props.status} />
           ))}
       </ol>
     )
@@ -69,12 +66,14 @@ export class MiniProgressStepper extends React.PureComponent<StepperProps> {
     return this.props.steps.filter(_ => !_.optional).length
   }
 
-  private nDone() {
-    return this.props.steps.filter(_ => this.props.status[_.codeBlockId] === 'success').length
+  private get nDone() {
+    return this.props.steps.filter(_ => _.status === 'success').length
   }
 
   private isComplete() {
-    return this.nDone() === this.nRequiredSteps
+    // it may be greater, it we have successful validation for
+    // optional steps
+    return this.nDone >= this.nRequiredSteps
   }
 
   public render() {
@@ -84,7 +83,7 @@ export class MiniProgressStepper extends React.PureComponent<StepperProps> {
 
 class MiniProgressStep extends React.PureComponent<MiniProps> {
   public componentDidMount() {
-    if (this.props.validate) {
+    if (this.props.validate && this.props.status !== 'in-progress' && this.props.status !== 'success') {
       setTimeout(async () => {
         try {
           emitLinkUpdate(this.props.codeBlockId, 'in-progress')
