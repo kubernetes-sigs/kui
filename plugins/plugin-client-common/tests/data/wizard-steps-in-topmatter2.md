@@ -12,27 +12,8 @@ WizardDescription
 
 ---
 
-## AAA
+<!-- DO NOT REMOVE OR MOVE: intentional comment here to verify parsing -->
+--8<-- "wizard-steps-in-topmatter2a.md"
 
-AAAContent
-
-```bash
-echo 111
-```
-
-## BBB
-
-BBBContent
-
-```bash
-echo 222
-```
-
-## CCC
-
-CCCContent
-
-```bash
-echo 333
-```
+--8<-- "wizard-steps-in-topmatter2b.md"
 
