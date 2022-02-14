@@ -27,7 +27,6 @@ export type ScrollbackOptions = NewSplitRequest['options']
 type ScrollbackState = ScrollbackOptions & {
   uuid: string
   blocks: BlockModel[]
-  nSectionBreak: number
 
   /** Display as strip along the bottom */
   position: SplitPosition
@@ -63,7 +62,6 @@ type ScrollbackState = ScrollbackOptions & {
   willFocusBlock: (evt: React.SyntheticEvent) => void
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
   willUpdateCommand: (idx: number, command: string) => void
-  willInsertSection: (idx: number) => void
   willUpdateExecutable: () => void
 
   /** Reference for the entire Split */

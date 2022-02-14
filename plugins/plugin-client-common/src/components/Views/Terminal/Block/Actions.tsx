@@ -105,19 +105,9 @@ export default class Actions extends React.PureComponent<Props> {
         <Action
           icon="WindowClose"
           onClick={evt => this.props.willRemove(evt, this.props.idx)}
-          title={this.props.isSectionBreak ? 'Remove this section' : 'Remove this block'}
+          title={'Remove this block'}
         />
       )
-    )
-  }
-
-  private sectionAction() {
-    return (
-      <Action
-        icon="Section"
-        onClick={() => this.props.willInsertSection(this.props.idx)}
-        title="Insert a section break above"
-      />
     )
   }
 
@@ -126,7 +116,7 @@ export default class Actions extends React.PureComponent<Props> {
       <MutabilityContext.Consumer>
         {value => {
           if (!value.editable && value.executable) {
-            if (this.props.isExecutable && !this.props.isSectionBreak) {
+            if (this.props.isExecutable) {
               return (
                 <div
                   className="kui--block-actions-buttons"
@@ -142,9 +132,8 @@ export default class Actions extends React.PureComponent<Props> {
             return (
               <div className="kui--block-actions-buttons kui--inverted-color-context">
                 <div className="kui-block-actions-others">
-                  {!this.props.isSectionBreak && this.copyAction()}
-                  {/* !readonly && !this.props.isSectionBreak && this.sectionAction() */}
-                  {value.executable && !this.props.isSectionBreak && this.rerunAction('Play')}
+                  {this.copyAction()}
+                  {value.executable && this.rerunAction('Play')}
                 </div>
                 {value.editable && this.removeAction()}
               </div>

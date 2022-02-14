@@ -65,7 +65,6 @@ import {
   isActive,
   isAnnouncement,
   isFinished,
-  isSectionBreak,
   isWithCompleteEvent,
   isOk,
   isOutputOnly,
@@ -423,7 +422,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       cleaners: [],
       inverseColors: opts.inverseColors,
       blocks: this.restoreBlocks(sbuuid).concat([Active()]),
-      nSectionBreak: 0,
       remove: undefined,
       clear: undefined,
       invert: undefined,
@@ -436,7 +434,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willRemoveBlock: undefined,
       willUpdateCommand: undefined,
       willUpdateExecutable: undefined,
-      willInsertSection: undefined,
       tabRefFor: undefined,
       scrollableRef: undefined,
 
@@ -518,12 +515,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     state.willUpdateExecutable = () => this.updateExecutable()
 
-    state.willInsertSection = (idx: number) => {
-      setTimeout(() => {
-        state.facade.REPL.pexec('# ---', { insertIdx: idx, noHistory: true })
-      })
-    }
-
     state.willUpdateCommand = (idx: number, command: string) => {
       return this.splice(sbuuid, curState => {
         const block = Object.assign({}, curState.blocks[idx])
@@ -582,8 +573,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
           return {
             blocks,
-            focusedBlockIdx,
-            nSectionBreak: isSectionBreak(curState.blocks[idx]) ? curState.nSectionBreak - 1 : curState.nSectionBreak
+            focusedBlockIdx
           }
         })
 
@@ -746,7 +736,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             .concat([Active(scrollback._activeBlock ? scrollback._activeBlock.inputValue() : '')])
 
           return Object.assign(scrollback, {
-            nSectionBreak: 0,
             blocks: residualBlocks,
             focusedBlockIdx: residualBlocks.length - 1
           })
@@ -960,7 +949,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
             return {
               focusedBlockIdx: insertIdx === undefined ? blocks.length - 1 : insertIdx,
-              nSectionBreak: isSectionBreak(finishedBlock) ? curState.nSectionBreak + 1 : curState.nSectionBreak,
               blocks
             }
           } catch (err) {
@@ -1465,24 +1453,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     // running tally for In[_idx_]
     let displayedIdx = 0
-    // running tally for §idx.jdx
-    let sectionIdx = scrollback.nSectionBreak > 0 ? 1 : 0
-    let subSectionIdx = 0
 
     return blocks.map((_, idx) => {
       if (!isAnnouncement(_) && !isOutputOnly(_)) {
         displayedIdx++
-      }
-
-      if (isSectionBreak(_)) {
-        if (idx !== 0 && !(idx === 1 && isAnnouncement(blocks[idx - 1]))) {
-          sectionIdx++
-        }
-        subSectionIdx = 0
-      } else {
-        if (!isAnnouncement(_) && !isOutputOnly(_)) {
-          subSectionIdx++
-        }
       }
 
       /** To find the focused block, we check:
@@ -1511,9 +1485,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           }
           idx={idx}
           isExecutable={isExecutable}
-          isSectionBreak={isSectionBreak(_) || undefined}
           displayedIdx={displayedIdx}
-          sectionIdx={sectionIdx > 0 ? `${sectionIdx}${subSectionIdx > 0 ? `.${subSectionIdx}` : ''}` : undefined}
           model={_}
           uuid={scrollback.uuid}
           tab={tab}
@@ -1523,7 +1495,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           onFocus={scrollback.onFocus}
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
-          willInsertSection={scrollback.willInsertSection}
           willUpdateCommand={scrollback.willUpdateCommand}
           willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}
