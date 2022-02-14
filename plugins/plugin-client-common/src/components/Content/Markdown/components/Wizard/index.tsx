@@ -21,10 +21,10 @@ import { WizardProps } from './rehype-wizard'
 import Progress from './Progress'
 import CodeBlockProps from './CodeBlockProps'
 import { onTabSwitch, offTabSwitch } from '../tabbed'
-import { Graph, OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
+import { OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
-import { MiniProgressStepper } from '../../../MiniProgressStepper'
+import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
 import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
@@ -37,7 +37,11 @@ type Status = ProgressStepState['status']
 type Props = WizardProps & { uuid: string }
 
 export interface State {
-  codeBlocks: OrderedGraph
+  /** Graph of code blocks across all steps */
+  graph: OrderedGraph
+
+  /** Code blocks contained in each step */
+  codeBlocksPerStep: StepperProps['steps'][]
 
   /** Map from codeBlock ID to execution status of that code block */
   status: Record<string, Status>
@@ -57,16 +61,54 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
+    this.state = Wizard.getDerivedStateFromProps(props)
+  }
 
-    this.state = {
-      status: {},
-      choices: {},
-      codeBlocks: order(sequence(this.children.flatMap(_ => this.containedCodeBlocks(_)).filter(Boolean)))
+  public static getDerivedStateFromProps(props: Props, state?: State) {
+    const status = !state ? {} : state.status
+    const choices = !state ? {} : state.choices
+    const codeBlocks = Wizard.children(props).map(_ => compile(Wizard.containedCodeBlocks(_)))
+
+    const codeBlocksPerStep = codeBlocks.map(codeBlocksInStep =>
+      blocks(codeBlocksInStep, choices).map(_ => ({
+        codeBlockId: _.id,
+        validate: _.validate,
+        body: _.body,
+        language: _.language,
+        optional: _.optional,
+        status: status[_.id]
+      }))
+    )
+
+    const noChangeToCodeBlocks = state && Wizard.sameCodeBlocks(state.codeBlocksPerStep, codeBlocksPerStep)
+
+    return {
+      status,
+      choices,
+      codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
+      graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
     }
   }
 
+  private static sameCodeBlocks(AA: State['codeBlocksPerStep'], BB: State['codeBlocksPerStep']) {
+    return AA.every((A, idx1) =>
+      A.every((a, idx2) => {
+        const b = BB[idx1][idx2]
+
+        return (
+          a.codeBlockId === b.codeBlockId &&
+          a.validate === b.validate &&
+          a.body === b.body &&
+          a.language === b.language &&
+          a.optional === b.optional &&
+          a.status === b.status
+        )
+      })
+    )
+  }
+
   public componentDidMount() {
-    blocks(this.state.codeBlocks, 'all').forEach(_ => {
+    blocks(this.state.graph, 'all').forEach(_ => {
       subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
       this.cleaners.push(() => unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler))
     })
@@ -87,47 +129,38 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   private updateStatus(codeBlockId: string, status: Status) {
     this.setState(curState => {
-      curState.status[codeBlockId] = status
-      return {
-        status: Object.assign({}, curState.status)
+      if (curState.status[codeBlockId] === status) {
+        // no change to state!
+        return null
+      } else {
+        curState.status[codeBlockId] = status
+        return {
+          status: Object.assign({}, curState.status)
+        }
       }
     })
   }
 
-  private wizardCodeBlockSteps(containedCodeBlocks: Graph) {
-    return (
-      containedCodeBlocks && (
-        <MiniProgressStepper
-          status={this.state.status}
-          steps={blocks(containedCodeBlocks, this.state.choices).map(_ => ({
-            codeBlockId: _.id,
-            validate: _.validate,
-            body: _.body,
-            language: _.language,
-            optional: _.optional
-          }))}
-        />
-      )
-    )
+  private wizardCodeBlockSteps(stepIdx: number) {
+    const containedCodeBlocks = this.state.codeBlocksPerStep[stepIdx]
+    return containedCodeBlocks && <MiniProgressStepper steps={containedCodeBlocks} />
   }
 
-  private wizardStepDescription(description: string, containedCodeBlocks: Graph) {
+  private wizardStepDescription(stepIdx: number, description: string) {
     return (
       <div className="kui--wizard-nav-item-description">
-        {this.wizardCodeBlockSteps(containedCodeBlocks)}
+        {this.wizardCodeBlockSteps(stepIdx)}
         <div className="paragraph">{description}</div>
       </div>
     )
   }
 
-  private containedCodeBlocks(_: WizardProps['children'][0]): Graph {
+  private static containedCodeBlocks(_: WizardProps['children'][0]): CodeBlockProps[] {
     if (typeof _.props.containedCodeBlocks === 'string' && _.props.containedCodeBlocks.length > 0) {
-      return compile(
-        _.props.containedCodeBlocks
-          .split(' ')
-          .filter(Boolean)
-          .map(_ => JSON.parse(Buffer.from(_, 'base64').toString()) as CodeBlockProps)
-      )
+      return _.props.containedCodeBlocks
+        .split(' ')
+        .filter(Boolean)
+        .map(_ => JSON.parse(Buffer.from(_, 'base64').toString()) as CodeBlockProps)
     } else {
       return undefined
     }
@@ -143,24 +176,24 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   /** Overall progress across all steps */
   private progress() {
-    if (this.props['data-kui-wizard-progress'] === 'bar' && blocks(this.state.codeBlocks).length > 0) {
+    if (this.props['data-kui-wizard-progress'] === 'bar' && blocks(this.state.graph).length > 0) {
       return (
         <div className="kui--markdown-major-paragraph">
-          <Progress status={this.state.status} choices={this.state.choices} codeBlocks={this.state.codeBlocks} />
+          <Progress status={this.state.status} choices={this.state.choices} codeBlocks={this.state.graph} />
         </div>
       )
     }
   }
 
-  private get children() {
-    return (this.props.children || []).slice(1)
+  private static children(props: Props) {
+    return (props.children || []).slice(1)
   }
 
   private wizard() {
-    const steps = this.children.map(_ => ({
+    const steps = Wizard.children(this.props).map((_, stepIdx) => ({
       name: _.props['data-kui-title'],
       stepNavItemProps: {
-        children: this.wizardStepDescription(_.props['data-kui-description'], this.containedCodeBlocks(_))
+        children: this.wizardStepDescription(stepIdx, _.props['data-kui-description'])
       },
       component: <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
     }))

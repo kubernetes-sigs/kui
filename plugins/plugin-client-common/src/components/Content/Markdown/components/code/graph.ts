@@ -34,11 +34,11 @@ type Status = ProgressStepState['status']
 type ChoicesMap = Record<CodeBlockProps['choice']['group'], CodeBlockProps['choice']['member']>
 
 /** Iteration order */
-interface Ordered {
+export interface Ordered {
   order: number
 }
 
-type Unordered = Partial<Ordered>
+export type Unordered = Partial<Ordered>
 
 type Sequence<T extends Unordered | Ordered = Unordered> = {
   sequence: Graph<T>[]
@@ -94,6 +94,10 @@ function seq(block: CodeBlockProps): Sequence {
 }
 
 export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parallel' = 'parallel'): Graph {
+  if (!blocks) {
+    return undefined
+  }
+
   let currentChoices: Choice
   let currentChoice: CodeBlockProps['choice']
 
