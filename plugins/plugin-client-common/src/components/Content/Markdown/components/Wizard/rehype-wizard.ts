@@ -15,6 +15,7 @@
  */
 
 import { u } from 'unist-builder'
+import { Element, Root } from 'hast'
 import { visitParents } from 'unist-util-visit-parents'
 
 import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
@@ -43,9 +44,9 @@ export type WizardProps = Title & {
 /**
  * This rehype plugin transforms wizard step headers.
  */
-function transformer(ast) {
+function transformer(ast: Root) {
   /** Treat headings that parents of nodes marked as Wizards as wizard steps */
-  function headingVisitor(node, ancestors) {
+  function headingVisitor(node: Element, ancestors: Element[]) {
     if (/^h\d+/.test(node.tagName) && ancestors.length > 0) {
       const parent = ancestors[ancestors.length - 1]
       if (
@@ -54,8 +55,10 @@ function transformer(ast) {
         node.children.length > 0 &&
         node.children[0].type === 'text'
       ) {
+        const firstNonCommentIdx = parent.children.findIndex(_ => _.type !== 'raw')
         const idx = parent.children.findIndex(_ => _ === node)
-        if (idx === 0) {
+
+        if (idx === firstNonCommentIdx) {
           const [title, description] = node.children[0].value.split(/\s*:\s*/)
           parent.properties['data-kui-title'] = title
           parent.properties['data-kui-description'] = description
@@ -74,12 +77,12 @@ function transformer(ast) {
     steps: []
   }
 
-  function stepsVisitor(node, ancestors) {
+  function stepsVisitor(node, ancestors: Element[]) {
     if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && ancestors.length > 0) {
       delete node.properties['data-kui-split']
 
       if (wizard.steps.length === 0 && node.properties['data-kui-wizard-progress']) {
-        wizard.progress = node.properties['data-kui-wizard-progress']
+        wizard.progress = node.properties['data-kui-wizard-progress'].toString() as 'bar' | 'none'
       }
 
       if (!node.properties['data-kui-title']) {
