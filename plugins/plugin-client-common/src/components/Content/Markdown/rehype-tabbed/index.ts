@@ -171,7 +171,6 @@ export function hackIndentation(source: string): string {
   let inTab: RegExp
   let inBlockquote = false
   let inCodeBlock = false
-  const replacement = ''
   const endMarkers: string[] = []
 
   const indentDepthOfContent: number[] = []
@@ -180,6 +179,19 @@ export function hackIndentation(source: string): string {
     const tabStartMatch = line.match(/^(\s*)===\s+".*"/)
     const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|todo|bug|info|note|warning|success|question)/)
     const startMatch = tabStartMatch || tipStartMatch
+
+    const unindent = (line: string) => {
+      if (!inBlockquote && !inCodeBlock) {
+        return line.replace(/^\s*/, '')
+      } else {
+        const curIndentDepth = indentDepthOfContent[indentDepthOfContent.length - 1] || 0
+        if (curIndentDepth > 0) {
+          return line.replace(new RegExp(`^\\s{${curIndentDepth * 4}}`), '')
+        } else {
+          return line
+        }
+      }
+    }
 
     const pop = (line: string, delta = 0) => {
       const indentMatch = line.match(/^\s+/)
@@ -249,26 +261,29 @@ export function hackIndentation(source: string): string {
             .join('')
       )
 
-      return (
-        `\n\n${possibleEndTab}${possibleNesting}${replacement}${startMarker}\n\n` + line.replace(/^\s*/, replacement)
-      )
+      return `\n\n${possibleEndTab}${possibleNesting}${startMarker}\n\n` + unindent(line)
     } else if (/^\s*```/.test(line)) {
+      // do this before flipping in or out of a blockquote
+      let unindented: string
+
       const possibleEndOfTab = !inTab || inTab.test(line) ? '' : pop(line)
 
       if (/(bash|sh|shell)/.test(line)) {
+        unindented = unindent(line)
         inCodeBlock = true
-        return possibleEndOfTab + line.replace(/^\s*/, replacement)
       } else if (inCodeBlock) {
         inCodeBlock = false
-        return possibleEndOfTab + line.replace(/^\s*/, replacement)
+        unindented = unindent(line)
+      } else if (!inBlockquote) {
+        unindented = unindent(line)
+        inBlockquote = true
       } else {
-        inBlockquote = !inBlockquote
-        if (inTab) {
-          return possibleEndOfTab + line.replace(/^\s*/, replacement)
-        }
+        inBlockquote = false
+        unindented = unindent(line)
       }
+      return possibleEndOfTab + unindented
     } else if (inTab) {
-      const unindented = line.replace(/^\s*/, replacement)
+      const unindented = unindent(line)
 
       if (line.length === 0 || /^\s+$/.test(line) || inBlockquote || inTab.test(line)) {
         // empty line, in blockquote, or still in tab
