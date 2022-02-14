@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.2.4](https://github.com/IBM/kui/compare/v11.2.3...v11.2.4) (2022-02-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** hide except on hover play button for validated code blocks ([d730c6b](https://github.com/IBM/kui/commit/d730c6b))
+- **plugins/plugin-client-common:** snippet inliner fails for lines with trailing whitespace ([113e728](https://github.com/IBM/kui/commit/113e728))
+- **plugins/plugin-client-common:** snippet inliner fails in reroute links ([7382e76](https://github.com/IBM/kui/commit/7382e76))
+- **plugins/plugin-client-common:** wizard mini progress UI lacks hover effect ([5221770](https://github.com/IBM/kui/commit/5221770))
+
+### Features
+
+- **plugins/plugin-client-common:** assign code blocks an ordinal execution order ([966027d](https://github.com/IBM/kui/commit/966027d))
+- **plugins/plugin-client-common:** initial support for code block ordering ([d46be6d](https://github.com/IBM/kui/commit/d46be6d))
+- **plugins/plugin-client-common:** more clearly distinguish optional and already-executed code blocks ([89298df](https://github.com/IBM/kui/commit/89298df))
+- **plugins/plugin-client-common:** show code block Run in offline clients with sample output ([bee449d](https://github.com/IBM/kui/commit/bee449d))
+
 ## [11.2.3](https://github.com/IBM/kui/compare/v11.2.2...v11.2.3) (2022-02-09)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.2.4](https://github.com/IBM/kui/compare/v11.2.3...v11.2.4) (2022-02-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** hide except on hover play button for validated code blocks ([d730c6b](https://github.com/IBM/kui/commit/d730c6b))
+
 ## [11.2.3](https://github.com/IBM/kui/compare/v11.2.2...v11.2.3) (2022-02-09)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

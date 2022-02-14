@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.2.4](https://github.com/kubernetes-sigs/kui/compare/v11.2.3...v11.2.4) (2022-02-14)
+
+### Features
+
+- **plugins/plugin-client-common:** assign code blocks an ordinal execution order ([966027d](https://github.com/kubernetes-sigs/kui/commit/966027d))
+- **plugins/plugin-client-common:** initial support for code block ordering ([d46be6d](https://github.com/kubernetes-sigs/kui/commit/d46be6d))
+
 ## [11.2.3](https://github.com/kubernetes-sigs/kui/compare/v11.2.2...v11.2.3) (2022-02-09)
 
 **Note:** Version bump only for package @kui-shell/test
