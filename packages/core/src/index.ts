@@ -279,8 +279,6 @@ export {
   isReadOnlyClient,
   /** @deprecated @see Client.isExecutable */
   isExecutableClient,
-  /** @deprecated @see Client.executeSequentially */
-  executeSequentially,
   /** @deprecated @see Client.hideReplayOutput */
   hideReplayOutput
 } from './api/Client'

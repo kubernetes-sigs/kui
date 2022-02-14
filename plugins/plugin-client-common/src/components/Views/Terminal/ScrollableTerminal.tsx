@@ -37,7 +37,6 @@ import {
   NewSplitRequest,
   isNewSplitRequest,
   isExecutableClient,
-  executeSequentially,
   isWatchable,
   isCommentaryResponse
 } from '@kui-shell/core'
@@ -60,7 +59,6 @@ import {
   Rerun,
   isRerunable,
   isBeingRerun,
-  hasBeenRerun,
   Processing,
   isActive,
   isAnnouncement,
@@ -135,9 +133,6 @@ type Props = TerminalOptions &
   }
 
 interface State {
-  /** This helps enforce sequential block execution semantics */
-  executable: { sbidx: number; blockidx: number }
-
   /** Index of the focused split (index into State.splits) */
   focusedIdx: number
 
@@ -189,30 +184,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     return {
       focusedIdx: 0,
-      splits,
-      executable: this.initBlockExecutableState(splits)
-    }
-  }
-
-  /** This helps enforce sequential block execution semantics */
-  private initBlockExecutableState(splits: State['splits']) {
-    let sbidx = 0
-    while (sbidx < splits.length) {
-      const blockidx = splits[sbidx].blocks.findIndex(_ => hasUUID(_) && isRerunable(_) && !isOutputOnly(_))
-      if (blockidx >= 0) {
-        return {
-          sbidx,
-          blockidx
-        }
-      } else {
-        sbidx++
-      }
-    }
-
-    // then we didn't find anything executable
-    return {
-      sbidx: -1,
-      blockidx: -1
+      splits
     }
   }
 
@@ -433,7 +405,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
       willUpdateCommand: undefined,
-      willUpdateExecutable: undefined,
       tabRefFor: undefined,
       scrollableRef: undefined,
 
@@ -513,8 +484,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     }
 
-    state.willUpdateExecutable = () => this.updateExecutable()
-
     state.willUpdateCommand = (idx: number, command: string) => {
       return this.splice(sbuuid, curState => {
         const block = Object.assign({}, curState.blocks[idx])
@@ -576,10 +545,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             focusedBlockIdx
           }
         })
-
-        if (this.findSplit(this.state, sbuuid) === this.state.executable.sbidx) {
-          this.updateExecutable()
-        }
       }
     }
 
@@ -975,33 +940,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         console.error('invalid state: got a command completion event, but never got command start event', event)
       }
     })
-
-    this.updateExecutable()
-  }
-
-  private updateExecutable() {
-    if (isExecutableClient() && executeSequentially()) {
-      let blockidx: number
-
-      const sbidx = this.state.splits.findIndex(split => {
-        const idx = split.blocks.findIndex(_ => {
-          const notBeenRerunSuccessfully = !hasBeenRerun(_) || (isWithCompleteEvent(_) && !isOk(_))
-
-          return hasUUID(_) && isRerunable(_) && !isOutputOnly(_) && notBeenRerunSuccessfully
-        })
-
-        if (idx !== -1) {
-          blockidx = idx
-          return true
-        } else {
-          return false
-        }
-      })
-
-      if (sbidx !== this.state.executable.sbidx || blockidx !== this.state.executable.blockidx) {
-        this.setState({ executable: { sbidx, blockidx } })
-      }
-    }
   }
 
   /** Only set focus if we haven't, yet */
@@ -1468,11 +1406,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         (idx === scrollback.focusedBlockIdx ||
           (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
 
-      const isExecutable = !isExecutableClient()
-        ? false
-        : !executeSequentially()
-        ? true
-        : this.state.executable.blockidx === idx && this.state.executable.sbidx === sbidx
+      const isExecutable = isExecutableClient()
 
       return (
         <Block
@@ -1496,7 +1430,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
           willUpdateCommand={scrollback.willUpdateCommand}
-          willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}
           isFocused={isFocused}
           isWidthConstrained={isWidthConstrained}

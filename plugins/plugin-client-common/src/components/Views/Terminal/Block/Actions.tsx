@@ -59,9 +59,6 @@ export default class Actions extends React.PureComponent<Props> {
   private readonly _rerunHandler = () => {
     if (hasUUID(this.props.model)) {
       this.props.tab.REPL.reexec(this.props.command, { execUUID: this.props.model.execUUID })
-      if (this.props.willUpdateExecutable) {
-        this.props.willUpdateExecutable()
-      }
     }
   }
 
