@@ -57,8 +57,6 @@ export interface BlockOperationTraits {
 
   /** Is the block executable? e.g. re-editable and re-runable */
   isExecutable?: boolean
-
-  willUpdateExecutable?: () => void
 }
 
 type Props = InputOptions & {

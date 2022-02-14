@@ -62,7 +62,6 @@ type ScrollbackState = ScrollbackOptions & {
   willFocusBlock: (evt: React.SyntheticEvent) => void
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
   willUpdateCommand: (idx: number, command: string) => void
-  willUpdateExecutable: () => void
 
   /** Reference for the entire Split */
   tabRefFor(ref: HTMLElement): void

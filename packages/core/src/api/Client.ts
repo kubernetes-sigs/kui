@@ -89,21 +89,6 @@ export function hideReplayOutput(): boolean {
   }
 }
 
-export function executeSequentially(): boolean {
-  if (isExecutableClient()) {
-    try {
-      const { sequentialExecution } = require('@kui-shell/client/config.d/client.json')
-
-      return sequentialExecution
-    } catch (err) {
-      debug('Client did not define a sequential execution status, assuming not sequential')
-      return false
-    }
-  } else {
-    return false
-  }
-}
-
 /** @return the model specified by `@kui-shell/client/config.d/notebooks.json` */
 export function guidebooksMenu() {
   const model = loadClientNotebooksMenuDefinition()
