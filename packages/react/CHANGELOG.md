@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.2.5](https://github.com/IBM/kui/compare/v11.2.4...v11.2.5) (2022-02-14)
+
+**Note:** Version bump only for package @kui-shell/react
+
 ## [11.2.4](https://github.com/IBM/kui/compare/v11.2.3...v11.2.4) (2022-02-14)
 
 **Note:** Version bump only for package @kui-shell/react

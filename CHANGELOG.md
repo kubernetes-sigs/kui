@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.2.5](https://github.com/IBM/kui/compare/v11.2.4...v11.2.5) (2022-02-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** wizard parser fails if step header preceded by comment ([5012af1](https://github.com/IBM/kui/commit/5012af1))
+- sigh, npm 8.3.1 (node 16.14.0) broke our colors override ([4ba92be](https://github.com/IBM/kui/commit/4ba92be))
+
 ## [11.2.4](https://github.com/IBM/kui/compare/v11.2.3...v11.2.4) (2022-02-14)
 
 ### Bug Fixes
