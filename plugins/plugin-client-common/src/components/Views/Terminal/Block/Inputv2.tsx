@@ -37,7 +37,7 @@ import Spinner from './Spinner'
 import Status from './CodeBlockStatus'
 import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
-import { MutabilityContext, MutabilityState } from '../../../Client/MutabilityContext'
+import { MutabilityContext } from '../../../Client/MutabilityContext'
 
 import Tooltip from '../../../spi/Tooltip'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
@@ -96,8 +96,11 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
     /** Output of this CodeBlock? */
     response?: KResponse
 
-    /** Execution status of the `response` property */
+    /** Execution status of the `response` property; this will be `replayed` rather than `done` or `error` if we have only sample output */
     status?: Status
+
+    /** Almost the same as `status`, but this will be `done` or `error`, even when we have only sample output */
+    rawStatus?: Status
 
     /** Execute on mount? */
     executeImmediately?: boolean
@@ -304,8 +307,8 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     return this.isExecutionInProgress ? this.timer() : this.status()
   }
 
-  private actions(mutability: MutabilityState) {
-    if (this.props.readonly !== true && mutability.executable) {
+  private actions(showAsExecutable: boolean, butUseSampleOutputOnRun: boolean) {
+    if (this.props.readonly !== true && showAsExecutable) {
       if (this.state.execution === 'processing') {
         return <Spinner />
       } else {
@@ -314,7 +317,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
             ready={this.state.ready}
             optional={this.props.optional}
             execution={this.state.execution}
-            onRun={this._onRun}
+            onRun={butUseSampleOutputOnRun ? this._onRunUsingSampleOutput : this._onRun}
           />
         )
       }
@@ -326,7 +329,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     this.setState({ codeSnippetValue })
   }
 
-  private input(mutability: MutabilityState) {
+  private input(showAsExecutable: boolean, butUseSampleOutputOnRun: boolean) {
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
         {this.badges()}
@@ -340,7 +343,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
             tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
           />
         </div>
-        {this.actions(mutability)}
+        {this.actions(showAsExecutable, butUseSampleOutputOnRun)}
       </div>
     )
   }
@@ -430,6 +433,17 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
         )
   }
 
+  /**
+   * We are in offline mode, we have sample output, and the user
+   * clicked the Run button. We only need to shift to showing the
+   * original status of the code block execution.
+   */
+  private readonly _onRunUsingSampleOutput = () => {
+    if (this.props.response) {
+      this.setState({ execution: this.props.rawStatus })
+    }
+  }
+
   private readonly _onRun = async () => {
     try {
       this.setState({ execution: 'processing', startTime: Date.now(), endTime: null })
@@ -483,33 +497,42 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     return this.props.outputOnly === true
   }
 
-  public render() {
-    const dataProps = Object.entries(this.props)
+  /** Extract any data- properties from Props */
+  private dataProps() {
+    return Object.entries(this.props)
       .filter(([key]) => /^data-/.test(key))
       .reduce((M, [key, value]) => {
         M[key] = value
         return M
       }, {})
+  }
 
+  public render() {
     return (
       <MutabilityContext.Consumer>
-        {mutability => (
-          <li
-            id={this.props.id}
-            className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
-            data-is-executable={mutability.executable}
-            data-is-output-only={this.outputOnly || undefined}
-            data-is-ready={this.state.ready || undefined}
-            data-is-optional={this.props.optional || undefined}
-            data-is-validated={this.state.validated || undefined}
-            data-is-sample-output={(this.hasOutput && this.state.execution === 'replayed') || undefined}
-            {...dataProps}
-          >
-            {!this.outputOnly && this.input(mutability)}
-            {!this.outputOnly && this.sourceRef()}
-            {this.output()}
-          </li>
-        )}
+        {mutability => {
+          const showAsExecutable =
+            !!(this.state.execution === 'replayed' && this.hasOutput) || mutability.executable || undefined
+          const butUseSampleOutputOnRun = !mutability.executable
+
+          return (
+            <li
+              id={this.props.id}
+              className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
+              data-is-executable={showAsExecutable}
+              data-is-output-only={this.outputOnly || undefined}
+              data-is-ready={this.state.ready || undefined}
+              data-is-optional={this.props.optional || undefined}
+              data-is-validated={this.state.validated || undefined}
+              data-is-sample-output={(this.hasOutput && this.state.execution === 'replayed') || undefined}
+              {...this.dataProps()}
+            >
+              {!this.outputOnly && this.input(showAsExecutable, butUseSampleOutputOnRun)}
+              {!this.outputOnly && this.sourceRef()}
+              {this.output()}
+            </li>
+          )
+        }}
       </MutabilityContext.Consumer>
     )
   }

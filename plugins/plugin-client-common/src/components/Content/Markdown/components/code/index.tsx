@@ -85,6 +85,7 @@ export default function code(
             optional={attributes.optional}
             response={response}
             status={statusConsideringReplay}
+            rawStatus={status}
             arg1={myCodeIdx}
             onResponse={spliceInCodeExecution}
             outputOnly={outputOnly}
