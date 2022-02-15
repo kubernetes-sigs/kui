@@ -50,7 +50,12 @@ const IN2: Input = {
   text: 'Tab2', // to test existence of both tabs
   blockquotes: [bq1, bq2]
 }
-;[IN1, IN2].forEach(markdown => {
+const IN3: Input = {
+  input: join(ROOT, 'data/tab-indentation-preservation3.md'),
+  text: 'Bullet2',
+  blockquotes: [bq1, bq2]
+}
+;[IN1, IN2, IN3].forEach(markdown => {
   describe(`tab indentation preservation in markdown text check ${basename(markdown.input)} ${process.env
     .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))

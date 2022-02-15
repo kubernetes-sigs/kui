@@ -171,6 +171,7 @@ export function hackIndentation(source: string): string {
   let inTab: RegExp
   let inBlockquote = false
   let inCodeBlock = false
+  let blockquoteOrCodeBlockIndent: number
   const endMarkers: string[] = []
 
   const indentDepthOfContent: number[] = []
@@ -184,9 +185,8 @@ export function hackIndentation(source: string): string {
       if (!inBlockquote && !inCodeBlock) {
         return line.replace(/^\s*/, '')
       } else {
-        const curIndentDepth = indentDepthOfContent[indentDepthOfContent.length - 1] || 0
-        if (curIndentDepth > 0) {
-          return line.replace(new RegExp(`^\\s{${curIndentDepth * 4}}`), '')
+        if (blockquoteOrCodeBlockIndent > 0) {
+          return line.replace(new RegExp(`^\\s{${blockquoteOrCodeBlockIndent}}`), '')
         } else {
           return line
         }
@@ -263,25 +263,20 @@ export function hackIndentation(source: string): string {
 
       return `\n\n${possibleEndTab}${possibleNesting}${startMarker}\n\n` + unindent(line)
     } else if (/^\s*```/.test(line)) {
-      // do this before flipping in or out of a blockquote
-      let unindented: string
-
       const possibleEndOfTab = !inTab || inTab.test(line) ? '' : pop(line)
 
       if (/(bash|sh|shell)/.test(line)) {
-        unindented = unindent(line)
+        blockquoteOrCodeBlockIndent = line.search(/\S/)
         inCodeBlock = true
       } else if (inCodeBlock) {
         inCodeBlock = false
-        unindented = unindent(line)
       } else if (!inBlockquote) {
-        unindented = unindent(line)
+        blockquoteOrCodeBlockIndent = line.search(/\S/)
         inBlockquote = true
       } else {
         inBlockquote = false
-        unindented = unindent(line)
       }
-      return possibleEndOfTab + unindented
+      return possibleEndOfTab + unindent(line)
     } else if (inTab) {
       const unindented = unindent(line)
 
@@ -292,6 +287,8 @@ export function hackIndentation(source: string): string {
         // possibly pop the stack of indentation
         return pop(line) + unindented
       }
+    } else if (inBlockquote || inCodeBlock) {
+      return unindent(line)
     }
 
     return line
