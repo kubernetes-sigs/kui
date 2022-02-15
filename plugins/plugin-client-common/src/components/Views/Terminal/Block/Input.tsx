@@ -104,9 +104,6 @@ type InputProps = {
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
 
-  /** section index to be displayed to the user */
-  sectionIdx?: string
-
   /** needed temporarily to make pty/client happy */
   _block?: HTMLElement
 
@@ -206,19 +203,11 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   private readonly _cancelReEdit = this.cancelReEdit.bind(this)
 
-  protected contextContent(
-    insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1
-  ): React.ReactNode {
+  protected contextContent(insideBrackets: React.ReactNode = this.idx): React.ReactNode {
     return this.state.isReEdit ? (
       <a href="#" className="kui--block-action" title={strings('Cancel edit')} onClick={this._cancelReEdit}>
         <Icons icon="Edit" className="clickable" />
       </a>
-    ) : this.props.sectionIdx !== undefined ? (
-      <span className="repl-context-inner">
-        {' '}
-        {/* Helps with vertical alignment */}
-        &sect;{this.props.sectionIdx}
-      </span>
     ) : (
       <span className="repl-context-inner">
         {' '}
@@ -317,6 +306,18 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
         />
       )
     )
+  }
+
+  protected get promptValue() {
+    return hasValue(this.props.model)
+      ? this.props.model.value
+      : hasCommand(this.props.model)
+      ? this.props.model.command
+      : ''
+  }
+
+  protected get idx() {
+    return this.props.displayedIdx || this.props.idx + 1
   }
 
   public render() {
@@ -435,11 +436,7 @@ export default class Input extends InputProvider {
 
   private onTextAreaRef(c: HTMLTextAreaElement) {
     if (c && (!this.state.prompt || isHTMLInputElement(this.state.prompt) || this.state.isReEdit)) {
-      let value = hasValue(this.props.model)
-        ? this.props.model.value
-        : hasCommand(this.props.model)
-        ? this.props.model.command
-        : ''
+      let value = this.promptValue
 
       if (isHTMLInputElement(this.state.prompt)) {
         if (endsWithBackSlash(this.state.prompt.value)) {

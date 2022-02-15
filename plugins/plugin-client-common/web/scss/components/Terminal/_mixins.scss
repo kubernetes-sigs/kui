@@ -51,8 +51,6 @@ $input-padding-right: $input-padding-left;
 $repl-context-min-width: 2em;
 $repl-context-margin-right: 0.5em;
 
-$section-break-margin: 2em 4em 2em 7em;
-
 /** Hover hysteresis for showing action buttons */
 $action-hover-delay: 210ms;
 
@@ -155,14 +153,6 @@ $action-hover-delay: 210ms;
   }
 }
 
-@mixin SectionBreak {
-  @include Block {
-    &[data-is-section-break] {
-      @content;
-    }
-  }
-}
-
 @mixin BlockAfterBlock {
   li.repl-block + li.repl-block {
     @content;
@@ -198,14 +188,16 @@ $action-hover-delay: 210ms;
 
 /** A "T T" layout, i.e. two terminals side-by-side */
 @mixin SideBySide {
-  .repl .kui--terminal-split-container {
-    &[data-split-count='2'],
-    &[data-split-count='4'],
-    &[data-split-count='5'],
-    &[data-split-count='6'],
-    &[data-split-count='7'],
-    &[data-split-count='8'] {
-      @content;
+  .kui-tab-content:not([data-has-bottom-stripe]):not([data-has-left-strip]) {
+    .repl .kui--terminal-split-container {
+      &[data-split-count='2'],
+      &[data-split-count='4'],
+      &[data-split-count='5'],
+      &[data-split-count='6'],
+      &[data-split-count='7'],
+      &[data-split-count='8'] {
+        @content;
+      }
     }
   }
 }
@@ -336,13 +328,16 @@ $action-hover-delay: 210ms;
 }
 
 /** Hide the In[1] bits */
+@mixin HideContext {
+  .repl-context {
+    display: none;
+  }
+}
 @mixin HideIn {
   @include Block {
     &[data-is-output-only],
-    &:not([data-in-sections]):not([data-is-replay]) {
-      .repl-context {
-        display: none;
-      }
+    &:not([data-is-replay]) {
+      @include HideContext;
     }
   }
 }
