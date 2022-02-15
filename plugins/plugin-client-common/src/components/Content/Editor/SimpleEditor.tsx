@@ -174,7 +174,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
           Object.assign(
             {
               showLineNumbers: nLines > 1,
-              lineNumbersMinChars: nLines.toString().length
+              lineNumbersMinChars: nLines.toString().length + 1
             },
             providedOptions
           )
