@@ -99,17 +99,6 @@
     }
   }
 
-  @include SectionBreak {
-    height: 1px;
-    background-color: var(--color-sidecar-toolbar-background);
-    padding: 0;
-    margin: $section-break-margin;
-  }
-
-  /*@include FinishedBlockWithInputAndOutput {
-    margin-top: 0.5em;
-  }*/
-
   @include Block {
     @include Context {
       padding: calc(#{$inset} / 0.875 + 1px) 0;
@@ -147,6 +136,10 @@
     display: flex;
     flex-direction: column;
     padding: 0.5em 0;
+
+    @include OutputOnly {
+      @include HideContext;
+    }
 
     @include NotOutputOnly {
       @include BlockOutput {
@@ -262,9 +255,6 @@
           padding-right: $inset; /* to pad against timestamp and action buttons */
         }
       }
-    }
-    .repl-output .repl-context {
-      opacity: 0;
     }
 
     &[data-is-output-only] {
