@@ -143,7 +143,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   private wizardCodeBlockSteps(stepIdx: number) {
     const containedCodeBlocks = this.state.codeBlocksPerStep[stepIdx]
-    return containedCodeBlocks && <MiniProgressStepper steps={containedCodeBlocks} />
+    return containedCodeBlocks && containedCodeBlocks.length > 0 && <MiniProgressStepper steps={containedCodeBlocks} />
   }
 
   private wizardStepDescription(stepIdx: number, description: string) {
