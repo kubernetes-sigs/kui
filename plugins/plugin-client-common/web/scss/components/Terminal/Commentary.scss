@@ -73,6 +73,12 @@ $box-shadow-margin: 4px; /* room for box shadow */
   }
 }
 
+@mixin Sepia {
+  &:not(:hover) {
+    filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
+  }
+}
+
 @mixin GrayAction {
   @include InputWrapper {
     --color-for-guidebook-block-actions: var(--color-text-02);
@@ -662,13 +668,12 @@ pre {
     }
 
     @include Optional {
-      &:not(:hover) {
-        filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
-      }
+      @include Sepia;
       @include GrayAction;
     }
 
     @include Validated {
+      @include Sepia;
       @include GrayAction;
       @include InvisibleActionExceptOnHover;
     }
