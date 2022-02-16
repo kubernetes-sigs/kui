@@ -100,7 +100,7 @@ export default function code(
         <div className={'paragraph' + (mdprops.executableCodeBlocks === false ? ' kui--inverted-color-context' : '')}>
           {!language ? (
             <pre>
-              <code>{code}</code>
+              <code>{body}</code>
             </pre>
           ) : (
             <code className="kui--code--editor">
