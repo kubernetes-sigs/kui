@@ -100,6 +100,18 @@ $box-shadow-margin: 4px; /* room for box shadow */
   }
 }
 
+@mixin ParagraphBoundaryMargins {
+  & > pre:not(:first-child) {
+    margin-top: $inset;
+  }
+  & > p:first-child {
+    margin-top: 0;
+  }
+  & > p:last-child {
+    margin-bottom: 0;
+  }
+}
+
 @mixin InvisibleActionExceptOnHoverThenWarning {
   @include WarningAction;
   @include InvisibleActionExceptOnHover;
@@ -393,6 +405,9 @@ body[kui-theme-style='light'] {
   @include ExpandableSection {
     font-size: $terminal-font-size;
     margin-right: $box-shadow-margin; /* room for box shadow */
+    @include ExpandableSectionContentElement {
+      @include ParagraphBoundaryMargins;
+    }
   }
   @include CodeBlock {
     margin-right: $box-shadow-margin; /* room for box shadow */
@@ -523,18 +538,6 @@ $tip-toggle-opacity-2: 0.6;
   /* we don't want padding below the tabs part of a Tabbed section */
   &.paragraph {
     padding-bottom: 0;
-  }
-}
-
-@mixin ParagraphBoundaryMargins {
-  & > pre:not(:first-child) {
-    margin-top: $inset;
-  }
-  & > p:first-child {
-    margin-top: 0;
-  }
-  & > p:last-child {
-    margin-bottom: 0;
   }
 }
 
