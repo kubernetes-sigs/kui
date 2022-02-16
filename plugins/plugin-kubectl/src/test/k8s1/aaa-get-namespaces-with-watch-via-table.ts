@@ -23,6 +23,7 @@ import {
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
+const timeout = { timeout: CLI.waitTimeout }
 
 /** name of the namespace */
 const nsName: string = create()
@@ -119,22 +120,22 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         const deleteBadge = await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))
 
         // the create and delete badges had better still exist
-        await this.app.client.$(createBadge).then(_ => _.waitForExist())
-        await this.app.client.$(deleteBadge).then(_ => _.waitForExist())
+        await this.app.client.$(createBadge).then(_ => _.waitForExist(timeout))
+        await this.app.client.$(deleteBadge).then(_ => _.waitForExist(timeout))
 
         // the "online" badge from the watch had better *NOT* exist after the delete
         // (i.e. we had better actually be watching!)
         await this.app.client.$(watchBadge).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
 
         // and, conversely, that watch had better eventually show Offline
-        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist(timeout))
 
         // create again
         await waitForOnline(await CLI.command(`${kubectl} create ns ${nsNameForIter}`, this.app))
 
         // the "online" badge from the watch had better now exist again after the create
         // (i.e. we had better actually be watching!)
-        await this.app.client.$(watchBadge).then(_ => _.waitForExist())
+        await this.app.client.$(watchBadge).then(_ => _.waitForExist(timeout))
 
         // and, conversely, that watch had better NOT show Offline
         await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
@@ -147,7 +148,7 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         await this.app.client.$(watchBadge).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
 
         // and, conversely, that watch had better eventually show Offline
-        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist(timeout))
 
         // hit the pause watcher button in get -w
         await this.app.client.$(Selectors.WATCH_LIVE_BUTTON(testWatch.count)).then(_ => _.click())
@@ -155,12 +156,12 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         // create again
         await waitForOnline(await CLI.command(`${kubectl} create ns ${nsNameForIter}`, this.app))
         // get -w should stay red
-        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist(timeout))
         // hit the resume watcher button in get -w
         await this.app.client.$(Selectors.WATCH_OFFLINE_BUTTON(testWatch.count)).then(_ => _.click())
         await this.app.client.$(Selectors.WATCH_LIVE_BUTTON(testWatch.count))
         // get -w should be green
-        await this.app.client.$(watchBadge).then(_ => _.waitForExist())
+        await this.app.client.$(watchBadge).then(_ => _.waitForExist(timeout))
       } catch (err) {
         await Common.oops(this, true)(err)
       }

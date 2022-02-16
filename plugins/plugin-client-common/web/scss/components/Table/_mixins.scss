@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@import '../Card/mixins';
+
 $bgcolor: transparent;
 $border-radius: 2px 4px;
 
@@ -49,8 +51,10 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
 }
 
 @mixin TableCard {
-  .kui--table-card {
-    @content;
+  @include Card {
+    &.kui--table-card {
+      @content;
+    }
   }
 }
 

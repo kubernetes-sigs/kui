@@ -21,6 +21,7 @@
 @import 'inverted';
 @import '@kui-shell/plugin-client-common/web/scss/components/Wizard/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/Sidecar/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
 
 body[kui-theme='Carbon Gray10'] {
@@ -31,6 +32,10 @@ body[kui-theme='Carbon Gray10'] {
 
   @include Sidecar {
     @include carbon-inverted;
+  }
+  @include InputWrapper {
+    @include carbon-inverted;
+    --color-sidecar-background-02: var(--color-base00);
   }
   @include StatusStripeWithDefaultColors {
     @include carbon-inverted;

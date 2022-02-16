@@ -160,3 +160,7 @@ body[kui-theme-style] {
 body[kui-theme-style='dark'] .kui--radio-table-row.kui--inverted-color-context.bx--structured-list-row--selected {
   background-color: var(--color-sidecar-background);
 }
+
+@include TableCard {
+  background-color: var(--color-base00);
+}

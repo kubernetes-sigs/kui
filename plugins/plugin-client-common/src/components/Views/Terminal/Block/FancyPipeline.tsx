@@ -56,7 +56,7 @@ export default class FancyPipeline extends React.PureComponent<Props> {
             {pidx > 0 && this.pipe('|')}
             {pipePart.map((word, widx) =>
               widx === 0 ? (
-                <span key={widx} className="color-base0D">
+                <span key={widx} className="color-base0C">
                   {word}
                 </span>
               ) : (

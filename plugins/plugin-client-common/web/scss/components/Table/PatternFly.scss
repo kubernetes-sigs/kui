@@ -21,7 +21,7 @@
 } */
 
 @include Table {
-  --pf-c-table--BackgroundColor: var(--pf-c-card--BackgroundColor);
+  --pf-c-table--BackgroundColor: transparent;
   border-collapse: collapse;
 
   @include TableHeadCell {

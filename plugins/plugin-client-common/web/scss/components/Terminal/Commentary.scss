@@ -77,7 +77,7 @@ $box-shadow-margin: 4px; /* room for box shadow */
 
 @mixin Sepia {
   &:not(:hover) {
-    filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
+    @include SepiaColors;
   }
 }
 
@@ -418,7 +418,6 @@ body[kui-theme-style='light'] {
   }
 
   @include ExpandableSectionContent {
-    margin-top: 1em;
     max-width: unset;
 
     & > .paragraph {
@@ -500,7 +499,16 @@ $tip-toggle-opacity-2: 0.6;
   }
 }
 
+@include SampleOutput {
+  @include ExpandableSectionContentElement {
+    margin-top: 0;
+  }
+}
+
 @include MarkdownTip {
+  @include ExpandableSectionContentElement {
+    margin-top: 1em;
+  }
   @include ExpandableSectionToggle {
     width: 100%;
     font-weight: 500;
