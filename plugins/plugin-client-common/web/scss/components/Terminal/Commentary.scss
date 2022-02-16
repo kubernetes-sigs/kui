@@ -19,6 +19,7 @@
 @import '../Editor/mixins';
 @import '../Wizard/mixins';
 @import '../Sidecar/mixins';
+@import '../Table/mixins';
 @import '../Tooltip/mixins';
 @import '../common/narrow-window';
 @import '../ProgressStepper/mixins';
@@ -188,6 +189,11 @@ body[kui-theme-style] {
   }
 }
 
+@mixin FullWidthTables {
+  @include TableOuter {
+    flex: 1;
+  }
+}
 @mixin FullWidth {
   @include CommentaryCard {
     flex: 1;
@@ -247,6 +253,7 @@ body[kui-theme-style] {
 
 @include Commentary {
   @include BlockLinks;
+  @include FullWidthTables;
 
   flex: 1;
   display: flex;
