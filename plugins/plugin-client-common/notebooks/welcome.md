@@ -59,14 +59,14 @@ for `kubectl`.
 First, let us try viewing our pods:
 
 ```bash
-k get pods
+k get deploy
 ```
 
 Clicking on a table cell gives you a quick way to drill down the
 following details:
 
 ```bash
-k get Pod frontend-6c6d6dfd4d-h6htk -o yaml
+k get deploy frontend -o yaml
 ```
 
 ### Events
