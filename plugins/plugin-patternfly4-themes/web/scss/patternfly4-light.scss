@@ -20,6 +20,7 @@
 @import 'light';
 @import '@kui-shell/plugin-client-common/web/scss/components/Wizard/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 
 body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   @include LightColors;
@@ -29,6 +30,10 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
 
   /** An inverted StatusStripe looks better in this theme */
   @include StatusStripeWithDefaultColors {
+    @include InvertLightToDark;
+  }
+  @include InputWrapper {
+    @include InvertLightToDarkForSidecar;
     @include InvertLightToDark;
   }
   @include CommentaryEditor {

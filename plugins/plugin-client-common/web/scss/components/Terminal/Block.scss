@@ -33,7 +33,7 @@
 @include Input {
   &::placeholder {
     opacity: 0.3;
-    font-size: $terminal-font-size;
+    font-size: calc($terminal-font-size * 12 / 14);
     color: var(--color-text-02);
   }
 }
@@ -55,10 +55,22 @@
   @include NoInputColorBlocking;
 }
 
+@include FinishedBlock {
+  @include InputWrapperImmediate {
+    @include SepiaColors;
+  }
+}
+
+@include Block {
+  @include InputWrapper {
+    font-size: calc($terminal-font-size * 12 / 14);
+  }
+}
+
 @include Block {
   @include InputWrapper {
     border: $input-border;
-    border-radius: 1px;
+    border-radius: 1px / 2px;
     &[data-is-reedit] {
       border-color: $input-border-editing;
     }
@@ -101,7 +113,7 @@
 
   @include Block {
     @include Context {
-      padding: calc(#{$inset} / 0.875 + 1px) 0;
+      padding: $inset 0;
       align-items: flex-start;
     }
 
@@ -143,7 +155,7 @@
 
     @include NotOutputOnly {
       @include BlockOutput {
-        margin-top: 0.5em;
+        margin-top: 0.25rem;
       }
     }
 
@@ -247,7 +259,7 @@
     & {
       @include InputWrapper {
         align-items: stretch;
-        padding-left: 0.5em;
+        padding-left: $inset;
         position: relative; /* for repl-block-actions' position: absolute */
         .repl-input-element,
         .kui--repl-input-element-nbsp {
@@ -278,9 +290,6 @@
       }
     }
   }
-  .kui--repl-block-right-element {
-    font-size: 0.6875em;
-  }
 }
 
 @include SideBySide {
@@ -298,7 +307,7 @@ body[kui-theme-style] .kui--repl-block-right-element {
 @mixin timestamp-like {
   margin: math.div($inset, $right-element-font-size-factor);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   transition-delay: $action-hover-delay;
 }
 

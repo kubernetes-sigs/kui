@@ -40,7 +40,11 @@ export const grabFocus = async (
 ) => {
   return app.client
     .$(currentPrompt)
-    .then(_ => _.click())
+    .then(_ =>
+      _.moveTo()
+        .catch(() => true)
+        .then(() => _.click())
+    )
     .then(() => app.client.$(currentPromptBlock))
     .then(_ => _.waitForEnabled())
     .catch(err => {

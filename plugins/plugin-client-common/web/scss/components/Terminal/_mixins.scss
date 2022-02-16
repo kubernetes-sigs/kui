@@ -24,10 +24,10 @@ $max-column-width: 77em;
 $terminal-font-size: 0.875rem;
 
 /** Inset of the <input> element w.r.t. the bordered/backgrounded region */
-$inset: 0.5em;
+$inset: 1em;
 
 /** Font size of e.g. timestamp */
-$right-element-font-size-factor: 0.875;
+$right-element-font-size-factor: math.div(11, 12);
 $right-element-font-size: $right-element-font-size-factor + em;
 
 /** Sizing for Block action buttons */
@@ -37,9 +37,9 @@ $action-width: 2em;
 /** Color to indicate focused block */
 $focus-color: var(--color-brand-01);
 
-$input-bg: var(--color-base01);
+$input-bg: var(--color-sidecar-background-02);
 $input-bg-inverted: var(--color-sidecar-background-02);
-$input-border: 1px solid rgba(150, 150, 150, 0.2);
+$input-border: 1px solid rgba(150, 150, 150, 0.075);
 $input-border-editing: var(--color-brand-03);
 
 /** This is the left-hand border that defines each block region */
@@ -368,6 +368,25 @@ $action-hover-delay: 210ms;
   }
 }
 
+/** Same as InputWrapper, but as an immediate descendant of Block, not
+  part of some outer-enclosing Block such as might happen with a
+  guidebook replay */
+@mixin InputWrapperImmediate {
+  > {
+    @include BlockInput {
+      > {
+        @include ContextAndInput {
+          > {
+            @include InputWrapper {
+              @content;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 @mixin Successful {
   &.valid-response {
     @content;
@@ -608,6 +627,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin NotShowingSampleOutput {
+  &:not([data-is-sample-output]) {
+    @content;
+  }
+}
+
 @mixin SampleOutput {
   .kui--sample-output {
     @content;
@@ -618,4 +643,8 @@ $action-hover-delay: 210ms;
   .kui--admonition {
     @content;
   }
+}
+
+@mixin SepiaColors {
+  filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
 }
