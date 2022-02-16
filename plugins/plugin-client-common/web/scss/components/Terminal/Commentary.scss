@@ -21,6 +21,7 @@
 @import '../Sidecar/mixins';
 @import '../Table/mixins';
 @import '../Tooltip/mixins';
+@import '../Accordion/mixins';
 @import '../common/narrow-window';
 @import '../ProgressStepper/mixins';
 @import '../ExpandableSection/mixins';
@@ -389,6 +390,9 @@ body[kui-theme-style='light'] {
 @include Commentary {
   @include WizardHeader {
     margin-right: $box-shadow-margin; /* room for box shadow */
+  }
+  @include Accordion {
+    font-size: $terminal-font-size;
   }
   @include ExpandableSection {
     font-size: $terminal-font-size;
