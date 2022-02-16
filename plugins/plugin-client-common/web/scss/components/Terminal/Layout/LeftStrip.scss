@@ -28,10 +28,9 @@
         }
 
         @include Split(3) {
-          @include Columns(4);
-          grid-template-areas:
-            'L1 T1 T1 T1'
-            'L1 T2 T2 T2';
+          @include Rows(1);
+          @include Columns(5);
+          grid-template-areas: 'L1 T1 T1 T2 T2';
         }
       }
     }
@@ -47,11 +46,9 @@
     }
 
     @include Split(3) {
-      @include Rows(2);
+      @include Rows(1);
       @include Columns(5);
-      grid-template-areas:
-        'L1 T1 T1 T1 T1'
-        'L1 T2 T2 T2 T2';
+      grid-template-areas: 'L1 T1 T1 T2 T2';
     }
 
     @include Split(4) {
