@@ -125,9 +125,13 @@ export function getCurrentDefaultContextName({ REPL, parsedOptions }: ContextArg
 }
 
 /** @return the relevant namespace for the given args/command line */
-export async function getCurrentDefaultNamespace(args: ContextArgs): Promise<string> {
-  const contextName = await getCurrentDefaultContextName(args)
-  if (currentDefaultNamespaceCache[contextName]) {
+export async function getCurrentDefaultNamespace(
+  args: ContextArgs,
+  context?: string,
+  noCache = false
+): Promise<string> {
+  const contextName = context || (await getCurrentDefaultContextName(args))
+  if (!noCache && currentDefaultNamespaceCache[contextName]) {
     return currentDefaultNamespaceCache[contextName]
   }
 

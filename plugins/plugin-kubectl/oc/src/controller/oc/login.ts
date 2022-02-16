@@ -14,14 +14,38 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
-import { doExecWithPty, emitKubectlConfigChangeEvent } from '@kui-shell/plugin-kubectl'
+import { Arguments, Capabilities, Registrar } from '@kui-shell/core'
+import {
+  KubeOptions,
+  doExecWithPty,
+  emitKubectlConfigChangeEvent,
+  getCurrentContextName,
+  getCurrentDefaultNamespace
+} from '@kui-shell/plugin-kubectl'
+
+/**
+ * There is no good way I can see to prase out the new context and
+ * namespace from the command line response to `oc login`. Sigh, so we
+ * need to re-fetch the data from disk.
+ */
+async function emitConfigChange(args: Arguments<KubeOptions>) {
+  // re-fetch from disk
+  const newContext = await getCurrentContextName(args)
+  const newNamespace = await getCurrentDefaultNamespace(args, newContext, true)
+
+  // then notify the views of the config change
+  emitKubectlConfigChangeEvent('SetNamespaceOrContext', newNamespace, newContext)
+}
 
 export default function registerOcLogin(registrar: Registrar) {
   registrar.listen('/oc/login', async args => {
     const command = args.command.replace(/login/, '_login')
     const response = await args.REPL.qexec(command)
-    emitKubectlConfigChangeEvent('SetNamespaceOrContext')
+    if (Capabilities.inBrowser()) {
+      // we'll need to emit this event on the browser side, as well as
+      // (below) on the proxy side
+      emitConfigChange(args)
+    }
     return response
   })
 
@@ -32,7 +56,7 @@ export default function registerOcLogin(registrar: Registrar) {
       args.argvNoOptions[1] = 'login'
       args.argv[1] = 'login'
       const response = await doExecWithPty(args, undefined, 'oc')
-      emitKubectlConfigChangeEvent('SetNamespaceOrContext')
+      emitConfigChange(args)
       return response
     },
     { requiresLocal: true }
