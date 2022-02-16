@@ -72,6 +72,9 @@ function stopProxy(this: State) {
 
     // unregister onQuit handler
     unregisterOnQuit(this.onQuitHandler)
+
+    // DO NOT DO THIS, otherwise support for different contexts across Kui tabs will break:
+    // offKubectlConfigChangeEvents(this.onQuitHandler)
   } catch (err) {
     console.error('Error stopping kubectl proxy', err)
   }
@@ -86,6 +89,9 @@ function registerOnQuit(state: Omit<State, 'onQuitHandler'>): State {
   try {
     const onQuitHandler = stopProxy.bind(state)
     onQuit(onQuitHandler)
+
+    // DO NOT DO THIS, otherwise support for different contexts across Kui tabs will break:
+    // onKubectlConfigChangeEvents(onQuitHandler)
     return Object.assign(state, { onQuitHandler })
   } catch (err) {
     console.error('Error registering kubectl proxy onQuit', err)

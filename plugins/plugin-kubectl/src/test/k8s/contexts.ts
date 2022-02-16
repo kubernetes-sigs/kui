@@ -46,10 +46,12 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     })
   )
 
+  const timeout = { timeout: CLI.waitTimeout }
+
   synonyms.forEach(kubectl => {
     /** delete the given namespace */
     const deleteIt = (name: string, context: string, kubeconfig: string) => {
-      it(`should delete the namespace ${name} via ${kubectl}`, () => {
+      it(`should delete, outside of Kui, the namespace ${name} via ${kubectl}`, () => {
         execSync(`kubectl delete namespace ${name} --context ${context} --kubeconfig ${kubeconfig}`)
       })
     }
@@ -244,7 +246,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it('should create a new tab via command', () =>
         CLI.command('tab new', this.app)
           .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
-          .then(_ => _.waitForDisplayed())
+          .then(_ => _.waitForDisplayed(timeout))
           .then(() => CLI.waitForSession(this)) // should have an active repl
           .catch(Common.oops(this, true)))
     }
@@ -253,7 +255,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it(`switch back to first tab via command`, () =>
         CLI.command('tab switch 1', this.app)
           .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
-          .then(_ => _.waitForDisplayed())
+          .then(_ => _.waitForDisplayed(timeout))
           .catch(Common.oops(this, true)))
     }
 
@@ -261,7 +263,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it(`switch back to the second tab tab via command`, () =>
         CLI.command('tab switch 2', this.app)
           .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
-          .then(_ => _.waitForDisplayed())
+          .then(_ => _.waitForDisplayed(timeout))
           .catch(Common.oops(this, true)))
     }
 
@@ -357,10 +359,11 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     listPodsAndExpectOne('nginx')
 
     deleteIt(ns, initialContext, initialKubeConfig)
-    it(`should expect ${ns} to be offline in tab  2`, async () => {
+
+    it(`should expect ${ns} to be offline in tab 2`, async () => {
       try {
         const offlineBadge = nsWatcherBadgeInTab2.replace(Status.Online, Status.Offline)
-        await this.app.client.$(offlineBadge).then(_ => _.waitForExist())
+        await this.app.client.$(offlineBadge).then(_ => _.waitForExist(timeout))
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -370,7 +373,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     it(`should expect ${ns2} to be offline in tab 1`, async () => {
       try {
         const offlineBadge = ns2WatcherBadgeInTab1.replace(Status.Online, Status.Offline)
-        await this.app.client.$(offlineBadge).then(_ => _.waitForExist())
+        await this.app.client.$(offlineBadge).then(_ => _.waitForExist(timeout))
       } catch (err) {
         return Common.oops(this, true)(err)
       }
