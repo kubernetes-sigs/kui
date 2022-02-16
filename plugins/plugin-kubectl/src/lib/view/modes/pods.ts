@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Arguments, Tab, ModeRegistration, Table } from '@kui-shell/core'
+import { i18n, Arguments, ModeRegistration } from '@kui-shell/core'
 
 import kubectl from '../../../controller/cli'
 import { getCommandFromArgs } from '../../util/util'
 import { selectorToString } from '../../util/selectors'
 import { KubeOptions } from '../../../controller/kubectl/options'
 import { KubeResource, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
+
+const strings = i18n('plugin-kubectl')
 
 export function getPodsCommand(resource: KubeResource, args?: Pick<Arguments, 'argvNoOptions'>) {
   const { selector } = resource.spec
@@ -38,9 +40,8 @@ export function getPodsCommand(resource: KubeResource, args?: Pick<Arguments, 'a
  * Render the tabular pods view
  *
  */
-async function renderPods(tab: Tab, resource: KubeResource, args: Arguments<KubeOptions>): Promise<Table> {
-  const tableModel = tab.REPL.qexec<Table>(getPodsCommand(resource, args))
-  return tableModel
+function renderPods(_, resource: KubeResource, args: Arguments<KubeOptions>) {
+  return getPodsCommand(resource, args)
 }
 
 /**
@@ -65,8 +66,10 @@ export const podMode: ModeRegistration<KubeResource> = {
   when: hasPods,
   mode: {
     mode: 'pods',
-    label: 'Pods',
-    content: renderPods
+    label: strings('Show Pods'),
+    kind: 'drilldown',
+    showRelatedResource: true,
+    command: renderPods
   }
 }
 
