@@ -22,7 +22,7 @@
 @include KuiTabContainer {
   @include SidebarOpen {
     @include TopLevelTab {
-      @include HasOnlyLeftStrip {
+      @include HasLeftAndBottomStrips {
         @include Split(3) {
           @include Columns(4);
           grid-template-areas:
