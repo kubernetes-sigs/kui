@@ -45,7 +45,10 @@ function sortRowWithDir(rowA: Row, rowB: Row, key: string, cidx: number, directi
   if (key === 'SIZE') {
     return sortBySize(rowA, rowB, cidx, dir)
   } else {
-    return rowA.name.localeCompare(rowB.name) * dir
+    const isName = key === 'NAME'
+    const valA = isName ? rowA.name : rowA.attributes[cidx - 1].value
+    const valB = isName ? rowB.name : rowB.attributes[cidx - 1].value
+    return valA.localeCompare(valB) * dir
   }
 }
 
@@ -53,6 +56,7 @@ export default function sortRow(rowA: Row, rowB: Row, key: string, cidx: number,
   return sortRowWithDir(rowA, rowB, key.toUpperCase(), cidx, direction)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function isSortableCol(key: string) {
-  return /NAME|SIZE|NAMESPACE|OBJECT/i.test(key.toUpperCase())
+  return true
 }
