@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { ISuite } from './common'
+import { OUTPUT_LAST } from './selectors'
+
 export default class Markdown {
   public readonly tip = '.kui--markdown-tip'
   public readonly tabs = '.kui--markdown-tabs'
@@ -21,6 +24,10 @@ export default class Markdown {
 
   private readonly _codeBlock = '.kui--code-block-in-markdown'
   public readonly runButton = '.kui--block-action-run'
+
+  public getText(ctx: ISuite) {
+    return ctx.app.client.$(OUTPUT_LAST).then(_ => _.getText())
+  }
 
   public tipWithTitle(title: string) {
     return `${this.tip}[data-title="${title}"]`

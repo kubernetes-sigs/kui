@@ -19,6 +19,9 @@ import { v4 } from 'uuid'
 import { Element } from 'hast'
 import { START_OF_TIP, END_OF_TIP } from '../rehype-tip'
 
+/** A placeholder marker to indicate markdown that uses indentation not to mean Tab or Tip content */
+const FAKE_END_MARKER = ''
+
 // const RE_TAB = /^(.|[\n\r])*===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
 const RE_TAB = /^===\s+"([^"]+)"/
 
@@ -176,52 +179,52 @@ export function hackIndentation(source: string): string {
 
   const indentDepthOfContent: number[] = []
 
+  const unindent = (line: string) => {
+    if (!inBlockquote && !inCodeBlock) {
+      return line.replace(/^\s*/, '')
+    } else {
+      if (blockquoteOrCodeBlockIndent > 0) {
+        return line.replace(new RegExp(`^\\s{${blockquoteOrCodeBlockIndent}}`), '')
+      } else {
+        return line
+      }
+    }
+  }
+
+  const pop = (line: string, delta = 0) => {
+    const indentMatch = line.match(/^\s+/)
+    const curIndentDepth = indentDepthOfContent[indentDepthOfContent.length - 1]
+    const thisIndentDepth = !indentMatch ? 0 : ~~(indentMatch[0].length / 4)
+
+    let pop = ''
+    for (let idx = curIndentDepth; idx > thisIndentDepth + delta; idx--) {
+      indentDepthOfContent.pop()
+      const endMarker = endMarkers.pop()
+      if (endMarker) {
+        pop += `\n${endMarker}\n\n`
+      }
+    }
+
+    if (pop) {
+      if (endMarkers.length === 0) {
+        inTab = undefined
+      } else {
+        const indentDepth = indentDepthOfContent[indentDepthOfContent.length - 1]
+        inTab = new RegExp(
+          '^' +
+            Array(indentDepth * 4)
+              .fill(' ')
+              .join('')
+        )
+      }
+    }
+    return pop
+  }
+
   const rewrite = source.split(/\n/).map(line => {
     const tabStartMatch = line.match(/^(\s*)===\s+".*"/)
     const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|todo|bug|info|note|warning|success|question)/)
     const startMatch = tabStartMatch || tipStartMatch
-
-    const unindent = (line: string) => {
-      if (!inBlockquote && !inCodeBlock) {
-        return line.replace(/^\s*/, '')
-      } else {
-        if (blockquoteOrCodeBlockIndent > 0) {
-          return line.replace(new RegExp(`^\\s{${blockquoteOrCodeBlockIndent}}`), '')
-        } else {
-          return line
-        }
-      }
-    }
-
-    const pop = (line: string, delta = 0) => {
-      const indentMatch = line.match(/^\s+/)
-      const curIndentDepth = indentDepthOfContent[indentDepthOfContent.length - 1]
-      const thisIndentDepth = !indentMatch ? 0 : ~~(indentMatch[0].length / 4)
-
-      let pop = ''
-      for (let idx = curIndentDepth; idx > thisIndentDepth + delta; idx--) {
-        indentDepthOfContent.pop()
-        const endMarker = endMarkers.pop()
-        if (endMarker) {
-          pop += `\n${endMarker}\n\n`
-        }
-      }
-
-      if (pop) {
-        if (endMarkers.length === 0) {
-          inTab = undefined
-        } else {
-          const indentDepth = indentDepthOfContent[indentDepthOfContent.length - 1]
-          inTab = new RegExp(
-            '^' +
-              Array(indentDepth * 4)
-                .fill(' ')
-                .join('')
-          )
-        }
-      }
-      return pop
-    }
 
     if (!inBlockquote && startMatch) {
       const thisIndentation = startMatch[1] || ''
@@ -248,6 +251,14 @@ export function hackIndentation(source: string): string {
         : `\n\n${PUSH_TABS}\n\n`
 
       const startMarker = tabStartMatch ? START_OF_TAB : START_OF_TIP
+
+      if (thisIndentDepth > indentDepth + 1) {
+        // then the markdown is using indentation in ways beyond that
+        // which would be "normal" for pymdown, i.e. to indicate Tab
+        // or Tip content
+        endMarkers.push(FAKE_END_MARKER)
+        indentDepthOfContent.push(-1)
+      }
 
       if (endMarker === END_OF_TIP || endMarkers.length === 0 || thisIndentDepth > indentDepth) {
         endMarkers.push(endMarker)
