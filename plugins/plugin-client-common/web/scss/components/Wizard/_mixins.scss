@@ -20,14 +20,38 @@
   }
 }
 
+@mixin WizardTitle {
+  .kui--wizard-header-title {
+    @content;
+  }
+}
+
 @mixin WizardHeader {
-  .pf-c-wizard__header {
+  .kui--wizard-header {
+    @content;
+  }
+}
+
+@mixin CollapsedHeader {
+  &[data-collapsed-header] {
+    @content;
+  }
+}
+
+@mixin WizardHeaderActionButtons {
+  .kui--wizard-header-action-buttons {
     @content;
   }
 }
 
 @mixin WizardDescription {
-  .pf-c-wizard__description {
+  .kui--wizard-header-description {
+    @content;
+  }
+}
+
+@mixin WizardMainContent {
+  .kui--wizard-main-content {
     @content;
   }
 }

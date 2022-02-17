@@ -24,10 +24,12 @@ import { onTabSwitch, offTabSwitch } from '../tabbed'
 import { OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
+import Icons from '../../../../spi/Icons'
 import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
 import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
+import '../../../../../../web/scss/components/Wizard/_index.scss'
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
@@ -37,6 +39,9 @@ type Status = ProgressStepState['status']
 type Props = WizardProps & { uuid: string }
 
 export interface State {
+  /** Is the wizard in "collapsed" mode, where we only show the title and progress bar? */
+  collapsedHeader: boolean
+
   /** Graph of code blocks across all steps */
   graph: OrderedGraph
 
@@ -85,6 +90,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
     return {
       status,
       choices,
+      collapsedHeader: !state ? false : state.collapsedHeader,
       codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
       graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
     }
@@ -189,6 +195,43 @@ export default class Wizard extends React.PureComponent<Props, State> {
     return (props.children || []).slice(1)
   }
 
+  private readonly _toggleCollapsedHeader = () =>
+    this.setState(curState => ({ collapsedHeader: !curState.collapsedHeader }))
+
+  private headerActions() {
+    return (
+      <div className="kui--wizard-header-action-buttons">
+        <a className="kui--wizard-collapse-button kui--block-action" onClick={this._toggleCollapsedHeader}>
+          <Icons icon={this.state.collapsedHeader ? 'WindowMaximize' : 'WindowMinimize'} />
+        </a>
+      </div>
+    )
+  }
+
+  private title() {
+    const label = this.props['data-kui-title'].trim()
+    return (
+      <div className="kui--wizard-header-title" aria-label={label}>
+        {label}
+      </div>
+    )
+  }
+
+  private description() {
+    return <div className="kui--wizard-header-description">{this.props.children[0]}</div>
+  }
+
+  private header() {
+    return (
+      <div className="kui--wizard-header kui--inverted-color-context">
+        {this.headerActions()}
+        {this.title()}
+        {this.description()}
+        {this.progress()}
+      </div>
+    )
+  }
+
   private wizard() {
     const steps = Wizard.children(this.props).map((_, stepIdx) => ({
       name: _.props['data-kui-title'],
@@ -198,25 +241,18 @@ export default class Wizard extends React.PureComponent<Props, State> {
       component: <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
     }))
 
-    const progress = this.progress()
-
     // onGoToStep={this._onWizardStepChange} onNext={this._onWizardStepChange} onBack={this._onWizardStepChange}
     return (
-      <PatternFlyWizard
-        hideClose
-        steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
-        className="kui--wizard"
-        data-hide-cancel={true}
-        data-bottom-margin={!progress /* no bottom margin if we're showing a progress bar */}
-        footer={this.footer()}
-        title={this.props['data-kui-title'].trim()}
-        description={
-          <React.Fragment>
-            {this.props.children[0]}
-            {progress}
-          </React.Fragment>
-        }
-      />
+      <div className="kui--wizard" data-collapsed-header={this.state.collapsedHeader || undefined}>
+        {this.header()}
+        <div className="kui--wizard-main-content">
+          <PatternFlyWizard
+            steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
+            data-hide-cancel={true}
+            footer={this.footer()}
+          />
+        </div>
+      </div>
     )
   }
 

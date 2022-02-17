@@ -16,8 +16,8 @@
 
 export default class Wizard {
   public readonly wizard = '.kui--wizard'
-  private readonly title = '.pf-c-wizard__title'
-  private readonly _description = '.pf-c-wizard__description'
+  private readonly title = '.kui--wizard-header-title'
+  private readonly _description = '.kui--wizard-header-description'
   private readonly _navItem = '.pf-c-wizard__nav-item'
   private readonly _navItemTitle = '.pf-c-wizard__nav-link'
   public readonly isCurrentStep = 'pf-m-current'
