@@ -38,6 +38,7 @@ import ToolbarContainer from './ToolbarContainer'
 import Toolbar from './Toolbar'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
 import BaseSidecar, { Props, State } from './BaseSidecarV2'
+import { MutabilityContext } from '../../Client/MutabilityContext'
 
 import '../../../../web/css/static/ToolbarButton.scss'
 import '../../../../web/scss/components/Sidecar/PatternFly.scss'
@@ -129,14 +130,15 @@ type TopNavState = HistoryEntry &
  * | nameHash?           |
  * | name                |
  * |---------------------|
- * | Tab | Tab |  ...    | <Tab/> from here down
- * |---------------------|
- * | <Toolbar/>          |   <ToolbarContainer/> from here down
- * |---------------------|
- * | <KuiContent/>       |
- * |                     |
+ * | Tab | Tab |  ...    | <Tab/> from here down  - this is header()
+ * |---------------------|                  |
+ * | <Toolbar/>          |              <ToolbarContainer/> from here down
+ * |---------------------|                  |                        |
+ * | <KuiContent/>       |                  |                        |
+ * |                     |               to here                  to here
  * -----------------------
- *
+ * | <Toolbar/>          | this is footer()
+ * -----------------------
  */
 export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNavState> {
   public static contextType = KuiContext
@@ -291,25 +293,29 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
 
   private tabContent(idx: number) {
     return (
-      <div
-        className="sidecar-content-container kui--tab-content"
-        hidden={idx !== this.current.currentTabIndex || undefined}
-      >
-        <div className="custom-content">
-          <ToolbarContainer
-            tab={this.props.tab}
-            execUUID={this.props.execUUID}
-            response={this.state.response}
-            args={this.state.args}
-            didUpdateToolbar={this._didUpdateToolbar}
-            toolbarText={this.state.toolbarText}
-            noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
-            buttons={this.current.viewButtons}
+      <MutabilityContext.Consumer>
+        {value => (
+          <div
+            className="sidecar-content-container kui--tab-content"
+            hidden={idx !== this.current.currentTabIndex || undefined}
           >
-            {this.bodyContent(idx)}
-          </ToolbarContainer>
-        </div>
-      </div>
+            <div className="custom-content">
+              <ToolbarContainer
+                tab={this.props.tab}
+                execUUID={this.props.execUUID}
+                response={this.state.response}
+                args={this.state.args}
+                didUpdateToolbar={this._didUpdateToolbar}
+                toolbarText={this.state.toolbarText}
+                noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
+                buttons={value.executable ? this.current.viewButtons : []}
+              >
+                {this.bodyContent(idx)}
+              </ToolbarContainer>
+            </div>
+          </div>
+        )}
+      </MutabilityContext.Consumer>
     )
   }
 
@@ -360,16 +366,28 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     }
   }
 
+  /**
+   * The footer offers drilldown buttons that we assume depend on the
+   * client supporting command execution. For example, a static single
+   * page web app would not allow for this kind of functionality.
+   *
+   */
   private footer() {
     return (
-      <Toolbar
-        bottom={true}
-        tab={this.props.tab}
-        execUUID={this.props.execUUID}
-        response={this.state.response}
-        args={this.state.args}
-        buttons={this.current.drilldownButtons}
-      />
+      <MutabilityContext.Consumer>
+        {value =>
+          value.executable && (
+            <Toolbar
+              bottom={true}
+              tab={this.props.tab}
+              execUUID={this.props.execUUID}
+              response={this.state.response}
+              args={this.state.args}
+              buttons={this.current.drilldownButtons}
+            />
+          )
+        }
+      </MutabilityContext.Consumer>
     )
   }
 
