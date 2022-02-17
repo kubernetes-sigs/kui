@@ -55,10 +55,8 @@
   @include NoInputColorBlocking;
 }
 
-@include FinishedBlock {
-  @include InputWrapperImmediate {
-    @include SepiaColors;
-  }
+@include SepiaBlockTarget {
+  @include SepiaColors;
 }
 
 @include Block {

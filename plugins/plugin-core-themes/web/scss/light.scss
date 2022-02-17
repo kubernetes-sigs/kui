@@ -170,6 +170,9 @@ body[kui-theme='Light'] {
   @include StatusStripeWithDefaultColors {
     @include InvertColors;
   }
+  @include SepiaBlockTarget {
+    --kui--sepia-filter: #{$invert-colors-filter $sepia-filter};
+  }
   @include InputWrapper {
     @include InvertColors;
   }
