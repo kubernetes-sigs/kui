@@ -129,7 +129,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <HTMLDom content={response.raw} />
       }
     } else if (isXtermResponse(response)) {
-      this.onRender()
+      this.onRender(response.rows && response.rows.length > 0)
       return <XtermDom response={response} />
     } else if (Buffer.isBuffer(response) || typeof response === 'string' || isError(response)) {
       const message = isError(response) ? response.message : response.toString()
