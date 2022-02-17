@@ -247,7 +247,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** add welcome blocks at the top of scrollback */
   private scrollbackWithWelcome() {
-    const scrollback = this.scrollback()
+    const scrollback = this.scrollback(undefined, { createdBy: 'default' })
     const welcomeMax = this.props.config.showWelcomeMax
 
     if (this.props.sessionInit === 'Done' && this.props.config.loadingDone && welcomeMax !== undefined) {
@@ -296,8 +296,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Create a split with the given position and coloration */
-  private makePositionedSplit(position: SplitPosition, inverseColors?: boolean) {
-    const split = this.scrollback(undefined, { position, inverseColors })
+  private makePositionedSplit(
+    position: SplitPosition,
+    opts: ScrollbackOptions = {},
+    inverseColors = position === 'left-strip'
+  ) {
+    const split = this.scrollback(undefined, Object.assign({}, opts, { position, inverseColors }))
 
     this.setState(curState => ({
       splits: curState.splits.concat([split])
@@ -329,7 +333,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       (position !== 'default'
         ? this.state.splits.find(_ => _.position === position)
         : this.state.splits.filter(_ => _.position === 'default')[count]) ||
-      this.makePositionedSplit(position, position === 'left-strip')
+      this.makePositionedSplit(position, { createdBy: 'kui' })
 
     if (split) {
       this.splice(split.uuid, curState => {
@@ -408,6 +412,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       tabRefFor: undefined,
       scrollableRef: undefined,
 
+      createdBy: opts.createdBy || 'user',
       position: opts.position || 'default',
       willToggleSplitPosition: undefined
     }
@@ -1467,6 +1472,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             onRemove={scrollback.remove}
             onClear={scrollback.clear}
             onInvert={scrollback.invert}
+            createdBy={scrollback.createdBy}
             hasLeftStrip={this.props.hasLeftStrip}
             hasBottomStrip={this.props.hasBottomStrip}
             willToggleSplitPosition={
