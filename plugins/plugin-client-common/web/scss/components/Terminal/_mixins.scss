@@ -645,6 +645,16 @@ $action-hover-delay: 210ms;
   }
 }
 
+$sepia-filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
 @mixin SepiaColors {
-  filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
+  --kui--sepia-filter: #{$sepia-filter};
+  filter: var(--kui--sepia-filter);
+}
+
+@mixin SepiaBlockTarget {
+  @include FinishedBlock {
+    @include InputWrapperImmediate {
+      @content;
+    }
+  }
 }
