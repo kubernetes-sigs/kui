@@ -20,23 +20,26 @@ import { i18n } from '@kui-shell/core'
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
 import { MutabilityContext } from '../../Client/MutabilityContext'
+
+import { CreatedBy } from './ScrollbackState'
 import SplitPosition, { SplitPositionProps } from './SplitPosition'
 
 import '../../../../web/scss/components/Terminal/SplitHeader.scss'
 
 const strings = i18n('plugin-client-common')
 
-type Props = SplitPositionProps & {
-  onRemove(): void
-  onInvert(): void
-  onClear(): void
+type Props = SplitPositionProps &
+  CreatedBy & {
+    onRemove(): void
+    onInvert(): void
+    onClear(): void
 
-  /** Toggle whether we have a left or bottom strip split */
-  willToggleSplitPosition(): void
+    /** Toggle whether we have a left or bottom strip split */
+    willToggleSplitPosition(): void
 
-  /** Position of the enclosing Split */
-  position: SplitPosition
-}
+    /** Position of the enclosing Split */
+    position: SplitPosition
+  }
 
 /** Render a header for the given split */
 export default class SplitHeader extends React.PureComponent<Props> {
@@ -130,7 +133,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
     return (
       <MutabilityContext.Consumer>
         {value =>
-          value.editable && (
+          (this.props.createdBy === 'user' || value.editable) && (
             <div className="kui--split-header flex-layout">
               <div className="flex-fill" />
               {this.invertButton()}

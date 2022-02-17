@@ -22,52 +22,69 @@ import { BlockModel } from './Block/BlockModel'
 
 export type Cleaner = () => void
 
-export type ScrollbackOptions = NewSplitRequest['options']
-
-type ScrollbackState = ScrollbackOptions & {
-  uuid: string
-  blocks: BlockModel[]
-
-  /** Display as strip along the bottom */
-  position: SplitPosition
-  willToggleSplitPosition(): void
-
-  /** tab facade */
-  facade?: KuiTab
-
-  /** grab a ref to the active block, to help us maintain focus */
-  _activeBlock?: Block
-
-  /** Has the user clicked to focus on a block? */
-  focusedBlockIdx?: number
-
-  /** cleanup routines for this split */
-  cleaners: Cleaner[]
-
-  /** Remove this scrollback (memoized handler) */
-  remove: () => void
-
-  /** Clear the current list of blocks (memoized handler) */
-  clear: () => void
-
-  /** Invert colors (memoized handler) */
-  invert: () => void
-
-  /** Other memoized handlers (TODO: docs) */
-  onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
-  onMouseDown: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
-  onFocus: (evt: React.FocusEvent) => void
-  onOutputRender: () => void
-  setActiveBlock: (c: Block) => void
-  willFocusBlock: (evt: React.SyntheticEvent) => void
-  willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
-  willUpdateCommand: (idx: number, command: string) => void
-
-  /** Reference for the entire Split */
-  tabRefFor(ref: HTMLElement): void
-
-  /** Reference for the scrollable part of the Split; helpful for scrollToTop/Bottom */
-  scrollableRef(ref: HTMLElement): void
+export type CreatedBy = {
+  /**
+   * How was this split created?
+   *
+   * - 'user' from user action e.g. by clicking the Split button or by
+   *   clicking on a Table row with a `drilldownTo=side-split` policy
+   *
+   * - 'kui' part of some kui automation e.g. as part of the splits
+   *    defined by a guidebook
+   *
+   * - 'default' this will usually mean the first split created in
+   *    every tab
+   */
+  createdBy: 'user' | 'kui' | 'default'
 }
+
+export type ScrollbackOptions = NewSplitRequest['options'] & Partial<CreatedBy>
+
+type ScrollbackState = ScrollbackOptions &
+  Required<CreatedBy> & {
+    uuid: string
+    blocks: BlockModel[]
+
+    /** Display as strip along the bottom */
+    position: SplitPosition
+    willToggleSplitPosition(): void
+
+    /** tab facade */
+    facade?: KuiTab
+
+    /** grab a ref to the active block, to help us maintain focus */
+    _activeBlock?: Block
+
+    /** Has the user clicked to focus on a block? */
+    focusedBlockIdx?: number
+
+    /** cleanup routines for this split */
+    cleaners: Cleaner[]
+
+    /** Remove this scrollback (memoized handler) */
+    remove: () => void
+
+    /** Clear the current list of blocks (memoized handler) */
+    clear: () => void
+
+    /** Invert colors (memoized handler) */
+    invert: () => void
+
+    /** Other memoized handlers (TODO: docs) */
+    onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
+    onMouseDown: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
+    onFocus: (evt: React.FocusEvent) => void
+    onOutputRender: () => void
+    setActiveBlock: (c: Block) => void
+    willFocusBlock: (evt: React.SyntheticEvent) => void
+    willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
+    willUpdateCommand: (idx: number, command: string) => void
+
+    /** Reference for the entire Split */
+    tabRefFor(ref: HTMLElement): void
+
+    /** Reference for the scrollable part of the Split; helpful for scrollToTop/Bottom */
+    scrollableRef(ref: HTMLElement): void
+  }
 
 export default ScrollbackState
