@@ -392,7 +392,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       >
         <TableComposable className="kui--table-like-wrapper" variant={variant} isStickyHeader gridBreakPoint="">
           {header &&
-            renderHeader(header, isSortable, this.state.activeSortIdx, this.state.activeSortDir, onSort.bind(this))}
+            renderHeader(
+              header,
+              body,
+              isSortable,
+              this.state.activeSortIdx,
+              this.state.activeSortDir,
+              onSort.bind(this)
+            )}
           {renderBody(response, this.justUpdatedMap(), tab, repl, offset)}
         </TableComposable>
       </div>

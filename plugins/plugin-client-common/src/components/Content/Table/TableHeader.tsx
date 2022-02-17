@@ -27,6 +27,7 @@ import { isSortableCol } from './sort'
  */
 export default function renderHeader(
   kuiHeader: Table['header'],
+  kuiBody: Table['body'],
   isSortable: boolean,
   activeSortIdx: number,
   direction: SortByDirection,
@@ -36,7 +37,7 @@ export default function renderHeader(
     const dataKey = key || value
 
     const sortParam =
-      isSortable && isSortableCol(dataKey)
+      isSortable && isSortableCol(dataKey, cidx, kuiBody)
         ? {
             sort: {
               sortBy: { index: activeSortIdx, direction },

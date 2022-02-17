@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Row } from '@kui-shell/core'
+import { Row, Table } from '@kui-shell/core'
 import { SortByDirection } from '@patternfly/react-table'
 
 const byte = 1
@@ -56,7 +56,21 @@ export default function sortRow(rowA: Row, rowB: Row, key: string, cidx: number,
   return sortRowWithDir(rowA, rowB, key.toUpperCase(), cidx, direction)
 }
 
+/**
+ * The logic here: don't bother sorting for 1-entry tables, or for
+ * columns with all the same value.
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function isSortableCol(key: string) {
-  return true
+export function isSortableCol(key: string, cidx: number, kuiBody: Table['body']) {
+  if (kuiBody.length <= 1) {
+    return false
+  } else {
+    if (cidx === 0) {
+      const val0 = kuiBody[0].name
+      return !kuiBody.every(_ => _.name === val0)
+    } else {
+      const val0 = kuiBody[0].attributes[cidx - 1].value
+      return !kuiBody.every(_ => _.attributes[cidx - 1].value === val0)
+    }
+  }
 }
