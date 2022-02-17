@@ -1,2 +1,2 @@
-!!! warning "XXXX"
+!!! Warning "XXXX"
     YYYY

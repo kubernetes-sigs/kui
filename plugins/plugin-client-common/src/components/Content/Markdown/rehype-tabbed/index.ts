@@ -223,7 +223,7 @@ export function hackIndentation(source: string): string {
 
   const rewrite = source.split(/\n/).map(line => {
     const tabStartMatch = line.match(/^(\s*)===\s+".*"/)
-    const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|todo|bug|info|note|warning|success|question)/)
+    const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|todo|bug|info|note|warning|success|question)/i)
     const startMatch = tabStartMatch || tipStartMatch
 
     if (!inBlockquote && startMatch) {
@@ -257,7 +257,7 @@ export function hackIndentation(source: string): string {
         // which would be "normal" for pymdown, i.e. to indicate Tab
         // or Tip content
         endMarkers.push(FAKE_END_MARKER)
-        indentDepthOfContent.push(-1)
+        indentDepthOfContent.push(indentDepthOfContent[indentDepthOfContent.length - 1])
       }
 
       if (endMarker === END_OF_TIP || endMarkers.length === 0 || thisIndentDepth > indentDepth) {
