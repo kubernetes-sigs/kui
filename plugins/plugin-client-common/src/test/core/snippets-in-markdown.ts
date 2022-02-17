@@ -48,11 +48,9 @@ const IN1viaUrl: Input = {
 const IN2: Input = {
   input: join(ROOT, 'data', 'snippet2.md'),
   content: `aaa
-${aContent}
-${aContent}
+${aContent} ${aContent}
 bbb
-${bContent}
-${bContent}
+${bContent} ${bContent}
 ccc`
 }
 

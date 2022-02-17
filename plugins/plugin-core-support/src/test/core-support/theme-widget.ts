@@ -39,6 +39,8 @@ describe('theme switching via status stripe widget', function(this: Common.ISuit
     }
   })
 
+  it('should sleep a bit for things to settle', () => new Promise(resolve => setTimeout(resolve, 3000)))
+
   it(`should show that we are using the ${altTheme} theme`, () =>
     CLI.command('theme current', this.app)
       .then(ReplExpect.okWithString(altTheme))
