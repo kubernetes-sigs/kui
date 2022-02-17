@@ -23,6 +23,7 @@ import { AppAndCount } from './repl-expect'
 
 export const timeout = Math.max(5000, parseInt(process.env.TIMEOUT) || 60000)
 export const waitTimeout = timeout - 5000
+export const waitTimeoutOption = { timeout: waitTimeout }
 
 /** grab focus for the repl */
 export const grabFocus = async (
@@ -46,7 +47,7 @@ export const grabFocus = async (
         .then(() => _.click())
     )
     .then(() => app.client.$(currentPromptBlock))
-    .then(_ => _.waitForEnabled())
+    .then(_ => _.waitForEnabled(waitTimeoutOption))
     .catch(err => {
       console.error(err)
       // probably ok, we are doing this is just in case it helps
@@ -76,10 +77,10 @@ export const command = async (
 ) => {
   return app.client
     .$(block)
-    .then(_ => _.waitForExist({ timeout: waitTimeout }))
+    .then(_ => _.waitForExist(waitTimeoutOption))
     .then(async () => {
       if (process.env.BOTTOM_INPUT_MODE)
-        await app.client.$(Selectors.BOTTOM_PROMPT_BLOCK).then(_ => _.waitForExist({ timeout: timeout - 5000 }))
+        await app.client.$(Selectors.BOTTOM_PROMPT_BLOCK).then(_ => _.waitForExist(waitTimeoutOption))
       if (!noFocus) return grabFocus(app, block, currentPrompt)
     })
     .then(() => app.client.$(process.env.BOTTOM_INPUT_MODE ? Selectors.BOTTOM_PROMPT_BLOCK : block))
@@ -119,7 +120,7 @@ export const commandInSplit = async (cmd: string, app: Application, splitIndex: 
 export const paste = async (cmd: string, app: Application, nLines = 1) =>
   app.client
     .$(Selectors.CURRENT_PROMPT_BLOCK)
-    .then(_ => _.waitForExist())
+    .then(_ => _.waitForExist(waitTimeoutOption))
     .then(() => app.client.$(Selectors.CURRENT_PROMPT_BLOCK))
     .then(_ => _.getAttribute('data-input-count'))
     .then(async count => {
@@ -131,9 +132,11 @@ export const paste = async (cmd: string, app: Application, nLines = 1) =>
 /** wait for the repl to be active */
 export const waitForRepl = async (app: Application) => {
   if (process.env.KUI_POPUP) {
-    await app.client.$(Selectors.STATUS_STRIPE_PROMPT).then(_ => _.waitForEnabled())
+    await app.client.$(Selectors.STATUS_STRIPE_PROMPT).then(_ => _.waitForEnabled(waitTimeoutOption))
   } else {
-    await app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.waitForEnabled())
+    const prompt = await app.client.$(Selectors.CURRENT_PROMPT)
+    await prompt.scrollIntoView()
+    await prompt.waitForEnabled(waitTimeoutOption)
   }
   return app
 }
@@ -150,8 +153,10 @@ export const waitForSession = async (ctx: Common.ISuite, noProxySessionWait = fa
   if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
     // wait for the proxy session to be established
     try {
-      await ctx.app.client.$(`${Selectors.CURRENT_TAB}.kui--session-init-done`).then(_ => _.waitForExist())
-      await ctx.app.client.$(Selectors.WELCOME_BLOCK).then(_ => _.waitForDisplayed())
+      await ctx.app.client
+        .$(`${Selectors.CURRENT_TAB}.kui--session-init-done`)
+        .then(_ => _.waitForExist(waitTimeoutOption))
+      await ctx.app.client.$(Selectors.WELCOME_BLOCK).then(_ => _.waitForDisplayed(waitTimeoutOption))
     } catch (err) {
       throw new Error('error waiting for proxy session init')
     }
@@ -183,13 +188,10 @@ export const makeCustom = (selector: string, expect: string, exact?: boolean) =>
 export const exitCode = (statusCode: number | string) => statusCode
 
 export const expectInput = (selector: string, expectedText: string) => async (app: Application) => {
-  await app.client.waitUntil(
-    async () => {
-      const inputText = await app.client.$(selector).then(_ => _.getValue())
-      return inputText === expectedText
-    },
-    { timeout: waitTimeout }
-  )
+  await app.client.waitUntil(async () => {
+    const inputText = await app.client.$(selector).then(_ => _.getValue())
+    return inputText === expectedText
+  }, waitTimeoutOption)
   return app
 }
 
@@ -202,16 +204,13 @@ export async function expectInputContext(res: AppAndCount, N: number, expectedTe
 
 export const expectPriorInput = (selector: string, expectedText: string) => async (app: Application) => {
   let idx = 0
-  await app.client.waitUntil(
-    async () => {
-      const inputText = await app.client.$(selector).then(_ => _.getText())
-      if (++idx > 5) {
-        console.error(`still waiting for prior input actual=${inputText} expected=${expectedText}`)
-      }
-      return inputText === expectedText
-    },
-    { timeout: waitTimeout }
-  )
+  await app.client.waitUntil(async () => {
+    const inputText = await app.client.$(selector).then(_ => _.getText())
+    if (++idx > 5) {
+      console.error(`still waiting for prior input actual=${inputText} expected=${expectedText}`)
+    }
+    return inputText === expectedText
+  }, waitTimeoutOption)
   return app
 }
 
@@ -240,13 +239,13 @@ export async function lastBlock(app: Application, splitIndex = 1, N = 1, inNoteb
 /** Click to expand the last replayed sample output */
 export async function expandNth(app: Application, N: number, splitIndex = 1) {
   const expando = await app.client.$(Selectors.EXPANDABLE_OUTPUT_N(N, splitIndex))
-  await expando.waitForExist()
+  await expando.waitForExist(waitTimeoutOption)
   await expando.click()
 }
 
 /** Click to expand the last replayed sample output */
 export async function expandLast(app: Application, splitIndex = 1, N = 1) {
   const expando = await app.client.$(Selectors.EXPANDABLE_OUTPUT_LAST_IN_NOTEBOOK(splitIndex, N))
-  await expando.waitForExist()
+  await expando.waitForExist(waitTimeoutOption)
   await expando.click()
 }
