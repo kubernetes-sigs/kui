@@ -71,14 +71,6 @@ $row-height: 1.5em;
     }
   }
 
-  @include NonNotebookTab {
-    @include NotFocusedSplit {
-      @include ScrollbackBlockList {
-        filter: opacity(87.5%);
-      }
-    }
-  }
-
   @include TableHeadCell {
     --table-head-background-color: transparent;
     height: $row-height;

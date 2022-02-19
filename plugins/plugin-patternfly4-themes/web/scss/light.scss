@@ -87,9 +87,9 @@
   --color-error-cell-text: var(--color-base00);
 }
 
-@mixin InvertDarkToLightGenerally {
+/* @mixin InvertDarkToLightGenerally {
   @include InvertedColors {
     @include pf-t-light;
     @include LightColors;
   }
-}
+} */

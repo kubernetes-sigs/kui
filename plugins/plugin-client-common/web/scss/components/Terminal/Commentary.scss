@@ -463,7 +463,7 @@ body[kui-theme-style='dark'] {
   }
 }
 
-$tip-toggle-opacity: 0.175;
+$tip-toggle-opacity: 0.25;
 $tip-toggle-opacity-2: 0.6;
 
 @mixin GreenTip {
@@ -519,6 +519,9 @@ $tip-toggle-opacity-2: 0.6;
     /* Some expandable section toggles in markdown have long urls,
    e.g. https://knative.dev/docs/getting-started/first-service/ */
     word-break: break-all;
+  }
+  @include ExpandableSectionToggle {
+    color: var(--color-text-01);
   }
   @include ExpandableSectionToggleText {
     color: var(--color-text-01);
