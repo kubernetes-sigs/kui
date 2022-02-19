@@ -30,16 +30,7 @@ body[kui-theme='Carbon Gray90'][kui-theme-style] {
   @include charts-dark;
   @include colors-dark;
 
-  @include ScrollbackInvertedColors {
-    @include colors-light;
-    @include Reset;
-    --color-text-02: #565656;
-
-    @include Sidecar {
-      @include carbon-inverted;
-      @include Reset;
-    }
-  }
+  @include InvertDarkToLightGenerally;
 
   --color-confirm-danger: #da1e28;
 

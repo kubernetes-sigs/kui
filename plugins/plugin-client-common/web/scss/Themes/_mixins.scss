@@ -75,3 +75,15 @@
     @content;
   }
 }
+
+$invert-colors-filter: invert(0.1);
+
+@mixin InvertColors {
+  filter: $invert-colors-filter;
+}
+
+@mixin InvertDarkToLightGenerally {
+  @include InvertedColors {
+    @include InvertColors;
+  }
+}

@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
+@import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/Lightweight/index';
 @import '@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
-@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
-
-$invert-colors-filter: invert(100%);
-
-@mixin InvertColors {
-  filter: $invert-colors-filter;
-}
 
 @mixin InvertColorsForTerminal {
-  @include ScrollbackInvertedColors {
-    @include InvertColors;
-  }
+  @include InvertDarkToLightGenerally;
 }
