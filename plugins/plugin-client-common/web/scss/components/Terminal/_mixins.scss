@@ -134,6 +134,18 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin IsActive {
+  &.repl-active {
+    @content;
+  }
+}
+
+@mixin IsNotActive {
+  &:not(.repl-active) {
+    @content;
+  }
+}
+
 @mixin BlockFocusAttributes {
   &:focus,
   &[data-is-focused] {
@@ -229,7 +241,7 @@ $action-hover-delay: 210ms;
 
 @mixin ActiveBlock {
   @include Block {
-    &.repl-active {
+    @include IsActive {
       @content;
     }
   }
@@ -245,7 +257,7 @@ $action-hover-delay: 210ms;
 
 @mixin FinishedBlock {
   @include Block {
-    &:not(.repl-active) {
+    @include IsNotActive {
       @content;
     }
   }
@@ -653,8 +665,10 @@ $sepia-filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
 
 @mixin SepiaBlockTarget {
   @include FinishedBlock {
-    @include InputWrapperImmediate {
-      @content;
+    &:not(:hover) {
+      @include InputWrapperImmediate {
+        @content;
+      }
     }
   }
 }

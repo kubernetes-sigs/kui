@@ -56,9 +56,11 @@
 }
 
 @include FocusedBlock {
-  @include Editable {
-    @include BlockBorder {
-      @include NormalDecorations;
+  @include IsNotActive {
+    @include Editable {
+      @include BlockBorder {
+        @include NormalDecorations;
+      }
     }
   }
 }
