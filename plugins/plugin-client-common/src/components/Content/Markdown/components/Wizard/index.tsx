@@ -129,7 +129,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
     this.cleaners.push(() => offTabSwitch(this.props.uuid, switcher))
   }
 
-  public componentDidUnmount() {
+  public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
   }
 
