@@ -49,7 +49,7 @@ const FEED = () => `${baseUrl()}/releases/latest`
 const DEFAULT_INTERVAL = 24 * 60 * 60 * 1000
 
 /** By default, wait 1 minute after statup for the first check */
-const DEFAULT_LAG = 1 * 60 * 1000
+const DEFAULT_LAG = 0 * 60 * 1000
 
 /** Remember that the version "duly noted" the availability of particular version in localStorage, using this key */
 const DULY_NOTED_KEY = 'kui-shell.org/UpdateChecker/DulyNoted'
@@ -159,14 +159,13 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
   private popover(entryForLatestVersion: State['entryForLatestVersion']) {
     if (entryForLatestVersion) {
       return {
-        maxWidth: '23rem',
         className: 'kui--update-checker--popover',
         onHide: () => this.dulyNoted(),
 
         bodyContent: (
-          <React.Fragment>
+          <React.Suspense fallback={<div />}>
             <Markdown source={entryForLatestVersion.content} baseUrl={baseUrl()} />
-          </React.Fragment>
+          </React.Suspense>
         ),
         headerContent: (
           <React.Fragment>
@@ -254,6 +253,13 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
     })
   }
 
+  private title() {
+    return strings(
+      'Version X is available. Click to see the changelog and download the new release.',
+      this.state.latestVersion
+    )
+  }
+
   public render() {
     if (this.isUpdateAvailable()) {
       return (
@@ -262,10 +268,8 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
           className={this.props.className}
           viewLevel="info"
           text={this.text()}
-          title={strings(
-            'Version X is available. Click to see the changelog and download the new release.',
-            this.state.latestVersion
-          )}
+          title={this.title()}
+          position="top-end"
           popover={this.state.popover}
         />
       )
