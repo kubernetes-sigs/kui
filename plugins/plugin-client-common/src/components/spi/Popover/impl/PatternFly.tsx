@@ -34,8 +34,11 @@ export default function PatternFlyPopover(props: Props) {
       bodyContent={props.bodyContent}
       headerContent={props.headerContent}
       footerContent={props.footerContent}
+      isVisible={props.isVisible}
       onHide={props.onHide}
       onShow={props.onShow}
+      shouldOpen={props.shouldOpen}
+      shouldClose={props.shouldClose}
     >
       {props.children}
     </Popover>

@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-import { ReactElement, ReactNode } from 'react'
+import { PopoverProps } from '@patternfly/react-core'
 
-type Props = {
-  className?: string
-  maxWidth?: string
-  minWidth?: string
-  distance?: number
-  hasNoPadding?: boolean
-  hasAutoWidth?: boolean
+type Props = PopoverProps & {
   triggerClassName?: string
-  position?: 'top' | 'top-start' | 'top-end' | 'bottom' | 'left' | 'right' | 'auto'
-
-  headerContent: ReactNode
-  bodyContent: ReactNode
-  footerContent?: ReactNode
-  children: ReactElement
-
-  onShow?: () => void
-  onHide?: () => void
 }
 
 export default Props
