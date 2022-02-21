@@ -71,5 +71,5 @@ a task in the above view, the drilldown view you will see is a Pod
 view!
 
 ```bash
-kubectl get Pod pi-f9qqg -o yaml -n kui-notebook-2
+kubectl get Pod pi-cs5hp -o yaml -n kui-notebook-2
 ```
