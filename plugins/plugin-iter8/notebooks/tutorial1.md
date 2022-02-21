@@ -6,17 +6,15 @@ layout:
 wizard:
     steps:
         - Introduction
-        - match: 1. Install Iter8
+        - match: 1. Install Iter8 CLI
           name: Install the CLI
           description: The iter8 CLI gives you an easy way to manage your experiments
-        - match: 2. Download experiment chart
-          name: Download experiment
+        - match: 2. Launch experiment
+          name: Launch experiment
           description: You may craft an experiment by hand, or, as we do here, you may use iter8 to download a previously constructed experiment definition
-        - match: 3. Run experiment
-          name: Run experiment
+        - match: 3. View report
+          name: View report
           description: Run load against the application, and monitor error rate and response time
-        - match: 4. Assert outcomes
-          name: Assert outcomes
 codeblocks:
     - match: brew install iter8
       validate: iter8 -v
@@ -44,4 +42,4 @@ This tutorial uses an [Iter8 experiment](concepts.md#what-is-an-iter8-experiment
 >
 > An Iter8 experiment is a sequence of tasks that produce metrics-driven insights for your app/ML model versions, validates them, and optionally performs a rollout. Iter8 provides a set of pre-defined and customizable tasks.
 
---8<-- "https://raw.githubusercontent.com/iter8-tools/iter8/master/mkdocs/docs/getting-started/your-first-experiment.md"
+--8<-- "https://raw.githubusercontent.com/iter8-tools/docs/main/docs/getting-started/your-first-experiment.md"

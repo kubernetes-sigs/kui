@@ -1,4 +1,4 @@
-[![Iter8 logo](https://github.com/iter8-tools/iter8/blob/master/mkdocs/docs/images/favicon.png?raw=true)](https://iter8.tools)
+[![Iter8 logo](https://github.com/iter8-tools/docs/blob/main/docs/images/favicon.png?raw=true)](https://iter8.tools)
 
 # Iter8
 
