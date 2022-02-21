@@ -16,6 +16,7 @@
 
 import REPL from '../models/repl'
 import TabState from '../models/tab-state'
+import ExecOptions from '../models/execOptions'
 import { isHeadless } from '../core/capabilities'
 import { getImpl as getReplImpl } from '../repl/exec'
 
@@ -139,7 +140,8 @@ export function pexecInCurrentTab(
   topLevelTab?: Tab,
   isInternalCallpath = false,
   incognito = false,
-  execUUID?: string
+  execUUID?: string,
+  execOptions?: ExecOptions
 ) {
   const split = splitFor(topLevelTab)
 
@@ -147,8 +149,8 @@ export function pexecInCurrentTab(
     const tab = split // "tab" is the old name for the split in the repl/exec code
 
     return isInternalCallpath
-      ? split.REPL.qexec(command, undefined, undefined, { tab, execUUID }) // "quiet" exec i.e. don't display the fact that we are executing a command
-      : split.REPL.pexec(command, { tab, echo: !incognito, noHistory: true, execUUID }) // normal exec, display the Input/Output in the UI
+      ? split.REPL.qexec(command, undefined, undefined, Object.assign({ tab, execUUID }, execOptions)) // "quiet" exec i.e. don't display the fact that we are executing a command
+      : split.REPL.pexec(command, Object.assign({ tab, echo: !incognito, noHistory: true, execUUID }, execOptions)) // normal exec, display the Input/Output in the UI
   } else {
     return Promise.reject(
       new Error(

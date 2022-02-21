@@ -19,7 +19,7 @@ import prettyPrintDuration from 'pretty-ms'
 import { Td } from '@patternfly/react-table'
 import {
   Capabilities,
-  Events,
+  ExecOptions,
   split,
   Table as KuiTable,
   Cell as KuiCell,
@@ -36,6 +36,8 @@ const Markdown = React.lazy(() => import('../Markdown'))
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
 
+import { MutabilityContext, MutabilityState } from '../../Client/MutabilityContext'
+
 export type CellOnClickHandler = (evt: React.MouseEvent) => void
 
 function XOR(a: boolean, b: boolean) {
@@ -51,14 +53,15 @@ export function onClickForCell(
   tab: Tab,
   repl: REPL,
   cell?: KuiCell,
-  opts?: Pick<KuiTable, 'drilldownTo'> & { selectRow?: () => void }
+  opts?: Pick<KuiTable, 'drilldownTo'> & { selectRow?: () => void },
+  mutability?: MutabilityState
 ): CellOnClickHandler {
   const { selectRow = () => undefined } = opts || {}
 
   // precedence order of drilldownTo protocol, with a default to drill down to a side split
   const drilldownTo = (cell && cell.drilldownTo) || row.drilldownTo || (opts && opts.drilldownTo) || 'side-split'
 
-  const handler = cell && cell.onclick ? cell.onclick : row.onclick
+  let handler = cell && cell.onclick ? cell.onclick : row.onclick
   if (handler === false) {
     return () => handler
   } else if (typeof handler === 'function') {
@@ -68,22 +71,25 @@ export function onClickForCell(
       handler()
       return false
     })
-  } else if (handler && handler.startEvent && handler.completeEvent) {
-    return whenNothingIsSelected((evt: React.MouseEvent) => {
-      evt.stopPropagation()
-      selectRow()
-      Events.eventBus.emitCommandStart(handler.startEvent)
-      Events.eventBus.emitCommandComplete(handler.completeEvent)
-      return false
-    })
   } else if (handler) {
-    const opts = { tab }
+    const opts: ExecOptions = { tab }
     if (!row.onclickExec || row.onclickExec === 'pexec') {
       return whenNothingIsSelected(async (evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
+
+        if (mutability && !mutability.executable && row.onclickIdempotent && row.onclickPrefetch) {
+          // we have prefetched content! and this client doesn't allow command execution, so use it
+          opts.masquerade = row.onclick
+          opts.data = row.onclickPrefetch
+          handler = 'replay-content'
+        }
+
         if (drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
-          pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
+          pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true, undefined, {
+            masquerade: opts.masquerade,
+            data: opts.data
+          })
         } else if (!Capabilities.isHeadless() && drilldownTo === 'new-window') {
           const { ipcRenderer } = await import('electron')
           ipcRenderer.send(
@@ -167,34 +173,42 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
     const { attributes = [] } = kuiRow
     // re: OBJECT, see https://github.com/IBM/kui/issues/6831
     return (
-      <Td
-        key={cidx}
-        className={cellClassName}
-        modifier={
-          /OBJECT/i.test(key) || /MESSAGE/i.test(key) ? 'wrap' : !/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined
-        }
-      >
-        <div
-          data-key={key}
-          data-value={value}
-          data-tag={tag}
-          className={outerClassName}
-          onClick={onclick ? onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table) : undefined}
-        >
-          {tag === 'badge' && (
-            <span
-              key={css /* force restart of animation if color changes */}
-              title={title}
-              className={css || 'kui--status-unknown'}
-              data-tag="badge-circle"
-              data-just-updated={justUpdated || undefined}
+      <MutabilityContext.Consumer>
+        {mutability => (
+          <Td
+            key={cidx}
+            className={cellClassName}
+            modifier={
+              /OBJECT/i.test(key) || /MESSAGE/i.test(key)
+                ? 'wrap'
+                : !/NAME|NAMESPACE/i.test(key)
+                ? 'fitContent'
+                : undefined
+            }
+          >
+            <div
+              data-key={key}
+              data-value={value}
+              data-tag={tag}
+              className={outerClassName}
+              onClick={onclick ? onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table, mutability) : undefined}
             >
-              {/red-background/.test(css) ? <ErrorCell /> : undefined}
-            </span>
-          )}
-          {innerSpanWithTooltip}
-        </div>
-      </Td>
+              {tag === 'badge' && (
+                <span
+                  key={css /* force restart of animation if color changes */}
+                  title={title}
+                  className={css || 'kui--status-unknown'}
+                  data-tag="badge-circle"
+                  data-just-updated={justUpdated || undefined}
+                >
+                  {/red-background/.test(css) ? <ErrorCell /> : undefined}
+                </span>
+              )}
+              {innerSpanWithTooltip}
+            </div>
+          </Td>
+        )}
+      </MutabilityContext.Consumer>
     )
   }
 }

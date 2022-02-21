@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import ExecOptions from './execOptions'
 import { Entity, MarkdownResponse } from './entity'
 
 /**
@@ -31,7 +32,7 @@ type TabLayoutModificationResponse<Request extends ModificationRequest = Modific
 
 export type NewSplitRequest = {
   modification: 'NewSplit'
-  options?: {
+  options?: Pick<ExecOptions, 'data' | 'masquerade'> & {
     /** Splice the split at this index; default (and if out of range) is at-end */
     index?: number
 

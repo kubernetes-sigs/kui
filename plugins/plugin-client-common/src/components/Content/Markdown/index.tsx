@@ -48,8 +48,9 @@ import components from './components'
 import wizard from './components/Wizard/rehype-wizard'
 
 import { CodeBlockResponse } from './components/code'
-import codeIndexer from './components/code/rehype-code-indexer'
+import prefetchTableRows from './components/code/prefetch'
 import encodePriorResponses from './components/code/encoding'
+import codeIndexer from './components/code/rehype-code-indexer'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
@@ -197,14 +198,20 @@ export default class Markdown extends React.PureComponent<Props, State> {
     if (filepath && execUUID) {
       const onSnapshot = async () => {
         const codeBlockResponses = this.codeBlockResponses()
-        if (codeBlockResponses.find(_ => _ !== undefined)) {
+        if (codeBlockResponses.find(_ => _)) {
           const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${encodeComponent(filepath)}`)).content
 
           if (Array.isArray(stats) && stats.length === 1 && stats[0].dirent.mount.isLocal) {
-            const fp = encodeComponent(filepathForResponses(filepath))
-            await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, {
-              data: encodePriorResponses(codeBlockResponses)
-            })
+            try {
+              const fp = encodeComponent(filepathForResponses(filepath))
+              await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, {
+                data: encodePriorResponses(await prefetchTableRows(codeBlockResponses, this.repl))
+              })
+            } catch (err) {
+              console.error('Error saving code block responses', err)
+            }
+          } else {
+            console.error('Unable to save code block responses, since original filepath not writeable')
           }
         }
       }
