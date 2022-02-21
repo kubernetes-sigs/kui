@@ -162,5 +162,5 @@ body[kui-theme-style='dark'] .kui--radio-table-row.kui--inverted-color-context.b
 }
 
 @include TableCard {
-  background-color: var(--color-base00);
+  background-color: $table-background-color;
 }
