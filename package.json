@@ -1,6 +1,6 @@
 {
   "name": "kui-shell",
-  "version": "11.2.0",
+  "version": "11.3.0",
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
   "main": "dist/headless/kui.min.js",
   "scripts": {
