@@ -53,7 +53,28 @@ function formatMessage(title?: string) {
 
 /** Command registration */
 export default function(registrar: Registrar) {
-  // register the `replay` command
+  // Register the `replay-content` command; this deals with replaying
+  // a command using fixed prefetched content. The assumption is that
+  // `execOptions.data` has a view model (not a controller data model)
+  // that can be directly injected into a view component. For example,
+  // `kubectl get` responds with a controller data model, and the
+  // `kubectl get` controller has also registered a viewTransformer
+  // that takes the data model into a view model. To prefetch this
+  // content, you can be assured to get a view model rather than a
+  // data model if you do a pexec rather than a qexec. It may help to
+  // pass pexec(cmdline, { quiet: true, echo: false, noHistory: true
+  // }`) if you want to avoid the command execution during prefetch as
+  // showing up in the Kui UI.
+  registrar.listen<KResponse, ReplayOptions>('/replay-content', ({ execOptions }) => {
+    if (Buffer.isBuffer(execOptions.data)) {
+      throw new Error('Unsupported replay content')
+    } else {
+      return execOptions.data
+    }
+  })
+
+  // Register the `replay` command; this deals with replaying a
+  // markdown guidebook
   registrar.listen<KResponse, ReplayOptions>(
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL }) => {

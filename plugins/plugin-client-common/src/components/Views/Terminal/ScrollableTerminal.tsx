@@ -652,7 +652,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     if (opts.cmdline) {
       setTimeout(() => {
-        state.facade.REPL.pexec(opts.cmdline)
+        state.facade.REPL.pexec(opts.cmdline, { masquerade: opts.masquerade, data: opts.data })
       })
     }
 
@@ -1118,10 +1118,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         : !(await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.ifnot).catch(() => true))
 
       if (!respIf || !respIfNot) {
-        const { cmdline } = request.spec.options
+        const { cmdline, data, masquerade } = request.spec.options
         const mainSplit = this.findMainSplit(thisSplitIdx) || thisSplit
         request.spec.options.cmdline = undefined // null this out, since we got it!
-        mainSplit.facade.REPL.pexec(cmdline)
+        mainSplit.facade.REPL.pexec(cmdline, { data, masquerade })
 
         return
       }

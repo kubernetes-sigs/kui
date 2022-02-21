@@ -46,7 +46,9 @@ export default function split(args?: Arguments<CommandLineOptions>): TabLayoutMo
     ifnot: args.parsedOptions.ifnot,
     index: args.parsedOptions.index,
     cmdline: args.parsedOptions.cmdline,
-    inverseColors: args.parsedOptions.inverse
+    inverseColors: args.parsedOptions.inverse,
+    masquerade: args.execOptions.masquerade,
+    data: args.execOptions.data
   }
 
   return {

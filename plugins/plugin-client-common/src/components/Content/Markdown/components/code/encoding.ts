@@ -35,10 +35,11 @@ function reactRedactor(key: string, value: any) {
   }
 }
 
+/** Clean out any unserializable content */
 export default function encodePriorResponses(responses: CodeBlockResponse[]): string {
   return JSON.stringify(
     responses.map(response => {
-      if (typeof response === 'undefined') {
+      if (!response) {
         return response
       } else if (response.response.constructor === Error) {
         return Object.assign({}, response, { response: stringifyError(response.response) })

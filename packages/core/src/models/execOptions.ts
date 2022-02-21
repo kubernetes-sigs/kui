@@ -28,7 +28,7 @@ export interface ExecOptions {
   execUUID?: string
 
   /** pass through uninterpreted data */
-  data?: number | string | Buffer | Record<string, any>
+  data?: boolean | number | string | Buffer | Record<string, any>
 
   /** pass watch state variables to subcommands being watched  */
   watch?: {
@@ -106,6 +106,9 @@ export interface ExecOptions {
 
   parameters?: any // eslint-disable-line @typescript-eslint/no-explicit-any
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  /** Masquerade as if we executed this command line */
+  masquerade?: string
 }
 
 /** Transform the `execUUID` field of `ExecOptions` to be required.  */

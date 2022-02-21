@@ -84,6 +84,9 @@ export class Row {
 
   onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
+  /** Prefetched content for the onclick handler (useful for offline clients) */
+  onclickPrefetch?: Entity
+
   drilldownTo?: 'side-split' | 'this-split' | 'new-window'
 
   css?: string

@@ -328,7 +328,7 @@ class InProcessExecutor implements Executor {
     const argv = split(command)
 
     // pipeline splits, e.g. if command='a b|c', the pipeStages=[['a','b'],'c']
-    const pipeStages = splitIntoPipeStages(command)
+    const pipeStages = splitIntoPipeStages(execOptions && execOptions.masquerade ? execOptions.masquerade : command)
 
     // debug('command', commandUntrimmed)
     const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
