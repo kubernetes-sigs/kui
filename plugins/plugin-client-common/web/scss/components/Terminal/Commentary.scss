@@ -615,6 +615,10 @@ pre {
 
     @include CardBody {
       padding: 0;
+
+      @include CardBody {
+        padding: var(--pf-c-card--first-child--PaddingTop);
+      }
     }
   }
   @include MarkdownTip {

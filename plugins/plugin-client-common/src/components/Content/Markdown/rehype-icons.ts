@@ -32,7 +32,7 @@ export default function plugin() {
     // match[1]: provider (material, fontawesome, ...)
     // match[2]: variant (e.g. -solid for fontawesome solid)
     // match[3]: icon name
-    const RE_ICON = /:(material|fontawesome)(-solid)?-([^:]+):/g
+    const RE_ICON = /:(badge|material|fontawesome)(-solid|-ok|-warning|-error)?-([^:]+):/g
 
     visit(ast, 'text', function() {
       // ugh, typescript bug
@@ -52,17 +52,22 @@ export default function plugin() {
         }
 
         children.push(
-          u('element', {
-            tagName: provider === 'fontawesome' ? 'i' : 'span',
-            properties: {
-              className:
-                provider === 'material'
-                  ? `kui--markdown-icon mdi mdi-${icon}`
-                  : provider === 'fontawesome'
-                  ? `kui--markdown-icon fa${variant ? variant[1] : 's'} fa-${icon}`
-                  : undefined
-            }
-          })
+          u(
+            'element',
+            {
+              tagName: provider === 'badge' ? 'tag' : provider === 'fontawesome' ? 'i' : 'span',
+              properties: {
+                variant: variant ? variant.slice(1) : undefined,
+                className:
+                  provider === 'material'
+                    ? `kui--markdown-icon mdi mdi-${icon}`
+                    : provider === 'fontawesome'
+                    ? `kui--markdown-icon fa${variant ? variant[1] : 's'} fa-${icon}`
+                    : undefined
+              }
+            },
+            provider === 'badge' ? [u('text', icon)] : undefined
+          )
         )
 
         curIndex = match.index + matched.length

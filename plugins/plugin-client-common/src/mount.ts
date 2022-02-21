@@ -21,6 +21,7 @@
 export default [
   'plugin://plugin-client-common/notebooks/code-blocks.md',
   'plugin://plugin-client-common/notebooks/expandable-section.md',
+  'plugin://plugin-client-common/notebooks/icons.md',
   'plugin://plugin-client-common/notebooks/hints.md',
   'plugin://plugin-client-common/notebooks/tabs.md',
   'plugin://plugin-client-common/notebooks/welcome.md',

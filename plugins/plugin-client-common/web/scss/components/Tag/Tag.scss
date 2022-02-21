@@ -30,19 +30,18 @@
 .kui--tag {
   &.pf-c-badge {
     &.yellow-background {
-      background-color: var(--color-yellow);
+      --pf-c-badge--BackgroundColor: var(--color-yellow);
       color: var(--color-base00);
     }
     &.red-background {
-      background-color: var(--color-red);
-      color: var(--color-base07);
+      --pf-c-badge--BackgroundColor: var(--color-red);
     }
     &.green-background {
-      background-color: var(--color-green);
+      --pf-c-badge--BackgroundColor: var(--color-green);
       color: var(--color-base00);
     }
     &.bx--tag--warm-gray {
-      background-color: var(--color-yellow-sidecar);
+      --pf-c-badge--BackgroundColor: var(--color-yellow-sidecar);
       color: var(--color-base00);
     }
   }

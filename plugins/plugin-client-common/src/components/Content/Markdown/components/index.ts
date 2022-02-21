@@ -19,6 +19,7 @@ import { Components } from 'react-markdown'
 
 import _a from './a'
 import p from './p'
+import tag from './tag'
 import _div from './div'
 import _img from './img'
 import tabbed from './tabbed'
@@ -83,6 +84,7 @@ function components(args: Args) {
   const components = Object.assign(
     {
       tip,
+      tag,
       tabbed: tabbed(args.uuid)
     },
     typedComponents(args)
