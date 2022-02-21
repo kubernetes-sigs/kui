@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, Util, encodeComponent } from '@kui-shell/core'
+
+const debug = Debug('plugin-client-common/notebook/load')
 
 export async function loadNotebook(
   filepath: string,
@@ -23,6 +26,7 @@ export async function loadNotebook(
   errOk = false
 ): Promise<string | object> {
   try {
+    debug('attempting to load guidebook data', filepath)
     if (/^https:/.test(filepath)) {
       return (await REPL.rexec<(string | object)[]>(`vfs _fetchfile ${encodeComponent(filepath)}`)).content[0]
     } else {
@@ -37,6 +41,7 @@ export async function loadNotebook(
       }
     }
   } catch (err) {
+    debug('error loading guidebook data', filepath, err)
     if (!errOk) {
       throw err
     } else {

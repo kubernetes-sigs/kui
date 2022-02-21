@@ -15,7 +15,7 @@
  */
 
 import { format } from 'url'
-import { basename, dirname, join } from 'path'
+import { basename, dirname as pathDirname, join as pathJoin } from 'path'
 
 import { Arguments, CommentaryResponse, Events, ParsedOptions, Registrar, getPrimaryTabId } from '@kui-shell/core'
 
@@ -92,6 +92,30 @@ type CommentaryOptions = ParsedOptions &
     }
   ]
 } */
+
+function isUrl(a: string) {
+  return /^https?:/.test(a)
+}
+
+function dirname(a: string) {
+  if (isUrl(a)) {
+    const url = new URL(a)
+    url.pathname = pathDirname(url.pathname)
+    return url.toString()
+  } else {
+    return pathDirname(a)
+  }
+}
+
+function join(a: string, b: string) {
+  if (isUrl(a)) {
+    const url = new URL(a)
+    url.pathname = pathJoin(url.pathname, b)
+    return url.toString()
+  } else {
+    return pathJoin(a, b)
+  }
+}
 
 export function filepathForResponses(filepath: string) {
   return join(dirname(filepath), basename(filepath).replace(/\..*$/, '') + '.json')

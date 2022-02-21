@@ -42,7 +42,7 @@ function dirname(a: string) {
 function join(a: string, b: string) {
   if (isUrl(a)) {
     const url = new URL(a)
-    url.pathname = join(url.pathname, b)
+    url.pathname = pathJoin(url.pathname, b)
     return url.toString()
   } else {
     return pathJoin(a, b)
