@@ -32,11 +32,10 @@
           "label": "Getting Started",
           "expanded": false,
           "submenu": [
-            { "notebook": "Quick start", "filepath": "/kui/kubernetes/knative-getting-started.md" },
+            { "notebook": "Quick start", "filepath": "/kui/kubernetes/knative-quickstart.md" },
             {
               "label": "Serving",
               "submenu": [
-                { "notebook": "First Knative Service", "filepath": "/kui/kubernetes/knative-first-service.md" },
                 { "notebook": "Scaling to Zero", "filepath": "/kui/kubernetes/knative-first-autoscale.md" },
                 { "notebook": "Traffic Splitting", "filepath": "/kui/kubernetes/knative-traffic-splitting.md" }
               ]
@@ -59,10 +58,6 @@
                 {
                   "notebook": "Creating your first Trigger",
                   "filepath": "/kui/kubernetes/knative-first-trigger.md"
-                },
-                {
-                  "notebook": "Clean Up",
-                  "filepath": "/kui/kubernetes/knative-clean-up.md"
                 }
               ]
             },
