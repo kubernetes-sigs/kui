@@ -95,7 +95,7 @@ export function unifyRow(row: Row, kind: string): Row {
       getFromSelector(row.object, 'tier')
     : ''
 
-  extraAttrs.push({ key: 'Tier', value: tier })
+  extraAttrs.push({ key: 'Tier', value: tier, outerCSS: 'kui--hide-in-narrower-windows' })
 
   const app = row.object
     ? getFromLabel(row.object, 'app') ||
@@ -103,7 +103,7 @@ export function unifyRow(row: Row, kind: string): Row {
       getFromSelector(row.object, 'app')
     : ''
 
-  extraAttrs.push({ key: 'Application', value: app })
+  extraAttrs.push({ key: 'Application', value: app, outerCSS: 'kui--hide-in-narrower-windows' })
 
   return rowWith(name, kind, status, trafficLight, row, extraAttrs)
 }
