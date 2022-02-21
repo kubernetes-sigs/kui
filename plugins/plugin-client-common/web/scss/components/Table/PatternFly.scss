@@ -15,13 +15,19 @@
  */
 
 @import 'mixins';
+@import '../Terminal/mixins';
 
 /* @include TableContainer {
   max-height: calc(0.7 * var(--kui--table-max-height));
 } */
 
+@include Block {
+  @include Table {
+    --pf-c-table--BackgroundColor: #{$table-background-color};
+  }
+}
+
 @include Table {
-  --pf-c-table--BackgroundColor: transparent;
   border-collapse: collapse;
 
   @include TableHeadCell {
