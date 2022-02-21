@@ -33,6 +33,8 @@ const offline: MutabilityState = { editable: false, executable: false }
 
 const notebookMode: MutabilityState = { editable: false, executable: true }
 
+export { offline as MutabilityStateOffline }
+
 // define initialization
 export function initializeState(): MutabilityState {
   if (isOfflineClient()) {

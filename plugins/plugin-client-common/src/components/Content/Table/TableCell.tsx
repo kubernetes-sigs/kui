@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
 import { Td } from '@patternfly/react-table'
@@ -39,6 +40,8 @@ import whenNothingIsSelected from '../../../util/selection'
 import { MutabilityContext, MutabilityState } from '../../Client/MutabilityContext'
 
 export type CellOnClickHandler = (evt: React.MouseEvent) => void
+
+const debug = Debug('plugin-client-common/Content/Table/TableCell')
 
 function XOR(a: boolean, b: boolean) {
   return (a || b) && !(a && b)
@@ -83,6 +86,7 @@ export function onClickForCell(
           opts.masquerade = row.onclick
           opts.data = row.onclickPrefetch
           handler = 'replay-content'
+          debug('Implementing table cell drilldown with replayed content', row.onclick)
         }
 
         if (drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
