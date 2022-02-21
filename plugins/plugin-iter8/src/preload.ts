@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import { Capabilities, PreloadRegistrar } from '@kui-shell/core'
+import { Capabilities } from '@kui-shell/core'
 
-import { metricListMode, metricYamlMode } from './models/metrics'
-import { exprcreateMode, decisionMode } from './models/renderCreateExpr'
-
-export default async (registrar: PreloadRegistrar) => {
+export default async () => {
   if (!Capabilities.isHeadless()) {
-    await registrar.registerModes(exprcreateMode, decisionMode, metricListMode, metricYamlMode)
-
     const { notebookVFS } = await import('@kui-shell/plugin-core-support')
     notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/iter8'] })
     notebookVFS.cp(
