@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,11 @@
  */
 
 import React from 'react'
-import { Badge } from '@patternfly/react-core'
 
-import Props from '../model'
+import { Props as TagProps } from '../../../spi/Tag'
+const Tag = React.lazy(() => import('../../../spi/Tag'))
 
-import '../../../../../web/scss/components/Tag/Tag.scss'
-
-export default function PatternFlyTag(props: Props) {
-  const color =
-    props.type === 'ok'
-      ? 'green-background'
-      : props.type === 'error'
-      ? 'red-background'
-      : props.type === 'warning'
-      ? 'yellow-background'
-      : 'gray-background'
-  return <Badge {...props} className={['kui--tag', color, props.spanclassname].join(' ')} />
+export default function tag(props: { variant?: TagProps['type']; children: TagProps['children'] }) {
+  console.error('!!!!!!', props)
+  return <Tag type={props.variant} {...props} />
 }

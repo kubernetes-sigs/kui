@@ -7,7 +7,7 @@
 
   "Completed tasks": "Completed tasks",
 
-  "status.optional": "This code block is optional :fontawesome-solid-dot-circle:",
+  "status.optional": ":badge-warning-optional:",
   "status.blank": "Not yet executed",
   "status.success": "Successfully executed :fontawesome-solid-check-circle:",
   "status.warning": "Warning",
