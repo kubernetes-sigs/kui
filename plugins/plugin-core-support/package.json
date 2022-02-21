@@ -29,9 +29,9 @@
     "colors": "1.4.0",
     "debug": "4.3.3",
     "enquirer": "2.3.6",
-    "listr2": "4.0.2",
+    "listr2": "4.0.4",
     "micromatch": "4.0.4",
-    "rxjs": "^7.5.2",
+    "rxjs": "^7.5.4",
     "tmp": "0.2.1"
   },
   "publishConfig": {
