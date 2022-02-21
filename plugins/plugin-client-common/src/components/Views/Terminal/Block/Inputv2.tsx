@@ -37,7 +37,7 @@ import Spinner from './Spinner'
 import Status from './CodeBlockStatus'
 import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
-import { MutabilityContext } from '../../../Client/MutabilityContext'
+import { MutabilityContext, MutabilityState, MutabilityStateOffline } from '../../../Client/MutabilityContext'
 
 import Tooltip from '../../../spi/Tooltip'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
@@ -408,16 +408,18 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     return this.props.response || this.hasStreamingOutput()
   }
 
-  private output() {
+  private output(mutability: MutabilityState) {
     const content = this.hasOutput && (
-      <div className="repl-output repl-result-has-content">
-        <div className="result-vertical">
-          <div className="repl-result">
-            {this.state.execution === 'processing' && this.streamingOutput()}
-            {this.nonstreamingOutput()}
+      <MutabilityContext.Provider value={this.showingReplayedOutput ? MutabilityStateOffline : mutability}>
+        <div className="repl-output repl-result-has-content">
+          <div className="result-vertical">
+            <div className="repl-result">
+              {this.state.execution === 'processing' && this.streamingOutput()}
+              {this.nonstreamingOutput()}
+            </div>
           </div>
         </div>
-      </div>
+      </MutabilityContext.Provider>
     )
 
     return this.state.execution !== 'replayed'
@@ -507,12 +509,15 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
       }, {})
   }
 
+  private get showingReplayedOutput() {
+    return !!(this.state.execution === 'replayed' && this.hasOutput)
+  }
+
   public render() {
     return (
       <MutabilityContext.Consumer>
         {mutability => {
-          const showAsExecutable =
-            !!(this.state.execution === 'replayed' && this.hasOutput) || mutability.executable || undefined
+          const showAsExecutable = this.showingReplayedOutput || mutability.executable || undefined
           const butUseSampleOutputOnRun = !mutability.executable
 
           return (
@@ -529,7 +534,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
             >
               {!this.outputOnly && this.input(showAsExecutable, butUseSampleOutputOnRun)}
               {!this.outputOnly && this.sourceRef()}
-              {this.output()}
+              {this.output(mutability)}
             </li>
           )
         }}
