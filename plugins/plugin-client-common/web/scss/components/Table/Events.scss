@@ -54,6 +54,7 @@ $inter-message-spacing: 0.1875rem;
 }
 
 @mixin bottom-events-message {
+  .marked-content > p,
   p {
     white-space: pre-wrap;
     font-family: var(--font-monospace);
