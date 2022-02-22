@@ -23,7 +23,7 @@ import { visitParents } from 'unist-util-visit-parents'
 import { Tab } from '@kui-shell/core'
 
 import preprocessCodeBlocks from './components/code/remark-codeblocks-topmatter'
-import KuiFrontmatter, { hasWizardSteps, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
+import KuiFrontmatter, { hasWizardSteps, isNormalSplit, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
 
 export { tryFrontmatter } from './frontmatter-parser'
 
@@ -154,12 +154,12 @@ function extractSplitsAndSections(tree /*: Root */, frontmatter: KuiFrontmatter)
     // text to place in empty sections
     const placeholder = isValidPositionObj(positionAsGiven) ? positionAsGiven.placeholder : undefined
 
-    const maximized =
-      isValidPositionObj(positionAsGiven) &&
-      (positionAsGiven.maximized === true || positionAsGiven.maximized === 'true')
+    const maximized = isValidPositionObj(positionAsGiven) && positionAsGiven.maximized === true
+    const inverseColors = isValidPositionObj(positionAsGiven) && positionAsGiven.inverseColors === true
 
-    const count = frontmatter.layoutCount[position] || 0
-    frontmatter.layoutCount[position] = count + 1
+    const positionForCount = isNormalSplit(position) ? 'default' : position
+    const count = frontmatter.layoutCount[positionForCount] || 0
+    frontmatter.layoutCount[positionForCount] = count + 1
 
     return u(
       'subtree',
@@ -167,6 +167,7 @@ function extractSplitsAndSections(tree /*: Root */, frontmatter: KuiFrontmatter)
         data: {
           hProperties: {
             'data-kui-split': position,
+            'data-kui-inverseColors': inverseColors.toString(),
             'data-kui-maximized': maximized.toString(),
             'data-kui-split-count': count,
             'data-kui-placeholder': placeholder

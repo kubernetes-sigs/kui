@@ -53,6 +53,13 @@ export type NewSplitRequest = {
 
     /** Swap the positions of the given two splits */
     swap?: { a: number; b: number }
+
+    /**
+     * Force this new split to have (or not) an active input,
+     * independent of what the default behavior would otherwis
+     * say?
+     */
+    hasActiveInput?: boolean
   }
 }
 

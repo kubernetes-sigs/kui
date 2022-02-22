@@ -17,7 +17,7 @@
 import { v5 } from 'uuid'
 import React from 'react'
 
-import SplitInjector from './SplitInjector'
+import SplitInjector, { InjectorOptions } from './SplitInjector'
 
 import {
   Events,
@@ -317,54 +317,91 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /**
-   * This is the handler for the `SplitInjector` component. Injects
-   * the given React `node` into the given `position`. Uses `uuid` to
-   * determine whether the a prior version of the node already exists
-   * in that position.
+   * This is the `inject` handler for the `SplitInjector`
+   * interface. Injects the given React `node` into the given
+   * `position`. Uses `uuid` to determine whether the a prior version
+   * of the node already exists in that position.
    */
-  private readonly injectInSplit = (
+  public readonly inject = (
     uuid: string,
     node: React.ReactNode,
     position: SplitPosition,
     count: number,
-    maximized?: boolean
+    { maximized, hasActiveInput, inverseColors }: InjectorOptions
   ) => {
     const split =
       (position !== 'default'
         ? this.state.splits.find(_ => _.position === position)
         : this.state.splits.filter(_ => _.position === 'default')[count]) ||
-      this.makePositionedSplit(position, { createdBy: 'kui' })
+      this.makePositionedSplit(position, { createdBy: 'kui', hasActiveInput })
 
     if (split) {
-      this.splice(split.uuid, curState => {
-        // have we already inserted the given node?
-        const execUUID = `${uuid}-${position}`
-        const alreadyIdx = curState.blocks.findIndex(_ => isAnnouncement(_) && _.execUUID === execUUID)
+      this.splice(
+        split.uuid,
+        curState => {
+          // have we already inserted the given node?
+          const execUUID = `${uuid}-${position}`
+          const alreadyIdx = curState.blocks.findIndex(_ => isAnnouncement(_) && _.execUUID === execUUID)
 
-        // in either case, we will use this new BlockModel
-        const newBlock = Announcement({ react: node }, execUUID, maximized)
+          // in either case, we will use this new BlockModel
+          const newBlock = Announcement({ react: node }, execUUID, maximized)
 
-        if (alreadyIdx >= 0) {
-          // yup! so splice out with the old, and in with the new!
-          return {
-            blocks: [
-              ...curState.blocks.slice(0, alreadyIdx),
-              newBlock,
-              ...curState.blocks.slice(alreadyIdx + 1) // skip over the existing version...
-            ]
+          if (alreadyIdx >= 0) {
+            // yup! so splice out with the old, and in with the new!
+            return {
+              blocks: [
+                ...curState.blocks.slice(0, alreadyIdx),
+                newBlock,
+                ...curState.blocks.slice(alreadyIdx + 1) // skip over the existing version...
+              ]
+            }
+          } else {
+            // then we splice in the new
+            const insertIdx = isActive(split.blocks[split.blocks.length - 1])
+              ? split.blocks.length - 1
+              : split.blocks.length
+
+            return {
+              inverseColors: inverseColors === true || curState.inverseColors,
+              blocks: [...curState.blocks.slice(0, insertIdx), newBlock, ...curState.blocks.slice(insertIdx)]
+            }
           }
-        } else {
-          // then we splice in the new
-          const insertIdx = isActive(split.blocks[split.blocks.length - 1])
-            ? split.blocks.length - 1
-            : split.blocks.length
-
-          return {
-            blocks: [...curState.blocks.slice(0, insertIdx), newBlock, ...curState.blocks.slice(insertIdx)]
-          }
-        }
-      })
+        },
+        { focus: !!hasActiveInput }
+      )
     }
+  }
+
+  /** This is the `modify` handler for the `SplitInjector`
+   * interface. Modifies the properties of an existing split as
+   * specified by `sbuuid`, and then returns the given `node`
+   * unchanged. */
+  public readonly modify = (
+    sbuuid: string,
+    node: React.ReactNode,
+    { hasActiveInput, inverseColors }: InjectorOptions
+  ): React.ReactNode => {
+    this.setState(curState => {
+      const sbidx = this.findSplit(this.state, sbuuid)
+      if (sbidx < 0) {
+        return null
+      } else {
+        const splits = curState.splits.slice()
+
+        if (typeof inverseColors === 'boolean') {
+          splits[sbidx].inverseColors = inverseColors
+        }
+
+        if (typeof hasActiveInput === 'boolean') {
+          splits[sbidx].hasActiveInput = hasActiveInput
+        }
+        return {
+          splits
+        }
+      }
+    })
+
+    return node
   }
 
   private allocateUUIDForScrollback() {
@@ -411,6 +448,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willUpdateCommand: undefined,
       tabRefFor: undefined,
       scrollableRef: undefined,
+      hasActiveInput: opts.hasActiveInput,
 
       createdBy: opts.createdBy || 'user',
       position: opts.position || 'default',
@@ -1308,16 +1346,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    * using the giving ScrollbackState mutator.
    *
    */
-  private splice(sbuuid: string, mutator: (state: ScrollbackState) => Pick<ScrollbackState, 'blocks'>) {
-    this.setState(curState => this.spliceMutate(curState, sbuuid, mutator))
+  private splice(
+    sbuuid: string,
+    mutator: (
+      state: ScrollbackState
+    ) => Pick<ScrollbackState, 'blocks'> & Partial<Pick<ScrollbackState, 'inverseColors'>>,
+    opts: { focus?: boolean } = {}
+  ) {
+    this.setState(curState => this.spliceMutate(curState, sbuuid, mutator, opts))
   }
 
   /** Helper for splice; i.e. splice() does the setState, while this method does them mutate */
   private spliceMutate(
     curState: State,
     sbuuid: string,
-    mutator: (state: ScrollbackState) => Pick<ScrollbackState, 'blocks'>
-  ): Pick<State, 'splits'> {
+    mutator: (state: ScrollbackState) => Pick<ScrollbackState, 'blocks'>,
+    opts: { focus?: boolean } = {}
+  ): Pick<State, 'splits' | 'focusedIdx'> {
     const focusedIdx = this.findAvailableSplit(curState, sbuuid)
     const splits = curState.splits
       .slice(0, focusedIdx)
@@ -1325,6 +1370,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       .concat(curState.splits.slice(focusedIdx + 1))
 
     return {
+      focusedIdx: opts.focus ? focusedIdx : curState.focusedIdx,
       splits
     }
   }
@@ -1430,7 +1476,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           tab={tab}
           splitPosition={scrollback.position}
           nSplits={this.state.splits.length}
-          noActiveInput={this.props.noActiveInput}
+          noActiveInput={
+            scrollback.hasActiveInput === false || (scrollback.hasActiveInput !== true && this.props.noActiveInput)
+          }
           onFocus={scrollback.onFocus}
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
@@ -1499,7 +1547,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <SplitInjector.Provider value={this.injectInSplit}>
+      <SplitInjector.Provider value={this}>
         <div className="repl" id="main-repl" data-session-init-status={this.props.sessionInit}>
           <div
             className="repl-inner zoomable kui--terminal-split-container"

@@ -17,6 +17,21 @@
 import React from 'react'
 import SplitPosition from './SplitPosition'
 
+export interface InjectorOptions {
+  /** @deprecated */
+  maximized?: boolean
+
+  /** Use inverse colors in the split? */
+  inverseColors?: boolean
+
+  /**
+   * Force this new split to have (or not) an active input,
+   * independent of what the default behavior would otherwis
+   * say?
+   */
+  hasActiveInput?: boolean
+}
+
 /**
  * Inject the given React `node` in the given `SplitPosition`. Use the
  * given `uuid` to determine whether we have already injected this
@@ -28,7 +43,24 @@ type Injector = (
   node: React.ReactNode,
   position: SplitPosition,
   count: number,
-  maximized?: boolean
+  opts?: InjectorOptions
 ) => void
 
-export default React.createContext<Injector>(undefined)
+/** Update the properties of an existing split */
+type Modifier = (
+  /** id of split to modify */
+  uuid: string,
+
+  /** The actual content */
+  node: React.ReactNode,
+
+  /** Modification options */
+  opts: InjectorOptions
+) => React.ReactNode
+
+interface InjectProvider {
+  inject: Injector
+  modify: Modifier
+}
+
+export default React.createContext<InjectProvider>(undefined)
