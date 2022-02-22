@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/react",
-  "version": "11.2.0",
+  "version": "11.3.0",
   "description": "Kui react enablement",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
