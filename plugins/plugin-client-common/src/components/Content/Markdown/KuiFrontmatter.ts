@@ -86,8 +86,8 @@ export function hasCodeBlocks(frontmatter: KuiFrontmatter): frontmatter is KuiFr
   return frontmatter.codeblocks && Array.isArray(frontmatter.codeblocks) && frontmatter.codeblocks.length > 0
 }
 
-type SplitPosition = 'left' | 'bottom' | 'default' | 'wizard'
-type SplitPositionObj = { position: SplitPosition; placeholder?: string; maximized?: boolean | 'true' | 'false' }
+type SplitPosition = 'left' | 'bottom' | 'default' | 'wizard' | 'terminal'
+type SplitPositionObj = { position: SplitPosition; placeholder?: string; maximized?: boolean; inverseColors?: boolean }
 type SplitPositionSpec = SplitPosition | SplitPositionObj
 
 export type PositionProps = {
@@ -97,13 +97,21 @@ export type PositionProps = {
 export function isValidPosition(position: SplitPositionSpec): position is SplitPosition {
   return (
     typeof position === 'string' &&
-    (position === 'default' || position === 'left' || position === 'bottom' || position === 'wizard')
+    (position === 'default' ||
+      position === 'left' ||
+      position === 'bottom' ||
+      position === 'wizard' ||
+      position === 'terminal')
   )
+}
+
+export function isNormalSplit(position: SplitPosition) {
+  return position === 'default' || position === 'terminal'
 }
 
 export function isValidPositionObj(position: SplitPositionSpec): position is SplitPositionObj {
   const pos = position as SplitPositionObj
-  return typeof pos === 'object' && typeof pos.position === 'string'
+  return typeof pos === 'object' && isValidPosition(pos.position)
 }
 
 export default KuiFrontmatter

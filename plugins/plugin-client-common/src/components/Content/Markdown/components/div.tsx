@@ -20,32 +20,48 @@ import { TextContent } from '@patternfly/react-core'
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
-import { PositionProps } from '../KuiFrontmatter'
+import { Props as MarkdownProps } from '..'
+import { PositionProps, isNormalSplit } from '../KuiFrontmatter'
 
 import { isWizard } from './Wizard/rehype-wizard'
 const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
-export default function div(uuid: string) {
+export default function div(mdprops: MarkdownProps, uuid: string) {
   return (props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps>) => {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const placeholder = props['data-kui-placeholder']
     const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
 
+    // Important! Default to `undefined` so that we pick up the
+    // *default* behavior from the Terminal component
+    const hasActiveInput = position === 'terminal' || undefined
+    const inverseColors = props['data-kui-inverse-colors'] === 'true' || undefined
+
     if (isWizard(props)) {
       return <Wizard uuid={uuid} {...props} />
-    } else if (!position || (position === 'default' && count === 0 && !maximized && !placeholder)) {
+    } else if (!position || (isNormalSplit(position) && count === 0 && !maximized && !placeholder)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
-      return <div data-is-maximized={maximized || undefined}>{props.children}</div>
+      const node = <div data-is-maximized={maximized || undefined}>{props.children}</div>
+      if (!mdprops.tab || (hasActiveInput !== true && hasActiveInput !== false)) {
+        return node
+      } else {
+        // modify the current split to have the desired properties
+        return (
+          <SplitInjector.Consumer>
+            {injector => injector.modify(mdprops.tab.uuid, node, { hasActiveInput, inverseColors })}
+          </SplitInjector.Consumer>
+        )
+      }
     } else {
       // then we have a section that targets a given split position
       return (
         <SplitInjector.Consumer>
-          {inject => {
+          {injector => {
             const node = (
               <ReactCommentary>
                 <TextContent>
@@ -56,13 +72,15 @@ export default function div(uuid: string) {
               </ReactCommentary>
             )
 
+            const positionForView = position === 'terminal' ? 'default' : position
+
             setTimeout(() =>
-              inject(
+              injector.inject(
                 uuid,
                 node,
-                (position + (position === 'default' ? '' : '-strip')) as SplitPosition,
+                (positionForView + (isNormalSplit(positionForView) ? '' : '-strip')) as SplitPosition,
                 count,
-                maximized
+                { inverseColors, hasActiveInput, maximized }
               )
             )
             return <React.Fragment />

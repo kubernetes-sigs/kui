@@ -48,7 +48,7 @@ function typedComponents(args: Args): Components {
   const { mdprops, repl, uuid, codeBlockResponses, spliceInCodeExecution } = args
 
   const a = _a(mdprops, uuid, repl)
-  const div = _div(uuid)
+  const div = _div(mdprops, uuid)
   const img = _img(mdprops)
   const code = _code(mdprops, uuid, codeBlockResponses, spliceInCodeExecution)
   const heading = _heading(uuid)
