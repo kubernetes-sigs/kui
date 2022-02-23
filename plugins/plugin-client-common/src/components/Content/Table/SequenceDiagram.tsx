@@ -21,6 +21,7 @@ import { REPL, Row, Tab, Table, i18n, Util } from '@kui-shell/core'
 
 import Bar from './Bar'
 import ErrorCell from './ErrorCell'
+import tooltipContent from './Tooltip'
 import DefaultColoring from './Coloring'
 import ProgressState from './ProgressState'
 import trafficLight from './css-for-status'
@@ -28,6 +29,7 @@ import { onClickForCell, CellOnClickHandler } from './TableCell'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 
 const Ansi = React.lazy(() => import('../Scalar/Ansi'))
+const Tooltip = React.lazy(() => import('../../spi/Tooltip'))
 
 import '../../../../web/scss/components/Table/SequenceDiagram/_index.scss'
 
@@ -111,6 +113,11 @@ function prettyPrintDuration(duration: number): string {
     console.error('error formatting duration', duration, err)
     return ''
   }
+}
+
+function prettyPrintFraction(a: number, b: number): string {
+  const frac = (100 * a) / b
+  return frac.toFixed(frac < 10 ? 1 : 0)
 }
 
 function prettyPrintDateDelta(row: Row, idx1: number, idx2: number, numerator?: string): string {
@@ -484,7 +491,6 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               width = 1 - left
             }
 
-            const title = strings('Duration', prettyPrintDuration(duration))
             const className = colorByStatus
               ? '' /* trafficLight(row.attributes[idx4]) */
               : durationColor(duration, false)
@@ -499,7 +505,16 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
                 if (overhead && overhead > 0) {
                   // tooltip for the overhead bar
-                  const titleB = overhead ? strings(attr, prettyPrintDuration(overhead), title) : undefined
+                  const titleB = overhead
+                    ? tooltipContent(
+                        strings(attr),
+                        strings(
+                          'DurationWithFraction',
+                          prettyPrintDuration(overhead),
+                          prettyPrintFraction(overhead, duration)
+                        )
+                      )
+                    : undefined
 
                   // width of the overhead bar
                   let widthB = overhead ? this.getFraction(overhead, interval) : undefined
@@ -559,17 +574,18 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 )}
                 {idx5 >= 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right badge-width">
-                    <span
-                      title={
+                    <Tooltip
+                      content={
                         (row.attributes[idx5] ? basename(row.attributes[idx5].value) : '') +
                         (idx6 < 0 || !row.attributes[idx6]
                           ? ''
                           : safePrettyPrintBytesWithPrefix(row.attributes[idx6].value, ': '))
                       }
-                      className="cell-inner"
                     >
-                      {row.attributes[idx5] ? basename(row.attributes[idx5].value) : ''}
-                    </span>
+                      <span className="cell-inner">
+                        {row.attributes[idx5] ? basename(row.attributes[idx5].value) : ''}
+                      </span>
+                    </Tooltip>
                   </td>
                 )}
                 <td className="kui--sequence-diagram-bar-cell pf-m-nowrap" onClick={onClick}>
@@ -581,7 +597,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                     <Bar
                       left={left}
                       width={width}
-                      title={title}
+                      title={tooltipContent(strings('DurationOnly'), prettyPrintDuration(duration))}
                       onClick={onClick}
                       className={className}
                       overheads={overheads}
@@ -606,12 +622,11 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 )}
                 {idx6 >= 0 && idx7 < 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
-                    <span
-                      className="cell-inner"
-                      title={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}
-                    >
-                      {row.attributes[idx6] ? prettyPrintDateDelta(row, idx1, idx2, row.attributes[idx6].value) : ''}
-                    </span>
+                    <Tooltip content={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}>
+                      <span className="cell-inner">
+                        {row.attributes[idx6] ? prettyPrintDateDelta(row, idx1, idx2, row.attributes[idx6].value) : ''}
+                      </span>
+                    </Tooltip>
                   </td>
                 )}
                 {this.props.progress && this.props.progress[row.rowKey] && this.props.progress[row.rowKey].message && (
@@ -623,9 +638,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 )}
                 {idx7 >= 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
-                    <span className="cell-inner" title={row.attributes[idx7] ? row.attributes[idx7].value : ''}>
-                      {row.attributes[idx7] ? row.attributes[idx7].value : ''}
-                    </span>
+                    <Tooltip content={row.attributes[idx7] ? row.attributes[idx7].value : ''}>
+                      <span className="cell-inner">{row.attributes[idx7] ? row.attributes[idx7].value : ''}</span>
+                    </Tooltip>
                   </td>
                 )}
                 {/* this.props.response.statusColumnIdx >= 0

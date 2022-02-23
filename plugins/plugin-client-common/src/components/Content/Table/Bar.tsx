@@ -16,6 +16,8 @@
 
 import React from 'react'
 
+const Tooltip = React.lazy(() => import('../../spi/Tooltip'))
+
 interface Props {
   left: number
   className?: string
@@ -49,25 +51,26 @@ export default class Bar extends React.PureComponent<Props> {
 
     return (
       <div className={'kui--bar-wrapper ' + (this.props.wrapperClassName || '')}>
-        <div
-          className={className}
-          data-left={left}
-          data-width={width}
-          style={{ left, width }}
-          title={this.props.title}
-          onClick={this.props.onClick}
-        />
+        <Tooltip markdown={this.props.title} position="bottom">
+          <div
+            className={className}
+            data-left={left}
+            data-width={width}
+            style={{ left, width }}
+            onClick={this.props.onClick}
+          />
+        </Tooltip>
 
         {/* "overlays", make sure this comes last:  */}
         {this.props.overheads &&
           this.props.overheads.map(({ title, width, offset }, idx) => (
-            <div
-              key={idx}
-              title={title}
-              data-overlay={idx}
-              style={{ marginLeft: str(offset + this.props.left), width: str(width) }}
-              className={'kui--bar' + (this.props.onClick ? ' clickable' : '')}
-            />
+            <Tooltip key={idx} markdown={title} position="bottom">
+              <div
+                data-overlay={idx}
+                style={{ marginLeft: str(offset + this.props.left), width: str(width) }}
+                className={'kui--bar' + (this.props.onClick ? ' clickable' : '')}
+              />
+            </Tooltip>
           ))}
       </div>
     )
