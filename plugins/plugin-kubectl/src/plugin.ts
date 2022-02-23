@@ -32,8 +32,8 @@ import raw from './controller/kubectl/raw'
 import run from './controller/kubectl/run'
 import top from './controller/kubectl/top'
 import config from './controller/kubectl/config'
-import jobList from './controller/kubectl/job/list'
 import applySubcommands from './controller/kubectl/apply-subcommands'
+import dashboard from './controller/kubectl/dashboard'
 
 import fetchFile from './controller/fetch-file'
 import catchall from './controller/kubectl/catchall'
@@ -47,7 +47,6 @@ export default async (registrar: Registrar) => {
   explain(registrar)
   edit(registrar)
   kdelete(registrar)
-  jobList(registrar)
   kget(registrar)
   kgetNs(registrar)
   deployment(registrar)
@@ -57,6 +56,7 @@ export default async (registrar: Registrar) => {
   top(registrar)
   config(registrar)
   applySubcommands(registrar)
+  dashboard(registrar)
 
   fetchFile(registrar)
   catchall(registrar)

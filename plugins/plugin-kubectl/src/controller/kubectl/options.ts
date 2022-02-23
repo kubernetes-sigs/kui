@@ -299,6 +299,7 @@ export interface KubeOptions extends ParsedOptions {
 
   l?: string
   label?: string
+  selector?: string | string[]
 
   f?: string | string[]
   filename?: string | string[]

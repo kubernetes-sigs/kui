@@ -149,7 +149,7 @@ new TestTable('should test duration table', {
 }).run()
 
 /** test table with timestamps */
-const sequenceTableBody = [
+/* const sequenceTableBody = [
   {
     name: 'test 1',
     attributes: [{ value: 'Running' }, { value: 'Mon Aug 10 2020 15:10:58' }, { value: 'Mon Aug 10 2020 15:13:13' }]
@@ -170,9 +170,9 @@ const sequenceTableBody = [
     name: 'test 5',
     attributes: [{ value: 'Error' }, { value: 'Mon Aug 10 2020 15:10:28' }, { value: 'Mon Aug 10 2020 15:14:26' }]
   }
-]
+] */
 
-new TestTable('should test table with timestamps', {
+/* new TestTable('should test table with timestamps', {
   exec: {
     command: 'test sequence',
     expectTable: {
@@ -244,7 +244,7 @@ new TestTable('should watch table with timestamps', {
       ]
     }
   }
-}).run()
+}).run() */
 
 /** test table with push watcher, and the final status badge and message are correct */
 new TestTable('should test table with status and pusher', {

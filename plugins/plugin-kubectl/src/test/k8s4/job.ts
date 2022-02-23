@@ -39,30 +39,27 @@ synonyms.forEach(kubectl => {
         await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
-        await ReplExpect.okWith(jobName)(res)
+        await ReplExpect.tableWithNRows(2)(res)
       } catch (err) {
         return Common.oops(this, true)(err)
       }
     })
 
-    it('should list pods of job', async () => {
+    it('should list pods of job as dashboard', async () => {
       try {
-        const res = await CLI.command(`${kubectl} get job ${inNamespace}`, this.app)
+        const res = await CLI.command(`${kubectl} db job ${inNamespace}`, this.app)
         await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
-        await ReplExpect.okWith(jobName)(res)
+        await ReplExpect.tableWithNRows(2)(res)
       } catch (err) {
         return Common.oops(this, true)
       }
     })
 
-    it('should list pods of job', async () => {
+    it('should list jobs by name', async () => {
       try {
         const res = await CLI.command(`${kubectl} get job ${jobName} ${inNamespace}`, this.app)
-        await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
-        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
-        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
         await ReplExpect.okWith(jobName)(res)
       } catch (err) {
         return Common.oops(this, true)

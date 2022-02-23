@@ -19,13 +19,13 @@ kind: Job
 metadata:
   name: pi
 spec:
-  completions: 2
-  parallelism: 1
+  completions: 8
+  parallelism: 2
   template:
     spec:
       containers:
       - name: pi
-        image: quay.io/bitnami/nginx
-        command: ["echo",  "hi"]
+        image: perl
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
       restartPolicy: Never
   backoffLimit: 4

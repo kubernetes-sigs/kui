@@ -34,6 +34,7 @@ import {
 
 import toSourceRefs from './source'
 import { getKindAndVersion } from './explain'
+import { isDashboardableJob } from './dashboard/jobs'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
 import statusDirect from '../client/direct/status'
@@ -45,11 +46,10 @@ import KubeOptions, {
   kustomizeOf,
   getNamespace,
   getContextForArgv,
-  isDryRun,
-  withKubeconfigFrom
+  isDryRun
 } from './options'
 import { EventWatcher } from './watch/get-watch'
-import KubeResource, { isJob } from '../../lib/model/resource'
+import KubeResource from '../../lib/model/resource'
 
 import { fetchKusto, fetchFilesVFS } from '../../lib/util/fetch-file'
 
@@ -494,17 +494,14 @@ export const doStatus = async (
           namespace,
           finalState
         )
-    debug('resourcesToWaitFor', resourcesToWaitFor)
+    debug('resourcesToWaitFor', verb, resourcesToWaitFor)
 
-    if (resourcesToWaitFor.length === 1) {
-      const { group, version, kind, name } = resourcesToWaitFor[0]
-      if (isJob({ apiVersion: `${group}/${version}`, kind })) {
-        const watchJobs = withKubeconfigFrom(
-          args,
-          `${command || 'kubectl'} get ${kind}.${version}.${group} ${name} ${isWatchRequest ? '--watch' : ''}`
-        )
-        return args.REPL.qexec(watchJobs)
-      }
+    if (finalState === FinalState.OnlineLike && resourcesToWaitFor.every(isDashboardableJob)) {
+      return args.REPL.qexec(
+        `kubectl dashboard jobs ${resourcesToWaitFor.map(_ => _.name).join(' ')} -n ${namespace} ${
+          isWatchRequest ? ' -w' : ''
+        }`
+      )
     }
 
     // try handing off to direct/status
