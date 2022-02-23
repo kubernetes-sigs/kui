@@ -21,10 +21,10 @@ import { REPL, Row, Tab, Table, i18n, Util } from '@kui-shell/core'
 
 import Bar from './Bar'
 import ErrorCell from './ErrorCell'
-import tooltipContent from './Tooltip'
 import DefaultColoring from './Coloring'
 import ProgressState from './ProgressState'
 import trafficLight from './css-for-status'
+import tooltipContent, { tooltipProps } from './Tooltip'
 import { onClickForCell, CellOnClickHandler } from './TableCell'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 
@@ -575,6 +575,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 {idx5 >= 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right badge-width">
                     <Tooltip
+                      {...tooltipProps}
                       content={
                         (row.attributes[idx5] ? basename(row.attributes[idx5].value) : '') +
                         (idx6 < 0 || !row.attributes[idx6]
@@ -622,7 +623,10 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 )}
                 {idx6 >= 0 && idx7 < 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
-                    <Tooltip content={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}>
+                    <Tooltip
+                      {...tooltipProps}
+                      content={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}
+                    >
                       <span className="cell-inner">
                         {row.attributes[idx6] ? prettyPrintDateDelta(row, idx1, idx2, row.attributes[idx6].value) : ''}
                       </span>
@@ -638,7 +642,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 )}
                 {idx7 >= 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
-                    <Tooltip content={row.attributes[idx7] ? row.attributes[idx7].value : ''}>
+                    <Tooltip {...tooltipProps} content={row.attributes[idx7] ? row.attributes[idx7].value : ''}>
                       <span className="cell-inner">{row.attributes[idx7] ? row.attributes[idx7].value : ''}</span>
                     </Tooltip>
                   </td>
