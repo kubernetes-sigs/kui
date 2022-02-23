@@ -196,7 +196,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         return Object.assign(defaults, currentState, newState)
       } else {
         // different props
-        return Object.assign(defaults, newState, currentState)
+        return Object.assign(defaults, newState, currentState, { asSequence })
       }
     } catch (err) {
       console.error('Internal error preparing PaginatedTable', err)
