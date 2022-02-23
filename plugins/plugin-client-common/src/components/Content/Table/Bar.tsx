@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import { tooltipProps } from './Tooltip'
 
 const Tooltip = React.lazy(() => import('../../spi/Tooltip'))
 
@@ -51,7 +52,7 @@ export default class Bar extends React.PureComponent<Props> {
 
     return (
       <div className={'kui--bar-wrapper ' + (this.props.wrapperClassName || '')}>
-        <Tooltip markdown={this.props.title} position="bottom">
+        <Tooltip markdown={this.props.title} {...tooltipProps}>
           <div
             className={className}
             data-left={left}
@@ -64,7 +65,7 @@ export default class Bar extends React.PureComponent<Props> {
         {/* "overlays", make sure this comes last:  */}
         {this.props.overheads &&
           this.props.overheads.map(({ title, width, offset }, idx) => (
-            <Tooltip key={idx} markdown={title} position="bottom">
+            <Tooltip key={idx} markdown={title} {...tooltipProps}>
               <div
                 data-overlay={idx}
                 style={{ marginLeft: str(offset + this.props.left), width: str(width) }}

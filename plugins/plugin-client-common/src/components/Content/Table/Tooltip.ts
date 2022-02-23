@@ -30,6 +30,5 @@ ${status ? 'Status: ' + status : ''}
 }
 
 export const tooltipProps = {
-  entryDelay: 300,
-  position: 'bottom' as const
+  position: 'bottom-start' as const
 }
