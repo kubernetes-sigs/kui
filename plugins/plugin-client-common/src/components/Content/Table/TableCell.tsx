@@ -185,6 +185,8 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
             modifier={
               /OBJECT/i.test(key) || /MESSAGE/i.test(key)
                 ? 'wrap'
+                : /STATUS/i.test(key)
+                ? 'nowrap'
                 : !/NAME|NAMESPACE/i.test(key)
                 ? 'fitContent'
                 : undefined
