@@ -34,7 +34,7 @@ async function emitConfigChange(args: Arguments<KubeOptions>) {
   const newNamespace = await getCurrentDefaultNamespace(args, newContext, true)
 
   // then notify the views of the config change
-  emitKubectlConfigChangeEvent('SetNamespaceOrContext', newNamespace, newContext)
+  emitKubectlConfigChangeEvent('LoginToContext', newNamespace, newContext)
 }
 
 export default function registerOcLogin(registrar: Registrar) {

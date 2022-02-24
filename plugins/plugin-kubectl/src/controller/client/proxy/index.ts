@@ -18,6 +18,8 @@ import Debug from 'debug'
 import { onQuit, offQuit } from '@kui-shell/core'
 import { ChildProcess } from 'child_process'
 
+import { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from '../../kubectl/config'
+
 /** We know how to launch a kubectl proxy for... */
 type SupportedCommand = 'oc' | 'kubectl'
 
@@ -28,6 +30,9 @@ const maxRetries = 1000
 
 // Kubectl Proxy State
 type State = {
+  /** Kubernetes context name */
+  context: string
+
   /** kubectl proxy port */
   port: number
 
@@ -36,6 +41,9 @@ type State = {
 
   /** handler that will be invoked when the process exits */
   onQuitHandler: () => void
+
+  /** handler that will be invoked on kubernetes config change events */
+  onConfigChangeHandler: Parameters<typeof onKubectlConfigChangeEvents>[0]
 }
 
 /** State of current kubectl proxy */
@@ -70,11 +78,12 @@ function stopProxy(this: State) {
       this.process.kill()
     }
 
-    // unregister onQuit handler
+    // unregister event handlers
     unregisterOnQuit(this.onQuitHandler)
 
-    // DO NOT DO THIS, otherwise support for different contexts across Kui tabs will break:
-    // offKubectlConfigChangeEvents(this.onQuitHandler)
+    if (typeof this.onConfigChangeHandler === 'function') {
+      offKubectlConfigChangeEvents(this.onConfigChangeHandler)
+    }
   } catch (err) {
     console.error('Error stopping kubectl proxy', err)
   }
@@ -85,14 +94,20 @@ function stopProxy(this: State) {
  * kubectl proxy processes.
  *
  */
-function registerOnQuit(state: Omit<State, 'onQuitHandler'>): State {
+function registerOnQuit(state: Omit<State, 'onQuitHandler' | 'onConfigChangeHandler'>): State {
   try {
     const onQuitHandler = stopProxy.bind(state)
     onQuit(onQuitHandler)
 
-    // DO NOT DO THIS, otherwise support for different contexts across Kui tabs will break:
-    // onKubectlConfigChangeEvents(onQuitHandler)
-    return Object.assign(state, { onQuitHandler })
+    // kill our instance if there is a change to our context
+    const onConfigChangeHandler: State['onConfigChangeHandler'] = (eventType, _2, newContext: string) => {
+      if (eventType === 'LoginToContext' && state.context === newContext) {
+        onQuitHandler()
+      }
+    }
+    onKubectlConfigChangeEvents(onConfigChangeHandler)
+
+    return Object.assign(state, { onQuitHandler, onConfigChangeHandler })
   } catch (err) {
     console.error('Error registering kubectl proxy onQuit', err)
   }
@@ -132,7 +147,7 @@ async function startProxy(command: SupportedCommand, context: string): Promise<S
           if (/Starting to serve/.test(msg)) {
             // success!
             debug('succeessfully spawned kubectl proxy on port', port)
-            myState = registerOnQuit({ process, port })
+            myState = registerOnQuit({ process, port, context })
             resolve(myState)
           }
         })
