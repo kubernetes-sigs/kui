@@ -20,9 +20,11 @@ import flags from './flags'
 import { doExecWithPty } from './exec'
 import { KubeOptions, getNamespaceAsExpressed } from './options'
 
-const kubectlConfigChangeChannel = '/kubectl/config/change'
 type Change = 'NewContext' | 'AlteredContext'
-type Handler = (type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace', namespace?: string, context?: string) => void
+type ConfigChangeEventType = 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace' | 'LoginToContext'
+
+const kubectlConfigChangeChannel = '/kubectl/config/change'
+type Handler = (type: ConfigChangeEventType, namespace?: string, context?: string) => void
 
 const mutators = [
   'delete-cluster',
@@ -36,11 +38,7 @@ const mutators = [
   'use-context'
 ]
 
-export function emitKubectlConfigChangeEvent(
-  type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace',
-  namespace?: string,
-  context?: string
-) {
+export function emitKubectlConfigChangeEvent(type: ConfigChangeEventType, namespace?: string, context?: string) {
   try {
     Events.eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context)
   } catch (err) {
@@ -64,12 +62,12 @@ export function offKubectlConfigChangeEvents(handler: Handler) {
 function emitChangeEventIfNeeded(args: Arguments<KubeOptions>) {
   const idx = args.argvNoOptions.indexOf('config')
   const verb = args.argvNoOptions[idx + 1]
-  const change =
+  const change: Change =
     verb === 'set' || verb === 'use-context' || (verb === 'set-context' && !args.parsedOptions.current)
       ? 'NewContext'
       : verb === 'set-context' || verb === 'set-cluster' || verb === 'set-credentials' || verb === 'rename-context'
-        ? 'AlteredContext'
-        : undefined
+      ? 'AlteredContext'
+      : undefined
 
   if (change) {
     emitKubectlConfigChangeEvent(
