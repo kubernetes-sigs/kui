@@ -66,6 +66,12 @@ function win32 {
           which mono || brew install mono
         fi
 
+	# hack in node-pty@010.0 just for windows, for now
+	# https://github.com/microsoft/node-pty/issues/532
+	echo "Hacking win32 node-pty"
+	"$BUILDER_HOME"/dist/electron/hack-win32-node-pty/hack.sh "$CLIENT_HOME"/node_modules/node-pty
+	echo "Done hacking win32 node-pty"
+
         (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" win32 $ARCH)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
@@ -94,7 +100,7 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' > kubectl-kui
             bindir=$(makeBinDirectory "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH")
             cp "$KUI_LAUNCHER" "$bindir"
         fi
-
+	
         #
         # deal with win32 packaging
         #
