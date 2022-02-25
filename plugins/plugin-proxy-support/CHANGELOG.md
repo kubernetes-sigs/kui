@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.4.0](https://github.com/IBM/kui/compare/v4.5.0...v11.4.0) (2022-02-25)
+
+### Bug Fixes
+
+- **packages/core:** Capabilities API added and documentation updated ([31be8fc](https://github.com/IBM/kui/commit/31be8fc))
+- **packages/core:** Events api created and typedoc documentation generated ([531461d](https://github.com/IBM/kui/commit/531461d))
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+- **plugins/plugin-client-common:** spurious warning in the console re: Tag ([93982de](https://github.com/IBM/kui/commit/93982de)), closes [#4959](https://github.com/IBM/kui/issues/4959)
+- **plugins/plugin-proxy-executor:** proxy-executor may fail poorly if the xhr has no response field ([951ebbc](https://github.com/IBM/kui/commit/951ebbc)), closes [#7170](https://github.com/IBM/kui/issues/7170)
+- **plugins/plugin-proxy-support:** fixed env for proxy executor ([c8de22b](https://github.com/IBM/kui/commit/c8de22b))
+- **plugins/plugin-proxy-support:** improved display of ProxyOffline state ([23b3206](https://github.com/IBM/kui/commit/23b3206)), closes [#4955](https://github.com/IBM/kui/issues/4955)
+- **plugins/plugin-proxy-support:** kui proxy may send duplicate messages back to client ([223a405](https://github.com/IBM/kui/commit/223a405)), closes [#7019](https://github.com/IBM/kui/issues/7019)
+- **plugins/plugin-proxy-support:** ProxyOfflineIndicator state does not survive unmount/remount ([312dcb2](https://github.com/IBM/kui/commit/312dcb2)), closes [#7969](https://github.com/IBM/kui/issues/7969)
+- improve discovery of ibmcloud s3 credentials ([96d5bc0](https://github.com/IBM/kui/commit/96d5bc0)), closes [#5926](https://github.com/IBM/kui/issues/5926)
+- **plugins/plugin-proxy-support:** proxy offline indicicator shows up in electron clients ([783b304](https://github.com/IBM/kui/commit/783b304)), closes [#3747](https://github.com/IBM/kui/issues/3747)
+- **plugins/plugin-proxy-support:** ProxyOfflineIndicator widget does not clean up on unount ([97c6b27](https://github.com/IBM/kui/commit/97c6b27)), closes [#5849](https://github.com/IBM/kui/issues/5849)
+- make inBrowserOk the default ([2a3c811](https://github.com/IBM/kui/commit/2a3c811)), closes [#4275](https://github.com/IBM/kui/issues/4275)
+- propagate statusCode back from the proxy ([275240a](https://github.com/IBM/kui/commit/275240a)), closes [#3318](https://github.com/IBM/kui/issues/3318)
+- some code is dependent on the existence of static config files ([cdc6487](https://github.com/IBM/kui/commit/cdc6487)), closes [#3813](https://github.com/IBM/kui/issues/3813)
+
+### Features
+
+- Add support to Kui proxy for pre-shared-key authorization ([2412a72](https://github.com/IBM/kui/commit/2412a72)), closes [#7772](https://github.com/IBM/kui/issues/7772)
+- **plugins/plugin-kubectl:** Enhance kubectl direct get to support custom columns ([4762dd8](https://github.com/IBM/kui/commit/4762dd8)), closes [#7014](https://github.com/IBM/kui/issues/7014)
+- **plugins/plugin-kubectl:** Port kubectl pollers to use push, for homogeneous deletes ([82448d7](https://github.com/IBM/kui/commit/82448d7)), closes [#6481](https://github.com/IBM/kui/issues/6481) [#6486](https://github.com/IBM/kui/issues/6486)
+- Extend kubectl optimizations to table watching ([9a2bc74](https://github.com/IBM/kui/commit/9a2bc74)), closes [#6449](https://github.com/IBM/kui/issues/6449)
+- notebook client ([4b64133](https://github.com/IBM/kui/commit/4b64133)), closes [#5501](https://github.com/IBM/kui/issues/5501)
+- simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+- SPI for icons ([3d034e3](https://github.com/IBM/kui/commit/3d034e3)), closes [#4441](https://github.com/IBM/kui/issues/4441) [#4364](https://github.com/IBM/kui/issues/4364)
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
+### BREAKING CHANGES
+
+- removes support for inBrowserOk
+- **packages/core:** remove old EntitySpec support
+
 # [11.3.0](https://github.com/IBM/kui/compare/v4.5.0...v11.3.0) (2022-02-22)
 
 ### Bug Fixes
