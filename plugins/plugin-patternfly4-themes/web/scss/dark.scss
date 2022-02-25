@@ -62,9 +62,9 @@
   --color-base0A: var(--pf-global--palette--gold-300);
   --color-base0B: var(--pf-global--palette--green-300);
   --color-base0C: var(--pf-global--palette--light-blue-300);
-  --color-base0D: var(--pf-global--palette--blue-300);
-  --color-base0E: #d12765;
-  --color-base0F: var(--pf-global--palette--purple-300);
+  --color-base0D: var(--pf-global--palette--blue-200);
+  --color-base0E: #{lighten(mix(#bee1f4, #c9190b), 10%)};
+  --color-base0F: var(--pf-global--palette--purple-200);
 
   --color-base08-rgb: var(--pf-global--palette--red-100-rgb);
   --color-red-rgb: var(--color-base08-rgb);
