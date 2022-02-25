@@ -81,30 +81,3 @@
     'T4 T4 T4 T5 T5 T5'
     'T4 T4 T4 T5 T5 T5';
 }
-
-@include Split(6) {
-  @include Rows(3);
-  @include Columns(4);
-  grid-template-areas:
-    'T1 T2 T3 T3'
-    'T4 T4 T6 T6'
-    'T5 T5 T6 T6';
-}
-
-@include Split(7) {
-  @include Rows(3);
-  @include Columns(4);
-  grid-template-areas:
-    'T1 T2 T3 T3'
-    'T4 T5 T7 T7'
-    'T6 T6 T7 T7';
-}
-
-@include Split(8) {
-  @include Rows(3);
-  @include Columns(4);
-  grid-template-areas:
-    'T1 T2 T3 T3'
-    'T4 T5 T8 T8'
-    'T6 T7 T8 T8';
-}

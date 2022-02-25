@@ -81,7 +81,7 @@ import '../../../../web/scss/components/Terminal/_index.scss'
 const strings = i18n('plugin-client-common')
 
 /** Hard limit on the number of Terminal splits */
-const MAX_TERMINALS = 6
+const MAX_TERMINALS = 5
 
 /** Remember the welcomed count in localStorage, using this key */
 const NUM_WELCOMED = 'kui-shell.org/ScrollableTerminal/NumWelcomed'
