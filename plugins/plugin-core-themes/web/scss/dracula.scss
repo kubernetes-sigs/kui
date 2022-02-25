@@ -38,7 +38,7 @@ body[kui-theme='Dracula'] {
   --color-base0B: #ebff87;
   --color-base0C: #a1efe4;
   --color-base0D: #62d6e8;
-  --color-base0E: #b45bcf;
+  --color-base0E: #{lighten(#b45bcf, 30%)};
   --color-base0F: #00f769;
 
   --color-base08-rgb: 234, 81, 178;
