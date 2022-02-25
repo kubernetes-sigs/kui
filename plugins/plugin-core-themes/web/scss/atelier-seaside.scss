@@ -36,10 +36,10 @@ body[kui-theme='Atelier'] {
   --color-base09: hsl(48, 65%, 50%); /* dialed L from 32% #87711d */
   --color-base0A: hsl(60, 70%, 41%); /* dialed L from 35% #98981b */
   --color-base0B: #29a329;
-  --color-base0C: #1999b3;
+  --color-base0C: #{lighten(#1999b3, 10%)};
   --color-base0D: hsl(228, 90%, 75%); /* dialed L from 60% #3d62f5 */
-  --color-base0E: #ad2bee;
-  --color-base0F: #e619c3;
+  --color-base0E: #{lighten(#e619c3, 25%)};
+  --color-base0F: #ad2bee;
 
   --color-base0B-rgb: 41, 163, 41;
   --color-red-rgb: var(--color-base08-rgb);
