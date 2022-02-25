@@ -53,10 +53,10 @@
 
     @include Split(4) {
       @include Rows(2);
-      @include Columns(8);
+      @include Columns(9);
       grid-template-areas:
-        'L1 L1 T1 T1 T1 T2 T2 T2'
-        'L1 L1 T3 T3 T3 T3 T3 T3';
+        'L1 L1 T1 T1 T1 T1 T2 T2 T2'
+        'L1 L1 T1 T1 T1 T1 T3 T3 T3';
     }
 
     @include Split(5) {

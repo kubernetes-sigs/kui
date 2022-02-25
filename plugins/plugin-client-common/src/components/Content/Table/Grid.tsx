@@ -24,6 +24,8 @@ import DefaultColoring, { Coloring } from './Coloring'
 import tooltipContent, { tooltipProps } from './Tooltip'
 const Markdown = React.lazy(() => import('../Markdown'))
 
+import '../../../../web/scss/components/Table/Grid/_index.scss'
+
 /** parameters to Grid component */
 export type Props<T extends KuiTable = KuiTable> = {
   tab: Tab
