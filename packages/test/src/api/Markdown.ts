@@ -15,12 +15,13 @@
  */
 
 import { ISuite } from './common'
-import { OUTPUT_LAST } from './selectors'
+import { PROMPT_BLOCK, OUTPUT_LAST } from './selectors'
 
 export default class Markdown {
   public readonly tip = '.kui--markdown-tip'
   public readonly tabs = '.kui--markdown-tabs'
   public readonly tab = `${this.tabs} .kui--markdown-tab button`
+  public readonly icon = `${PROMPT_BLOCK} .kui--markdown-icon`
 
   private readonly _codeBlock = '.kui--code-block-in-markdown'
   public readonly runButton = '.kui--block-action-run'
