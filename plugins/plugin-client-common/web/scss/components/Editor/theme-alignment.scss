@@ -56,15 +56,22 @@ body[kui-theme-style] .monaco-editor .strong {
   color: var(--color-base0D);
 }
 
-body[kui-theme-style] .monaco-editor .mtk22,
-body[kui-theme-style] .monaco-editor .mtk4 {
+body[kui-theme-style] .monaco-editor .mtk22 {
   /* map keys */
   /* notes:
        mtk22 is the CSS class for YAML keys
-       mtk4 is the CSS class for JSON keys
    */
   transition: color 300ms ease-in-out;
-  color: var(--color-map-key);
+  color: var(--color-base0C);
+}
+
+body[kui-theme-style] .monaco-editor .mtk4 {
+  /* map keys */
+  /* notes:
+       mtk4 is the CSS class for JSON keys and --options in bash
+   */
+  transition: color 300ms ease-in-out;
+  color: var(--color-base0E);
 }
 
 body[kui-theme-style] .monaco-editor .mtk1 {
