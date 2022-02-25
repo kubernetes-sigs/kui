@@ -81,20 +81,6 @@ $min-height: 7rem;
         'T3 T4'
         'B1 B1';
     }
-
-    @include Split(6) {
-      @include Rows(8);
-      @include Columns(6);
-      grid-template-areas:
-        'T1 T1 T2 T2 T3 T3'
-        'T1 T1 T2 T2 T3 T3'
-        'T1 T1 T2 T2 T3 T3'
-        'T4 T4 T4 T5 T5 T5'
-        'T4 T4 T4 T5 T5 T5'
-        'T4 T4 T4 T5 T5 T5'
-        'T4 T4 T4 T5 T5 T5'
-        'B1 B1 B1 B1 B1 B1';
-    }
   }
 }
 
