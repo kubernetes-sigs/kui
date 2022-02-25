@@ -266,8 +266,6 @@ function builddeps {
 function build {
     echo "builddeps" && builddeps
 
-    win32 x64
-
     if [ -z "$ARCH" ] || [ "$ARCH" = "all" ]; then
 	echo "Building all arch for mac"
         mac x64
@@ -283,6 +281,10 @@ function build {
     else
 	linux ${ARCH-x64}
     fi
+
+    # must be at the end, for now, due to the way we hack in node-pty
+    # 0.10 (see "Hacking win32 node-pty" above)
+    win32 x64
 }
 
 # line up the work
