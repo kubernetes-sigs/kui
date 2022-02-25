@@ -42,6 +42,7 @@ body[kui-theme-style='light'] {
     display: flex;
     flex-direction: column;
     overflow-y: hidden; /* !!! keep bottom-aligned content always in view */
+    padding: 1rem 0 0.5rem;
   }
   @include SidebarNav {
     flex: 1;

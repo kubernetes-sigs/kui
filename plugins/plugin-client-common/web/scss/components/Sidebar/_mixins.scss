@@ -33,7 +33,7 @@
 }
 
 @mixin SidebarBody {
-  .pf-c-page__sidebar-body {
+  .pf-topology-side-bar__body {
     @content;
   }
 }
