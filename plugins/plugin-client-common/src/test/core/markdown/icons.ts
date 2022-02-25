@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/icons1.md')), '..')
 
@@ -81,7 +81,7 @@ ${IN4.text}`,
 
         await this.app.client.waitUntil(
           async () => {
-            const actualIcons = await this.app.client.$$('.kui--markdown-icon')
+            const actualIcons = await this.app.client.$$(Selectors.Markdown.icon)
             return actualIcons.length === expectedIcons.length
           },
           { timeout: CLI.waitTimeout }
@@ -91,7 +91,7 @@ ${IN4.text}`,
           expectedIcons.map(async (expectedIcon, idx) =>
             this.app.client.waitUntil(
               async () => {
-                const actualIcon = (await this.app.client.$$('.kui--markdown-icon'))[idx]
+                const actualIcon = (await this.app.client.$$(Selectors.Markdown.icon))[idx]
 
                 const actualTagName = await actualIcon.getTagName()
                 const expectedTagName = expectedIcon.tagName

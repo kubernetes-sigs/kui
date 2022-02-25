@@ -19,7 +19,7 @@ import * as Common from './api/common'
 import * as CLI from './api/cli'
 import * as ReplExpect from './api/repl-expect'
 import * as SidecarExpect from './api/sidecar-expect'
-import * as Selectors from './api/selectors'
+import * as Selectors from './api/SelectorApi'
 import * as Util from './api/util'
 
 export { Common }
