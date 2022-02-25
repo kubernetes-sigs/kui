@@ -633,6 +633,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin MarkdownIcon {
+  .kui--markdown-icon {
+    @content;
+  }
+}
+
 @mixin Markdown {
   .page-content {
     @content;
