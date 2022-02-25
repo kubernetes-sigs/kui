@@ -39,6 +39,7 @@ body[kui-theme-style='light'] {
 body[kui-theme-style] {
   .pf-c-page {
     overflow: hidden;
+    display: grid !important; /** Override PatternFly media queries that hide the content */
   }
 
   .pf-c-page {
