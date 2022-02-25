@@ -38,7 +38,7 @@ body[kui-theme='Nord'] {
   --color-base0B: #bf616a;
   --color-base0C: #d08770;
   --color-base0D: #ebcb8b;
-  --color-base0E: #a3be8c;
+  --color-base0E: #{lighten(#a3be8c, 20%)};
   --color-base0F: #b48ead;
 
   --color-white: var(--color-base06);

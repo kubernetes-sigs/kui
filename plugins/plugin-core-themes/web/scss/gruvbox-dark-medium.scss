@@ -38,7 +38,7 @@ body[kui-theme='Gruvbox'] {
   --color-base0B: #b8bb26;
   --color-base0C: #8ec07c;
   --color-base0D: hsl(157, 16%, 70%); /* dialed L from 58% #83a598 */
-  --color-base0E: #d3869b;
+  --color-base0E: #{lighten(#d3869b, 10%)};
   --color-base0F: #d65d0e;
 
   --color-base08-rgb: 251, 73, 52;
