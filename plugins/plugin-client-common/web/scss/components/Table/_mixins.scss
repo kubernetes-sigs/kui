@@ -64,6 +64,14 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
   }
 }
 
+@mixin TableHeadCellForColumn($col) {
+  @include TableHeadCell {
+    &[data-key='#{$col}'] {
+      @content;
+    }
+  }
+}
+
 @mixin TableRow {
   tr {
     @content;

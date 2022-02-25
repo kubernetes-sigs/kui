@@ -16,10 +16,9 @@
 
 @import 'mixins';
 @import 'colors';
+@import './Grid/mixins';
 @import '../common/narrow-window';
 @import '../common/stippling';
-
-$grid-cell-size: 1.25rem;
 
 @mixin GrayBadge {
   color: $color-fg--bar-gray;
@@ -93,7 +92,6 @@ $grid-cell-size: 1.25rem;
       border-bottom: 1px solid var(--color-base03);
     }
     .kui--card-body {
-      padding-top: var(--pf-c-card--child--PaddingBottom);
     }
 
     .kui--table-like-wrapper {
@@ -143,7 +141,7 @@ $grid-cell-size: 1.25rem;
   .kui--data-table-container .kui--table-like-wrapper,
   .kui--table-like {
     [data-tag='badge'] {
-      justify-content: center;
+      padding-left: 1.125em;
 
       [data-tag='badge-circle'] {
         margin: 0;
