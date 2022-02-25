@@ -483,6 +483,13 @@ $tip-toggle-opacity-2: 0.6;
   }
 }
 
+@mixin GrayTip {
+  --pf-c-expandable-section--m-display-lg--after--BackgroundColor: var(--color-base04);
+  @include ExpandableSectionToggle {
+    background-color: var(--color-base02);
+  }
+}
+
 @mixin BlueTip {
   $bgcolor: var(--color-blue-rgb);
   --pf-c-expandable-section--m-display-lg--after--BackgroundColor: #{rgba($bgcolor, $tip-toggle-opacity-2)};
@@ -527,7 +534,7 @@ $tip-toggle-opacity-2: 0.6;
     color: var(--color-text-01);
   }
   @include MarkdownTipVariant(tip) {
-    @include BlueTip;
+    @include GrayTip;
   }
   @include MarkdownTipVariant(success) {
     @include GreenTip;

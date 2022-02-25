@@ -10,7 +10,27 @@ as an expandable section, with the tab content indented by at least
     sure to have a newline separating the section start and section
     content.
 
-???+ tip "Example Expandable Section (default expanded)"
+???+ question "Example Question (default expanded)"
 
     With the added `+` (as in `???+`), the expandable section will
     be initially expanded.
+
+???+ bug "Example Bug (default expanded)"
+
+    You can choose from 
+    - tip
+    - todo
+    - bug
+    - info
+    - note
+    - warning
+    - success
+    - question
+
+??? info "Example Info"
+
+    Informative content!
+
+??? warning "Example Warning"
+
+    ## :fontawesome-solid-sad-cry:
