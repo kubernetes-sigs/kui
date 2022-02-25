@@ -177,10 +177,9 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
     const { attributes = [] } = kuiRow
     // re: OBJECT, see https://github.com/IBM/kui/issues/6831
     return (
-      <MutabilityContext.Consumer>
+      <MutabilityContext.Consumer key={cidx}>
         {mutability => (
           <Td
-            key={cidx}
             className={cellClassName}
             modifier={
               /OBJECT/i.test(key) || /MESSAGE/i.test(key)
