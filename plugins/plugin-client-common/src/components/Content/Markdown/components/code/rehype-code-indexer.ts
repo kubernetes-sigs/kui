@@ -90,7 +90,12 @@ export default function plugin(uuid: string) {
                   reserialize()
                 }
 
-                if (!attributes.validcate && attributes.optional !== false && isImplicitlyOptional(_)) {
+                if (
+                  !attributes.cleanup &&
+                  !attributes.validate &&
+                  attributes.optional !== false &&
+                  isImplicitlyOptional(_)
+                ) {
                   // don't propagate code blocks out of implicitly
                   // optional elements, unless the code block has an
                   // associated validator. The idea is that if the

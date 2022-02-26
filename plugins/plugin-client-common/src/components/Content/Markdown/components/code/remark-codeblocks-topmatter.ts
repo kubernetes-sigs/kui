@@ -43,7 +43,7 @@ export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiF
             node.lang = matched.language
           }
 
-          if (matched.optional !== undefined || matched.validate) {
+          if (matched.optional !== undefined || matched.validate || matched.cleanup) {
             const { body, attributes } = tryFrontmatter(node.value)
 
             attributes.optional = matched.optional
@@ -52,6 +52,12 @@ export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiF
               // smash in validation logic; this is done in the
               // topmatter of the code block, and parsed out by rehype-code-indexer
               attributes.validate = matched.validate
+            }
+
+            if (matched.cleanup) {
+              // smash in cleanup logic; this is done in the
+              // topmatter of the code block, and parsed out by rehype-code-indexer
+              attributes.cleanup = matched.cleanup
             }
 
             node.value = dump(attributes, body)
