@@ -25,6 +25,7 @@ export default class Markdown {
 
   private readonly _codeBlock = '.kui--code-block-in-markdown'
   public readonly runButton = '.kui--block-action-run'
+  public readonly cleanupButton = '.kui--block-action-cleanup'
 
   public getText(ctx: ISuite) {
     return ctx.app.client.$(OUTPUT_LAST).then(_ => _.getText())
