@@ -90,6 +90,9 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
     /** A command line that validates whether this command was successfully issued at some time in the past */
     validate?: string
 
+    /** A command line that undoes the effects of this code block's body */
+    cleanup?: string
+
     /** Is execution of this code block optional? */
     optional?: boolean
 
@@ -276,6 +279,10 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     return this.state.execution === 'processing' && this.state.startTime && !this.state.endTime
   }
 
+  private get isExecutedSuccessfullyOrValidated() {
+    return this.state.validated || this.state.execution === 'done'
+  }
+
   /** UI to denote duration of the current Run */
   private timer() {
     return (
@@ -313,12 +320,15 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
         return <Spinner />
       } else {
         return (
-          <Run
-            ready={this.state.ready}
-            optional={this.props.optional}
-            execution={this.state.execution}
-            onRun={butUseSampleOutputOnRun ? this._onRunUsingSampleOutput : this._onRun}
-          />
+          <React.Fragment>
+            {this.props.cleanup && this.isExecutedSuccessfullyOrValidated && <Cleanup onCleanup={this._onCleanup} />}
+            <Run
+              ready={this.state.ready}
+              optional={this.props.optional}
+              execution={this.state.execution}
+              onRun={butUseSampleOutputOnRun ? this._onRunUsingSampleOutput : this._onRun}
+            />
+          </React.Fragment>
         )
       }
     }
@@ -446,18 +456,18 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     }
   }
 
-  private readonly _onRun = async () => {
+  private async onRun(cmdline: string) {
     try {
       this.setState({ execution: 'processing', startTime: Date.now(), endTime: null })
       this.emitLinkStatus('processing')
 
       // semicolons between commands and escape newlines
-      const cmdline = this.state.value
+      const cleanedUpCmdline = cmdline
         .replace(/^\s*#.*$/gm, '') // strip comments
         .replace(/([^\\])(;?)\n/g, (_, p1, p2) => `${p1}${p2 || ';'} `) // newline->semi (don't add semi when not needed)
         .replace(/&;/g, '&') // oof, correct for &; as just &
 
-      const response = await this.execWithStream(cmdline)
+      const response = await this.execWithStream(cleanedUpCmdline)
       const endTime = Date.now()
 
       const execution = isXtermResponse(response)
@@ -479,8 +489,16 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
       this.setState({ execution: 'error', endTime: Date.now() })
       this.props.onResponse('error', err, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus('error')
-    } finally {
     }
+  }
+
+  private readonly _onRun = () => {
+    this.onRun(this.state.value)
+  }
+
+  private readonly _onCleanup = async () => {
+    await this.onRun(this.props.cleanup)
+    this.setState({ validated: false, execution: 'not-yet' })
   }
 
   private responseStatus() {
@@ -548,6 +566,23 @@ type RunProps = Pick<Props, 'optional'> &
     onRun: () => void | Promise<void>
   }
 
+class Cleanup extends React.PureComponent<{ onCleanup: () => void }> {
+  public render() {
+    return (
+      <Tooltip content="Clean up the effects of this code block" position="bottom-end">
+        <TwoFaceIcon
+          a="Trash"
+          b="Checkmark"
+          delay={4000}
+          onClick={this.props.onCleanup}
+          classNameB="green-text"
+          className="kui--block-action kui--block-action-cleanup"
+        />
+      </Tooltip>
+    )
+  }
+}
+
 class Run extends React.PureComponent<RunProps> {
   public render() {
     const tooltip = strings(
@@ -563,7 +598,7 @@ class Run extends React.PureComponent<RunProps> {
       <Tooltip content={tooltip} position="bottom-end">
         <TwoFaceIcon
           a="Play"
-          b="Play"
+          b="Checkmark"
           delay={4000}
           onClick={this.props.onRun}
           classNameB="green-text"
