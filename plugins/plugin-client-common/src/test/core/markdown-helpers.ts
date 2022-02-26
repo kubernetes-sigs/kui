@@ -23,25 +23,35 @@ interface Validation {
   valid?: boolean
 }
 
-export type Block = Partial<Validation> & {
-  index: number
-  output: string
-
-  /** If we have an ossociated ProgressStepper UI? */
-  status?: {
-    /** Split position in which the ProgressStepper UI is rendered */
-    position: Position
-
-    /** index in ProgressStepper UI */
-    index: number
-
-    /** Expected execution status of the block, after execution... */
-    status: 'done' | 'error'
-  }
+interface Cleanup {
+  /** Does this code block have cleanup logic */
+  cleanup?: boolean
 }
+
+export type Block = Partial<Validation> &
+  Partial<Cleanup> & {
+    index: number
+    output: string
+
+    /** If we have an ossociated ProgressStepper UI? */
+    status?: {
+      /** Split position in which the ProgressStepper UI is rendered */
+      position: Position
+
+      /** index in ProgressStepper UI */
+      index: number
+
+      /** Expected execution status of the block, after execution... */
+      status: 'done' | 'error'
+    }
+  }
 
 export function hasValidation(block: Block): block is Block & Required<Validation> {
   return typeof block.valid === 'boolean'
+}
+
+export function hasCleanup(block: Block): block is Block & Required<Cleanup> {
+  return typeof block.cleanup === 'boolean'
 }
 
 export interface Input {
@@ -60,14 +70,28 @@ export interface Input {
   }[]
 }
 
-export async function checkBlockValidation(ctx: Common.ISuite, split: Position, block: Block & Required<Validation>) {
-  const codeBlock = await ctx.app.client.$(`${split()} .kui--code-block-in-markdown[data-code-index="${block.index}"]`)
+export async function checkBlockValidation(
+  ctx: Common.ISuite,
+  split: Position,
+  block: Block & Required<Validation>,
+  reverse = false
+) {
+  const codeBlock = await ctx.app.client.$(`${split()} ${Selectors.Markdown.codeBlock(block.index)}`)
   await codeBlock.waitForDisplayed({ timeout: CLI.waitTimeout })
 
-  const icon = block.valid ? 'Checkmark' : 'Error'
-  await codeBlock
-    .$(`.kui--code-block-status [icon="${icon}"]`)
-    .then(_ => _.waitForDisplayed({ timeout: CLI.waitTimeout }))
+  const icon = await codeBlock.$(`.kui--code-block-status [icon="${block.valid ? 'Checkmark' : 'Error'}"]`)
+  await icon.waitForDisplayed({ timeout: CLI.waitTimeout, reverse })
+}
+
+export async function checkBlockCleanup(ctx: Common.ISuite, split: Position, block: Block & Required<Cleanup>) {
+  const codeBlock = await ctx.app.client.$(`${split()} ${Selectors.Markdown.codeBlock(block.index)}`)
+  await codeBlock.waitForDisplayed({ timeout: CLI.waitTimeout })
+
+  const icon = await codeBlock.$(Selectors.Markdown.cleanupButton)
+  await icon.waitForDisplayed({ timeout: CLI.waitTimeout })
+  await icon.click()
+
+  await checkBlockValidation(ctx, split, Object.assign({}, block, { valid: true }), true)
 }
 
 export async function clickToExecuteBlock(this: Common.ISuite, split: Position, block: Block) {

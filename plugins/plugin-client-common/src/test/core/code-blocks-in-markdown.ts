@@ -18,7 +18,14 @@ import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
 import { Common, CLI, Selectors } from '@kui-shell/test'
 
-import { Block, hasValidation, checkBlockValidation, clickToExecuteBlock } from './markdown-helpers'
+import {
+  Block,
+  hasCleanup,
+  hasValidation,
+  checkBlockCleanup,
+  checkBlockValidation,
+  clickToExecuteBlock
+} from './markdown-helpers'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/code-block1.md')), '..')
 
@@ -55,7 +62,18 @@ const IN2: Input = {
     { index: 4, output: 'EEE' }
   ]
 }
-;[IN1a, IN1b, IN1c, IN2].forEach(markdown => {
+
+// with cleanup logic
+const IN3a: Input = {
+  input: join(ROOT, 'data', 'cleanup1.md'),
+  blocks: [{ index: 0, output: 'YYY', cleanup: true }]
+}
+
+const IN3b: Input = {
+  input: join(ROOT, 'data', 'cleanup2.md'),
+  blocks: IN3a.blocks
+}
+;[IN3a, IN3b, IN1a, IN1b, IN1c, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
     describe(`execute code blocks in markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
       .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -76,6 +94,13 @@ const IN2: Input = {
           // now click to execute the blocks
           const blocks = blockExecutionOrder === 'forward' ? markdown.blocks : markdown.blocks.slice().reverse()
           await Util.promiseEach(blocks, clickToExecuteBlock.bind(this, Selectors.SPLIT_DEFAULT))
+
+          // check cleanup bits after execution
+          await Util.promiseEach(markdown.blocks, block => {
+            if (hasCleanup(block)) {
+              return checkBlockCleanup(this, Selectors.SPLIT_DEFAULT, block)
+            }
+          })
         } catch (err) {
           await Common.oops(this, true)(err)
         }

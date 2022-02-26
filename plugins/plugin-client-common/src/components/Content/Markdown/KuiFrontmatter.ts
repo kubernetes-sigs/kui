@@ -53,6 +53,12 @@ interface CodeBlocks {
     validate?: string
 
     /**
+     * If given, this command line will undo the effects of the code
+     * block body.
+     */
+    cleanup?: string
+
+    /**
      * Is successful execution of this code block seen as necessary
      * for overall successful completion of the enclosing
      * guidebook? */

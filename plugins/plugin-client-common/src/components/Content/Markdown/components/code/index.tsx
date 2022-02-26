@@ -81,6 +81,7 @@ export default function code(
             watch={attributes.watch}
             language={language}
             blockId={blockId}
+            cleanup={attributes.cleanup}
             validate={attributes.validate}
             optional={attributes.optional}
             response={response}
