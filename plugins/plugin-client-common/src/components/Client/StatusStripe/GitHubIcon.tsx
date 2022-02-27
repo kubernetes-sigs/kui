@@ -17,6 +17,7 @@
 import React from 'react'
 
 import Icons from '../../spi/Icons'
+import Tooltip, { Props as TooltipProps } from '../../spi/Tooltip'
 
 function getClientHomePage() {
   try {
@@ -26,20 +27,21 @@ function getClientHomePage() {
   }
 }
 
-export default function GitHubIcon() {
+export default function GitHubIcon(props: Pick<TooltipProps, 'position'>) {
   const homepage = getClientHomePage()
 
   return !homepage ? (
     <React.Fragment />
   ) : (
-    <a
-      target="_blank"
-      rel="noopener noreferrer"
-      title="Visit our GitHub page"
-      href={homepage}
-      className="kui--status-stripe-element-clickable kui--status-stripe-element"
-    >
-      <Icons icon="Github" className="somewhat-larger-text" />
-    </a>
+    <Tooltip content="Visit our GitHub page" position={props.position || 'top-end'}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={homepage}
+        className="kui--status-stripe-element-clickable kui--status-stripe-element"
+      >
+        <Icons icon="Github" className="somewhat-larger-text" />
+      </a>
+    </Tooltip>
   )
 }

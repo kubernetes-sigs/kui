@@ -19,19 +19,13 @@
 
 $tooltip-fgcolor: var(--color-base00);
 $tooltip-fgcolor-dark: var(--color-text-01);
-$tooltip-bgcolor: var(--color-blue);
-
-body[kui-theme-style='dark'] {
-  @include Tooltip {
-    filter: grayscale(0.9);
-  }
-}
+$tooltip-bgcolor: var(--color-base0A);
 
 @include Tooltip {
   --tooltip-fgcolor: #{$tooltip-fgcolor};
   color: var(--tooltip-fgcolor);
   background-color: $tooltip-bgcolor;
-  filter: grayscale(0.85);
+  filter: grayscale(0.9);
 
   &[data-is-markdown] {
     @include EditorInMarkdown {
