@@ -323,6 +323,7 @@ export async function clickBlockActionButton(res: AppAndCount, buttonSelector: s
   const removeButton = await res.app.client.$(buttonSelector)
   await removeButton.scrollIntoView()
   await removeButton.waitForDisplayed({ timeout: CLI.waitTimeout })
+  await prompt.moveTo()
   await removeButton.click()
 }
 
