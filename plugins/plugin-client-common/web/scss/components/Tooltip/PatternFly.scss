@@ -17,12 +17,21 @@
 @import 'mixins';
 @import '../Editor/mixins';
 
-$color: var(--color-base00);
-$bgcolor: var(--color-base06);
+$tooltip-fgcolor: var(--color-base00);
+$tooltip-fgcolor-dark: var(--color-text-01);
+$tooltip-bgcolor: var(--color-blue);
+
+body[kui-theme-style='dark'] {
+  @include Tooltip {
+    filter: grayscale(0.9);
+  }
+}
 
 @include Tooltip {
-  color: $color;
-  background-color: $bgcolor;
+  --tooltip-fgcolor: #{$tooltip-fgcolor};
+  color: var(--tooltip-fgcolor);
+  background-color: $tooltip-bgcolor;
+  filter: grayscale(0.85);
 
   &[data-is-markdown] {
     @include EditorInMarkdown {
@@ -77,7 +86,7 @@ $bgcolor: var(--color-base06);
 
     code {
       opacity: 0.9;
-      color: var(--color-base00);
+      color: var(--tooltip-fgcolor);
       font-family: var(--font-sans-serif);
     }
 
@@ -87,16 +96,15 @@ $bgcolor: var(--color-base06);
   }
 
   & > div {
-    color: $color;
-    background-color: $bgcolor;
-    filter: brightness(2);
+    color: var(--tooltip-fgcolor);
+    background-color: $tooltip-bgcolor;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    color: $color;
+    color: var(--tooltip-fgcolor);
     padding-top: 0;
     font-size: inherit;
   }
