@@ -40,6 +40,7 @@ import Scalar from '../../../Content/Scalar'
 import { MutabilityContext, MutabilityState, MutabilityStateOffline } from '../../../Client/MutabilityContext'
 
 import Tooltip from '../../../spi/Tooltip'
+import { SupportedIcon } from '../../../spi/Icons'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 
 import { emitGetCodeBlockReadiness, onCodeBlockReadiness, offCodeBlockReadiness } from './CodeBlockEvents'
@@ -561,31 +562,70 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   }
 }
 
-type RunProps = Pick<Props, 'optional'> &
-  Pick<State, 'execution' | 'ready'> & {
-    onRun: () => void | Promise<void>
+abstract class ActionButton<Props> extends React.PureComponent<Props> {
+  protected abstract get icon(): SupportedIcon
+  protected abstract get onClick(): () => void
+  protected abstract get tooltip(): string
+  protected abstract get className(): string
+
+  protected classNameOf(cls: string) {
+    return `kui--block-action ${cls}`
   }
 
-class Cleanup extends React.PureComponent<{ onCleanup: () => void }> {
   public render() {
     return (
-      <Tooltip content="Clean up the effects of this code block" position="bottom-end">
-        <TwoFaceIcon
-          a="Trash"
-          b="Checkmark"
-          delay={4000}
-          onClick={this.props.onCleanup}
-          classNameB="green-text"
-          className="kui--block-action kui--block-action-cleanup"
-        />
+      <Tooltip content={this.tooltip} position="bottom-end">
+        <div className="flex-layout">
+          <TwoFaceIcon
+            a={this.icon}
+            b="Checkmark"
+            delay={4000}
+            onClick={this.onClick}
+            classNameB="green-text"
+            className={this.className}
+          />
+        </div>
       </Tooltip>
     )
   }
 }
 
-class Run extends React.PureComponent<RunProps> {
-  public render() {
-    const tooltip = strings(
+/** The Code Block Trash button */
+class Cleanup extends ActionButton<{ onCleanup: () => void }> {
+  private readonly _className = this.classNameOf('kui--block-action-cleanup')
+
+  protected get className() {
+    return this._className
+  }
+
+  protected get tooltip() {
+    return 'Clean up the effects of this code block'
+  }
+
+  protected get icon(): SupportedIcon {
+    return 'Trash'
+  }
+
+  protected get onClick() {
+    return this.props.onCleanup
+  }
+}
+
+type RunProps = Pick<Props, 'optional'> &
+  Pick<State, 'execution' | 'ready'> & {
+    onRun: () => void | Promise<void>
+  }
+
+/** The Code Block Run button */
+class Run extends ActionButton<RunProps> {
+  private readonly _className = this.classNameOf('kui--block-action-run')
+
+  protected get className() {
+    return this._className
+  }
+
+  protected get tooltip() {
+    return strings(
       !this.props.ready && this.props.execution !== 'done' && this.props.execution !== 'error'
         ? 'Execute with caution! The pre-requisites for this code block have not yet been satisfied.'
         : this.props.execution === 'done'
@@ -594,17 +634,13 @@ class Run extends React.PureComponent<RunProps> {
         ? 'Execution of this command is optional'
         : 'Execute this command'
     )
-    return (
-      <Tooltip content={tooltip} position="bottom-end">
-        <TwoFaceIcon
-          a="Play"
-          b="Checkmark"
-          delay={4000}
-          onClick={this.props.onRun}
-          classNameB="green-text"
-          className="kui--block-action kui--block-action-run"
-        />
-      </Tooltip>
-    )
+  }
+
+  protected get icon(): SupportedIcon {
+    return 'Play'
+  }
+
+  protected get onClick() {
+    return this.props.onRun
   }
 }
