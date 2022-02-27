@@ -574,8 +574,8 @@ abstract class ActionButton<Props> extends React.PureComponent<Props> {
 
   public render() {
     return (
-      <Tooltip content={this.tooltip} position="bottom-end">
-        <div className="flex-layout">
+      <div className="flex-layout">
+        <Tooltip content={this.tooltip} position="bottom-end">
           <TwoFaceIcon
             a={this.icon}
             b="Checkmark"
@@ -584,8 +584,8 @@ abstract class ActionButton<Props> extends React.PureComponent<Props> {
             classNameB="green-text"
             className={this.className}
           />
-        </div>
-      </Tooltip>
+        </Tooltip>
+      </div>
     )
   }
 }
