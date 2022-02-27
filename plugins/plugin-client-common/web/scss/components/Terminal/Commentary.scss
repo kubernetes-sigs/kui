@@ -742,9 +742,8 @@ pre {
 
 @include h1 {
   @include MarkdownIcon {
-    font-size: 12rem;
+    font-size: 11rem;
     display: flex;
-    justify-content: center;
     line-height: 10rem;
   }
 }
