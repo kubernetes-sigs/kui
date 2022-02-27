@@ -694,6 +694,8 @@ pre {
         width: calc(2em * $action-size);
       }
       @include BlockAction {
+        width: auto;
+        padding: 8px;
         font-size: $action-size + em;
         color: var(--color-for-guidebook-block-actions);
       }
