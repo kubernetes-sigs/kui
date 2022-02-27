@@ -17,6 +17,8 @@
 import React from 'react'
 import { pexecInCurrentTab } from '@kui-shell/core'
 
+import Tooltip from '../../spi/Tooltip'
+
 import { Props as PopoverProps } from '../../spi/Popover'
 const Popover = React.lazy(() => import('../../spi/Popover'))
 
@@ -87,10 +89,12 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       (this.props.className ? ' ' + this.props.className : '')
 
     return (
-      <div className={className} onClick={this._onClick} title={this.props.title} data-view={this.props.viewLevel}>
-        {iconPart}
-        {textPart}
-      </div>
+      <Tooltip content={this.props.title} position={this.props.position}>
+        <div className={className} onClick={this._onClick} data-view={this.props.viewLevel}>
+          {iconPart}
+          {textPart}
+        </div>
+      </Tooltip>
     )
   }
 
