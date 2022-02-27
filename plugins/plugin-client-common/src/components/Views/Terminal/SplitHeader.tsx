@@ -48,7 +48,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
   private closeButton() {
     return (
       this.props.onRemove && (
-        <Tooltip markdown={strings('Close this split pane')}>
+        <Tooltip content={strings('Close this split pane')} position="bottom-end">
           <a
             href="#"
             className="kui--split-close-button kui--tab-navigatable kui--split-header-button"
@@ -92,7 +92,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
   private splitPositionToggleButton() {
     return (
       this.props.willToggleSplitPosition && (
-        <Tooltip markdown={strings('Toggle position')}>
+        <Tooltip content={strings('Toggle position')} position="bottom-end">
           <a
             href="#"
             className="kui--tab-navigatable"
@@ -111,7 +111,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
 
   private invertButton() {
     return (
-      <Tooltip markdown={strings('Invert colors')}>
+      <Tooltip content={strings('Invert colors')} position="bottom-end">
         <a href="#" className="kui--tab-navigatable" onMouseDown={this.stopFocusStealing} onClick={this.props.onInvert}>
           <Icons className="kui--split-invert-button kui--split-header-button" icon="Contrast" />
         </a>
@@ -121,7 +121,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
 
   private clearButton() {
     return (
-      <Tooltip markdown={strings('Clear this split pane')}>
+      <Tooltip content={strings('Clear this split pane')} position="bottom-end">
         <a href="#" className="kui--tab-navigatable" onMouseDown={this.stopFocusStealing} onClick={this.props.onClear}>
           <Icons className="kui--split-clear-button kui--split-header-button" icon="Clear" />
         </a>
