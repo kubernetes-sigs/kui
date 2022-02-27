@@ -447,11 +447,13 @@ export function blockCount(this: ISuite) {
 
           return this.app.client.waitUntil(
             async () => {
-              const actualBlockCount = (await this.app.client.$$(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex))).length
+              const blocks = await this.app.client.$$(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex))
+              const actualBlockCount = blocks.length
 
               if (++idx > 5) {
                 console.error(
-                  `still waiting for expectedBlockCount=${expectedBlockCount}; actualBlockCount=${actualBlockCount}`
+                  `still waiting for expectedBlockCount=${expectedBlockCount}; actualBlockCount=${actualBlockCount}`,
+                  blocks
                 )
               }
 
