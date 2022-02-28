@@ -56,29 +56,32 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       (this.props.iconIsNarrow ? 'tiny-right-pad' : 'small-right-pad') +
       (this.props.iconOnclick ? ' clickable' : '')
 
-    const iconPart = this.props.iconOnclick ? (
-      <a
-        href="#"
-        className={iconClassName}
-        onMouseDown={evt => evt.preventDefault()}
-        onClick={
-          !this.props.iconOnclick
-            ? undefined
-            : (evt: React.MouseEvent) => {
-                evt.stopPropagation()
-                if (typeof this.props.iconOnclick === 'string') {
-                  pexecInCurrentTab(this.props.iconOnclick)
-                } else {
-                  this.props.iconOnclick()
+    const iconPart =
+      !this.props.children || React.Children.count(this.props.children) === 0 ? (
+        <React.Fragment />
+      ) : this.props.iconOnclick ? (
+        <a
+          href="#"
+          className={iconClassName}
+          onMouseDown={evt => evt.preventDefault()}
+          onClick={
+            !this.props.iconOnclick
+              ? undefined
+              : (evt: React.MouseEvent) => {
+                  evt.stopPropagation()
+                  if (typeof this.props.iconOnclick === 'string') {
+                    pexecInCurrentTab(this.props.iconOnclick)
+                  } else {
+                    this.props.iconOnclick()
+                  }
                 }
-              }
-        }
-      >
-        {this.props.children}
-      </a>
-    ) : (
-      <span className={iconClassName}>{this.props.children}</span>
-    )
+          }
+        >
+          {this.props.children}
+        </a>
+      ) : (
+        <span className={iconClassName}>{this.props.children}</span>
+      )
 
     const textPart = <span className="kui--status-stripe-text">{this.props.text}</span>
 
