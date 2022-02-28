@@ -19,6 +19,10 @@ It is good practice to experiment in a separate namespace. Thus, we
 first create a scratch namespace.
 
 ```bash
+---
+validate: k get ns kui-notebook-1
+cleanup: k delete ns kui-notebook-1
+---
 k create ns kui-notebook-1
 ```
 
@@ -26,6 +30,10 @@ Now we can use `kubectl apply` to create a deployment in the
 `kui-notebook-1` namespace.
 
 ```bash
+---
+validate: k get deploy myapp -n kui-notebook-1
+cleanup: k delete -f https://raw.githubusercontent.com/kubernetes-sigs/kui/master/plugins/plugin-kubectl/tests/data/k8s/deployment.yaml -n kui-notebook-1
+---
 k apply -f https://raw.githubusercontent.com/kubernetes-sigs/kui/master/plugins/plugin-kubectl/tests/data/k8s/deployment.yaml -n kui-notebook-1
 ```
 
