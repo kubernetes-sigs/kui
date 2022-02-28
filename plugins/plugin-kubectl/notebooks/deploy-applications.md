@@ -29,6 +29,10 @@ for Read requests.
 First, let's create a namespace to keep our work isolated:
 
 ```bash
+---
+validate: k get ns kui-notebook-1
+cleanup: k delete ns kui-notebook-1
+---
 kubectl create ns kui-notebook-3
 ```
 
@@ -57,6 +61,10 @@ By executing the following `apply -f` command view, you can initiate
 the deployment of this application to your cluster.
 
 ```bash
+---
+validate: k get deploy frontend -n kui-notebook-1
+cleanup: k delete -n kui-notebook-3 -f plugins/plugin-kubectl/tests/data/k8s/application/guestbook/
+---
 kubectl apply -n kui-notebook-3 -f plugins/plugin-kubectl/tests/data/k8s/application/guestbook/
 ```
 
