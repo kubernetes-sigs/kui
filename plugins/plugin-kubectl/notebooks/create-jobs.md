@@ -1,75 +1,64 @@
 ---
-title: Kubernetes -- Working with Jobs
+title: Kubernetes &mdash; Working with Jobs
 layout:
-  1: left
+    1: left
 ---
 
-# Kubernetes Jobs
+# :material-kubernetes:
 
-Kubernetes supports parallel batch job scheduling via the **Job**
-resource type. A Job creates one or more Pods and ensures that a
-specified number of them successfully terminate.
+# Batch Jobs in Kubernetes
 
-In this notebook, you will learn how to create a job to run multiple
-tasks in parallel and use Kui's **Sequence Diagram** to inspect jobs
-and pods.
-
-### Controlling Parallelism
-
-Kubernetes Jobs use two parameters, `completions` and `parallelism`,
-to control how a Job is subdivided into units of work. Each unit of
-work is executed by a **Pod**. In the example on the right, we
-specified values of `20` and `4`, respectively. These parameters tell
-Kubernetes to execute the Job across 20 Pods, but schedule at most 4
-Pods to run concurrently.
-
-You can see these values defined by expanding the `job.yaml` source.
-
-You can also see the execution pattern visualized in the **Sequence
-Diagram** view. Note how there are steps of four Pods executed at a
-time, with a new Pod being scheduled only when one of the prior Pods
-has completed its work.
-
-The gray hashed prefix of every bar represents the **cold start time**
-of the Pod. This is the time spent bringing up the Pod, and is in
-contrast to the work you actually want to accomplish. If the cold
-start penalty is high, you may want to consider coarsening your work:
-try to do more work per Pod.
+A Job creates one or more Pods and will continue to retry execution of the Pods until a specified number of them successfully terminate. As pods successfully complete, the Job tracks the successful completions. When a specified number of successful completions is reached, the task (ie, Job) is complete. Deleting a Job will clean up the Pods it created. Suspending a Job will delete its active Pods until the Job is resumed again.
 
 ---
+
+???+ tip "Controlling Parallelism"
+
+    Kubernetes Jobs use two parameters, `completions` and `parallelism`, to control how a Job is subdivided into units of work. Each unit of work is executed by a Pod.
 
 ## Scheduling a Job
 
 First, let's create a namespace to keep our work isolated:
 
 ```bash
+---
+validate: kubectl get ns kui-notebook-2
+cleanup: kubectl delete ns kui-notebook-2
+---
 kubectl create ns kui-notebook-2
 ```
 
 To schedule a job, use `kubectl apply` with a definition of your
 job. The following command applies a `job.yaml` to our scratch
-namespace. The response from this command is a live Sequence Diagram
-visualization.
+namespace. The response from this command is a live visualization of
+the progress of the Job.
 
 ```bash
-k apply -f plugins/plugin-kubectl/tests/data/k8s/job.yaml -n kui-notebook-2
+---
+validate: kubectl get job pi -n kui-notebook-2
+cleanup: kubectl delete job pi -n kui-notebook-2
+---
+k apply -f https://raw.githubusercontent.com/kubernetes-sigs/kui/master/plugins/plugin-kubectl/tests/data/k8s/job2.yaml -n kui-notebook-2
 ```
 
-This visualization shows how the sub-tasks of our Job are scheduled,
-over time. You can see concurrency and cold start penalties. The live
-table will update as tasks are scheduled and complete.
+This visualization shows how the tasks of our Job are scheduled, over
+time. You can see concurrency and cold start penalties. The live table
+will update as tasks are scheduled.
 
-You may also switch to a list or grid view by clicking the toolbar
-buttons at the bottom of the view.
-
-## Inspecting the details of Job execution
-
-To view the details of the tasks, you may click on any of the rows of
-the Sequence Diagram (or rows of the Table view; or cells of the Grid
-view). After Kubernetes runs the tasks in Pods, so, after clicking on
-a task in the above view, the drilldown view you will see is a Pod
-view!
+---
 
 ```bash
-kubectl get Pod pi-cs5hp -o yaml -n kui-notebook-2
+---
+execute: now
+---
+kubectl dashboard job -n kui-notebook-2 --watch
+```
+
+---
+
+```bash
+---
+execute: now
+---
+kubectl get events -n kui-notebook-2 --field-selector=involvedObject.kind=Pod --field-selector=involvedObject.kind=Job --watch
 ```
