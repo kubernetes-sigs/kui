@@ -30,7 +30,6 @@
 @import 'Keys';
 
 $marginTop: 0.5em;
-$box-shadow-margin: 4px; /* room for box shadow */
 
 @mixin TextContent {
   .pf-c-content {
@@ -400,21 +399,14 @@ body[kui-theme-style='light'] {
 }
 
 @include Commentary {
-  @include WizardHeader {
-    margin-right: $box-shadow-margin; /* room for box shadow */
-  }
   @include Accordion {
     font-size: $terminal-font-size;
   }
   @include ExpandableSection {
     font-size: $terminal-font-size;
-    margin-right: $box-shadow-margin; /* room for box shadow */
     @include ExpandableSectionContentElement {
       @include ParagraphBoundaryMargins;
     }
-  }
-  @include CodeBlock {
-    margin-right: $box-shadow-margin; /* room for box shadow */
   }
 
   @include ExpandableSectionContent {
