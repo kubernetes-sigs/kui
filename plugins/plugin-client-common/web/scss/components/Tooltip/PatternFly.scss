@@ -19,7 +19,7 @@
 
 $tooltip-fgcolor: var(--color-base00);
 $tooltip-fgcolor-dark: var(--color-text-01);
-$tooltip-bgcolor: var(--color-base0A);
+$tooltip-bgcolor: var(--color-base0D);
 
 @include Tooltip {
   --tooltip-fgcolor: #{$tooltip-fgcolor};
