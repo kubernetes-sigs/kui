@@ -30,7 +30,7 @@ export default interface CodeBlockProps {
      * This option names the group, to keep it distinct from other
      * groups of choices.
      */
-    group?: string
+    group: string
 
     /**
      * This option names that member. e.g. if the user can choose
@@ -38,6 +38,9 @@ export default interface CodeBlockProps {
      * whether we are part ofth e first choice (A+B) or the second
      * (C+D).
      */
-    member?: string
+    member: number
+
+    /** Is this a nested choice? */
+    nestingDepth: number
   }
 }

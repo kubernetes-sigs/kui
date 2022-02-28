@@ -21,7 +21,7 @@ import { WizardProps } from './rehype-wizard'
 import Progress from './Progress'
 import CodeBlockProps from './CodeBlockProps'
 import { onTabSwitch, offTabSwitch } from '../tabbed'
-import { OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
+import { ChoicesMap, OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
@@ -52,7 +52,7 @@ export interface State {
   status: Record<string, Status>
 
   /** Map from tab group to currently selected tab member */
-  choices: Record<string, string>
+  choices: ChoicesMap
 }
 
 export default class Wizard extends React.PureComponent<Props, State> {
