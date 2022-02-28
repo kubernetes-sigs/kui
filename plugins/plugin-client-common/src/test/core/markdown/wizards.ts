@@ -83,7 +83,37 @@ const IN4 = {
     { name: 'CCC', body: 'CCCContent', description: '', codeBlocks: [{ index: 2, output: '333' }] }
   ]
 }
-;[IN4, IN1, IN2, IN3].forEach(markdown => {
+
+// nested choice
+const IN5 = {
+  input: join(ROOT, 'tests/data/nested-choice1.md'),
+  title: 'WizardTitle',
+  description: 'WizardDescription',
+  expectedSplitCount: 1,
+  expectedCodeBlockTasks: 1,
+  steps: [{ name: 'AAA', body: 'AAAContent', description: '', codeBlocks: [{ index: 0, output: 'XXX' }] }]
+}
+
+// nested choice
+const IN6 = {
+  input: join(ROOT, 'tests/data/nested-choice2.md'),
+  title: 'WizardTitle',
+  description: 'WizardDescription',
+  expectedSplitCount: 1,
+  expectedCodeBlockTasks: 2,
+  steps: [
+    {
+      name: 'AAA',
+      body: 'AAAContent',
+      description: '',
+      codeBlocks: [
+        { index: 0, output: 'XXX1' },
+        { index: 1, output: 'XXX2' }
+      ]
+    }
+  ]
+}
+;[IN1, IN2, IN3, IN4, IN5, IN6].forEach(markdown => {
   describe(`wizards in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
