@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/IBM/kui/compare/v11.4.0...v11.4.1) (2022-02-28)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** use markdown kube icon, rather than hard-coded svg content ([80a9241](https://github.com/IBM/kui/commit/80a9241))
+
+### Features
+
+- **plugins/plugin-client-common:** improved layout for grid watchers ([8aef5b6](https://github.com/IBM/kui/commit/8aef5b6))
+
 # [11.4.0](https://github.com/IBM/kui/compare/v4.5.0...v11.4.0) (2022-02-25)
 
 ### Bug Fixes

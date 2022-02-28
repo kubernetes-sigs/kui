@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/IBM/kui/compare/v11.4.0...v11.4.1) (2022-02-28)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** another small tweak to tooltips ([254f729](https://github.com/IBM/kui/commit/254f729))
+- **plugins/plugin-client-common:** avoid super-tall action buttons in code blocks ([4fc6300](https://github.com/IBM/kui/commit/4fc6300))
+- **plugins/plugin-client-common:** code block action tooltips not attached to innermost element ([8da45e5](https://github.com/IBM/kui/commit/8da45e5))
+- **plugins/plugin-client-common:** Missing React `key` property on table cells ([d8f679f](https://github.com/IBM/kui/commit/d8f679f))
+- **plugins/plugin-client-common:** remove wizard right-margin ([d04311b](https://github.com/IBM/kui/commit/d04311b))
+- **plugins/plugin-client-common:** Sidebar footer is no longer at the bottom ([3d99414](https://github.com/IBM/kui/commit/3d99414))
+- **plugins/plugin-client-common:** small adjustments to markdown h1 icon size and position ([f50548a](https://github.com/IBM/kui/commit/f50548a))
+- **plugins/plugin-client-common:** split header tooltips have odd spacing ([04e2139](https://github.com/IBM/kui/commit/04e2139))
+- **plugins/plugin-client-common:** tooltips often have low contrast against surrounding elements ([66c2fc7](https://github.com/IBM/kui/commit/66c2fc7))
+- **plugins/plugin-client-common:** tweak code block option color ([117be17](https://github.com/IBM/kui/commit/117be17))
+- **plugins/plugin-client-common:** with narrower windows, content disappears ([9387c33](https://github.com/IBM/kui/commit/9387c33))
+- **plugins/plugin-kubectl:** use markdown kube icon, rather than hard-coded svg content ([80a9241](https://github.com/IBM/kui/commit/80a9241))
+- creating split can cause funky layout ([e01ae67](https://github.com/IBM/kui/commit/e01ae67))
+
+### Features
+
+- **plugins/plugin-client-common:** add gray markdown tips ([af76e5c](https://github.com/IBM/kui/commit/af76e5c))
+- **plugins/plugin-client-common:** improved layout for grid watchers ([8aef5b6](https://github.com/IBM/kui/commit/8aef5b6))
+- **plugins/plugin-client-common:** increase font size of markdown icons inside of h1 ([58a6799](https://github.com/IBM/kui/commit/58a6799))
+- **plugins/plugin-client-common:** shift a few more components to use Tooltip ([aae2457](https://github.com/IBM/kui/commit/aae2457))
+- add guidebook code block cleanup support ([e0e55f0](https://github.com/IBM/kui/commit/e0e55f0))
+
 # [11.4.0](https://github.com/IBM/kui/compare/v4.5.0...v11.4.0) (2022-02-25)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/IBM/kui/compare/v11.4.0...v11.4.1) (2022-02-28)
+
+### Bug Fixes
+
+- more base0E color contrast fixes ([eebcd5b](https://github.com/IBM/kui/commit/eebcd5b))
+
 # [11.4.0](https://github.com/IBM/kui/compare/v4.5.0...v11.4.0) (2022-02-25)
 
 ### Bug Fixes

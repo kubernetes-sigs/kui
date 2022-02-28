@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/IBM/kui/compare/v11.4.0...v11.4.1) (2022-02-28)
+
+### Bug Fixes
+
+- **plugins/plugin-patternfly4-themes:** magenta and purple colors in patternfly4 dark have low contrast ([d6c4c3a](https://github.com/IBM/kui/commit/d6c4c3a))
+
 # [11.4.0](https://github.com/IBM/kui/compare/v4.5.0...v11.4.0) (2022-02-25)
 
 ### Bug Fixes
