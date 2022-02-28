@@ -90,23 +90,14 @@ export default function plugin(uuid: string) {
                   reserialize()
                 }
 
-                if (
-                  !attributes.cleanup &&
-                  !attributes.validate &&
-                  attributes.optional !== false &&
-                  isImplicitlyOptional(_)
-                ) {
-                  // don't propagate code blocks out of implicitly
-                  // optional elements, unless the code block has an
-                  // associated validator. The idea is that if the
-                  // author went through the trouble of writing a
-                  // validator for a code block, it probably isn't
-                  // optional. If the absence of a validator, then
-                  // we should stop propagating the code block
-                  // upwards if we reach some element that seems
-                  // indicative of blocking out an optional area,
-                  // e.g. an expandable section that is
-                  // default-closed
+                if (attributes.optional === true || isImplicitlyOptional(_)) {
+                  // don't propagate code blocks out of either
+                  // explicitly or implicitly optional elements. Re:
+                  // implicitly, the idea is that we should stop
+                  // propagating the code block upwards if we reach
+                  // some element that seems indicative of blocking
+                  // out an optional area, e.g. an expandable section
+                  // that is default-closed
                   attributes.optional = true
                   reserialize()
                 }
@@ -118,16 +109,19 @@ export default function plugin(uuid: string) {
                       const parent = ancestors[idx - 1]
                       if (isElementWithProperties(parent)) {
                         const group = parent.properties['data-kui-choice-group']
-                        const member = String(_.properties['data-kui-tab-index'])
+                        const member = parseInt(_.properties['data-kui-tab-index'].toString(), 0)
+                        const nestingDepth = parseInt(parent.properties['data-kui-choice-nesting-depth'].toString(), 0)
 
                         if (!attributes.choice) {
                           attributes.choice = {
                             group,
-                            member
+                            member,
+                            nestingDepth
                           }
                         } else {
                           attributes.group = group
                           attributes.member = member
+                          attributes.nestingDepth = nestingDepth
                         }
 
                         // re-serialize this update for later use

@@ -31,7 +31,7 @@ import { ProgressStepState } from '../../../ProgressStepper'
 type Status = ProgressStepState['status']
 
 /* map from choice group to selected choice member */
-type ChoicesMap = Record<CodeBlockProps['choice']['group'], CodeBlockProps['choice']['member']>
+export type ChoicesMap = Record<CodeBlockProps['choice']['group'], CodeBlockProps['choice']['member']>
 
 /** Iteration order */
 export interface Ordered {
@@ -48,7 +48,7 @@ type Choice<T extends Unordered | Ordered = Unordered> = {
   group: string
 
   choices: {
-    member: string
+    member: number
     graph: Sequence<T>
   }[]
 }
@@ -100,15 +100,24 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
 
   let currentChoices: Choice
   let currentChoice: CodeBlockProps['choice']
+  const currentChoiceStack: { currentChoice: CodeBlockProps['choice']; currentChoices: Choice }[] = []
 
   const parts: Graph[] = []
 
   blocks.forEach(block => {
     if (block.choice) {
-      if (!currentChoice || currentChoice.group !== block.choice.group) {
-        currentChoice = block.choice
+      if (
+        currentChoiceStack.length > 0 &&
+        currentChoice.nestingDepth > 0 &&
+        block.choice.nestingDepth < currentChoice.nestingDepth
+      ) {
+        const tmp = currentChoiceStack.pop()
+        currentChoice = tmp.currentChoice
+        currentChoices = tmp.currentChoices
+      }
 
-        currentChoices = {
+      if (!currentChoice || currentChoice.group !== block.choice.group) {
+        const newChoice = {
           group: block.choice.group,
           choices: [
             {
@@ -118,7 +127,21 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
           ]
         }
 
-        parts.push(currentChoices)
+        const isNested = currentChoice && block.choice.nestingDepth > 0 && block.choice.member === 0
+        if (isNested) {
+          currentChoiceStack.push({ currentChoice, currentChoices })
+          currentChoices.choices.push({
+            member: currentChoices.choices.length,
+            graph: sequence([newChoice])
+          })
+        }
+
+        currentChoice = block.choice
+        currentChoices = newChoice
+
+        if (!isNested) {
+          parts.push(currentChoices)
+        }
       } else if (currentChoice.member === block.choice.member) {
         // continuation of the current choice member
         currentChoices.choices[currentChoices.choices.length - 1].graph.sequence.push(block)

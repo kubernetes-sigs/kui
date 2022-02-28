@@ -45,7 +45,8 @@ export default function plugin(/* options */) {
           children: currentTabs,
           properties: {
             depth: tabStack.length,
-            'data-kui-choice-group': v4()
+            'data-kui-choice-group': v4(),
+            'data-kui-choice-nesting-depth': tabStack.length
           }
         })
       }
