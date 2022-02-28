@@ -115,7 +115,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
 
           const candidates = match[5]
             ? [match[5]]
-            : ['./', snippetBasePath, '../', '../snippets', '../../snippets'].filter(Boolean)
+            : ['./', snippetBasePath, '../', '../snippets', '../../snippets', '../../', '../../../'].filter(Boolean)
 
           const snippetDatas = isUrl(snippetFileName)
             ? [
@@ -139,7 +139,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
                     loadNotebook(filepath, args)
                       .then(data => recurse(myBasePath, toString(data)))
                       .catch(err => {
-                        debug('Warning: could not fetch inlined content 2', myBasePath, err)
+                        debug('Warning: could not fetch inlined content 2', myBasePath, snippetFileName, err)
                         return err
                       })
                   )
