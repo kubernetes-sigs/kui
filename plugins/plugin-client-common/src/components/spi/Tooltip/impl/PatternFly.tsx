@@ -25,6 +25,12 @@ import '../../../../../web/scss/components/Tooltip/PatternFly.scss'
 
 export default function PatternFlyTooltip(props: Props): React.ReactElement {
   const isMarkdown = isMarkdownProps(props)
+  const isReference = isReferenceProps(props)
+
+  if (!isReference && ((isMarkdown && !props.markdown) || (!isMarkdown && !props.content))) {
+    // no content to display!
+    return <React.Fragment>{props.children}</React.Fragment>
+  }
 
   return (
     <Tooltip
@@ -35,11 +41,11 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
       position={props.position || 'auto'}
       entryDelay={props.entryDelay || 200}
       data-is-markdown={isMarkdown || undefined}
-      reference={isReferenceProps(props) && props.reference}
+      reference={isReference && props.reference}
       content={
-        isReferenceProps(props) ? (
+        isReference ? (
           props.children
-        ) : isMarkdownProps(props) ? (
+        ) : isMarkdown ? (
           <React.Suspense fallback={<div />}>
             <Markdown nested executableCodeBlocks={false} source={props.markdown} />
           </React.Suspense>
@@ -48,7 +54,7 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
         )
       }
     >
-      {!isReferenceProps(props) && <React.Fragment>{props.children}</React.Fragment>}
+      {!isReference && <React.Fragment>{props.children}</React.Fragment>}
     </Tooltip>
   )
 }
