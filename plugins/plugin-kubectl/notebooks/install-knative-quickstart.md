@@ -1,5 +1,5 @@
 ---
-title: Knative Quickstart
+title: Install Knative - Quickstart
 layout:
     1: left
     default: wizard
@@ -10,45 +10,42 @@ wizard:
         - match: Install the Knative quickstart plugin
           name: Install and use the Knative quickstart plugin
           description: The plugin sets up Knative against kind by creating a kind cluster populated with Knative
-        - match: Deploying your first Knative Service
-          name: Example 1 - Deploying your first Knative Service
-          description: In this example, you will deploy a "Hello world" service
-        - name: Clean Up
+        - Run the Knative quickstart plugin
 codeblocks:
     - match: ^brew install kn$
       validate: kn version
     - match: ^brew upgrade kn$
       optional: true
-    - match: ^brew tap --repair
-      optional: true
+    - match: ^mv <path-to-binary-file> kn
+      validate: kn version
     - match: ^mv kn /usr/local/bin$
       validate: kn version
+    - match: ^git clone https://github.com/knative/client.git
+      validate: $? -e 0 && exit 0 || exit 1
+    - match: ^hack/build.sh -f$
+      validate: $? -e 0 && exit 0 || exit 1
     - match: ^kn version$
       validate: $body
+    - match: ^docker run --rm -v "$HOME/.kube/config:/root/.kube/config" gcr.io/knative-releases/knative.dev/client/cmd/kn:latest service list$
+      validate: $? -e 0 && exit 0 || exit 1
     - match: ^brew install knative-sandbox/kn-plugins/quickstart$
       validate: kn quickstart --help
     - match: ^brew upgrade knative-sandbox/kn-plugins/quickstart$
       optional: true
     - match: ^kn quickstart --help$
       validate: $body
+    - match: ^git clone https://github.com/knative-sandbox/kn-plugin-quickstart.git
+      validate: $? -e 0 && exit 0 || exit 1
+    - match: ^hack/build.sh$
+      validate: $? -e 0 && exit 0 || exit 1
     - match: ^mv kn-quickstart /usr/local/bin$
       validate: kn quickstart --help
     - match: ^kn quickstart kind$
       validate: (kubectl cluster-info --context kind-knative) && exit 0 || exit 1
     - match: ^kn quickstart minikube$
       validate: minikube profile list
-    - match: ^kn service create hello
-      validate: kn service describe hello
-    - match: ^kubectl apply -f hello.yaml$
-      validate: kn service describe hello
-    - match: ^curl http://hello.default.127.0.0.1.sslip.io$
-      validate: $body
-    - match: ^[Resolve]
-      optional: true
-    - match: ^kind delete clusters knative$
-      validate: (kubectl cluster-info --context kind-knative) && exit 1 || exit 0
-    - match: ^minikube delete -p knative$
-      validate: (kubectl cluster-info --context kind-knative) && exit 1 || exit 0
+    - match: ^minikube tunnel --profile knative$
+      validate: $? -e 0 && exit 0 || exit 1
 ---
 
 --8<-- "https://raw.githubusercontent.com/kubernetes-sigs/kui/master/plugins/plugin-kubectl/notebooks/knative-what-is-it-good-for.md"
@@ -60,7 +57,3 @@ codeblocks:
 ---
 
 --8<-- "https://raw.githubusercontent.com/mra-ruiz/docs/guidebooks/docs/getting-started/quickstart-install.md"
-
---8<-- "https://raw.githubusercontent.com/mra-ruiz/docs/guidebooks/docs/getting-started/first-service.md"
-
---8<-- "https://raw.githubusercontent.com/mra-ruiz/docs/guidebooks/docs/getting-started/clean-up.md"
