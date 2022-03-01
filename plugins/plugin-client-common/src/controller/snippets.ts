@@ -102,7 +102,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
           // Call ourselves recursively, in case a fetched snippet
           // fetches other files. We also may need to reroute relative
           // <img> and <a> links according to the given `basePath`.
-          const recurse = (basePath: string, data: string) => {
+          const recurse = (basePath: string, snippetFileName: string, data: string) => {
             // Note: intentionally using `snippetBasePath` for the
             // first argument, as this represents the "root" base
             // path, either from the URL of the original filepath (we
@@ -120,7 +120,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
           const snippetDatas = isUrl(snippetFileName)
             ? [
                 await loadNotebook(snippetFileName, args)
-                  .then(data => recurse(snippetBasePath || dirname(snippetFileName), toString(data)))
+                  .then(data => recurse(snippetBasePath || dirname(snippetFileName), snippetFileName, toString(data)))
                   .catch(err => {
                     debug('Warning: could not fetch inlined content 1', snippetBasePath, snippetFileName, err)
                     return err
@@ -137,7 +137,7 @@ export default function inlineSnippets(snippetBasePath?: string) {
                   .filter(_ => _ && _.filepath !== srcFilePath) // avoid cycles
                   .map(({ myBasePath, filepath }) =>
                     loadNotebook(filepath, args)
-                      .then(data => recurse(myBasePath, toString(data)))
+                      .then(data => recurse(myBasePath, filepath, toString(data)))
                       .catch(err => {
                         debug('Warning: could not fetch inlined content 2', myBasePath, snippetFileName, err)
                         return err
