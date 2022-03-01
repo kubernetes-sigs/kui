@@ -17,6 +17,8 @@
 import { v4 } from 'uuid'
 
 import { Element } from 'hast'
+
+import { isImports } from '../remark-import'
 import { START_OF_TIP, END_OF_TIP } from '../rehype-tip'
 
 /** A placeholder marker to indicate markdown that uses indentation not to mean Tab or Tip content */
@@ -41,7 +43,7 @@ export default function plugin(/* options */) {
       if (currentTabs.length > 0) {
         children.push({
           type: 'element',
-          tagName: 'tabbed',
+          tagName: 'div',
           children: currentTabs,
           properties: {
             depth: tabStack.length,
@@ -82,11 +84,22 @@ export default function plugin(/* options */) {
         if (child.type === 'raw' && child.value === END_OF_TAB) {
           flushTabs(newChildren)
           return newChildren
+        } else if (child.type === 'raw' && child.value === START_OF_TAB) {
+          // we process this in the RE_TAB match below; this is for
+          // now only a breadcrumb to help with debugging
+          return newChildren
         } else if (child.type === 'raw' && child.value === PUSH_TABS) {
-          tabStack.push(currentTabs)
-          currentTabs = []
+          if (currentTabs.length > 0) {
+            tabStack.push(currentTabs)
+            currentTabs = []
+          }
         } else if (child.type === 'element' && child.tagName === 'div') {
-          child.children = process(child.children)
+          if (currentTabs.length > 0 && isImports(child.properties)) {
+            const sub = transformer(child)
+            return addToTab(sub)
+          } else {
+            child.children = process(child.children)
+          }
         } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
             if (

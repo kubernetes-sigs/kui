@@ -210,8 +210,11 @@
       border-right: 1px solid var(--color-table-border1);
     }
 
-    .kui--block-action:hover {
-      background-color: var(--color-base02);
+    @include BlockAction {
+      &:hover {
+        cursor: pointer;
+        background-color: var(--color-base02);
+      }
     }
 
     .repl-input,

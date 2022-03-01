@@ -14,33 +14,96 @@
  * limitations under the License.
  */
 
+export interface GroupMember {
+  /**
+   * This option names the group, to keep it distinct from other
+   * groups of choices.
+   */
+  group: string
+
+  /**
+   * This option names that member. e.g. if the user can choose
+   * between doing either A-and-B or C-and-D, this identifies
+   * whether we are part ofth e first choice (A+B) or the second
+   * (C+D).
+   */
+  member: number
+}
+
+export interface Title {
+  title: string
+}
+
+export interface Description {
+  description: string
+}
+
+/**
+ * Is this a member of a group of choices? e.g. am I `A` in a choice
+ * to do either `A+B` or `C+D`?
+ */
+export type Choice = GroupMember &
+  Title &
+  Kind<'Choice'> & {
+    /** Title for the choice group */
+    groupTitle: string
+  }
+
+export type Import = Title &
+  Kind<'Import'> & {
+    key: string
+    filepath: string
+  }
+
+type Kind<T extends string> = {
+  kind: T
+}
+
+export type Wizard = {
+  wizard: Title & Partial<Description>
+}
+
+export type WizardStep = Wizard & GroupMember & Title & Partial<Description> & Kind<'WizardStep'>
+
+type CodeBlockNestingParent = Choice | Import | WizardStep
+
+export function isGroupMember<T extends CodeBlockNestingParent>(part: T): part is T & GroupMember {
+  const member = part as GroupMember
+  return typeof member.group === 'string' && typeof member.member === 'number'
+}
+
+function hasTitle<T extends CodeBlockNestingParent>(part: T): part is T & Title {
+  return typeof (part as Title).title === 'string'
+}
+
+function hasKind<T extends CodeBlockNestingParent, K extends T['kind']>(part: T, kind: K): part is T & Kind<K> {
+  return (part as T).kind === kind
+}
+
+export function isChoice(part: CodeBlockNestingParent): part is Choice {
+  return isGroupMember(part) && hasTitle(part) && hasKind(part, 'Choice')
+}
+
+export function isImport(part: CodeBlockNestingParent): part is Import {
+  return hasTitle(part) && hasKind(part, 'Import')
+}
+
+export function isWizardStep(part: CodeBlockNestingParent): part is WizardStep {
+  return isGroupMember(part) && hasTitle(part) && hasKind(part, 'WizardStep')
+}
+
 export default interface CodeBlockProps {
   id: string
   body: string
   language: string
   optional?: boolean
   validate?: string
+  nesting?: CodeBlockNestingParent[]
+}
 
-  /**
-   * Is this a member of a group of choices? e.g. am I `A` in a choice
-   * to do either `A+B` or `C+D`?
-   */
-  choice?: {
-    /**
-     * This option names the group, to keep it distinct from other
-     * groups of choices.
-     */
-    group: string
-
-    /**
-     * This option names that member. e.g. if the user can choose
-     * between doing either A-and-B or C-and-D, this identifies
-     * whether we are part ofth e first choice (A+B) or the second
-     * (C+D).
-     */
-    member: number
-
-    /** Is this a nested choice? */
-    nestingDepth: number
+export function addNesting(props: CodeBlockProps, nesting: CodeBlockNestingParent) {
+  if (!props.nesting) {
+    props.nesting = []
   }
+  props.nesting.push(nesting)
 }

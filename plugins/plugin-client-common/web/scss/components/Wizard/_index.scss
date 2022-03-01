@@ -15,6 +15,7 @@
  */
 
 @import 'mixins';
+@import '../Progress/mixins';
 @import '../Terminal/mixins';
 
 @include Wizard {
@@ -59,4 +60,26 @@
 @include WizardTitle {
   font-size: var(--pf-global--FontSize--3xl);
   margin-bottom: 1em;
+}
+
+/** Place wizard header progress title beside bar */
+@include WizardHeader {
+  @include WizardProgress {
+    grid-template-rows: 1fr;
+    grid-template-columns: 7em 1fr 3em;
+
+    @include ProgressDescription {
+      grid-row: 1;
+      grid-column: 1;
+    }
+    @include ProgressBar {
+      grid-row: 1;
+      grid-column: 2;
+    }
+    @include ProgressStatus {
+      grid-row: 1;
+      grid-column: 3;
+      line-height: normal;
+    }
+  }
 }

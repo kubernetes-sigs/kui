@@ -37,6 +37,9 @@ const strings = i18n('plugin-client-common', 'code')
 type Status = ProgressStepState['status']
 
 type Props = Pick<WizardState, 'choices'> & {
+  /** Title to display alongside the progress bar */
+  title: string
+
   /** The tasks to be accomplished */
   codeBlocks: OrderedGraph
 
@@ -96,7 +99,6 @@ export default class Progress extends React.PureComponent<Props, State> {
   public render() {
     const { nDone, nError, nTotal } = this.state
 
-    const title = strings('Completed tasks')
     const label =
       nError > 0
         ? strings(nError === 1 ? 'xOfyFailingz' : 'xOfyFailingsz', nDone, nError, nTotal)
@@ -111,11 +113,12 @@ export default class Progress extends React.PureComponent<Props, State> {
         min={0}
         max={nTotal}
         value={nDone}
-        title={title}
+        title={this.props.title}
         label={label}
         valueText={label}
         size="sm"
         variant={variant}
+        measureLocation="outside"
       />
     )
   }

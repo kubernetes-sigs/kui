@@ -90,7 +90,17 @@ TipContent
 DDD`,
   tips: [{ title: 'TipTitle', content: 'TipContent' }]
 }
-;[IN1, IN1viaUrl, IN2, IN3, IN4, IN5, IN6].forEach(markdown => {
+
+const IN7: Input = {
+  input: join(ROOT, 'data', 'snippets-in-tab3.md'),
+  content: `AAA
+Tab1
+Tab2
+BBBoo
+DDD`,
+  tips: []
+}
+;[IN1, IN1viaUrl, IN2, IN3, IN4, IN5, IN6, IN7].forEach(markdown => {
   describe(`markdown snippets hash include ${markdown.input} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))

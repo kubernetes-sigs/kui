@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import { i18n } from '@kui-shell/core'
 
 import { WizardProps } from './rehype-wizard'
 
@@ -33,7 +34,11 @@ import '../../../../../../web/scss/components/Wizard/_index.scss'
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 import { WizardStep } from '@patternfly/react-core'
+
+// const Prerequisites = React.lazy(() => import('./Prerequisites'))
 const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
+
+const strings = i18n('plugin-client-common', 'code')
 
 type Status = ProgressStepState['status']
 
@@ -97,21 +102,19 @@ export default class Wizard extends React.PureComponent<Props, State> {
     }
   }
 
-  private static sameCodeBlocks(AA: State['codeBlocksPerStep'], BB: State['codeBlocksPerStep']) {
-    return AA.every((A, idx1) =>
-      A.every((a, idx2) => {
-        const b = BB[idx1][idx2]
-
-        return (
-          a.codeBlockId === b.codeBlockId &&
-          a.validate === b.validate &&
-          a.body === b.body &&
-          a.language === b.language &&
-          a.optional === b.optional &&
-          a.status === b.status
-        )
-      })
+  private static sameCodeBlock(a: State['codeBlocksPerStep'][0][0], b: State['codeBlocksPerStep'][0][0]) {
+    return (
+      a.codeBlockId === b.codeBlockId &&
+      a.validate === b.validate &&
+      a.body === b.body &&
+      a.language === b.language &&
+      a.optional === b.optional &&
+      a.status === b.status
     )
+  }
+
+  private static sameCodeBlocks(AA: State['codeBlocksPerStep'], BB: State['codeBlocksPerStep']) {
+    return AA.every((A, idx1) => A.every((a, idx2) => Wizard.sameCodeBlock(a, BB[idx1][idx2])))
   }
 
   public componentDidMount() {
@@ -186,7 +189,12 @@ export default class Wizard extends React.PureComponent<Props, State> {
     if (this.props['data-kui-wizard-progress'] === 'bar' && blocks(this.state.graph).length > 0) {
       return (
         <div className="kui--markdown-major-paragraph">
-          <Progress status={this.state.status} choices={this.state.choices} codeBlocks={this.state.graph} />
+          <Progress
+            status={this.state.status}
+            choices={this.state.choices}
+            codeBlocks={this.state.graph}
+            title={strings('Completed tasks')}
+          />
         </div>
       )
     }
@@ -224,12 +232,14 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   private header() {
     return (
-      <div className="kui--wizard-header kui--inverted-color-context">
-        {this.headerActions()}
-        {this.title()}
-        {this.description()}
-        {this.progress()}
-      </div>
+      <React.Fragment>
+        <div className="kui--wizard-header kui--inverted-color-context">
+          {this.headerActions()}
+          {this.title()}
+          {this.description()}
+          {this.progress()}
+        </div>
+      </React.Fragment>
     )
   }
 

@@ -16,6 +16,7 @@
 
 @import 'mixins';
 @import '../Card/mixins';
+@import '../Tree/mixins';
 @import '../Editor/mixins';
 @import '../Wizard/mixins';
 @import '../Sidecar/mixins';
@@ -737,5 +738,19 @@ pre {
     font-size: 11rem;
     display: flex;
     line-height: 10rem;
+  }
+}
+
+@include Scrollback {
+  @include RightStrip {
+    @include Block {
+      @include BlockOutput {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+    @include Commentary {
+      margin: 0;
+    }
   }
 }

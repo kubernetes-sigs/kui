@@ -1,1 +1,1 @@
-:material-send: XXXX :fontawesome-solid-envelope::material-send:YYYY
+:material-send: XXXX :fontawesome-solid-envelope::material-send: YYYY

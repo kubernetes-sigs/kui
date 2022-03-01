@@ -20,6 +20,7 @@ import { visit } from 'unist-util-visit'
 
 import dump from './dump'
 import { tryFrontmatter } from '../../frontmatter'
+import { visitImportContainers } from '../../remark-import'
 import KuiFrontmatter, { hasCodeBlocks } from '../../KuiFrontmatter'
 
 function isCode(node: Node): node is Code {
@@ -27,7 +28,7 @@ function isCode(node: Node): node is Code {
 }
 
 /** Scan and process the `codeblocks` schema of the given `frontmatter` */
-export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiFrontmatter) {
+function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: KuiFrontmatter) {
   if (hasCodeBlocks(frontmatter)) {
     const codeblocks = frontmatter.codeblocks.map(_ =>
       Object.assign({}, _, { match: new RegExp(_.match.replace(/\./g, '\\.')) })
@@ -66,4 +67,17 @@ export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiF
       }
     })
   }
+}
+
+/** Scan and process the `codeblocks` schema of the given `frontmatter` */
+function preprocessCodeBlocksInImports(tree /*: Root */) {
+  visitImportContainers(tree, ({ node, frontmatter }) => {
+    preprocessCodeBlocksInContent(node, frontmatter)
+  })
+}
+
+/** Scan and process the `codeblocks` schema of the given `frontmatter` */
+export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiFrontmatter) {
+  preprocessCodeBlocksInContent(tree, frontmatter)
+  preprocessCodeBlocksInImports(tree)
 }

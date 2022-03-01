@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-export function tryFrontmatter(
-  value: string
-): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes' | 'bodyBegin'> {
-  try {
-    const frontmatter = require('front-matter')
-    return frontmatter(value)
-  } catch (err) {
-    console.error('Error parsing frontmatter', err)
-    return {
-      body: value,
-      bodyBegin: 0,
-      attributes: {}
-    }
-  }
-}
-
-/** In case you only want the body part of a `markdownText` */
-export function stripFrontmatter(markdownText: string) {
-  return tryFrontmatter(markdownText).body
-}
+$blank-color: var(--color-blue-rgb);
+$hover-color: var(--color-table-border3);
+$error-color: var(--color-error);
+$success-color: var(--pf-global--primary-color--100);
+$complete-color: var(--color-ok);

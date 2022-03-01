@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-export function tryFrontmatter(
-  value: string
-): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes' | 'bodyBegin'> {
-  try {
-    const frontmatter = require('front-matter')
-    return frontmatter(value)
-  } catch (err) {
-    console.error('Error parsing frontmatter', err)
-    return {
-      body: value,
-      bodyBegin: 0,
-      attributes: {}
-    }
+@mixin Tree {
+  .kui--tree {
+    @content;
   }
 }
 
-/** In case you only want the body part of a `markdownText` */
-export function stripFrontmatter(markdownText: string) {
-  return tryFrontmatter(markdownText).body
+@mixin TreeItem {
+  .pf-c-tree-view__list-item {
+    @content;
+  }
+}
+
+@mixin TreeItemButton {
+  .pf-c-tree-view__node {
+    @content;
+  }
+}
+
+@mixin TreeToggle {
+  .pf-c-tree-view__node-toggle {
+    @content;
+  }
+}
+
+@mixin TreeAction {
+  .kui--tree-action {
+    @content;
+  }
 }

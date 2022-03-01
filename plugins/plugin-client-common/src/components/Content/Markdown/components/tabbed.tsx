@@ -149,11 +149,25 @@ class LinkableTabs extends React.PureComponent<Props, State> {
   }
 }
 
+export interface TabProps {
+  depth: string
+  'data-kui-choice-group': string
+  children: any
+}
+
+export function isTabs(props: Partial<TabProps>): props is Required<TabProps> {
+  return typeof props['data-kui-choice-group'] === 'string'
+}
+
 export default function tabbedWrapper(uuid: string) {
-  return function tabbed(props) {
+  return function tabbed(props: TabProps) {
     // isSecondary={parseInt(props.depth, 10) > 0}
     return (
-      <LinkableTabs uuid={uuid} depth={props.depth} data-kui-choice-group={props['data-kui-choice-group']}>
+      <LinkableTabs
+        uuid={uuid}
+        depth={parseInt(props.depth, 10)}
+        data-kui-choice-group={props['data-kui-choice-group']}
+      >
         {props.children}
       </LinkableTabs>
     )

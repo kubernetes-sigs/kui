@@ -31,6 +31,10 @@ import gfm from 'remark-gfm'
 // ==foo== -> <mark>foo</mark>
 import hackMarks from './remark-mark'
 
+// parses out ::import{filepath} as node.type === 'leafDirective', but
+// does not create any DOM elements
+import remarkDirective from 'remark-directive'
+
 // ++ctrl+alt+delete++== -> <kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>delete</kbd>
 import hackKeys from './remark-keys'
 
@@ -46,6 +50,7 @@ import tabbed, { hackIndentation } from './rehype-tabbed'
 
 import components from './components'
 import wizard from './components/Wizard/rehype-wizard'
+import rehypeImports, { remarkImports } from './remark-import'
 
 import { CodeBlockResponse } from './components/code'
 import prefetchTableRows from './components/code/prefetch'
@@ -64,12 +69,15 @@ const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
   tabbed,
   tip,
   [codeIndexer, uuid],
+  rehypeImports,
   icons,
   rehypeRaw,
   rehypeSlug
 ]
 const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) => [
   gfm,
+  remarkDirective,
+  remarkImports,
   [frontmatter, ['yaml', 'toml']],
   [kuiFrontmatter, { tab }],
   emojis // [emojis, { emoticon: true }]
@@ -118,6 +126,9 @@ export interface Props {
 }
 
 interface State {
+  /** Did we get some severe error in rendering? */
+  hasError: boolean
+
   source: Props['source']
 
   /** Has the user clicked to execute a code block? */
@@ -131,6 +142,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     super(props)
     this.state = {
       source: '',
+      hasError: false,
       codeBlockResponses: []
     }
     setTimeout(() => this.prepareSource())
@@ -169,6 +181,14 @@ export default class Markdown extends React.PureComponent<Props, State> {
         return fm.attributes.snippets.basePath
       }
     }
+  }
+
+  public static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
   }
 
   /**
@@ -311,6 +331,10 @@ export default class Markdown extends React.PureComponent<Props, State> {
   public render() {
     if (this.props.onRender) {
       this.props.onRender()
+    }
+
+    if (this.state.hasError) {
+      return <TextContent>Internal Error</TextContent>
     }
 
     const { source } = this.state

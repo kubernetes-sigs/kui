@@ -64,6 +64,7 @@ export type SupportedIcon =
   | 'Sequence'
   | 'Split'
   | 'Trash'
+  | 'Terminal'
   | 'TerminalOnly'
   | 'Theme'
   | 'Unknown'

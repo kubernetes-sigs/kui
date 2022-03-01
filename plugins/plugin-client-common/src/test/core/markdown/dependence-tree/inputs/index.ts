@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-export function tryFrontmatter(
-  value: string
-): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes' | 'bodyBegin'> {
-  try {
-    const frontmatter = require('front-matter')
-    return frontmatter(value)
-  } catch (err) {
-    console.error('Error parsing frontmatter', err)
-    return {
-      body: value,
-      bodyBegin: 0,
-      attributes: {}
-    }
-  }
-}
+import IN1 from './1'
 
-/** In case you only want the body part of a `markdownText` */
-export function stripFrontmatter(markdownText: string) {
-  return tryFrontmatter(markdownText).body
-}
+export default [IN1]

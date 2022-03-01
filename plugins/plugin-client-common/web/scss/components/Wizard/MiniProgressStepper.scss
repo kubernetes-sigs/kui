@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
+@import 'Colors';
 @import '../Terminal/mixins';
 @import '../ProgressStepper/mixins';
 
 $small: 0.5rem;
 $regular: 0.75rem;
-
-$blank-color: var(--color-blue-rgb);
-$hover-color: var(--color-table-border3);
-$error-color: var(--color-error);
-$success-color: var(--pf-global--primary-color--100);
-$complete-color: var(--color-ok);
 
 @mixin MiniProgressStepper {
   @include ProgressStepper {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Heading } from 'mdast'
 import { u } from 'unist-builder'
 import { visit } from 'unist-util-visit'
 import { Literal, Node, Root, Text } from 'hast'
@@ -22,6 +21,7 @@ import { visitParents } from 'unist-util-visit-parents'
 
 import { Tab } from '@kui-shell/core'
 
+import { isOnAnImportChain } from './remark-import'
 import preprocessCodeBlocks from './components/code/remark-codeblocks-topmatter'
 import KuiFrontmatter, { hasWizardSteps, isNormalSplit, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
 
@@ -86,7 +86,7 @@ function positionOf(sectionIdx: number, frontmatter: KuiFrontmatter) {
 }
 
 /** Scan and process the `wizard` schema of the given `frontmatter` */
-function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
+function preprocessWizardSteps(tree /*: Root */, frontmatter: KuiFrontmatter) {
   if (hasWizardSteps(frontmatter)) {
     if (!frontmatter.layout) {
       frontmatter.layout = 'wizard'
@@ -95,7 +95,10 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
     // since the user defined wizard steps in the topmatter, we need
     // to remove existing thematicBreaks, for now
     let sectionIdx = 1
-    visitParents(tree, 'thematicBreak', (node, ancestors) => {
+    visitParents(tree, (node, ancestors) => {
+      if (node.type !== 'thematicBreak') return
+      else if (isOnAnImportChain(ancestors)) return
+
       const { position } = positionOf(sectionIdx++, frontmatter)
 
       if (position === 'wizard') {
@@ -106,7 +109,10 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
       }
     })
 
-    visitParents<Heading>(tree, 'heading', (node, ancestors) => {
+    visitParents(/* <Heading> */ tree, (node, ancestors) => {
+      if (node.type !== 'heading') return
+      else if (isOnAnImportChain(ancestors)) return
+
       if (ancestors.length > 0 && node.children && node.children[0]) {
         const firstChild = node.children[0]
 
@@ -123,7 +129,7 @@ function preprocessWizardSteps(tree: Root, frontmatter: KuiFrontmatter) {
           )
           if (matchingStep) {
             if (childIdx >= 0) {
-              if (parent.children[childIdx - 1].type !== 'thematicBreak') {
+              if (childIdx > 0 && parent.children[childIdx - 1].type !== 'thematicBreak') {
                 // splice in a ---, which below we use to indicate steps
                 parent.children.splice(childIdx, 0, u('thematicBreak'))
               }

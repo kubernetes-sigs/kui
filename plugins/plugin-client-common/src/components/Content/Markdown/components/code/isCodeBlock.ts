@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-export function tryFrontmatter(
-  value: string
-): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes' | 'bodyBegin'> {
-  try {
-    const frontmatter = require('front-matter')
-    return frontmatter(value)
-  } catch (err) {
-    console.error('Error parsing frontmatter', err)
-    return {
-      body: value,
-      bodyBegin: 0,
-      attributes: {}
-    }
-  }
+import { Element } from 'hast'
+
+export default function isExecutable(language: string) {
+  return /^(bash|sh|shell)$/.test(language)
 }
 
-/** In case you only want the body part of a `markdownText` */
-export function stripFrontmatter(markdownText: string) {
-  return tryFrontmatter(markdownText).body
+export function isExecutableCodeBlock(node: Element) {
+  if (node.tagName === 'code') {
+    // react-markdown v6+ places the language in the className
+    const match = node.properties.className ? /language-(\w+)/.exec(node.properties.className.toString()) : ''
+    const language = match ? match[1] : undefined
+
+    return isExecutable(language)
+  } else {
+    return false
+  }
 }
