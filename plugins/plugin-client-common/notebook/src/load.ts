@@ -37,6 +37,7 @@ export async function loadNotebook(
       if (stats.isDirectory) {
         throw new Error('Invalid filepath')
       } else {
+        debug('successfully loaded guidebook data', filepath)
         return stats.data as string
       }
     }
