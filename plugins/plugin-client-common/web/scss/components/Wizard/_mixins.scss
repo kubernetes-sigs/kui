@@ -106,7 +106,7 @@
 }
 
 @mixin HideCancel {
-  &[data-hide-cancel] {
+  [data-hide-cancel] {
     @content;
   }
 }
