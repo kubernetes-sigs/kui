@@ -36,6 +36,7 @@
     "rehype-slug": "5.0.1",
     "remark-code-frontmatter": "1.0.0",
     "remark-collapse": "0.1.2",
+    "remark-directive": "2.0.1",
     "remark-emoji": "3.0.2",
     "remark-frontmatter": "4.0.1",
     "remark-gfm": "3.0.1",

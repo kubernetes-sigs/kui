@@ -1,1 +1,6 @@
+---
+imports:
+    - importb.md
+---
+
 BBB

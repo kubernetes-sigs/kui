@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
+import { v4 } from 'uuid'
 import { u } from 'unist-builder'
 import { Element, Root } from 'hast'
-import { visitParents } from 'unist-util-visit-parents'
+import { visit } from 'unist-util-visit'
 
+import { isElement } from '../code/rehype-code-indexer'
 import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
+import { GroupMember as CodeBlockGroupMember } from './CodeBlockProps'
 
-interface Primordial {
+type Primordial = Pick<CodeBlockGroupMember, 'group'> & {
   title: string
-  description: string
+  description: Element
+  steps: Element[]
   progress: Required<WizardSteps['wizard']['progress']>
-  steps: any[]
+}
+
+interface GroupMember {
+  'data-kui-group': CodeBlockGroupMember['group']
+  'data-kui-member': CodeBlockGroupMember['member']
 }
 
 interface Title {
@@ -32,13 +40,36 @@ interface Title {
 }
 
 interface Description {
-  'data-kui-description'?: string
+  'data-kui-description': string
 }
 
-export type WizardProps = Title & {
-  children: {
-    props: Title & Description & { containedCodeBlocks?: string; children?: React.ReactNode[] }
-  }[]
+export type WizardProps = Title &
+  Partial<Description> & {
+    children: {
+      props: Title & Partial<Description> & { containedCodeBlocks?: string; children?: React.ReactNode[] }
+    }[]
+  }
+
+type WizardStepProps = GroupMember &
+  Title &
+  Partial<Description> & {
+    'data-kui-split-count': number
+  }
+
+export function getTitle(props: Partial<Title>) {
+  return props['data-kui-title']
+}
+
+export function getDescription(props: Partial<Description>) {
+  return props['data-kui-description']
+}
+
+export function getWizardGroup(props: WizardStepProps) {
+  return props['data-kui-wizard-group']
+}
+
+export function getWizardStepMember(props: WizardStepProps) {
+  return props['data-kui-wizard-member']
 }
 
 /**
@@ -46,9 +77,12 @@ export type WizardProps = Title & {
  */
 function transformer(ast: Root) {
   /** Treat headings that parents of nodes marked as Wizards as wizard steps */
-  function headingVisitor(node: Element, ancestors: Element[]) {
-    if (/^h\d+/.test(node.tagName) && ancestors.length > 0) {
-      const parent = ancestors[ancestors.length - 1]
+  function headingVisitor() {
+    const node: Element = arguments[0] // eslint-disable-line prefer-rest-params
+    const idx: number = arguments[1] // eslint-disable-line prefer-rest-params
+    const parent: Element = arguments[2] // eslint-disable-line prefer-rest-params
+
+    if (/^h\d+/.test(node.tagName) && parent) {
       if (
         parent.tagName === 'div' &&
         parent.properties['data-kui-split'] === 'wizard' &&
@@ -56,7 +90,6 @@ function transformer(ast: Root) {
         node.children[0].type === 'text'
       ) {
         const firstNonCommentIdx = parent.children.findIndex(_ => _.type !== 'raw')
-        const idx = parent.children.findIndex(_ => _ === node)
 
         if (idx === firstNonCommentIdx) {
           const [title, description] = node.children[0].value.split(/\s*:\s*/)
@@ -71,14 +104,19 @@ function transformer(ast: Root) {
   }
 
   const wizard: Primordial = {
+    group: v4(),
     title: '',
-    description: '',
+    description: undefined,
     progress: 'bar',
     steps: []
   }
 
-  function stepsVisitor(node, ancestors: Element[]) {
-    if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && ancestors.length > 0) {
+  function stepsVisitor() {
+    const node: Element = arguments[0] // eslint-disable-line prefer-rest-params
+    const idx: number = arguments[1] // eslint-disable-line prefer-rest-params
+    const parent: Element = arguments[2] // eslint-disable-line prefer-rest-params
+
+    if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && parent) {
       delete node.properties['data-kui-split']
 
       if (wizard.steps.length === 0 && node.properties['data-kui-wizard-progress']) {
@@ -100,7 +138,7 @@ function transformer(ast: Root) {
         // PatternFly's Wizard header description :(
         node.tagName = 'span' // top-most div -> span
         node.children = node.children.map(child =>
-          child.tagName !== 'p'
+          !isElement(child) || child.tagName !== 'p'
             ? child
             : Object.assign({}, child, { tagName: 'span', properties: { className: 'paragraph' } })
         )
@@ -108,19 +146,19 @@ function transformer(ast: Root) {
         wizard.description = node
       } else {
         node.properties.containedCodeBlocks = []
+        node.properties['data-kui-wizard-group'] = wizard.group
+        node.properties['data-kui-wizard-member'] = wizard.steps.length
         wizard.steps.push(node)
       }
 
-      const parent = ancestors[ancestors.length - 1]
-      const idx = parent.children.findIndex(_ => _ === node)
       if (idx >= 0) {
         parent.children.splice(idx, 1)
       }
     }
   }
 
-  visitParents(ast, 'element', headingVisitor)
-  visitParents(ast, 'element', stepsVisitor)
+  visit(ast, 'element', headingVisitor)
+  visit(ast, 'element', stepsVisitor)
 
   if (wizard.steps.length > 0 || wizard.title.trim() || wizard.description) {
     ast.children.push(
@@ -131,7 +169,8 @@ function transformer(ast: Root) {
           properties: {
             'data-kui-split': 'wizard',
             'data-kui-title': wizard.title,
-            'data-kui-wizard-progress': wizard.progress
+            'data-kui-wizard-progress': wizard.progress,
+            'data-kui-code-blocks': [] // rehype-imports will populate this
           }
         },
         [wizard.description, ...wizard.steps]
@@ -142,6 +181,11 @@ function transformer(ast: Root) {
 
 export function isWizard(props: Partial<PositionProps> | WizardProps): props is WizardProps {
   return props['data-kui-split'] === 'wizard'
+}
+
+export function isWizardStep(props: Partial<WizardStepProps>): props is WizardStepProps {
+  const stepProps = props as WizardStepProps
+  return typeof stepProps['data-kui-title'] === 'string' && typeof stepProps['data-kui-split-count'] === 'number'
 }
 
 export default function wizard() {

@@ -21,6 +21,8 @@ import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
 import { Props as MarkdownProps } from '..'
+import _tabbed, { TabProps, isTabs } from './tabbed'
+import { isImports, ImportProps } from '../remark-import'
 import { PositionProps, isNormalSplit } from '../KuiFrontmatter'
 
 import { isWizard } from './Wizard/rehype-wizard'
@@ -29,7 +31,11 @@ const Wizard = React.lazy(() => import('./Wizard'))
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
 export default function div(mdprops: MarkdownProps, uuid: string) {
-  return (props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps>) => {
+  const tabbed = _tabbed(uuid)
+
+  return (
+    props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<ImportProps> & Partial<TabProps>
+  ) => {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const placeholder = props['data-kui-placeholder']
@@ -42,6 +48,11 @@ export default function div(mdprops: MarkdownProps, uuid: string) {
 
     if (isWizard(props)) {
       return <Wizard uuid={uuid} {...props} />
+    } else if (isTabs(props)) {
+      return tabbed(props)
+    } else if (isImports(props)) {
+      // Don't render the content of imported documents. We will process these separately.
+      return <React.Fragment />
     } else if (!position || (isNormalSplit(position) && count === 0 && !maximized && !placeholder)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is

@@ -26,6 +26,7 @@ import tabbed from './tabbed'
 import _heading from './heading'
 import blockquote from './blockquote'
 import { list, li } from './list'
+import guidebookimports from './Imports'
 import { details, tip } from './details'
 import { table, thead, tbody, tr, th, td } from './table'
 import _code, { CodeBlockResponse } from './code'
@@ -85,6 +86,7 @@ function components(args: Args) {
     {
       tip,
       tag,
+      guidebookimports,
       tabbed: tabbed(args.uuid)
     },
     typedComponents(args)

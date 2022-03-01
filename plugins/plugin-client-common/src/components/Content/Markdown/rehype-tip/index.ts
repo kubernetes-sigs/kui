@@ -49,11 +49,13 @@ export default function plugin(/* options */) {
         if (child.type === 'raw' && child.value === END_OF_TIP) {
           flushTip()
           return newChildren
+        } else if (child.type === 'raw' && child.value === START_OF_TIP) {
+          // we process this in the RE_TIP matches below; this is for
+          // now only a breadcrumb to help with debugging
+          return newChildren
         } else if (
           child.type === 'element' &&
-          (child.tagName === 'div' ||
-            child.tagName === 'tabbed' ||
-            (child.tagName === 'span' && child.properties.className !== 'paragraph'))
+          (child.tagName === 'div' || (child.tagName === 'span' && child.properties.className !== 'paragraph'))
         ) {
           const newChild = Object.assign({}, child, { children: [] })
           const children = currentTipLevel === level ? currentTip.children : newChildren
@@ -142,6 +144,9 @@ export default function plugin(/* options */) {
                 return addToTip(pchild)
               }
 
+              if (pchild.type === 'element' && pchild.tagName === 'div') {
+                pchild.children = process(pchild.children, level)
+              }
               pnewChildren.push(pchild)
               return pnewChildren
             }, [])

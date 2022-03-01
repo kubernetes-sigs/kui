@@ -20,7 +20,7 @@
 @import '../../TopLevelTab/mixins';
 
 /** Special background color for RightStrip splits */
-$bgcolor: var(--color-base01);
+$bgcolor: var(--color-base00);
 
 @include KuiTabContainer {
   @include SidebarOpen {

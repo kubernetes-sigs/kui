@@ -32,41 +32,60 @@ export interface WizardSteps {
   }
 }
 
+interface Language {
+  /** Override any `language` property of the matched code block */
+  language?: string
+}
+
+export type CodeBlock = Partial<Language> & {
+  /**
+   * A string that will be interpreted as regular expression. Any
+   * markdown code blocks whose body matches this pattern will be seen
+   * as instances of the rules below (e.g. `language`, `validate`, etc.)
+   */
+  match: string
+
+  /**
+   * If given, this command line will be executed. If it exits with
+   * exit code 0, then the code block will be seen as "already
+   * executed", and thus represent a valid state. Non-zero exit
+   * codes will not be seen as errors, but rather as representative
+   * of a default state.
+   */
+  validate?: string
+
+  /**
+   * If given, this command line will undo the effects of the code
+   * block body.
+   */
+  cleanup?: string
+
+  /**
+   * Is successful execution of this code block seen as necessary
+   * for overall successful completion of the enclosing
+   * guidebook? */
+  optional?: boolean
+}
+
 interface CodeBlocks {
-  codeblocks: {
-    /** A string that will be interpreted as regular expression. Any
-    markdown code blocks whose body matches this pattern will be seen
-    as instances of the rules below (e.g. `language`, `validate`,
-    etc.) */
-    match: string
+  codeblocks: CodeBlock[]
+}
 
-    /** Override any `language` property of the matched code block */
-    language?: string
+interface Imports {
+  imports: string[]
+}
 
-    /**
-     * If given, this command line will be executed. If it exits with
-     * exit code 0, then the code block will be seen as "already
-     * executed", and thus represent a valid state. Non-zero exit
-     * codes will not be seen as errors, but rather as representative
-     * of a default state.
-     */
-    validate?: string
-
-    /**
-     * If given, this command line will undo the effects of the code
-     * block body.
-     */
-    cleanup?: string
-
-    /**
-     * Is successful execution of this code block seen as necessary
-     * for overall successful completion of the enclosing
-     * guidebook? */
-    optional?: boolean
-  }[]
+export function hasImports(attributes: any): attributes is Imports {
+  return (
+    attributes &&
+    typeof attributes === 'object' &&
+    Array.isArray(attributes.imports) &&
+    attributes.imports.every(_ => typeof _ === 'string')
+  )
 }
 
 type KuiFrontmatter = Partial<WizardSteps> &
+  Partial<Imports> &
   Partial<CodeBlocks> & {
     /** Title of the Notebook */
     title?: string

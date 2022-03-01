@@ -27,6 +27,7 @@ import {
   ChartBarIcon as ChartBar,
   CopyIcon as Copy,
   PlusIcon as Add,
+  TerminalIcon as Terminal,
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
   TimesIcon /* WindowCloseIcon */ as WindowClose,
@@ -178,6 +179,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Search style={size20} {...props} />
     case 'Trash':
       return <Trash {...props} />
+    case 'Terminal':
+      return <Terminal {...props} />
     case 'TerminalOnly':
       return <TerminalOnly {...props} />
     case 'Theme':

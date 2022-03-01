@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-export function tryFrontmatter(
-  value: string
-): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes' | 'bodyBegin'> {
-  try {
-    const frontmatter = require('front-matter')
-    return frontmatter(value)
-  } catch (err) {
-    console.error('Error parsing frontmatter', err)
-    return {
-      body: value,
-      bodyBegin: 0,
-      attributes: {}
+@import 'mixins';
+
+body[kui-theme-style] {
+  @include TreeItemButton {
+    background: none;
+    font-size: inherit;
+    color: var(--color-text-01);
+  }
+
+  @include Tree {
+    li {
+      margin-top: 0;
+    }
+
+    /** hmm.. otherwise the vertical guides aren't visible */
+    .pf-c-tree-view__list-item .pf-c-tree-view__list-item:before {
+      z-index: 100;
     }
   }
-}
-
-/** In case you only want the body part of a `markdownText` */
-export function stripFrontmatter(markdownText: string) {
-  return tryFrontmatter(markdownText).body
 }
