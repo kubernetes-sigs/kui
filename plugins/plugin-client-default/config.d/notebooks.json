@@ -32,7 +32,7 @@
           "label": "Getting Started",
           "expanded": false,
           "submenu": [
-            { "notebook": "Quick start", "filepath": "/kui/kubernetes/knative-quickstart.md" },
+            { "notebook": "Quick start", "filepath": "/kui/kubernetes/install-knative-quickstart.md" },
             {
               "label": "Serving",
               "submenu": [
@@ -62,6 +62,13 @@
               ]
             },
             { "notebook": "What's Next?", "filepath": "/kui/kubernetes/knative-whats-next.md" }
+          ]
+        },
+        {
+          "label": "Knative Serving Examples",
+          "expanded": false,
+          "submenu": [
+            { "notebook": "Hello World Deployment", "filepath": "/kui/kubernetes/knative-serving-hello-world.md" }
           ]
         }
       ]
