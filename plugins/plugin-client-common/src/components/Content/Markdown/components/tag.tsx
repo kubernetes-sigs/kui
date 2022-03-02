@@ -20,6 +20,5 @@ import { Props as TagProps } from '../../../spi/Tag'
 const Tag = React.lazy(() => import('../../../spi/Tag'))
 
 export default function tag(props: { variant?: TagProps['type']; children: TagProps['children'] }) {
-  console.error('!!!!!!', props)
   return <Tag type={props.variant} {...props} />
 }
