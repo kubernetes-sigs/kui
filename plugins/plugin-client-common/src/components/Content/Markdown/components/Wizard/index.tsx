@@ -32,6 +32,7 @@ import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkS
 import '../../../../../../web/scss/components/Wizard/_index.scss'
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
+import { WizardStep } from '@patternfly/react-core'
 const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
 
 type Status = ProgressStepState['status']
@@ -233,8 +234,9 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   private wizard() {
-    const steps = Wizard.children(this.props).map((_, stepIdx) => ({
+    const steps: WizardStep[] = Wizard.children(this.props).map((_, stepIdx) => ({
       name: _.props['data-kui-title'],
+      hideCancelButton: true,
       stepNavItemProps: {
         children: this.wizardStepDescription(stepIdx, _.props['data-kui-description'])
       },
@@ -246,11 +248,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
       <div className="kui--wizard" data-collapsed-header={this.state.collapsedHeader || undefined}>
         {this.header()}
         <div className="kui--wizard-main-content">
-          <PatternFlyWizard
-            steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
-            data-hide-cancel={true}
-            footer={this.footer()}
-          />
+          <PatternFlyWizard steps={steps.length === 0 ? [{ name: '', component: '' }] : steps} footer={this.footer()} />
         </div>
       </div>
     )
