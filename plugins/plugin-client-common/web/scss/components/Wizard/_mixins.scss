@@ -105,12 +105,6 @@
   }
 }
 
-@mixin HideCancel {
-  [data-hide-cancel] {
-    @content;
-  }
-}
-
 @mixin CancelButton {
   .pf-c-wizard__footer-cancel {
     @content;
