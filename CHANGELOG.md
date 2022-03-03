@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.2](https://github.com/IBM/kui/compare/v11.4.1...v11.4.2) (2022-03-03)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** add a few more heuristics to the snippet inliner ([903b44b](https://github.com/IBM/kui/commit/903b44b))
+- **plugins/plugin-client-common:** nested choices in wizards were not presented as such ([f67e244](https://github.com/IBM/kui/commit/f67e244))
+- **plugins/plugin-client-common:** remove leftover debugging printf ([089cf1d](https://github.com/IBM/kui/commit/089cf1d))
+- **plugins/plugin-client-common:** snippet inliner does not properly handle certain recursion ([d548bde](https://github.com/IBM/kui/commit/d548bde))
+- **plugins/plugin-client-common:** snippet inliner fails when rerouting links ([d845575](https://github.com/IBM/kui/commit/d845575))
+- **plugins/plugin-client-common:** StatusStripe widgets may have extra left padding ([e399b72](https://github.com/IBM/kui/commit/e399b72))
+- **plugins/plugin-client-common:** Tooltip component can present empty tooltip ([aa5e98e](https://github.com/IBM/kui/commit/aa5e98e))
+- **plugins/plugin-client-common:** Wizard Cancel button is visible again ([4cfa3d9](https://github.com/IBM/kui/commit/4cfa3d9))
+- **plugins/plugin-kubectl:** Removed knative-getting-started.md in favor of knative-quickstart.md ([b9f8fc8](https://github.com/IBM/kui/commit/b9f8fc8))
+
 ## [11.4.1](https://github.com/IBM/kui/compare/v11.4.0...v11.4.1) (2022-02-28)
 
 ### Bug Fixes

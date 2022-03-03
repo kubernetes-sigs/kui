@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.2](https://github.com/IBM/kui/compare/v11.4.1...v11.4.2) (2022-03-03)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** Removed knative-getting-started.md in favor of knative-quickstart.md ([b9f8fc8](https://github.com/IBM/kui/commit/b9f8fc8))
+
 ## [11.4.1](https://github.com/IBM/kui/compare/v11.4.0...v11.4.1) (2022-02-28)
 
 ### Bug Fixes
