@@ -167,11 +167,11 @@ export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-ou
 
 export const SPLIT_DEFAULT = (baseSelector = SPLITS) => `${baseSelector}[data-position="default"]`
 export const SPLIT_LEFT = (baseSelector = SPLITS) => `${baseSelector}[data-position="left-strip"]`
-export const SPLIT_BOTTOM = (baseSelector = SPLITS) => `${baseSelector}[data-position="bottom-strip"]`
+export const SPLIT_RIGHT = (baseSelector = SPLITS) => `${baseSelector}[data-position="right-strip"]`
 
 export const SPLIT_N_AS_DEFAULT = (N: number) => SPLIT_DEFAULT(SPLIT_N(N))
 export const SPLIT_N_AS_LEFT_STRIP = (N: number) => SPLIT_LEFT(SPLIT_N(N))
-export const SPLIT_N_AS_BOTTOM_STRIP = (N: number) => SPLIT_BOTTOM(SPLIT_N(N))
+export const SPLIT_N_AS_RIGHT_STRIP = (N: number) => SPLIT_RIGHT(SPLIT_N(N))
 
 export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${current(_PROMPT_BLOCK)}`
 export const CURRENT_PROMPT_FOR_SPLIT = (splitIndex: number) =>

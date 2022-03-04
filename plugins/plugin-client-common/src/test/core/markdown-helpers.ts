@@ -16,7 +16,7 @@
 
 import { Common, CLI, Selectors } from '@kui-shell/test'
 
-type Position = typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_BOTTOM
+type Position = typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_RIGHT
 
 interface Validation {
   /** Is the block expected to show as valid/invalid (true/false) on initial render? */

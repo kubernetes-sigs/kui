@@ -29,7 +29,7 @@ const IN1: Input = {
   splits: [
     { position: Selectors.SPLIT_LEFT, content: 'This should appear in a left split.' },
     { position: Selectors.SPLIT_DEFAULT, content: 'This should appear in a default split.' },
-    { position: Selectors.SPLIT_BOTTOM, content: 'This should appear in a bottom split.' }
+    { position: Selectors.SPLIT_RIGHT, content: 'This should appear in a right split.' }
   ]
 }
 

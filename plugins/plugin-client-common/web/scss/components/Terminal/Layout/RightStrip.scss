@@ -1,0 +1,85 @@
+/*
+ * Copyright 2021 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../mixins';
+@import '../../Card/mixins';
+@import '../../Page/mixins';
+@import '../../TopLevelTab/mixins';
+
+/** Special background color for RightStrip splits */
+$bgcolor: var(--color-base01);
+
+@include KuiTabContainer {
+  @include SidebarOpen {
+    @include TopLevelTab {
+      @include HasOnlyRightStrip {
+        @include Split(2) {
+          @include Columns(4);
+          grid-template-areas: 'T1 T1 T1 R1';
+        }
+
+        @include Split(3) {
+          @include Rows(1);
+          @include Columns(5);
+          grid-template-areas: 'T1 T1 T2 T2 R1';
+        }
+      }
+    }
+  }
+}
+
+@include TopLevelTab {
+  @include HasOnlyRightStrip {
+    @include Split(2) {
+      @include Rows(1);
+      @include Columns(5);
+      grid-template-areas: 'T1 T1 T1 T1 R1';
+    }
+
+    @include Split(3) {
+      @include Rows(1);
+      @include Columns(5);
+      grid-template-areas: 'T1 T1 T2 T2 R1';
+    }
+
+    @include Split(4) {
+      @include Rows(2);
+      @include Columns(9);
+      grid-template-areas:
+        'T1 T1 T1 T1 T2 T2 T2 R1 R1'
+        'T1 T1 T1 T1 T3 T3 T3 R1 R1';
+    }
+
+    @include Split(5) {
+      @include Rows(2);
+      @include Columns(8);
+      grid-template-areas:
+        'T1 T1 T1 T2 T2 T2 R1 R1'
+        'T3 T3 T3 T4 T4 T4 R1 R1';
+    }
+  }
+
+  @include Scrollback {
+    @include RightStrip {
+      --color-repl-background: #{$bgcolor};
+      grid-area: R1;
+
+      @include CardBody {
+        background-color: $bgcolor;
+      }
+    }
+  }
+}

@@ -414,7 +414,6 @@ export default class Output extends React.PureComponent<Props, State> {
     ) : (
       <ExpandableSection
         className="flex-fill"
-        expanded={this.props.splitPosition === 'bottom-strip' /* Default expanded for bottom strip positioning */}
         showMore={strings('Show Sample Output')}
         showLess={strings('Hide Sample Output')}
       >

@@ -36,20 +36,20 @@
   }
 }
 
-@mixin HasOnlyBottomStrip {
-  &[data-has-bottom-strip]:not([data-has-left-strip]) {
+@mixin HasOnlyRightStrip {
+  &[data-has-right-strip]:not([data-has-left-strip]) {
     @content;
   }
 }
 
 @mixin HasOnlyLeftStrip {
-  &[data-has-left-strip]:not([data-has-bottom-strip]) {
+  &[data-has-left-strip]:not([data-has-right-strip]) {
     @content;
   }
 }
 
-@mixin HasLeftAndBottomStrips {
-  &[data-has-left-strip][data-has-bottom-strip] {
+@mixin HasLeftAndRightStrips {
+  &[data-has-left-strip][data-has-right-strip] {
     @content;
   }
 }

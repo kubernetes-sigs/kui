@@ -74,8 +74,8 @@ $action-hover-delay: 210ms;
   }
 }
 
-@mixin BottomStrip {
-  &[data-position='bottom-strip'] {
+@mixin RightStrip {
+  &[data-position='right-strip'] {
     @content;
   }
 }
@@ -200,7 +200,7 @@ $action-hover-delay: 210ms;
 
 /** A "T T" layout, i.e. two terminals side-by-side */
 @mixin SideBySide {
-  .kui-tab-content:not([data-has-bottom-stripe]):not([data-has-left-strip]) {
+  .kui-tab-content:not([data-has-right-stripe]):not([data-has-left-strip]) {
     .repl .kui--terminal-split-container {
       &[data-split-count='2'],
       &[data-split-count='4'],

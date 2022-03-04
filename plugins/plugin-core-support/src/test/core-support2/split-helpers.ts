@@ -180,8 +180,8 @@ function checkIsLeftStrip(ctx: Common.ISuite, N: number) {
   return ctx.app.client.$(Selectors.SPLIT_N_AS_LEFT_STRIP(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 }
 
-function checkIsBottomStrip(ctx: Common.ISuite, N: number) {
-  return ctx.app.client.$(Selectors.SPLIT_N_AS_BOTTOM_STRIP(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+function checkIsRightStrip(ctx: Common.ISuite, N: number) {
+  return ctx.app.client.$(Selectors.SPLIT_N_AS_RIGHT_STRIP(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 }
 
 function checkIsDefault(ctx: Common.ISuite, N: number) {
@@ -192,8 +192,8 @@ export function isLeftStrip(this: Common.ISuite, N: number) {
   it(`should show split ${N} as being a left strip`, () => checkIsLeftStrip(this, N).catch(Common.oops(this, true)))
 }
 
-export function isBottomStrip(this: Common.ISuite, N: number) {
-  it(`should show split ${N} as being a bottom strip`, () => checkIsBottomStrip(this, N).catch(Common.oops(this, true)))
+export function isRightStrip(this: Common.ISuite, N: number) {
+  it(`should show split ${N} as being a right strip`, () => checkIsRightStrip(this, N).catch(Common.oops(this, true)))
 }
 
 export function isDefault(this: Common.ISuite, N: number) {
@@ -203,7 +203,7 @@ export function isDefault(this: Common.ISuite, N: number) {
 /** Toggle the position of the given split */
 export function doToggleSplitPosition(
   this: Common.ISuite,
-  expectedPosition: SplitPosition = 'bottom-strip',
+  expectedPosition: SplitPosition = 'right-strip',
   inSplit: number,
   expectedSplitCount = 2
 ) {
@@ -211,8 +211,8 @@ export function doToggleSplitPosition(
     try {
       await this.app.client.$(Selectors.SPLIT_N_POSITION_TOGGLE(inSplit)).then(_ => _.click())
 
-      if (expectedPosition === 'bottom-strip') {
-        await checkIsBottomStrip(this, inSplit)
+      if (expectedPosition === 'right-strip') {
+        await checkIsRightStrip(this, inSplit)
       } else if (expectedPosition === 'left-strip') {
         await checkIsLeftStrip(this, inSplit)
       } else {

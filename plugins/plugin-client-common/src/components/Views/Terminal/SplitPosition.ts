@@ -24,6 +24,6 @@ export interface SplitPositionProps {
   /** Are we to display one of the splits as a left strip? */
   hasLeftStrip: boolean
 
-  /** Are we to display one of the splits as a bottom strip? */
-  hasBottomStrip: boolean
+  /** Are we to display one of the splits as a right strip? */
+  hasRightStrip: boolean
 }
