@@ -45,7 +45,7 @@ type ScrollbackState = ScrollbackOptions &
     uuid: string
     blocks: BlockModel[]
 
-    /** Display as strip along the bottom */
+    /** Where to position this split, e.g. pinned to the left or right */
     position: SplitPosition
     willToggleSplitPosition(): void
 

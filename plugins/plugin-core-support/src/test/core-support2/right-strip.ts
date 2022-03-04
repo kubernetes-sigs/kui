@@ -22,12 +22,12 @@ import {
   expectSplits,
   doToggleSplitPosition,
   isLeftStrip,
-  isBottomStrip,
+  isRightStrip,
   isDefault,
   splitViaButton
 } from './split-helpers'
 
-describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`right strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -37,7 +37,7 @@ describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   const closeViaCommand = close.bind(this)
   const closeTheSplit = closeViaButton.bind(this)
   const leftStrip = isLeftStrip.bind(this)
-  const bottomStrip = isBottomStrip.bind(this)
+  const rightStrip = isRightStrip.bind(this)
   const defaultSplit = isDefault.bind(this)
   const count = expectSplits.bind(this)
 
@@ -46,13 +46,13 @@ describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   splitTheTerminalViaButton(2)
   count(2)
 
-  // DEFAULT+DEFAULT -> BOTTOM+DEFAULT
-  togglePosition('bottom-strip', 1)
+  // DEFAULT+DEFAULT -> RIGHT+DEFAULT
+  togglePosition('right-strip', 1)
   count(2)
-  bottomStrip(1)
+  rightStrip(1)
   defaultSplit(2)
 
-  // BOTTOM+DEFAULT -> LEFT+DEFAULT
+  // RIGHT+DEFAULT -> LEFT+DEFAULT
   togglePosition('left-strip', 1)
   count(2)
   leftStrip(1)
@@ -64,50 +64,50 @@ describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   defaultSplit(1)
   defaultSplit(2)
 
-  // (round robin!) DEFAULT+DEFAULT -> BOTTOM+DEFAULT
-  togglePosition('bottom-strip', 1)
+  // (round robin!) DEFAULT+DEFAULT -> RIGHT+DEFAULT
+  togglePosition('right-strip', 1)
   count(2)
-  bottomStrip(1)
+  rightStrip(1)
   defaultSplit(2)
 
   splitTheTerminalViaButton(3)
   count(3)
-  bottomStrip(1)
+  rightStrip(1)
   defaultSplit(2)
   defaultSplit(3)
 
   closeTheSplit(2, 2)
   count(2)
-  bottomStrip(1)
+  rightStrip(1)
   defaultSplit(2)
 
   closeViaCommand(1, 1)
   count(1)
   defaultSplit(1)
 
-  // now verify expected behavior when closing the non-bottom split in a default+bottom scenario
+  // now verify expected behavior when closing the non-right split in a default+right scenario
   // for good measure, do this a few times
   for (let idx = 0; idx < 3; idx++) {
     count(1)
     splitTheTerminalViaButton(2)
     count(2)
-    togglePosition('bottom-strip', 2)
+    togglePosition('right-strip', 2)
     defaultSplit(1)
-    bottomStrip(2)
+    rightStrip(2)
     closeViaCommand(1, 1) // close the first split, which is the default split
     count(1)
     defaultSplit(1) // verify that the remaining split is a default split
   }
 
-  // now for extra good measure, do the same, but closing the bottom strip
+  // now for extra good measure, do the same, but closing the right strip
   for (let idx = 0; idx < 3; idx++) {
     count(1)
     splitTheTerminalViaButton(2)
     count(2)
-    togglePosition('bottom-strip', 1) // 1 this time
-    bottomStrip(1)
+    togglePosition('right-strip', 1) // 1 this time
+    rightStrip(1)
     defaultSplit(2)
-    closeViaCommand(1, 1) // close the first split, which is the bottom strip
+    closeViaCommand(1, 1) // close the first split, which is the right strip
     count(1)
     defaultSplit(1) // verify that the remaining split is a default split
   }

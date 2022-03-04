@@ -1,7 +1,7 @@
 ---
 layout:
   1: left
-  3: bottom
+  3: right
 ---
 
 **This should appear in a left split.**
@@ -12,4 +12,4 @@ layout:
 
 ---
 
-**This should appear in a bottom split.**
+**This should appear in a right split.**

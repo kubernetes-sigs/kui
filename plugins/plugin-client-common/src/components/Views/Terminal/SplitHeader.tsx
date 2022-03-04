@@ -34,7 +34,7 @@ type Props = SplitPositionProps &
     onInvert(): void
     onClear(): void
 
-    /** Toggle whether we have a left or bottom strip split */
+    /** Toggle whether we have a left or right strip split */
     willToggleSplitPosition(): void
 
     /** Position of the enclosing Split */
@@ -65,22 +65,22 @@ export default class SplitHeader extends React.PureComponent<Props> {
   private iconRotation() {
     const goToDefault = ''
     const goToLeft = ' kui--rotate-270'
-    const goToBottom = ' kui--rotate-180'
+    const goToRight = ' kui--rotate-90'
 
     if (this.props.position === 'default') {
-      // default->bottom if we have no bottom
-      // default->left if we have do have a bottom
-      if (this.props.hasBottomStrip) {
+      // default->right if we have no right
+      // default->left if we have do have a right
+      if (this.props.hasRightStrip) {
         return goToLeft
       } else {
-        return goToBottom
+        return goToRight
       }
     } else if (this.props.position === 'left-strip') {
       // left always goes to default
       return goToDefault
     } else {
-      // bottom->left if we have no left
-      // bottom->default if we do have a left
+      // right->left if we have no left
+      // right->default if we do have a left
       if (!this.props.hasLeftStrip) {
         return goToLeft
       } else {

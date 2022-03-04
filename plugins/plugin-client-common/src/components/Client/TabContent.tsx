@@ -68,8 +68,8 @@ type State = Partial<WithTab> & {
   /** Does this tab have a left strip layout? */
   hasLeftStrip: boolean
 
-  /** Does this tab have a bottom strip layout? */
-  hasBottomStrip: boolean
+  /** Does this tab have a right strip layout? */
+  hasRightStrip: boolean
 
   /** grab a ref (below) so that we can maintain focus */
   _terminal: React.RefObject<ScrollableTerminal>
@@ -119,7 +119,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       sessionInit: 'NotYet',
       showSessionInitDone: true,
       hasLeftStrip: false,
-      hasBottomStrip: false,
+      hasRightStrip: false,
       _terminal: React.createRef(),
       mutability: initializeState()
     }
@@ -294,14 +294,13 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   /** Reset any notion of left strip etc. */
-  private readonly _resetSplitLayout = () => this.setState({ hasLeftStrip: false, hasBottomStrip: false })
+  private readonly _resetSplitLayout = () => this.setState({ hasLeftStrip: false, hasRightStrip: false })
 
   /** Enter/exit mode where one split is displayed along the left */
   private readonly _toggleLeftStripMode = () => this.setState(curState => ({ hasLeftStrip: !curState.hasLeftStrip }))
 
-  /** Enter/exit mode where one split is displayed along the bottom */
-  private readonly _toggleBottomStripMode = () =>
-    this.setState(curState => ({ hasBottomStrip: !curState.hasBottomStrip }))
+  /** Enter/exit mode where one split is displayed along the right */
+  private readonly _toggleRightStripMode = () => this.setState(curState => ({ hasRightStrip: !curState.hasRightStrip }))
 
   /** Toggle attribute on Tab DOM */
   private readonly _toggleAttribute = (attr: string) => {
@@ -334,9 +333,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
               onClear={this._onClear}
               ref={this.state._terminal}
               hasLeftStrip={this.state.hasLeftStrip}
-              hasBottomStrip={this.state.hasBottomStrip}
+              hasRightStrip={this.state.hasRightStrip}
               willToggleLeftStripMode={this._toggleLeftStripMode}
-              willToggleBottomStripMode={this._toggleBottomStripMode}
+              willToggleRightStripMode={this._toggleRightStripMode}
               resetSplitLayout={this._resetSplitLayout}
               noActiveInput={this.props.noActiveInput || !this.state.mutability.editable}
             >
@@ -458,7 +457,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
           className={this.tabClassName()}
           data-tab-id={this.props.uuid}
           data-has-left-strip={this.state.hasLeftStrip || undefined}
-          data-has-bottom-strip={this.state.hasBottomStrip || undefined}
+          data-has-right-strip={this.state.hasRightStrip || undefined}
         >
           {this.body()}
         </div>
