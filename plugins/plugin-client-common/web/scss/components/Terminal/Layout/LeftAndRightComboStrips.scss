@@ -24,7 +24,7 @@
     @include TopLevelTab {
       @include HasLeftAndRightStrips {
         @include Split(3) {
-          @include Rows(4);
+          @include Rows(1);
           @include Columns(4);
           grid-template-areas: 'L1 T1 T1 R1';
         }
