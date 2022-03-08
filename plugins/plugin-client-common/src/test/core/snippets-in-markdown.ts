@@ -69,7 +69,28 @@ const IN4: Input = {
   content: IN3.content,
   tips: IN3.tips
 }
-;[IN1, IN1viaUrl, IN2, IN3, IN4].forEach(markdown => {
+
+const IN5: Input = {
+  input: join(ROOT, 'data', 'snippets-in-tab1.md'),
+  content: `AAA
+Tab1
+Tab2
+BBB
+DDD`,
+  tips: []
+}
+
+const IN6: Input = {
+  input: join(ROOT, 'data', 'snippets-in-tab2.md'),
+  content: `AAA
+Tab1
+Tab2
+TipTitle
+TipContent
+DDD`,
+  tips: [{ title: 'TipTitle', content: 'TipContent' }]
+}
+;[IN1, IN1viaUrl, IN2, IN3, IN4, IN5, IN6].forEach(markdown => {
   describe(`markdown snippets hash include ${markdown.input} ${process.env.MOCHA_RUN_TARGET ||
     ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
