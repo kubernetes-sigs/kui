@@ -19,11 +19,11 @@ import { isAbsolute as pathIsAbsolute, dirname as pathDirname, join as pathJoin 
 import { Arguments, isError } from '@kui-shell/core'
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
-import { stripFrontmatter } from '../components/Content/Markdown/frontmatter-parser'
+import { tryFrontmatter } from '../components/Content/Markdown/frontmatter-parser'
 
 const debug = Debug('plugin-client-common/markdown/snippets')
 
-const RE_SNIPPET = /^--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?\s*$/
+const RE_SNIPPET = /^(\s*)--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?\s*$/
 
 function isUrl(a: string) {
   return /^https?:/.test(a)
@@ -78,77 +78,103 @@ function rerouteLinks(basePath: string, data: string) {
  * Simplistic approximation of
  * https://facelessuser.github.io/pymdown-extensions/extensions/snippets/.
  */
-export default function inlineSnippets(snippetBasePath?: string) {
-  return async (data: string, srcFilePath: string, args: Pick<Arguments, 'REPL'>): Promise<string> =>
-    Promise.all(
-      data.split(/\n/).map(async line => {
+export default function inlineSnippets(
+  args: Pick<Arguments, 'REPL'>,
+  snippetBasePath?: string,
+  includeFrontmatter = true
+) {
+  const fetchRecursively = async (
+    snippetFileName: string,
+    srcFilePath: string,
+    provenance: string[],
+    optionalSnippetBasePathInSnippetLine?: string
+  ) => {
+    const getBasePath = (snippetBasePath: string) => {
+      try {
+        const basePath = optionalSnippetBasePathInSnippetLine || snippetBasePath
+
+        return isAbsolute(basePath) ? basePath : srcFilePath ? join(srcFilePath, basePath) : undefined
+      } catch (err) {
+        debug(err)
+        return undefined
+      }
+    }
+
+    // Call ourselves recursively, in case a fetched snippet
+    // fetches other files. We also may need to reroute relative
+    // <img> and <a> links according to the given `basePath`.
+    const recurse = (basePath: string, recursedSnippetFileName: string, data: string) => {
+      // Note: intentionally using `snippetBasePath` for the
+      // first argument, as this represents the "root" base
+      // path, either from the URL of the original filepath (we
+      // may be recursing here) or from the command line or from
+      // the topmatter of the original document. The second
+      // represents the current base path in the recursion.
+      const base = isAbsolute(basePath) || !snippetBasePath ? basePath : snippetBasePath
+      return inlineSnippets(args, base, false)(rerouteLinks(base, data), recursedSnippetFileName, provenance)
+    }
+
+    const candidates = optionalSnippetBasePathInSnippetLine
+      ? [optionalSnippetBasePathInSnippetLine]
+      : ['./', snippetBasePath, '../', '../snippets', '../../snippets', '../../', '../../../'].filter(Boolean)
+
+    const snippetDatas = isUrl(snippetFileName)
+      ? [
+          await loadNotebook(snippetFileName, args)
+            .then(async data => ({
+              filepath: snippetFileName,
+              snippetData: await recurse(snippetBasePath || dirname(snippetFileName), snippetFileName, toString(data))
+            }))
+            .catch(err => {
+              debug('Warning: could not fetch inlined content 1', snippetBasePath, snippetFileName, err)
+              return err
+            })
+        ]
+      : await Promise.all(
+          candidates
+            .map(getBasePath)
+            .filter(Boolean)
+            .map(myBasePath => ({
+              myBasePath,
+              filepath: join(myBasePath, snippetFileName)
+            }))
+            .filter(_ => _ && _.filepath !== srcFilePath) // avoid cycles
+            .map(({ myBasePath, filepath }) =>
+              loadNotebook(filepath, args)
+                .then(async data => ({ filepath, snippetData: await recurse(myBasePath, filepath, toString(data)) }))
+                .catch(err => {
+                  debug('Warning: could not fetch inlined content 2', myBasePath, snippetFileName, err)
+                  return err
+                })
+            )
+        ).then(_ => _.filter(Boolean))
+
+    const snippetData =
+      snippetDatas.find(_ => _.snippetData && !isError(_.snippetData)) ||
+      snippetDatas.find(_ => isError(_.snippetData) && !/ENOTDIR/.test(_.snippetData.message)) ||
+      snippetDatas[0]
+
+    return snippetData
+  }
+
+  return async (data: string, srcFilePath: string, provenance: string[] = []): Promise<string> => {
+    const { body } = tryFrontmatter(data)
+
+    const mainContent = await Promise.all(
+      (includeFrontmatter ? data : body).split(/\n/).map(async line => {
         const match = line.match(RE_SNIPPET)
         if (!match) {
           return line
         } else {
-          const snippetFileName = match[3]
-
-          const getBasePath = (snippetBasePath: string) => {
-            try {
-              const basePath = match[5] || snippetBasePath
-
-              return isAbsolute(basePath) ? basePath : srcFilePath ? join(srcFilePath, basePath) : undefined
-            } catch (err) {
-              debug(err)
-              return undefined
-            }
-          }
-
-          // Call ourselves recursively, in case a fetched snippet
-          // fetches other files. We also may need to reroute relative
-          // <img> and <a> links according to the given `basePath`.
-          const recurse = (basePath: string, snippetFileName: string, data: string) => {
-            // Note: intentionally using `snippetBasePath` for the
-            // first argument, as this represents the "root" base
-            // path, either from the URL of the original filepath (we
-            // may be recursing here) or from the command line or from
-            // the topmatter of the original document. The second
-            // represents the current base path in the recursion.
-            const base = isAbsolute(basePath) || !snippetBasePath ? basePath : snippetBasePath
-            return inlineSnippets(base)(rerouteLinks(base, data), snippetFileName, args)
-          }
-
-          const candidates = match[5]
-            ? [match[5]]
-            : ['./', snippetBasePath, '../', '../snippets', '../../snippets', '../../', '../../../'].filter(Boolean)
-
-          const snippetDatas = isUrl(snippetFileName)
-            ? [
-                await loadNotebook(snippetFileName, args)
-                  .then(data => recurse(snippetBasePath || dirname(snippetFileName), snippetFileName, toString(data)))
-                  .catch(err => {
-                    debug('Warning: could not fetch inlined content 1', snippetBasePath, snippetFileName, err)
-                    return err
-                  })
-              ]
-            : await Promise.all(
-                candidates
-                  .map(getBasePath)
-                  .filter(Boolean)
-                  .map(myBasePath => ({
-                    myBasePath,
-                    filepath: join(myBasePath, snippetFileName)
-                  }))
-                  .filter(_ => _ && _.filepath !== srcFilePath) // avoid cycles
-                  .map(({ myBasePath, filepath }) =>
-                    loadNotebook(filepath, args)
-                      .then(data => recurse(myBasePath, filepath, toString(data)))
-                      .catch(err => {
-                        debug('Warning: could not fetch inlined content 2', myBasePath, snippetFileName, err)
-                        return err
-                      })
-                  )
-              ).then(_ => _.filter(Boolean))
-
-          const snippetData =
-            snippetDatas.find(_ => _ && !isError(_)) ||
-            snippetDatas.find(_ => isError(_) && !/ENOTDIR/.test(_.message)) ||
-            snippetDatas[0]
+          const indentation = match[1]
+          const snippetFileName = match[4]
+          const optionalSnippetBasePathInSnippetLine = match[6]
+          const { snippetData } = await fetchRecursively(
+            snippetFileName,
+            srcFilePath,
+            provenance,
+            optionalSnippetBasePathInSnippetLine
+          )
 
           if (!snippetData) {
             return line
@@ -157,12 +183,20 @@ export default function inlineSnippets(snippetBasePath?: string) {
 ${indent(snippetData.message)}`
           } else {
             debug('successfully fetched inlined content', snippetFileName)
-
-            // for now, we completely strip off the topmatter from
-            // snippets. TODO?
-            return stripFrontmatter(toString(snippetData))
+            const data = toString(snippetData)
+            if (indentation && indentation.length > 0) {
+              return data
+                .split(/\n/)
+                .map(line => `${indentation}${line}`)
+                .join('\n')
+            } else {
+              return data
+            }
           }
         }
       })
     ).then(_ => _.join('\n'))
+
+    return mainContent
+  }
 }

@@ -125,7 +125,7 @@ function loader(
     return (esModule ? 'export default ' : 'module.exports = ') + json
   }
 
-  inlineSnippets()(data, srcFilePath, { REPL })
+  inlineSnippets({ REPL })(data, srcFilePath)
     .then(exportIt)
     .then(data => callback(null, data))
     .catch(callback)
