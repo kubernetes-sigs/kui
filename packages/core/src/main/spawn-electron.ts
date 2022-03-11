@@ -513,7 +513,8 @@ export const getCommand = (argv: string[], screen: () => Promise<{ screen: Scree
       _ !== '--no-color' &&
       !_.match(/^-psn/) &&
       _ !== '--allow-file-access-from-files' &&
-      _ !== '--enable-avfoundation'
+      _ !== '--enable-avfoundation' &&
+      _ !== '--enable-crashpad' // this one seems to be linux-specific?
   )
 
   // re: argv.length === 0, this should happen for double-click launches
