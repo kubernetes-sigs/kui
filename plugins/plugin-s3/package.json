@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-s3",
-  "version": "11.4.2",
+  "version": "11.4.3",
   "description": "s3 related commands for Kui",
   "license": "Apache-2.0",
   "keywords": [
