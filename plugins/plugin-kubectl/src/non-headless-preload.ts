@@ -77,7 +77,6 @@ export default async (registrar: PreloadRegistrar) => {
       'plugin://plugin-kubectl/notebooks/knative-what-is-it-good-for.md',
       'plugin://plugin-kubectl/notebooks/install-knative-quickstart.md',
       'plugin://plugin-kubectl/notebooks/knative-quickstart.json',
-      'plugin://plugin-kubectl/notebooks/knative-first-service.md',
       'plugin://plugin-kubectl/notebooks/knative-first-autoscale.md',
       'plugin://plugin-kubectl/notebooks/knative-traffic-splitting.md',
       'plugin://plugin-kubectl/notebooks/knative-introducing-eventing.md',
