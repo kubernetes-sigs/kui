@@ -10,33 +10,13 @@ wizard:
         - match: Hello World - Go
           name: Building your application
           description: In this example, you will build a "Hello world" application
-        - match: Deploying
-          name: Deploying your service
+        - name: Deploying
           description: After build is complete, push container to docker hub and then deploy your app into your cluster
         - match: Verifying
           name: Ping your Knative Service
         - match: Removing
           name: Clean Up
 codeblocks:
-    # Validation for Knative CLI under step 1 Required Tools
-    - match: ^(kn version >& /dev/null) && echo "You have the Knative CLI" \|\| (echo "Please install the Knative CLI" && exit 1)$
-      validate: $body
-    - match: ^brew install kn$
-      validate: kn version
-    - match: ^brew upgrade kn$
-      optional: true
-    - match: ^mv <path-to-binary-file> kn
-      validate: kn version
-    - match: ^mv kn /usr/local/bin$
-      validate: kn version
-    - match: ^git clone https://github.com/knative/client.git
-      validate: $? -e 0 && exit 0 \|\| exit 1
-    - match: ^hack/build.sh -f$
-      validate: $? -e 0 && exit 0 \|\| exit 1
-    - match: ^kn version$
-      validate: $body
-    - match: ^docker run --rm -v "$HOME/.kube/config:/root/.kube/config" gcr.io/knative-releases/knative.dev/client/cmd/kn:latest service list$
-      validate: $? -e 0 && exit 0 \|\| exit 1
     # Validation for Step 2: Building your application
     - match: ^git clone https://github.com/knative/docs.git knative-docs
       validation: $? -e 0 && exit 0 \|\| exit 1
@@ -67,25 +47,4 @@ codeblocks:
       validate: (kubectl cluster-info --context kind-knative) && exit 1 \|\| exit 0
 ---
 
---8<-- "https://raw.githubusercontent.com/kubernetes-sigs/kui/master/plugins/plugin-kubectl/notebooks/knative-what-is-it-good-for.md"
-
----
-
-# Knative Serving - Deploying "Hello World"
-
-This application will be deplyoyed as a Knative Service instead of a Kubernetes service.
-
----
-
-# Install Required Tools
-
-!!! note "Note - Installing Knative" 
-    If you install Knative using Quickstart, when you run the quickstart plugin, a cluster called `knative` will be created. To complete the deployment of the "Hello World" application, a pre-built app with a container already pushed to Docker hub will be used.
-
---8<-- "knative.md"
-
---8<-- "kn-cli.md"
-
---8<-- "https://raw.githubusercontent.com/mra-ruiz/docs/guidebooks/code-samples/serving/hello-world/helloworld-go/README.md"
-
---8<-- "https://raw.githubusercontent.com/mra-ruiz/docs/guidebooks/docs/getting-started/clean-up.md"
+--8<-- "https://raw.githubusercontent.com/mra-ruiz/docs/guidebooks/docs/guidebooks/knative-serving-hello-world.md"
