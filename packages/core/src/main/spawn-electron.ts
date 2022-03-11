@@ -506,7 +506,15 @@ export const getCommand = (argv: string[], screen: () => Promise<{ screen: Scree
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
 
   // re: the -psn bit, opening Kui from macOS Finder adds additional argv -psn; see: https://github.com/IBM/kui/issues/382
-  argv = argv.filter(_ => _ !== '--ui' && _ !== '--no-color' && !_.match(/^-psn/))
+  // re: the --allow-file... and --enable-av...; see https://github.com/kubernetes-sigs/kui/issues/8746
+  argv = argv.filter(
+    _ =>
+      _ !== '--ui' &&
+      _ !== '--no-color' &&
+      !_.match(/^-psn/) &&
+      _ !== '--allow-file-access-from-files' &&
+      _ !== '--enable-avfoundation'
+  )
 
   // re: argv.length === 0, this should happen for double-click launches
   const isShell =
