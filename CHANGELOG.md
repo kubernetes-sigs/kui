@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.4](https://github.com/IBM/kui/compare/v11.4.3...v11.4.4) (2022-03-11)
+
+### Bug Fixes
+
+- **packages/core:** strip off chrome args for second electron instance (v2) ([4ece3bb](https://github.com/IBM/kui/commit/4ece3bb))
+
 ## [11.4.3](https://github.com/IBM/kui/compare/v11.4.2...v11.4.3) (2022-03-11)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-patternfly4-themes",
-  "version": "11.4.3",
+  "version": "11.4.4",
   "description": "Kui plugin offering a Patternfly4-inspired set of themes",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
