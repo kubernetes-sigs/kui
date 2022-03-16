@@ -75,9 +75,11 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
                   if (!isNotebook) {
                     const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
                     file = relativeToCWD
-                  } else {
+                  } else if (/^https?:/.test(absoluteHref)) {
                     // reference to http://
                     file = absoluteHref.replace(/\.\//g, '')
+                  } else {
+                    file = absoluteHref
                   }
                 }
               }
