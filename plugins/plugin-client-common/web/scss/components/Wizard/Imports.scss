@@ -65,6 +65,20 @@
     }
   }
 
+  svg {
+    @include Success {
+      color: $complete-color;
+    }
+  }
+
+  /** We hijack "isRead" badges to mean that the subtree is complete. And for these, we use a badge, so we can "mute" these badges. */
+  .pf-c-badge.pf-m-unread {
+    padding: 0;
+    min-width: unset;
+    font-size: 1rem;
+    background-color: transparent;
+  }
+
   strong {
     font-weight: 500;
     color: var(--color-text-02);

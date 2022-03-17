@@ -27,6 +27,7 @@ import {
   ChartBarIcon as ChartBar,
   CopyIcon as Copy,
   PlusIcon as Add,
+  BookIcon as Guidebook,
   TerminalIcon as Terminal,
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
@@ -123,6 +124,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Grid {...props} />
     case 'Github':
       return <Github {...props} />
+    case 'Guidebook':
+      return <Guidebook {...props} />
     case 'Hamburger':
       return <Hamburger {...props} />
     case 'Help':
