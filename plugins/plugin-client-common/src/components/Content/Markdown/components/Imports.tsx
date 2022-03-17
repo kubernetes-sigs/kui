@@ -150,8 +150,6 @@ class ImportsImpl extends React.PureComponent<Props, State> {
           )
         }
 
-    if (showIcon && doneOrErrors && !hasErrors) console.error('!!!!!!WI', showBadge, rollupStatus, data.name)
-
     return Object.assign(data, badgeProps, {
       'data-origin': origin,
       'data-has-errors': hasErrors,
