@@ -18,6 +18,18 @@
 @import '../../Page/mixins';
 @import '../../TopLevelTab/mixins';
 
+@include Scrollback {
+  @include LeftStrip {
+    /**
+         * Normally, this will have a min-width: 0, which allows the
+         * flex box to adjust to reduced width. However, the
+         * RightStrip is narrow, and so we probably would rather have
+         * horizontal overflow than wrapping.
+         */
+    @include WrapNormally;
+  }
+}
+
 @include KuiTabContainer {
   @include SidebarOpen {
     @include TopLevelTab {
