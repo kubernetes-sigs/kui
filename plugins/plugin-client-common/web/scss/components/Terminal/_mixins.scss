@@ -678,3 +678,18 @@ $sepia-filter: sepia(0.5) opacity(0.9) contrast(0.95) blur(0.25px);
     }
   }
 }
+
+/**
+ * Normally, certain elements will have a min-width: 0, which allows
+ * the flex box to adjust to reduced width. In some cases, e.g. areas
+ * we know will be particularly narrow, we probably would rather have
+ * horizontal overflow than wrapping.
+ *
+ * Future Devs: update the rules here as we define other regions (in
+ * addition to Commentary) that have this property.
+ */
+@mixin WrapNormally {
+  @include Commentary {
+    min-width: unset;
+  }
+}
