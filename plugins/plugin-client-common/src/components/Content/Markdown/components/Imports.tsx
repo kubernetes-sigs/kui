@@ -221,7 +221,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       hasBadge
     )
 
-    return { data: [data] }
+    return { data: [Tree.xformFoldNestedSubTask(data)] }
   }
 
   private treeModelForTitledStep(
@@ -278,24 +278,20 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     // only show the "n of m" text for the root
     const hasBadge = isDone(rollupStatus) || depth === 0
 
-    const data =
-      // eslint-disable-next-line no-constant-condition
-      false && children.length === 1 && children[0].name === 'Choice'
-        ? children[0].children
-        : // : [Object.assign(children[0], { name: name || children[0].name })]
-          [
-            this.withIcons(
-              rollupStatus,
-              graph,
-              {
-                name: name || 'Sequence',
-                defaultExpanded: depth < 1,
-                children: children.length === 0 ? undefined : children
-              },
-              hasBadge
-            )
-          ]
-    return { data }
+    const data = [
+      this.withIcons(
+        rollupStatus,
+        graph,
+        {
+          name: name || 'Sequence',
+          defaultExpanded: depth < 1,
+          children: children.length === 0 ? undefined : children
+        },
+        hasBadge
+      )
+    ]
+
+    return { data: Tree.xformFoldSingletonSubTask(data) }
   }
 
   private treeModelForParallel(

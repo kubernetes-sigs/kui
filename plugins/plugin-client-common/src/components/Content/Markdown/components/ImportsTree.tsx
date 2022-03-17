@@ -81,6 +81,58 @@ export default abstract class Tree {
     }
   }
 
+  /**
+   * Transform A -> SubTask1 -> SubTask2 -> 1,2,3,4
+   *      ===> A -> SubTask1|SubTask2 -> 1,2,3,4
+   *
+   * where we choose whichever of SubTask1 or SubTask2 has a title,
+   * giving preference to SubTask1.
+   */
+  public static xformFoldNestedSubTask(graph: TreeViewProps['data'][0]) {
+    const origin1 = graph['data-origin']
+    if (origin1 && isSubTask(origin1)) {
+      if (graph.children.length === 1) {
+        const singleChild = graph.children[0]
+        const origin2 = singleChild['data-origin']
+        if (origin2) {
+          if (graph.title) {
+            // choose SubTask1, since it has a title
+            return Object.assign({}, graph, { children: singleChild.children })
+          } else if (origin2.title) {
+            // choose SubTask2
+            return singleChild
+          }
+        }
+      }
+    }
+
+    // otherwise, stick with the current graph
+    return graph
+  }
+
+  /**
+   * Transform A -> SubTask -> 1,2,3,4
+   *      ===> A -> 1,2,3,4
+   *
+   * This logic currently assumes that A has a good name.
+   */
+  public static xformFoldSingletonSubTask(data: TreeViewProps['data']) {
+    if (data.length === 1) {
+      const singleChild1 = data[0]
+      if (singleChild1.children.length === 1) {
+        const singleChild2 = singleChild1.children[0]
+        const origin2 = singleChild2['data-origin']
+        if (origin2 && isSubTask(origin2)) {
+          if (singleChild2.children.length > 0) {
+            return [Object.assign({}, singleChild1, { children: singleChild2.children })]
+          }
+        }
+      }
+    }
+
+    return data
+  }
+
   public static optimize(children: TreeViewProps['data'], depth = 0): TreeViewProps['data'] {
     return Tree.xformFoldImportsIntoWizards(Tree.xformFoldChoices(children), depth)
   }

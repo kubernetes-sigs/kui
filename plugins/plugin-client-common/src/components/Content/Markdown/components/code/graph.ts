@@ -48,6 +48,10 @@ export type ChoicesMap = Record<CodeBlockChoice['group'], CodeBlockChoice['membe
 export interface Ordered {
   order: number
   postorder: number
+  controlDependenceRegion?: {
+    depth: number
+    group: CodeBlockChoice['group']
+  }
 }
 
 export type Unordered = Partial<Ordered>
@@ -431,9 +435,11 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
           } else if (isCodeBlockWizardStep(parent)) {
             // new graph node for wizard
             set(idx, { parent, graph: newWizard(block, parent, isDeepest) })
-          } else {
+          } else if (isCodeBlockImport(parent)) {
             // new graph node for import
             set(idx, { parent, graph: newSubTask(block, parent, isDeepest) })
+          } else {
+            console.error('Missing handler in graph compilation', parent)
           }
         }
       })
