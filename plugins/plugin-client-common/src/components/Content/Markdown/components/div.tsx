@@ -46,18 +46,23 @@ export default function div(mdprops: MarkdownProps, uuid: string) {
     const hasActiveInput = position === 'terminal' || undefined
     const inverseColors = props['data-kui-inverse-colors'] === 'true' || undefined
 
-    if (isWizard(props)) {
-      return <Wizard uuid={uuid} {...props} />
-    } else if (isTabs(props)) {
+    if (isTabs(props)) {
       return tabbed(props)
     } else if (isImports(props)) {
       // Don't render the content of imported documents. We will process these separately.
       return <React.Fragment />
-    } else if (!position || (isNormalSplit(position) && count === 0 && !maximized && !placeholder)) {
+    } else if (
+      !position ||
+      ((isNormalSplit(position) || position === 'wizard') && count === 0 && !maximized && !placeholder)
+    ) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
-      const node = <div data-is-maximized={maximized || undefined}>{props.children}</div>
+      const node = isWizard(props) ? (
+        <Wizard uuid={uuid} {...props} />
+      ) : (
+        <div data-is-maximized={maximized || undefined}>{props.children}</div>
+      )
       if (!mdprops.tab || (hasActiveInput !== true && hasActiveInput !== false)) {
         return node
       } else {
@@ -77,13 +82,17 @@ export default function div(mdprops: MarkdownProps, uuid: string) {
               <ReactCommentary>
                 <TextContent>
                   <div className="padding-content marked-content page-content" data-is-nested>
-                    {props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')}
+                    {isWizard(props) ? (
+                      <Wizard uuid={uuid} {...props} />
+                    ) : (
+                      props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')
+                    )}
                   </div>
                 </TextContent>
               </ReactCommentary>
             )
 
-            const positionForView = position === 'terminal' ? 'default' : position
+            const positionForView = position === 'terminal' || position === 'wizard' ? 'default' : position
 
             setTimeout(() =>
               injector.inject(

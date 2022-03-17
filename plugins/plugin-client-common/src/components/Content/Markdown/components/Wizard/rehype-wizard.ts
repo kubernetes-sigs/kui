@@ -28,6 +28,7 @@ type Primordial = Pick<CodeBlockGroupMember, 'group'> & {
   description: Element
   steps: Element[]
   progress: Required<WizardSteps['wizard']['progress']>
+  splitCount: number
 }
 
 interface GroupMember {
@@ -105,6 +106,7 @@ function transformer(ast: Root) {
 
   const wizard: Primordial = {
     group: v4(),
+    splitCount: 0,
     title: '',
     description: undefined,
     progress: 'bar',
@@ -119,8 +121,15 @@ function transformer(ast: Root) {
     if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && parent) {
       delete node.properties['data-kui-split']
 
-      if (wizard.steps.length === 0 && node.properties['data-kui-wizard-progress']) {
-        wizard.progress = node.properties['data-kui-wizard-progress'].toString() as 'bar' | 'none'
+      if (wizard.steps.length === 0) {
+        if (node.properties['data-kui-wizard-progress']) {
+          wizard.progress = node.properties['data-kui-wizard-progress'].toString() as 'bar' | 'none'
+        }
+
+        const splitCount = node.properties['data-kui-split-count']
+        if (!wizard.title && typeof splitCount !== 'undefined') {
+          wizard.splitCount = typeof splitCount === 'number' ? splitCount : parseInt(splitCount.toString(), 10)
+        }
       }
 
       if (!node.properties['data-kui-title']) {
@@ -169,6 +178,7 @@ function transformer(ast: Root) {
           properties: {
             'data-kui-split': 'wizard',
             'data-kui-title': wizard.title,
+            'data-kui-split-count': wizard.splitCount,
             'data-kui-wizard-progress': wizard.progress,
             'data-kui-code-blocks': [] // rehype-imports will populate this
           }
