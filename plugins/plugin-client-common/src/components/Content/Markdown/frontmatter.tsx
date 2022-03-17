@@ -163,7 +163,7 @@ function extractSplitsAndSections(tree /*: Root */, frontmatter: KuiFrontmatter)
     const maximized = isValidPositionObj(positionAsGiven) && positionAsGiven.maximized === true
     const inverseColors = isValidPositionObj(positionAsGiven) && positionAsGiven.inverseColors === true
 
-    const positionForCount = isNormalSplit(position) ? 'default' : position
+    const positionForCount = isNormalSplit(position) || position === 'wizard' ? 'default' : position
     const count = frontmatter.layoutCount[positionForCount] || 0
     frontmatter.layoutCount[positionForCount] = count + 1
 
