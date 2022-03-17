@@ -27,6 +27,7 @@ export default abstract class Tree {
    * child, and no other children, then we can fold the Imports and
    * treat them as prefix steps in the Wizard
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private static xformFoldImportsIntoWizards(children: TreeViewProps['data'], depth = 0): TreeViewProps['data'] {
     const { subtasks, titledSteps, rest } = children.reduce(
       (P, child) => {
@@ -49,14 +50,15 @@ export default abstract class Tree {
 
     if (subtasks.length > 0 && titledSteps.length === 1 && rest.length === 0) {
       const wizard = titledSteps[0]
-      const prereqs = {
+      /* const prereqs = {
         name: 'Prerequisites',
         hasBadge: true,
         children: subtasks,
         defaultExpanded: depth < 2
       }
       wizard.children.splice(0, 0, prereqs)
-      return [wizard]
+      return [wizard] */
+      return [...subtasks, wizard]
     } else {
       return children
     }

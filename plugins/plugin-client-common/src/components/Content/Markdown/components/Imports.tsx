@@ -69,6 +69,10 @@ type State = Pick<TreeViewProps, 'data'> & {
   codeBlockStatus: Record<string, Status>
 }
 
+function isDone({ nDone, nTotal }: Progress) {
+  return nDone === nTotal
+}
+
 class ImportsImpl extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
@@ -122,17 +126,38 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     return this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, 'Tasks')
   }
 
-  private withIcons(rollupStatus: Progress, origin: OrderedGraph, data: TreeViewProps['data'][0]) {
-    const isTotallyDone = rollupStatus.nDone === rollupStatus.nTotal
+  private withIcons(
+    rollupStatus: Progress,
+    origin: OrderedGraph,
+    data: TreeViewProps['data'][0],
+    showBadge = isDone(rollupStatus)
+  ) {
+    const isTotallyDone = isDone(rollupStatus)
     const hasErrors = rollupStatus.nError > 0
     const doneOrErrors = isTotallyDone || hasErrors
 
-    return Object.assign(data, {
+    const showIcon = data.icon || !showBadge
+
+    const badgeProps = !showBadge
+      ? { hasBadge: false }
+      : {
+          hasBadge: true,
+          badgeProps: { isRead: !isTotallyDone },
+          customBadgeContent: isTotallyDone ? (
+            <Icons className="pf-m-success" icon="Checkmark" />
+          ) : (
+            <span className="nowrap">{`${rollupStatus.nDone} of ${rollupStatus.nTotal}`}</span>
+          )
+        }
+
+    if (showIcon && doneOrErrors && !hasErrors) console.error('!!!!!!WI', showBadge, rollupStatus, data.name)
+
+    return Object.assign(data, badgeProps, {
       'data-origin': origin,
       'data-has-errors': hasErrors,
       'data-is-totally-done': isTotallyDone,
-      expandedIcon: null,
-      icon: doneOrErrors && <LabelWithStatus status={hasErrors ? 'error' : 'success'} />
+      expandedIcon: data.expandedIcon || null,
+      icon: showIcon && (data.icon || (doneOrErrors && <LabelWithStatus status={hasErrors ? 'error' : 'success'} />))
     })
   }
 
@@ -171,23 +196,32 @@ class ImportsImpl extends React.PureComponent<Props, State> {
         .flatMap(_ => _.data)
     )
 
-    const data = this.withIcons(rollupStatus, origin, {
-      id: key,
-      name: title || basename(filepath),
-      defaultExpanded: depth < 1,
-      children: children.length === 0 ? undefined : children,
-      action: filepath && (
-        <button
-          className="kui--tree-action pf-c-button pf-m-plain"
-          onClick={() => {
-            debug('drilling down to notebook', filepath)
-            pexecInCurrentTab(`replay ${encodeComponent(filepath)}`, undefined, true, true)
-          }}
-        >
-          <Icons icon="Info" />
-        </button>
-      )
-    })
+    const hasAction = !!filepath
+    const hasBadge = hasAction
+
+    const data = this.withIcons(
+      rollupStatus,
+      origin,
+      {
+        id: key,
+        name: title || basename(filepath),
+        defaultExpanded: depth < 1,
+        children: children.length === 0 ? undefined : children,
+        icon: <Icons icon="Guidebook" />,
+        action: hasAction && (
+          <button
+            className="kui--tree-action pf-c-button pf-m-plain"
+            onClick={() => {
+              debug('drilling down to notebook', filepath)
+              pexecInCurrentTab(`replay ${encodeComponent(filepath)}`, undefined, true, true)
+            }}
+          >
+            <Icons icon="Info" />
+          </button>
+        )
+      },
+      hasBadge
+    )
 
     return { data: [data] }
   }
@@ -243,19 +277,25 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       depth
     )
 
+    // only show the "n of m" text for the root
+    const hasBadge = isDone(rollupStatus) || depth === 0
+
     const data =
       // eslint-disable-next-line no-constant-condition
       false && children.length === 1 && children[0].name === 'Choice'
         ? children[0].children
         : // : [Object.assign(children[0], { name: name || children[0].name })]
           [
-            this.withIcons(rollupStatus, graph, {
-              name: name || 'Sequence',
-              defaultExpanded: depth < 1,
-              hasBadge: depth === 0,
-              customBadgeContent: `${rollupStatus.nDone} of ${rollupStatus.nTotal} complete`,
-              children: children.length === 0 ? undefined : children
-            })
+            this.withIcons(
+              rollupStatus,
+              graph,
+              {
+                name: name || 'Sequence',
+                defaultExpanded: depth < 1,
+                children: children.length === 0 ? undefined : children
+              },
+              hasBadge
+            )
           ]
     return { data }
   }
@@ -336,7 +376,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     const data = [
       {
         id,
-        icon: myStatus && <LabelWithStatus status={myStatus} />,
+        icon: myStatus && myStatus !== 'success' && <LabelWithStatus status={myStatus} />,
         name: (
           <pre>
             <code>
