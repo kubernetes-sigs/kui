@@ -69,7 +69,8 @@
           "expanded": false,
           "submenu": [
             { "notebook": "Hello World Deployment", "filepath": "/kui/kubernetes/knative-serving-hello-world.md" },
-            { "notebook": "Autoscaling Using Go", "filepath": "/kui/kubernetes/knative-serving-autoscaling-go.md" }
+            { "notebook": "Autoscaling Using Go", "filepath": "/kui/kubernetes/knative-serving-autoscaling-go.md" },
+            { "notebook": "Traffic Management", "filepath": "/kui/kubernetes/knative-serving-traffic-management.md" }
           ]
         }
       ]
