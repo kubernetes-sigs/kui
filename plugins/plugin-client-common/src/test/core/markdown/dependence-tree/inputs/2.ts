@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-import IN1 from './1'
-import IN2 from './2'
+import Input, { Tree } from '../Input'
+import { importa, importe, importd } from './1'
 
-export default [IN1, IN2]
+const thisContent: Tree = {
+  name: 'AAA',
+  children: [{ name: 'Option 1: Tab1', children: [importd] }]
+}
+
+const IN2: Input = {
+  input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model2.md'),
+  tree: [
+    {
+      name: 'snippets-in-tab4.md',
+      children: [importa, importe, thisContent]
+    }
+  ]
+}
+
+export default IN2

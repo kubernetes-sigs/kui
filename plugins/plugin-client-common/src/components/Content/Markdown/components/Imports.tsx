@@ -31,6 +31,7 @@ import {
   order,
   progress,
   CodeBlockProps,
+  OrderedCodeBlock,
   OrderedChoice,
   OrderedGraph,
   OrderedParallel,
@@ -123,7 +124,9 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     status = this.state.codeBlockStatus,
     doValidate = true
   ): Pick<State, 'data'> {
-    return this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, 'Tasks')
+    return {
+      data: Tree.domTree(this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, 'Tasks').data)
+    }
   }
 
   private withIcons(
@@ -150,7 +153,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
           )
         }
 
-    return Object.assign(data, badgeProps, {
+    return Object.assign({ id: origin.order.toString() }, data, badgeProps, {
       'data-origin': origin,
       'data-has-errors': hasErrors,
       'data-is-totally-done': isTotallyDone,
@@ -201,7 +204,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       rollupStatus,
       origin,
       {
-        id: key,
+        id: origin.order.toString(),
         name: title || basename(filepath),
         defaultExpanded: depth < 3 && !isDone(rollupStatus),
         children: children.length === 0 ? undefined : children,
@@ -354,17 +357,12 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     return { data }
   }
 
-  private treeModelForCodeBlock(
-    graph: CodeBlockProps,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = ''
-  ) {
+  private treeModelForCodeBlock(graph: OrderedCodeBlock, status: State['codeBlockStatus'], doValidate: boolean) {
     if (doValidate) {
       setTimeout(() => this.validate(graph))
     }
 
-    const id = `${idPrefix}-${graph.id}`
+    const id = graph.order.toString()
     const myStatus = status[graph.id]
 
     const data = [
@@ -408,7 +406,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     } else if (isSubTask(graph)) {
       return this.treeModelForSubTask(graph, status, doValidate, depth)
     } else if (!graph.optional && !ImportsImpl.ignoreCodeBlock(graph)) {
-      return this.treeModelForCodeBlock(graph, status, doValidate, idPrefix)
+      return this.treeModelForCodeBlock(graph, status, doValidate)
     }
   }
 

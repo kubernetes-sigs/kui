@@ -163,6 +163,8 @@ export type Graph<T extends Unordered | Ordered = Unordered> =
 
 export type OrderedGraph = Graph<Ordered>
 
+export type OrderedCodeBlock = CodeBlockProps & Ordered
+
 export function isChoice<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Choice<T> {
   return Array.isArray((graph as Choice).choices)
 }

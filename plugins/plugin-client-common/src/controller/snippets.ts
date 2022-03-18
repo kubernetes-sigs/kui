@@ -238,7 +238,7 @@ ${indent(errorMessage)}`
       return oops404(snippetFileName)
     }
 
-    const { attributes, body, bodyBegin } = tryFrontmatter(snippetData)
+    const { attributes, body, bodyBegin } = tryFrontmatter(snippetData.trim())
 
     const attributesEnc = bodyBegin === 0 ? '' : encodeURIComponent(JSON.stringify(attributes))
 
@@ -319,7 +319,7 @@ ${colons}
               .slice(0, bodyBegin - 1)
               .join('\n')
 
-      return `${topmatter}
+      return `${topmatter ? '\n' + topmatter : ''}
 
 <!-- Begin imported content for ${srcFilePath} -->
 
