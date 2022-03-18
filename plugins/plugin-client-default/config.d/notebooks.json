@@ -68,7 +68,8 @@
           "label": "Knative Serving Examples",
           "expanded": false,
           "submenu": [
-            { "notebook": "Hello World Deployment", "filepath": "/kui/kubernetes/knative-serving-hello-world.md" }
+            { "notebook": "Hello World Deployment", "filepath": "/kui/kubernetes/knative-serving-hello-world.md" },
+            { "notebook": "Autoscaling Using Go", "filepath": "/kui/kubernetes/knative-serving-autoscaling-go.md" }
           ]
         }
       ]
