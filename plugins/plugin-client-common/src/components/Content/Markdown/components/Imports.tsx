@@ -332,7 +332,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     depth = 0
   ) {
     const _children = graph.choices
-      .map((_, childIdx) =>
+      .map(_ =>
         this.treeModelForLeaf(
           _.graph,
           status,
@@ -340,7 +340,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
           `${idPrefix}-g${graph.group}-m${_.member}`,
           depth + 1,
           <span>
-            <strong>Option {childIdx + 1}</strong>: {_.title}
+            <strong>Option {_.member + 1}</strong>: {_.title}
           </span>
         )
       )
