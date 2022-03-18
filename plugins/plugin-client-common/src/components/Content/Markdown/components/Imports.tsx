@@ -203,7 +203,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       {
         id: key,
         name: title || basename(filepath),
-        defaultExpanded: depth < 1,
+        defaultExpanded: depth < 3 && !isDone(rollupStatus),
         children: children.length === 0 ? undefined : children,
         icon: <Icons icon="Guidebook" />,
         action: hasAction && (
