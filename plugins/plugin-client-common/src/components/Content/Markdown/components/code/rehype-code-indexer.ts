@@ -78,8 +78,9 @@ export default function plugin(uuid: string) {
     visit(/* <Element> */ ast, 'element', function visitor(node, ancestors) {
       if (node.tagName === 'code') {
         // react-markdown v6+ places the language in the className
-        const match = node.properties.className ? /language-(\w+)/.exec(node.properties.className.toString()) : ''
-        const language = match ? match[1] : undefined
+        const match = node.properties.className ? /language-([\w{.]+)/.exec(node.properties.className.toString()) : ''
+        const language = match ? match[1].replace(/[{.]/g, '') : undefined
+        // re: the replace: this is a bit of a hack to support {.bash .no-copy} style languages from pymdown
 
         if (isExecutable(language)) {
           const myCodeIdx = codeIdx++

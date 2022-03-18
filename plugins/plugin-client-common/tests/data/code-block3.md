@@ -27,7 +27,7 @@ intentionalerror
 
 === "tab1"
 
-    ```bash
+    ```{.bash .no-copy}
     ---
     id: BBB
     ---
