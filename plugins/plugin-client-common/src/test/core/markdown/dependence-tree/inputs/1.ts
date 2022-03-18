@@ -14,32 +14,39 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'path'
-
 import Input, { Tree } from '../Input'
 
-const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model.md')), '..')
-
 const importa: Tree = { name: 'importa.md', children: [{ name: 'echo AAA' }] }
+
 const importc: Tree = { name: 'importc.md', children: [{ name: 'echo CCC' }] }
-const importe: Tree = { name: 'importe.md', children: [{ name: 'Option 1: TabE1', children: [{ name: 'echo EEE' }] }] }
+
+const importe: Tree = { name: 'EEE', children: [{ name: 'Option 1: TabE1', children: [{ name: 'echo EEE' }] }] }
+
 const importd: Tree = {
-  name: 'importd.md',
+  name: 'DDD',
   children: [
     { name: 'Option 1: SubTab1', children: [{ name: 'echo AAA' }, { name: 'echo AAA' }, { name: 'echo AAA' }] },
     { name: 'Option 2: SubTab2', children: [{ name: 'echo BBB' }] }
   ]
 }
-const importf: Tree = { name: 'importf.md', children: [importd] }
+
+// the dominator tree will elimimate this node from the view
+// const importf: Tree = { name: 'importf.md', children: [importd] }
+
+const thisContent: Tree = {
+  name: 'AAA',
+  children: [{ name: 'Option 1: Tab1' }, { name: 'Option 2: Tab2', children: [importc] }]
+}
 
 const IN1: Input = {
-  input: join(ROOT, 'data', 'guidebook-tree-model.md'),
+  input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model1.md'),
   tree: [
     {
       name: 'snippets-in-tab3.md',
-      children: [importa, importe, importf, importd, importc]
+      children: [importa, importe, importd, thisContent]
     }
   ]
 }
 
+export { importa, importc, importe, importd }
 export default IN1

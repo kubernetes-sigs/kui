@@ -4,7 +4,6 @@ layout:
 imports:
     - importa.md
     - importe.md
-    - importf.md
 ---
 
 ::imports
@@ -17,6 +16,6 @@ imports:
     --8<-- "snippets-in-tab3a.md"
 
 === "Tab2"
-    --8<-- "snippets-in-tab1b.md"
+    --8<-- "snippets-in-tab4b.md"
 
 DDD
