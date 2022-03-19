@@ -19,7 +19,10 @@ import { importa, importe, importd } from './1'
 
 const thisContent: Tree = {
   name: 'AAA',
-  children: [{ name: 'Option 1: Tab1', children: [importd] }]
+  children: [
+    { name: 'Option 1: Tab1', children: [importd] },
+    { name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }
+  ]
 }
 
 const IN2: Input = {

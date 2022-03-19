@@ -383,7 +383,7 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
                   }
                 } else {
                   // here we are at [1b]
-                  curNesting.parent = parent
+                  currentNesting = [...currentNesting.slice(0, idx), { parent, graph: curNesting.graph }]
                   curNesting.graph.choices.push(newChoice(block, parent, isDeepest))
                 }
               } else {
@@ -403,7 +403,7 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
                   addToCurrentWizardStep(curNesting.graph, block, parent, isDeepest)
                 } else {
                   // here we are at [4b]
-                  curNesting.parent = parent
+                  currentNesting = [...currentNesting.slice(0, idx), { parent, graph: curNesting.graph }]
                   addWizardStep(curNesting.graph, block, parent, isDeepest)
                 }
               } else {
