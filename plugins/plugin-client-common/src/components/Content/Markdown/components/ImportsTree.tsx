@@ -153,6 +153,7 @@ export default abstract class Tree {
 
       const childOrigin = child['data-origin']
       if (childOrigin && isSubTask(childOrigin)) {
+        // then we have a potentially shared node
         const { key } = childOrigin
         const already = subTaskMemo[key]
         if (already) {
@@ -169,9 +170,13 @@ export default abstract class Tree {
   }
 
   private static toGraph(data: TreeViewProps['data']) {
-    const graph: number[][] = []
-    const backmap: TreeViewProps['data'][0][] = []
-    const blank: boolean[] = []
+    const maxPostorder = data
+      .map(_ => _['data-origin'].postorder)
+      .reduce((max, postorder) => Math.max(max, postorder), 0)
+
+    const graph: number[][] = Array(maxPostorder)
+    const backmap: TreeViewProps['data'][0][] = Array(maxPostorder)
+    const blank: boolean[] = Array(maxPostorder)
     const subTaskMemo: Record<SubTask['key'], number> = {}
 
     data.forEach(_ => Tree.toGraphForNode(_, graph, backmap, subTaskMemo))
@@ -211,6 +216,12 @@ export default abstract class Tree {
             parent.children.push(child)
           }
         }
+      }
+    })
+
+    backmap.forEach(_ => {
+      if (_.children.length === 0) {
+        delete _.children
       }
     })
 
