@@ -20,6 +20,8 @@ const importa: Tree = { name: 'importa.md', children: [{ name: 'echo AAA' }] }
 
 const importc: Tree = { name: 'importc.md', children: [{ name: 'echo CCC' }] }
 
+const option2Tab2: Tree = { name: 'Option 2: Tab2', children: [importc] }
+
 const importe: Tree = { name: 'EEE', children: [{ name: 'Option 1: TabE1', children: [{ name: 'echo EEE' }] }] }
 
 const importd: Tree = {
@@ -30,20 +32,17 @@ const importd: Tree = {
   ]
 }
 
-// the dominator tree will elimimate this node from the view
-// const importf: Tree = { name: 'importf.md', children: [importd] }
-
-const thisContent: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 1: Tab1' }, { name: 'Option 2: Tab2', children: [importc] }]
+const snippetsInTab3 = {
+  name: 'snippets-in-tab3.md',
+  children: [option2Tab2]
 }
 
 const IN1: Input = {
   input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model1.md'),
   tree: [
     {
-      name: 'snippets-in-tab3.md',
-      children: [importa, importe, importd, thisContent]
+      name: 'Tasks',
+      children: [snippetsInTab3, importa, importe, importd]
     }
   ]
 }

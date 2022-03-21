@@ -37,6 +37,8 @@ import CodeBlockProps, {
 } from '../Wizard/CodeBlockProps'
 import { ProgressStepState } from '../../../ProgressStepper'
 
+import hoistSubTasks from './graph/hoistSubTasks'
+
 type Status = ProgressStepState['status']
 
 export { CodeBlockProps }
@@ -89,7 +91,7 @@ type ChoicePart<T extends Unordered | Ordered = Unordered> = {
   graph: Sequence<T>
 }
 
-type Choice<T extends Unordered | Ordered = Unordered> = T &
+export type Choice<T extends Unordered | Ordered = Unordered> = T &
   Title & {
     group: ChoiceGroup
     choices: ChoicePart<T>[]
@@ -146,6 +148,15 @@ export type SubTask<T extends Unordered | Ordered = Unordered> = T & {
 }
 
 export type OrderedSubTask = SubTask<Ordered>
+
+export function subtask(key: string, title: string, filepath: string, graph: Sequence<Unordered>): SubTask<Unordered> {
+  return {
+    key,
+    title,
+    filepath,
+    graph
+  }
+}
 
 function sameSubTask(A: SubTask, B: SubTask) {
   return (
@@ -226,7 +237,7 @@ export function parallel(parallel: Graph[]): Parallel {
   }
 }
 
-function emptySequence(): Sequence {
+export function emptySequence(): Sequence {
   return sequence([])
 }
 
@@ -256,9 +267,11 @@ function isWizardStepNesting(nesting: Nesting): nesting is WizardStepNesting {
 }
 
 function optimize(graph: Graph) {
-  return graph
+  return hoistSubTasks(graph)
+  // return graph
 }
 
+/** Take a list of code blocks and arrange them into a control flow dag */
 export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parallel' = 'parallel'): Graph {
   if (!blocks) {
     return undefined

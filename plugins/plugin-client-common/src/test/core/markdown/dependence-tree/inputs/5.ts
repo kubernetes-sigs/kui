@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import IN1 from './1'
-import IN2 from './2'
-import IN3 from './3'
-import IN4 from './4'
-import IN5 from './5'
+import Input from '../Input'
+import { importd } from './1'
 
-export default [IN1, IN2, IN3, IN4, IN5]
+const IN5: Input = {
+  input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model5.md'),
+  tree: [
+    {
+      name: 'Tasks',
+      children: [importd]
+    }
+  ]
+}
+
+export default IN5

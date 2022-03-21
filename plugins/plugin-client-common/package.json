@@ -28,7 +28,6 @@
     "@patternfly/react-styles": "4.48.5",
     "@patternfly/react-table": "4.67.5",
     "anser": "2.1.1",
-    "dominators": "^1.1.2",
     "html-entities": "2.3.2",
     "monaco-editor": "0.32.1",
     "monaco-editor-webpack-plugin": "7.0.1",

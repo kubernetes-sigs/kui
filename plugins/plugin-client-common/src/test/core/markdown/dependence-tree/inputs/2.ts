@@ -17,8 +17,8 @@
 import Input, { Tree } from '../Input'
 import { importa, importe, importd } from './1'
 
-const thisContent: Tree = {
-  name: 'AAA',
+const snippetsInTab4: Tree = {
+  name: 'snippets-in-tab4.md',
   children: [
     { name: 'Option 1: Tab1', children: [importd] },
     { name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }
@@ -29,8 +29,8 @@ const IN2: Input = {
   input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model2.md'),
   tree: [
     {
-      name: 'snippets-in-tab4.md',
-      children: [importa, importe, thisContent]
+      name: 'Tasks',
+      children: [snippetsInTab4, importa, importe]
     }
   ]
 }

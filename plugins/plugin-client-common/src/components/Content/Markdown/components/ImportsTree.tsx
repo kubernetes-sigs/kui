@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { iterative } from 'dominators'
 import { TreeViewProps } from '@patternfly/react-core'
 
-import { SubTask, isChoice, isSubTask, isTitledSteps } from './code/graph'
+import { isChoice, isSubTask, isTitledSteps } from './code/graph'
 
 export default abstract class Tree {
   /**
@@ -136,99 +135,5 @@ export default abstract class Tree {
 
   public static optimize(children: TreeViewProps['data'], depth = 0): TreeViewProps['data'] {
     return Tree.xformFoldImportsIntoWizards(Tree.xformFoldChoices(children), depth)
-  }
-
-  private static toGraphForNode(
-    data: TreeViewProps['data'][0],
-    graph: number[][],
-    backmap: TreeViewProps['data'][0][],
-    subTaskMemo: Record<SubTask['key'], number>
-  ) {
-    const id = parseInt(data.id, 10)
-    const { children = [] } = data
-
-    backmap[id] = data
-    graph[id] = children.map(child => {
-      const childId = parseInt(child.id, 10)
-
-      const childOrigin = child['data-origin']
-      if (childOrigin && isSubTask(childOrigin)) {
-        // then we have a potentially shared node
-        const { key } = childOrigin
-        const already = subTaskMemo[key]
-        if (already) {
-          return already
-        } else {
-          subTaskMemo[key] = childId
-          // intentional fall-through
-        }
-      }
-
-      Tree.toGraphForNode(child, graph, backmap, subTaskMemo)
-      return childId
-    })
-  }
-
-  private static toGraph(data: TreeViewProps['data']) {
-    const maxPostorder = data
-      .map(_ => _['data-origin'].postorder)
-      .reduce((max, postorder) => Math.max(max, postorder), 0)
-
-    const graph: number[][] = Array(maxPostorder)
-    const backmap: TreeViewProps['data'][0][] = Array(maxPostorder)
-    const blank: boolean[] = Array(maxPostorder)
-    const subTaskMemo: Record<SubTask['key'], number> = {}
-
-    data.forEach(_ => Tree.toGraphForNode(_, graph, backmap, subTaskMemo))
-
-    // we may have skipped some preorder numbers in our graph
-    // optimizations; the `dominators` npm fails if we don't fill in
-    // the gaps
-    for (let idx = 0; idx < graph.length; idx++) {
-      if (!graph[idx]) {
-        blank[idx] = true
-        graph[idx] = []
-      }
-    }
-
-    return { graph, backmap, blank }
-  }
-
-  public static domTree(data: TreeViewProps['data']): TreeViewProps['data'] {
-    // first, convert the PatternFly tree model to the edge model that
-    // `dominators` needs: number[][], where the outer index is the
-    // source node id and the inner array contains the child ids
-    const { graph, backmap, blank } = Tree.toGraph(data)
-    const idom = iterative(graph)
-
-    backmap.forEach(node => (node.children = []))
-
-    idom.forEach((parentId, childId) => {
-      if (parentId !== null) {
-        const parent = backmap[parentId]
-        if (!parent) {
-          console.error('Error in domTree, cannot find parent', parentId)
-        } else {
-          const child = backmap[childId]
-          if (!child) {
-            console.error('Error in domTree, cannot find child', childId)
-          } else {
-            parent.children.push(child)
-          }
-        }
-      }
-    })
-
-    backmap.forEach(_ => {
-      if (_.children.length === 0) {
-        delete _.children
-      }
-    })
-
-    // the roots are nodes with no parents, making sure to ignore the nodeIds we removed prior
-    const roots = idom
-      .map((parent, nodeId) => (parent === null && !blank[nodeId] ? backmap[nodeId] : null))
-      .filter(Boolean)
-    return roots
   }
 }

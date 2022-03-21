@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 
-import IN1 from './1'
-import IN2 from './2'
-import IN3 from './3'
-import IN4 from './4'
-import IN5 from './5'
+import Input, { Tree } from '../Input'
+import { importa, importe, importd } from './1'
 
-export default [IN1, IN2, IN3, IN4, IN5]
+const snippetsInTab5: Tree = {
+  name: 'snippets-in-tab5.md',
+  children: [
+    { name: 'Option 1: Tab1', children: [importd] },
+    { name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] },
+    { name: 'Option 3: Tab3', children: [importd] }
+  ]
+}
+
+const IN3: Input = {
+  input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model3.md'),
+  tree: [
+    {
+      name: 'Tasks',
+      children: [snippetsInTab5, importa, importe]
+    }
+  ]
+}
+
+export default IN3
