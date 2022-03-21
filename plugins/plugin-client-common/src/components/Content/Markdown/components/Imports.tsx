@@ -124,9 +124,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     status = this.state.codeBlockStatus,
     doValidate = true
   ): Pick<State, 'data'> {
-    return {
-      data: Tree.domTree(this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, 'Tasks').data)
-    }
+    return this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, 'Tasks')
   }
 
   private withIcons(
@@ -198,7 +196,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     )
 
     const hasAction = !!filepath
-    const hasBadge = hasAction
+    const hasBadge = hasAction && rollupStatus.nDone > 0
 
     const data = this.withIcons(
       rollupStatus,
