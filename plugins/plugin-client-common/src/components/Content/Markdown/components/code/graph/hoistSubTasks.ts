@@ -46,7 +46,14 @@ function removeDuplicates(list: SubTask[]): SubTask[] {
 
 function extractDominatedSubTasksUpToChoice(graph: Graph): SubTask[] {
   if (isSubTask(graph)) {
-    return [graph, ...extractDominatedSubTasksUpToChoice(graph.graph)]
+    const subgraphTasks = extractDominatedSubTasksUpToChoice(graph.graph)
+    if (!graph.filepath) {
+      // then this is a subtask that was made up internally, e.g. we
+      // even do so here, with a "Prerequisites" subtask
+      return subgraphTasks
+    } else {
+      return [graph, ...subgraphTasks]
+    }
   } else if (isChoice(graph)) {
     return []
   } else if (isSequence(graph)) {
@@ -79,105 +86,77 @@ function extractSubTasksCommonToAllChoices(choice: Choice): SubTask[] {
   }
 }
 
-function pruneSubTasks(
-  graph: SubTask,
-  inheritedSubTasks: SubTask[],
-  includingMe = true
-): { changed: boolean; graph: SubTask } {
+function pruneSubTasks(graph: SubTask, inheritedSubTasks: SubTask[], includingMe = true): SubTask {
   if (includingMe && inheritedSubTasks.find(_ => _.key === graph.key)) {
     // then we can zero out this particular instance of the subtask,
     // since it is inherited from above
-    return { changed: true, graph: undefined }
+    return undefined
   } else if (!graph.graph) {
-    return { changed: false, graph }
+    return graph
   } else {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const { changed, graph: subgraph } = pruneShadowedSubTasks(graph.graph, inheritedSubTasks)
+    const subgraph = pruneShadowedSubTasks(graph.graph, inheritedSubTasks)
     if (!subgraph) {
-      return { changed: !!graph, graph: undefined }
+      return undefined
     } else {
-      return { changed, graph: Object.assign({}, graph, { graph: subgraph }) }
+      return Object.assign({}, graph, { graph: subgraph })
     }
   }
 }
 
-function pruneShadowedSubTasks(graph: Graph, inheritedSubTasks: SubTask[]): { changed: boolean; graph: Graph | void } {
+function pruneShadowedSubTasks(graph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
   if (isSubTask(graph)) {
     return pruneSubTasks(graph, inheritedSubTasks)
   } else if (isSequence(graph)) {
     const elements = graph.sequence.map(_ => pruneShadowedSubTasks(_, inheritedSubTasks))
-    const changed = !!elements.find(_ => _.changed)
-    const residual = elements.map(_ => _.graph).filter(Boolean)
+    const residual = elements.filter(Boolean)
 
-    return {
-      changed,
-      graph: !changed
-        ? graph
-        : residual.length === 0
-        ? undefined
-        : Object.assign({}, graph, {
-            sequence: residual
-          })
-    }
+    return residual.length === 0
+      ? undefined
+      : Object.assign({}, graph, {
+          sequence: residual
+        })
   } else if (isParallel(graph)) {
     const elements = graph.parallel.map(_ => pruneShadowedSubTasks(_, inheritedSubTasks))
-    const changed = !!elements.find(_ => _.changed)
-    const residual = elements.map(_ => _.graph).filter(Boolean)
+    const residual = elements.filter(Boolean)
 
-    return {
-      changed,
-      graph: !changed
-        ? graph
-        : residual.length === 0
-        ? undefined
-        : Object.assign({}, graph, {
-            parallel: residual
-          })
-    }
-  } else if (isChoice(graph)) {
-    const prunedSubGraphs = graph.choices.map(_ => pruneShadowedSubTasks(_.graph, inheritedSubTasks))
-    const changed = !!prunedSubGraphs.find(_ => _.changed)
-    const prunedGraph = !changed
-      ? graph
+    return residual.length === 0
+      ? undefined
       : Object.assign({}, graph, {
-          choices: graph.choices
-            .map((_, idx) => {
-              const prunedSubGraph = prunedSubGraphs[idx].graph
-              if (prunedSubGraph) {
-                return Object.assign({}, _, {
-                  graph: prunedSubGraph
-                })
-              }
-            })
-            .filter(Boolean)
+          parallel: residual
         })
+  } else if (isChoice(graph)) {
+    const prunedChoices = graph.choices.map(choice => {
+      const prunedSubGraph = pruneShadowedSubTasks(choice.graph, inheritedSubTasks) || emptySequence()
+      return Object.assign({}, choice, {
+        graph: prunedSubGraph
+      })
+    })
 
-    return {
-      changed,
-      graph: prunedGraph.choices.length === 0 ? undefined : prunedGraph
+    if (prunedChoices.length > 0) {
+      return Object.assign({}, graph, {
+        choices: prunedChoices
+      })
     }
   } else if (isTitledSteps(graph)) {
-    const prunedSubGraphs = graph.steps.map(_ => pruneShadowedSubTasks(_.graph, inheritedSubTasks))
-    const changed = !!prunedSubGraphs.find(_ => _.changed)
-    return {
-      changed,
-      graph: !changed
-        ? graph
-        : Object.assign({}, graph, {
-            steps: graph.steps
-              .map((_, idx) => {
-                const prunedSubGraph = prunedSubGraphs[idx].graph
-                if (prunedSubGraph) {
-                  return Object.assign({}, _, {
-                    graph: prunedSubGraph
-                  })
-                }
-              })
-              .filter(Boolean)
+    const prunedSteps = graph.steps
+      .map(step => {
+        const prunedStep = pruneShadowedSubTasks(step.graph, inheritedSubTasks)
+        if (prunedStep) {
+          return Object.assign({}, step, {
+            graph: prunedStep
           })
+        }
+      })
+      .filter(Boolean)
+
+    if (prunedSteps.length > 0) {
+      return Object.assign({}, graph, {
+        steps: prunedSteps
+      })
     }
   } else {
-    return { changed: false, graph }
+    return graph
   }
 }
 
@@ -197,56 +176,39 @@ function findChoiceFrontier(graph: Graph): Choice[] {
   }
 }
 
-function findAndHoistChoiceFrontier(
-  graph: void | Graph,
-  inheritedSubTasks: SubTask[]
-): { changed: boolean; graph: Graph | void } {
+function findAndHoistChoiceFrontier(graph: void | Graph, inheritedSubTasks: SubTask[]): Graph | void {
   if (!graph) {
-    return { changed: false, graph }
+    return graph
   } else if (isChoice(graph)) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const recurse = graph.choices.map(_ => hoist(_.graph, inheritedSubTasks))
-    const changed = !!recurse.find(_ => _.changed)
-    return {
-      changed,
-      graph: !changed
-        ? graph
-        : Object.assign({}, graph, {
-            choices: graph.choices.map((_, idx) =>
-              Object.assign({}, _, {
-                graph: recurse[idx].graph
-              })
-            )
-          })
-    }
+    return Object.assign({}, graph, {
+      choices: graph.choices.map((_, idx) =>
+        Object.assign({}, _, {
+          graph: recurse[idx]
+        })
+      )
+    })
   } else if (isSubTask(graph)) {
     const recurse = findAndHoistChoiceFrontier(graph.graph, inheritedSubTasks)
-    return { changed: recurse.changed, graph: Object.assign({}, graph, { graph: recurse.graph }) }
+    return Object.assign({}, graph, { graph: recurse })
   } else if (isSequence(graph)) {
     const recurse = graph.sequence.map(_ => findAndHoistChoiceFrontier(_, inheritedSubTasks))
-    const changed = !!recurse.find(_ => _.changed)
-    return { changed, graph: !changed ? graph : Object.assign({}, graph, { sequence: recurse.map(_ => _.graph) }) }
+    return Object.assign({}, graph, { sequence: recurse })
   } else if (isParallel(graph)) {
     const recurse = graph.parallel.map(_ => findAndHoistChoiceFrontier(_, inheritedSubTasks))
-    const changed = !!recurse.find(_ => _.changed)
-    return { changed, graph: !changed ? graph : Object.assign({}, graph, { parallel: recurse.map(_ => _.graph) }) }
+    return Object.assign({}, graph, { parallel: recurse })
   } else if (isTitledSteps(graph)) {
     const recurse = graph.steps.map(_ => findAndHoistChoiceFrontier(_.graph, inheritedSubTasks))
-    const changed = !!recurse.find(_ => _.changed)
-    return {
-      changed,
-      graph: !changed
-        ? graph
-        : Object.assign({}, graph, {
-            steps: graph.steps.map((_, idx) =>
-              Object.assign({}, _, {
-                graph: recurse[idx].graph
-              })
-            )
-          })
-    }
+    return Object.assign({}, graph, {
+      steps: graph.steps.map((_, idx) =>
+        Object.assign({}, _, {
+          graph: recurse[idx]
+        })
+      )
+    })
   } else {
-    return { changed: false, graph }
+    return graph
   }
 }
 
@@ -266,13 +228,13 @@ function extractTopLevelSubTasks(graph: Graph): { toplevelSubTasks: SubTask[]; r
   }
 }
 
-function union(...As: SubTask[][]): SubTask[] {
-  return As.reduce((set, subtasks) => set.concat(subtasks.filter(b => !set.find(a => a.key === b.key))), [])
+function union(...Ts: SubTask[][]): SubTask[] {
+  return Ts.reduce((set, subtasks) => set.concat(subtasks.filter(b => !set.find(a => a.key === b.key))), [])
 }
 
 /** Smash in any subTasks we hoisted */
 function recombine(graph: Graph | void, subTasks1: SubTask[]) {
-  const subTasks = subTasks1.map(_ => pruneSubTasks(_, subTasks1, false).graph).filter(Boolean)
+  const subTasks = subTasks1.map(_ => pruneSubTasks(_, subTasks1, false)).filter(Boolean)
 
   if (subTasks.length === 0) {
     return graph
@@ -285,52 +247,45 @@ function recombine(graph: Graph | void, subTasks1: SubTask[]) {
   }
 }
 
-/* function names(A: SubTask[]): string[] {
-  return A.map(_ => _.key)
-} */
-
 /** Hoist shared SubTasks as high as possible in the graph */
-function hoist(inputGraph: Graph, inheritedSubTasks: SubTask[]): { changed: boolean; graph: Graph | void } {
+function hoist(inputGraph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
   const myDominatedSubTasks = extractDominatedSubTasksUpToChoice(inputGraph)
 
   const choiceFrontier = findChoiceFrontier(inputGraph)
   const frontierAllChoicesSubTasks = choiceFrontier.flatMap(extractSubTasksCommonToAllChoices)
 
   const subTasks = union(myDominatedSubTasks, frontierAllChoicesSubTasks, inheritedSubTasks)
-  // console.error('!!!!!!SUB1', names(myDominatedSubTasks))
-  // console.error('!!!!!!SUB2', names(frontierAllChoicesSubTasks))
-  // console.error('!!!!!!SUB3', names(inheritedSubTasks))
 
   if (subTasks.length === 0) {
-    return { changed: false, graph: inputGraph }
+    return inputGraph
   }
 
-  const { changed: changed1, graph: prunedGraph } = pruneShadowedSubTasks(inputGraph, subTasks)
+  const prunedGraph = pruneShadowedSubTasks(inputGraph, subTasks)
 
   // recurse, for each control subregion
-  const { changed: changed2, graph: prunedGraph2 } = findAndHoistChoiceFrontier(prunedGraph, subTasks)
-
-  // any changes from me or a control subregion?
-  const changed = changed1 || changed2
+  const prunedGraph2 = findAndHoistChoiceFrontier(prunedGraph, subTasks)
 
   // smash in any subTasks we hoisted
-  const graph = recombine(prunedGraph2, subTasks)
-
-  return {
-    changed,
-    graph
-  }
+  return recombine(prunedGraph2, subTasks)
 }
 
-/** Hoist shared SubTasks as high as possible in the graph */
-export default function hoistSubTasks(inputGraph: Graph): Graph {
-  const { graph } = hoist(inputGraph, [])
-  /* if (changed) {
+/**
+ * Hoist shared SubTasks as high as possible in the graph.
+ *
+ * @param inputGraph the graph to optimize
+ * @param maxIter to protect against infinite loop bugs
+ */
+export default function hoistSubTasks(inputGraph: Graph, iter = 0, maxIter = 20): Graph {
+  const graph = hoist(inputGraph, [])
+
+  const changed = JSON.stringify(inputGraph) !== JSON.stringify(graph)
+  if (changed && iter < maxIter) {
     if (graph) {
-      return hoistSubTasks(graph)
+      return hoistSubTasks(graph, iter + 1, maxIter)
     } else {
       return emptySequence()
     }
-  } else */
+  }
+
   return graph || emptySequence()
 }

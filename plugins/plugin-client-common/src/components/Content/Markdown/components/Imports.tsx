@@ -21,6 +21,7 @@ import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
 import { TreeView, TreeViewProps } from '@patternfly/react-core'
 
 import {
+  isEmpty,
   isSequence,
   isParallel,
   isTitledSteps,
@@ -195,6 +196,10 @@ class ImportsImpl extends React.PureComponent<Props, State> {
         .flatMap(_ => _.data)
     )
 
+    if (children.length === 0) {
+      return
+    }
+
     const hasAction = !!filepath
     const hasBadge = hasAction && rollupStatus.nDone > 0
 
@@ -330,6 +335,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     depth = 0
   ) {
     const _children = graph.choices
+      .filter(_ => !isEmpty(_.graph))
       .map(_ =>
         this.treeModelForLeaf(
           _.graph,

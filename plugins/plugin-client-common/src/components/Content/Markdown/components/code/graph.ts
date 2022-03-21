@@ -177,25 +177,25 @@ export type OrderedGraph = Graph<Ordered>
 export type OrderedCodeBlock = CodeBlockProps & Ordered
 
 export function isChoice<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Choice<T> {
-  return Array.isArray((graph as Choice).choices)
+  return graph && Array.isArray((graph as Choice).choices)
 }
 
 export function isSequence<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Sequence<T> {
-  return Array.isArray((graph as Sequence).sequence)
+  return graph && Array.isArray((graph as Sequence).sequence)
 }
 
 export function isParallel<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Parallel<T> {
-  return Array.isArray((graph as Parallel).parallel)
+  return graph && Array.isArray((graph as Parallel).parallel)
 }
 
 export function isTitledSteps<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is TitledSteps<T> {
   const ts = graph as TitledSteps<T>
-  return typeof ts.title === 'string' && Array.isArray(ts.steps)
+  return ts && typeof ts.title === 'string' && Array.isArray(ts.steps)
 }
 
 export function isSubTask<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is SubTask<T> {
   const subtask = graph as SubTask
-  return typeof subtask.key === 'string' && typeof subtask.filepath === 'string'
+  return subtask && typeof subtask.key === 'string' && typeof subtask.filepath === 'string'
 }
 
 function sameCodeBlock(a: CodeBlockProps, b: CodeBlockProps) {
@@ -205,6 +205,15 @@ function sameCodeBlock(a: CodeBlockProps, b: CodeBlockProps) {
     a.body === b.body &&
     a.language === b.language &&
     a.optional === b.optional
+  )
+}
+
+export function isEmpty(A: Graph): boolean {
+  return (
+    (isSequence(A) && A.sequence.length === 0) ||
+    (isParallel(A) && A.parallel.length === 0) ||
+    (isTitledSteps(A) && A.steps.length === 0) ||
+    (isChoice(A) && A.choices.length === 0)
   )
 }
 
