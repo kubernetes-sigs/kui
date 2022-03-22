@@ -104,6 +104,13 @@ function pruneSubTasks(graph: SubTask, inheritedSubTasks: SubTask[], includingMe
   }
 }
 
+/**
+ * Given a set of `inheritedSubTasks`, scan the given `graph` and
+ * remove any references to those inherited tasks. The idea is one of
+ * graph dominance: if we already know that a certain subtask is
+ * certainly required for completion of the main task, then we don't
+ * need to repeat this fact in subtrees.
+ */
 function pruneShadowedSubTasks(graph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
   if (isSubTask(graph)) {
     return pruneSubTasks(graph, inheritedSubTasks)
@@ -254,19 +261,22 @@ function hoist(inputGraph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
   const choiceFrontier = findChoiceFrontier(inputGraph)
   const frontierAllChoicesSubTasks = choiceFrontier.flatMap(extractSubTasksCommonToAllChoices)
 
-  const subTasks = union(myDominatedSubTasks, frontierAllChoicesSubTasks, inheritedSubTasks)
+  const mySubTasks = union(myDominatedSubTasks, frontierAllChoicesSubTasks)
+  const allSubTasks = union(mySubTasks, inheritedSubTasks)
 
-  if (subTasks.length === 0) {
+  if (allSubTasks.length === 0) {
     return inputGraph
   }
 
-  const prunedGraph = pruneShadowedSubTasks(inputGraph, subTasks)
+  const prunedGraph = pruneShadowedSubTasks(inputGraph, allSubTasks)
 
   // recurse, for each control subregion
-  const prunedGraph2 = findAndHoistChoiceFrontier(prunedGraph, subTasks)
+  const prunedGraph2 = findAndHoistChoiceFrontier(prunedGraph, allSubTasks)
 
-  // smash in any subTasks we hoisted
-  return recombine(prunedGraph2, subTasks)
+  // smash in any subTasks we hoisted.
+  return recombine(prunedGraph2, mySubTasks)
+  // NOTE: do not recombine with ^^^^^^^^^^ inherited sub tasks! otherwise we will repeat them for every
+  // subtree call to hoist()!
 }
 
 /**
@@ -276,16 +286,12 @@ function hoist(inputGraph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
  * @param maxIter to protect against infinite loop bugs
  */
 export default function hoistSubTasks(inputGraph: Graph, iter = 0, maxIter = 20): Graph {
-  const graph = hoist(inputGraph, [])
-
+  const graph = hoist(inputGraph, []) || emptySequence()
   const changed = JSON.stringify(inputGraph) !== JSON.stringify(graph)
-  if (changed && iter < maxIter) {
-    if (graph) {
-      return hoistSubTasks(graph, iter + 1, maxIter)
-    } else {
-      return emptySequence()
-    }
-  }
 
-  return graph || emptySequence()
+  if (changed && iter < maxIter) {
+    return hoistSubTasks(graph, iter + 1, maxIter)
+  } else {
+    return graph
+  }
 }
