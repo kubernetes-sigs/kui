@@ -309,12 +309,11 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
   }
 
   protected get promptValue() {
-    return 'yoyo'
-    /* return hasValue(this.props.model)
+    return hasValue(this.props.model)
       ? this.props.model.value
       : hasCommand(this.props.model)
       ? this.props.model.command
-      : '' */
+      : ''
   }
 
   protected get idx() {
