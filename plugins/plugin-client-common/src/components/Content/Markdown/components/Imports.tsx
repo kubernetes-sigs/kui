@@ -27,10 +27,7 @@ import {
   isTitledSteps,
   isSubTask,
   isChoice,
-  compile,
   sameGraph,
-  order,
-  progress,
   CodeBlockProps,
   OrderedCodeBlock,
   OrderedChoice,
@@ -40,6 +37,10 @@ import {
   OrderedSubTask,
   OrderedTitledSteps
 } from './code/graph'
+
+import order from './code/graph/order'
+import compile from './code/graph/compile'
+import progress from './code/graph/progress'
 
 import Tree from './ImportsTree'
 import Icons from '../../../spi/Icons'

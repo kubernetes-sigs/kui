@@ -27,7 +27,9 @@ import {
   offGetCodeBlockReadiness
 } from '../../../../Views/Terminal/Block/CodeBlockEvents'
 
-import { OrderedGraph, blocks, progress } from '../code/graph'
+import blocks from '../code/graph/linearize'
+import progress from '../code/graph/progress'
+import { OrderedGraph } from '../code/graph'
 import { ProgressStepState } from '../../../ProgressStepper'
 
 const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Progress })))
