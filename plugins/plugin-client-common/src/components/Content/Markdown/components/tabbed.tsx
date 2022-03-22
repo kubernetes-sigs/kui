@@ -114,6 +114,10 @@ class LinkableTabs extends React.PureComponent<Props, State> {
     return this.asTabs()
   }
 
+  private get isSecondary() {
+    return this.props.depth > 0
+  }
+
   /** Render as a Tabs UI */
   private asTabs() {
     return (
@@ -124,6 +128,7 @@ class LinkableTabs extends React.PureComponent<Props, State> {
         mountOnEnter
         unmountOnExit
         data-depth={this.props.depth}
+        isSecondary={this.isSecondary}
       >
         {(this.props.children || []).map((_, idx) => (
           <Tab
