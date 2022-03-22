@@ -22,7 +22,11 @@ import { WizardProps } from './rehype-wizard'
 import Progress from './Progress'
 import CodeBlockProps from './CodeBlockProps'
 import { onTabSwitch, offTabSwitch } from '../tabbed'
-import { ChoicesMap, OrderedGraph, blocks, compile, order, sequence } from '../code/graph'
+
+import order from '../code/graph/order'
+import compile from '../code/graph/compile'
+import blocks from '../code/graph/linearize'
+import { ChoicesMap, OrderedGraph, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'

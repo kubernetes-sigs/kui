@@ -29,6 +29,8 @@ import {
   subtask
 } from '../graph'
 
+import findChoiceFrontier from './choice-frontier'
+
 type LookupTable = Record<SubTask['key'], SubTask>
 
 function toLookupTable(list: SubTask[]): LookupTable {
@@ -164,22 +166,6 @@ function pruneShadowedSubTasks(graph: Graph, inheritedSubTasks: SubTask[]): Grap
     }
   } else {
     return graph
-  }
-}
-
-function findChoiceFrontier(graph: Graph): Choice[] {
-  if (isChoice(graph)) {
-    return [graph]
-  } else if (isSubTask(graph)) {
-    return findChoiceFrontier(graph.graph)
-  } else if (isSequence(graph)) {
-    return graph.sequence.flatMap(findChoiceFrontier)
-  } else if (isParallel(graph)) {
-    return graph.parallel.flatMap(findChoiceFrontier)
-  } else if (isTitledSteps(graph)) {
-    return graph.steps.flatMap(_ => findChoiceFrontier(_.graph))
-  } else {
-    return []
   }
 }
 
