@@ -74,7 +74,32 @@ type TitledSteps<T extends Unordered | Ordered = Unordered> = T &
 
 export type OrderedTitledSteps = TitledSteps<Ordered>
 
-function sameSequence(A: Sequence, B: Sequence) {
+export function isSequence<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Sequence<T> {
+  return graph && Array.isArray((graph as Sequence).sequence)
+}
+
+export function sequence(graphs: Graph[]): Sequence {
+  return {
+    // here, we flatten nested sequences
+    sequence: graphs.flatMap(_ => (isSequence(_) ? _.sequence : _))
+  }
+}
+
+export function parallel(parallel: Graph[]): Parallel {
+  return {
+    parallel
+  }
+}
+
+export function emptySequence(): Sequence {
+  return sequence([])
+}
+
+function seq(block: CodeBlockProps): Sequence {
+  return sequence([block])
+}
+
+function sameSequence(A: Sequence = emptySequence(), B: Sequence = emptySequence()) {
   return (
     A.sequence.length === B.sequence.length &&
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -180,10 +205,6 @@ export function isChoice<T extends Unordered | Ordered = Unordered>(graph: Graph
   return graph && Array.isArray((graph as Choice).choices)
 }
 
-export function isSequence<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Sequence<T> {
-  return graph && Array.isArray((graph as Sequence).sequence)
-}
-
 export function isParallel<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is Parallel<T> {
   return graph && Array.isArray((graph as Parallel).parallel)
 }
@@ -231,27 +252,6 @@ export function sameGraph(A: Graph, B: Graph) {
   } else {
     return !isChoice(B) && !isSequence(B) && !isParallel(B) && !isTitledSteps(B) && !isSubTask(B) && sameCodeBlock(A, B)
   }
-}
-
-export function sequence(graphs: Graph[]): Sequence {
-  return {
-    // here, we flatten nested sequences
-    sequence: graphs.flatMap(_ => (isSequence(_) ? _.sequence : _))
-  }
-}
-
-export function parallel(parallel: Graph[]): Parallel {
-  return {
-    parallel
-  }
-}
-
-export function emptySequence(): Sequence {
-  return sequence([])
-}
-
-function seq(block: CodeBlockProps): Sequence {
-  return sequence([block])
 }
 
 type ChoiceNesting = { parent: CodeBlockChoice; graph: Choice }
@@ -481,7 +481,7 @@ export function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parall
   )
 }
 
-function orderSequence(graph: Sequence, ordinal = 0): Sequence<Ordered> {
+function orderSequence(graph: Sequence = emptySequence(), ordinal = 0): Sequence<Ordered> {
   const { postorder, sequence } = graph.sequence.reduce(
     (P: { postorder: number; sequence: Graph<Ordered>[] }, _) => {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
