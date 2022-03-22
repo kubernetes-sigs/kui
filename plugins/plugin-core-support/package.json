@@ -24,14 +24,14 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@electron/remote": "2.0.4",
+    "@electron/remote": "2.0.8",
     "@supercharge/promise-pool": "2.1.0",
     "colors": "1.4.0",
-    "debug": "4.3.3",
+    "debug": "4.3.4",
     "enquirer": "2.3.6",
-    "listr2": "4.0.4",
+    "listr2": "4.0.5",
     "micromatch": "4.0.4",
-    "rxjs": "^7.5.4",
+    "rxjs": "^7.5.5",
     "tmp": "0.2.1"
   },
   "publishConfig": {
