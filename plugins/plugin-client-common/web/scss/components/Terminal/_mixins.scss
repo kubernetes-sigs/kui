@@ -566,6 +566,15 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin MarkdownSecondaryTabs {
+  @include MarkdownTabs {
+    &.pf-m-secondary {
+      @content;
+    }
+  }
+}
+
 @mixin MarkdownTabContent {
   section.kui--markdown-tab:not([hidden]) {
     @content;

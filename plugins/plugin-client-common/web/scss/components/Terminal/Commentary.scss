@@ -628,6 +628,15 @@ pre {
   }
 }
 
+@include MarkdownSecondaryTabs {
+  padding-top: 0;
+
+  /** This is to snap the alignment back to the top of the enclosing
+  tabs, thus compensating for the top-padding of our Card wrapper (see
+  tabbed.tsx) */
+  margin-top: -1rem;
+}
+
 @include CodeBlock {
   &:hover {
     @include CodeBlockActions {
