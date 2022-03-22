@@ -152,6 +152,10 @@ function formatBaseUrl(filepath: string) {
   }
 }
 
+function setTabReadonly({ tab }: Arguments) {
+  Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
+}
+
 async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
   const {
     edit: _edit,
@@ -193,7 +197,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
       }
 
   if (filepath && readonly) {
-    Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(args.tab))
+    setTabReadonly(args)
   }
 
   const baseUrl = args.parsedOptions['base-url']
@@ -235,7 +239,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           title,
           filepath,
           children: data,
-          codeBlockResponses: codeBlockResponses,
+          codeBlockResponses,
           baseUrl
         }
       }
@@ -244,6 +248,28 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
     throw new Error(
       'Insufficient arguments: must specify either --file or -f, or provide a comment on the command line'
     )
+  }
+}
+
+async function show(args: Arguments) {
+  const filepath = args.argvNoOptions[1]
+
+  /* if (!process.env.KUI_POPUP) {
+    return args.REPL.qexec(`replay ${encodeComponent(filepath)}`)
+  } */
+
+  const { data = '#', codeBlockResponses } = await fetchMarkdownFile(filepath, args)
+
+  setTabReadonly(args)
+
+  return {
+    apiVersion: 'kui-shell/v1',
+    kind: 'CommentaryResponse',
+    props: {
+      filepath,
+      children: data,
+      codeBlockResponses
+    }
   }
 }
 
@@ -256,6 +282,7 @@ export default function registerCommentaryController(commandTree: Registrar) {
     boolean: ['edit', 'header', 'preview', 'readonly', 'replace']
   }
 
+  commandTree.listen('/show', show, { outputOnly: true, flags })
   commandTree.listen('/commentary', addComment, { outputOnly: true, flags })
   commandTree.listen('/#', addComment, { outputOnly: true, noCoreRedirect: true, flags })
 }
