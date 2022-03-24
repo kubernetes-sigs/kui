@@ -15,11 +15,11 @@
  */
 
 import { format } from 'url'
-import { basename, dirname as pathDirname, join as pathJoin } from 'path'
+import { basename } from 'path'
 
 import { Arguments, CommentaryResponse, Events, ParsedOptions, Registrar, getPrimaryTabId } from '@kui-shell/core'
 
-import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
+import fetchMarkdownFile, { join } from './fetch'
 
 /**
  * commentary command parsedOptions type
@@ -93,54 +93,6 @@ type CommentaryOptions = ParsedOptions &
   ]
 } */
 
-function isUrl(a: string) {
-  return /^https?:/.test(a)
-}
-
-function dirname(a: string) {
-  if (isUrl(a)) {
-    const url = new URL(a)
-    url.pathname = pathDirname(url.pathname)
-    return url.toString()
-  } else {
-    return pathDirname(a)
-  }
-}
-
-function join(a: string, b: string) {
-  if (isUrl(a)) {
-    const url = new URL(a)
-    url.pathname = pathJoin(url.pathname, b)
-    return url.toString()
-  } else {
-    return pathJoin(a, b)
-  }
-}
-
-export function filepathForResponses(filepath: string) {
-  return join(dirname(filepath), basename(filepath).replace(/\..*$/, '') + '.json')
-}
-
-export async function fetchMarkdownFile(filepath: string, args: Pick<Arguments, 'REPL'>) {
-  const { pathname } = /^https?:/.test(filepath) ? new URL(filepath) : { pathname: filepath }
-
-  if (!/\.md$/.test(pathname)) {
-    throw new Error('File extension not support')
-  } else {
-    const [data, codeBlockResponses] = await Promise.all([
-      loadNotebook(filepath, args),
-      loadNotebook(filepathForResponses(filepath), args, true)
-    ])
-
-    return {
-      data: typeof data === 'string' ? data : JSON.stringify(data),
-      codeBlockResponses: (typeof codeBlockResponses === 'string'
-        ? JSON.parse(codeBlockResponses)
-        : codeBlockResponses) as CommentaryResponse['props']['codeBlockResponses']
-    }
-  }
-}
-
 function formatBaseUrl(filepath: string) {
   if (/^http:/.test(filepath)) {
     const url = new URL(filepath)
@@ -152,7 +104,8 @@ function formatBaseUrl(filepath: string) {
   }
 }
 
-function setTabReadonly({ tab }: Arguments) {
+/** TODO: move to core Tab api? */
+export function setTabReadonly({ tab }: Arguments) {
   Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
 }
 
@@ -251,30 +204,8 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
   }
 }
 
-async function show(args: Arguments) {
-  const filepath = args.argvNoOptions[1]
-
-  /* if (!process.env.KUI_POPUP) {
-    return args.REPL.qexec(`replay ${encodeComponent(filepath)}`)
-  } */
-
-  const { data = '#', codeBlockResponses } = await fetchMarkdownFile(filepath, args)
-
-  setTabReadonly(args)
-
-  return {
-    apiVersion: 'kui-shell/v1',
-    kind: 'CommentaryResponse',
-    props: {
-      filepath,
-      children: data,
-      codeBlockResponses
-    }
-  }
-}
-
 /**
- * This plugin introduces the /card command
+ * This plugin introduces the commentary command
  *
  */
 export default function registerCommentaryController(commandTree: Registrar) {
@@ -282,7 +213,6 @@ export default function registerCommentaryController(commandTree: Registrar) {
     boolean: ['edit', 'header', 'preview', 'readonly', 'replace']
   }
 
-  commandTree.listen('/show', show, { outputOnly: true, flags })
   commandTree.listen('/commentary', addComment, { outputOnly: true, flags })
   commandTree.listen('/#', addComment, { outputOnly: true, noCoreRedirect: true, flags })
 }

@@ -25,12 +25,22 @@ const snippetsInTab4: Tree = {
   ]
 }
 
+const prerequisites = {
+  name: 'Prerequisites',
+  children: [importa, importe]
+}
+
+const mainTasks = {
+  name: 'Main Tasks',
+  children: snippetsInTab4.children
+}
+
 const IN2: Input = {
   input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model2.md'),
-  tree: [
+  tree: () => [
     {
-      name: 'Tasks',
-      children: [snippetsInTab4, importa, importe]
+      name: snippetsInTab4.name,
+      children: [prerequisites, mainTasks]
     }
   ]
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { join } from 'path'
+
 import Input, { Tree } from '../Input'
 import { importa, importe, importd } from './1'
 
@@ -22,12 +24,14 @@ const snippetsInTab5: Tree = {
   children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
 }
 
+const filename = 'guidebook-tree-model4.md'
+
 const IN4: Input = {
-  input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model4.md'),
-  tree: [
+  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
+  tree: (command: string) => [
     {
-      name: 'Tasks',
-      children: [importd, snippetsInTab5, importa, importe]
+      name: command === 'guide' ? filename : 'Tasks',
+      children: [importd, importa, importe, snippetsInTab5]
     }
   ]
 }

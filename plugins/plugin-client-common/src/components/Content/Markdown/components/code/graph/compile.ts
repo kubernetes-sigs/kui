@@ -64,8 +64,9 @@ export default function compile(blocks: CodeBlockProps[], ordering: 'sequence' |
   })
 
   const newChoices = (block: CodeBlockProps, parent: CodeBlockChoice, isDeepest: boolean): Choice => ({
-    title: parent.groupTitle,
     group: parent.group,
+    title: parent.groupDetail.title,
+    source: parent.groupDetail.source,
     choices: [newChoice(block, parent, isDeepest)]
   })
 
@@ -77,6 +78,7 @@ export default function compile(blocks: CodeBlockProps[], ordering: 'sequence' |
     return {
       title: parent.title,
       description: parent.description,
+      source: parent.source,
       graph: isDeepest ? seq(block) : emptySequence()
     }
   }
@@ -105,6 +107,7 @@ export default function compile(blocks: CodeBlockProps[], ordering: 'sequence' |
 
   const newWizard = (block: CodeBlockProps, parent: CodeBlockWizardStep, isDeepest: boolean): TitledSteps => {
     const wiz = {
+      source: parent.source,
       title: parent.wizard.title,
       description: parent.wizard.description,
       steps: []
@@ -115,6 +118,7 @@ export default function compile(blocks: CodeBlockProps[], ordering: 'sequence' |
   const newSubTask = (block: CodeBlockProps, parent: CodeBlockImport, isDeepest: boolean): SubTask => ({
     key: parent.key,
     title: parent.title,
+    source: parent.source,
     filepath: parent.filepath,
     graph: isDeepest ? seq(block) : emptySequence()
   })

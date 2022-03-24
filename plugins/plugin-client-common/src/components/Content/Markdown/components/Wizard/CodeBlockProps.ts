@@ -38,18 +38,24 @@ export interface Description {
   description: string
 }
 
+export type Source = {
+  source: string
+}
+
 /**
  * Is this a member of a group of choices? e.g. am I `A` in a choice
  * to do either `A+B` or `C+D`?
  */
 export type Choice = GroupMember &
+  Source &
   Title &
   Kind<'Choice'> & {
-    /** Title for the choice group */
-    groupTitle: string
+    /** Title and Source for the choice group */
+    groupDetail: Partial<Title> & Source
   }
 
 export type Import = Title &
+  Source &
   Kind<'Import'> & {
     key: string
     filepath: string
@@ -60,10 +66,10 @@ type Kind<T extends string> = {
 }
 
 export type Wizard = {
-  wizard: Title & Partial<Description>
+  wizard: Title & Partial<Description> & Source
 }
 
-export type WizardStep = Wizard & GroupMember & Title & Partial<Description> & Kind<'WizardStep'>
+export type WizardStep = Wizard & GroupMember & Title & Partial<Description> & Kind<'WizardStep'> & Source
 
 type CodeBlockNestingParent = Choice | Import | WizardStep
 

@@ -20,9 +20,14 @@
  * highlighter background.
  */
 export default function plugin(markdownText: string) {
-  const RE_MARK_BASE = '==([^=]+)==([^=])'
+  const RE_MARK_BASE0 = '==([^=]+)=='
+  const RE_MARK_BASE = `${RE_MARK_BASE0}([^=])`
   const RE_MARK = new RegExp(`([^=])${RE_MARK_BASE}`, 'g')
-  const RE_MARK_AT_TOP = new RegExp(`^${RE_MARK_BASE}`, 'g')
+  const RE_MARK_AT_TOP = new RegExp(`^${RE_MARK_BASE}`)
+  const RE_MARK_AT_BOTTOM = new RegExp(`${RE_MARK_BASE0}$`)
 
-  return markdownText.replace(RE_MARK_AT_TOP, '<mark>$1</mark>$2').replace(RE_MARK, '$1<mark>$2</mark>$3')
+  return markdownText
+    .replace(RE_MARK_AT_TOP, '<mark>$1</mark>$2')
+    .replace(RE_MARK, '$1<mark>$2</mark>$3')
+    .replace(RE_MARK_AT_BOTTOM, '<mark>$1</mark>')
 }

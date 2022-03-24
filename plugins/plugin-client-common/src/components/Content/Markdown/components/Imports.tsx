@@ -126,7 +126,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     status = this.state.codeBlockStatus,
     doValidate = true
   ): Pick<State, 'data'> {
-    return this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, 'Tasks')
+    return this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, false, 'Tasks')
   }
 
   private withIcons(
@@ -186,13 +186,14 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     origin: OrderedSubTask,
     status: State['codeBlockStatus'],
     doValidate: boolean,
-    depth: number
+    depth: number,
+    metFirstChoice = false
   ): { data: TreeViewProps['data'] } {
     const { key, title, filepath, graph } = origin
     const rollupStatus = this.progress(graph, status)
     const children = Tree.xformFoldChoices(
       graph.sequence
-        .map(_ => this.treeModelForLeaf(_, status, doValidate, key, depth + 1))
+        .map(_ => this.treeModelForLeaf(_, status, doValidate, key, depth + 1, metFirstChoice))
         .filter(Boolean)
         .flatMap(_ => _.data)
     )
@@ -203,16 +204,18 @@ class ImportsImpl extends React.PureComponent<Props, State> {
 
     const hasAction = !!filepath
     const hasBadge = hasAction && rollupStatus.nDone > 0
+    const hasIcon = hasAction
 
     const data = this.withIcons(
       rollupStatus,
       origin,
       {
         id: origin.order.toString(),
-        name: title || basename(filepath),
-        defaultExpanded: depth < 3 && !isDone(rollupStatus),
+        name: <span className="kui--fooooo">{title || basename(filepath)}</span>,
+        defaultExpanded: !isDone(rollupStatus) && depth < 2,
         children: children.length === 0 ? undefined : children,
-        icon: <Icons icon="Guidebook" />,
+        icon: hasIcon && <Icons className="kui--dependence-tree-subtask--icon" icon="Guidebook" />,
+        expandedIcon: hasIcon && <Icons className="kui--dependence-tree-subtask--icon" icon="GuidebookOpen" />,
         action: hasAction && (
           <button
             className="kui--tree-action pf-c-button pf-m-plain"
@@ -236,9 +239,10 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     status: State['codeBlockStatus'],
     doValidate: boolean,
     idPrefix = '',
-    depth = 0
+    depth = 0,
+    metFirstChoice = false
   ) {
-    return this.treeModelForSequence(graph.graph, status, doValidate, idPrefix, depth, graph.title)
+    return this.treeModelForSequence(graph.graph, status, doValidate, idPrefix, depth, metFirstChoice, graph.title)
   }
 
   private treeModelForTitledSteps(
@@ -246,10 +250,13 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     status: State['codeBlockStatus'],
     doValidate: boolean,
     idPrefix = '',
-    depth = 0
+    depth = 0,
+    metFirstChoice = false
   ) {
     const _children = graph.steps
-      .map((_, childIdx) => this.treeModelForTitledStep(_, status, doValidate, `${idPrefix}-s${childIdx}`, depth + 1))
+      .map((_, childIdx) =>
+        this.treeModelForTitledStep(_, status, doValidate, `${idPrefix}-s${childIdx}`, depth + 1, metFirstChoice)
+      )
       .filter(Boolean)
     const rollupStatus = this.progress(graph, status)
     const children = _children.flatMap(_ => _.data)
@@ -258,7 +265,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       data: [
         this.withIcons(rollupStatus, graph, {
           name: graph.title,
-          defaultExpanded: depth < 2,
+          defaultExpanded: !metFirstChoice || depth < 2,
           children
         })
       ]
@@ -271,10 +278,13 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     doValidate: boolean,
     idPrefix = '',
     depth = 0,
+    metFirstChoice = false,
     name: React.ReactNode = ''
   ) {
     const _children = graph.sequence
-      .map((_, childIdx) => this.treeModelForLeaf(_, status, doValidate, `${idPrefix}-s${childIdx}`, depth + 1, name))
+      .map((_, childIdx) =>
+        this.treeModelForLeaf(_, status, doValidate, `${idPrefix}-s${childIdx}`, depth + 1, metFirstChoice, name)
+      )
       .filter(Boolean)
     const rollupStatus = this.progress(graph, status)
     const children = Tree.optimize(
@@ -291,7 +301,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
         graph,
         {
           name: name || 'Sequence',
-          defaultExpanded: depth < 1,
+          defaultExpanded: !metFirstChoice || depth < 1,
           children: children.length === 0 ? undefined : children
         },
         hasBadge
@@ -307,10 +317,13 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     doValidate: boolean,
     idPrefix = '',
     depth = 0,
+    metFirstChoice = false,
     name: React.ReactNode = ''
   ) {
     const _children = graph.parallel
-      .map((_, childIdx) => this.treeModelForLeaf(_, status, doValidate, `${idPrefix}-p${childIdx}`, depth + 1, name))
+      .map((_, childIdx) =>
+        this.treeModelForLeaf(_, status, doValidate, `${idPrefix}-p${childIdx}`, depth + 1, metFirstChoice, name)
+      )
       .filter(Boolean)
     const rollupStatus = this.progress(graph, status)
     const children = _children.flatMap(_ => _.data)
@@ -344,6 +357,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
           doValidate,
           `${idPrefix}-g${graph.group}-m${_.member}`,
           depth + 1,
+          true,
           <span>
             <strong>Option {_.member + 1}</strong>: {_.title}
           </span>
@@ -356,6 +370,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     const data = [
       this.withIcons(rollupStatus, graph, {
         name: graph.title || <span className="italic red-text">Missing heading for choice</span>,
+        defaultExpanded: true,
         children
       })
     ]
@@ -398,18 +413,19 @@ class ImportsImpl extends React.PureComponent<Props, State> {
     doValidate: boolean,
     idPrefix = '',
     depth = 0,
+    metFirstChoice = false,
     name: React.ReactNode = ''
   ): { data: TreeViewProps['data'] } {
     if (isSequence(graph)) {
-      return this.treeModelForSequence(graph, status, doValidate, idPrefix, depth, name)
+      return this.treeModelForSequence(graph, status, doValidate, idPrefix, depth, metFirstChoice, name)
     } else if (isTitledSteps(graph)) {
-      return this.treeModelForTitledSteps(graph, status, doValidate, idPrefix, depth)
+      return this.treeModelForTitledSteps(graph, status, doValidate, idPrefix, depth, metFirstChoice)
     } else if (isParallel(graph)) {
-      return this.treeModelForParallel(graph, status, doValidate, idPrefix, depth, name)
+      return this.treeModelForParallel(graph, status, doValidate, idPrefix, depth, metFirstChoice, name)
     } else if (isChoice(graph)) {
       return this.treeModelForChoice(graph, status, doValidate, idPrefix, depth)
     } else if (isSubTask(graph)) {
-      return this.treeModelForSubTask(graph, status, doValidate, depth)
+      return this.treeModelForSubTask(graph, status, doValidate, depth, metFirstChoice)
     } else if (!graph.optional && !ImportsImpl.ignoreCodeBlock(graph)) {
       return this.treeModelForCodeBlock(graph, status, doValidate)
     }

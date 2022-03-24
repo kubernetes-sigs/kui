@@ -17,7 +17,7 @@
 import { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
 
 import card from '../components/spi/Card'
-import { fetchMarkdownFile } from './commentary'
+import fetchMarkdownFile from './fetch'
 
 /**
  * card command parsedOptions type

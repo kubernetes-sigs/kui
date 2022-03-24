@@ -26,6 +26,7 @@ import tabbed from './tabbed'
 import _heading from './heading'
 import blockquote from './blockquote'
 import { list, li } from './list'
+import guidebookguide from './Guide'
 import guidebookimports from './Imports'
 import { details, tip } from './details'
 import { table, thead, tbody, tr, th, td } from './table'
@@ -87,7 +88,8 @@ function components(args: Args) {
       tip,
       tag,
       guidebookimports,
-      tabbed: tabbed(args.uuid)
+      tabbed: tabbed(args.uuid),
+      guidebookguide: guidebookguide(args.uuid)
     },
     typedComponents(args)
   )

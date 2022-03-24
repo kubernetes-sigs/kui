@@ -28,6 +28,7 @@ import {
   CopyIcon as Copy,
   PlusIcon as Add,
   BookIcon as Guidebook,
+  BookOpenIcon as GuidebookOpen,
   TerminalIcon as Terminal,
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
@@ -126,6 +127,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Github {...props} />
     case 'Guidebook':
       return <Guidebook {...props} />
+    case 'GuidebookOpen':
+      return <GuidebookOpen {...props} />
     case 'Hamburger':
       return <Hamburger {...props} />
     case 'Help':

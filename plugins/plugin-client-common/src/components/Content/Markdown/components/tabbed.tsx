@@ -22,6 +22,7 @@ import { EventEmitter } from 'events'
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 
 import Card from '../../../spi/Card'
+import isElementWithProperties from '../isElement'
 
 type Props = {
   /** markdown document id */
@@ -34,7 +35,7 @@ type Props = {
   'data-kui-choice-group': string
 
   /** the tab models */
-  children: {
+  tabs: {
     props: { title: string; 'data-kui-tab-index': string; children?: React.ReactNode[] }
   }[]
 }
@@ -59,7 +60,7 @@ function emitTabSwitch(uuid: string, group: string, member: string) {
   switchEvents.emit(uuid, group, member)
 }
 
-class LinkableTabs extends React.PureComponent<Props, State> {
+export class LinkableTabs extends React.PureComponent<Props, State> {
   private readonly slugs = new Slugger()
   private readonly cleaners: (() => void)[] = []
 
@@ -73,7 +74,7 @@ class LinkableTabs extends React.PureComponent<Props, State> {
   }
 
   private initEvents() {
-    ;(this.props.children || [])
+    ;(this.props.tabs || [])
       .map(_ => this.slugs.slug(_.props.title))
       .forEach((slug, activeKey) => {
         const onActivate = (evt?: React.MouseEvent) => {
@@ -97,12 +98,12 @@ class LinkableTabs extends React.PureComponent<Props, State> {
     return this.props['data-kui-choice-group']
   }
 
-  private member(tab: Props['children'][0]): string {
+  private member(tab: Props['tabs'][0]): string {
     return tab.props['data-kui-tab-index']
   }
 
   private readonly onSelect = (_, tabIndex: number) => {
-    const selectedTab = this.props.children[tabIndex]
+    const selectedTab = this.props.tabs[tabIndex]
     emitTabSwitch(this.props.uuid, this.group, this.member(selectedTab))
 
     this.setState({
@@ -130,7 +131,7 @@ class LinkableTabs extends React.PureComponent<Props, State> {
         data-depth={this.props.depth}
         isSecondary={this.isSecondary}
       >
-        {(this.props.children || []).map((_, idx) => (
+        {(this.props.tabs || []).map((_, idx) => (
           <Tab
             key={idx}
             eventKey={idx}
@@ -147,7 +148,7 @@ class LinkableTabs extends React.PureComponent<Props, State> {
       </Tabs>
     )
 
-    // re: the <React.Fragment> wrapper around props.children; this is
+    // re: the <React.Fragment> wrapper around props.tabs; this is
     // to avoid Card's PatternFly impl creating a separate Markdown
     // component for every child. We know here that all of the children are part
     // of the same contiguous stretch of text.
@@ -158,6 +159,14 @@ export interface TabProps {
   depth: string
   'data-kui-choice-group': string
   children: any
+}
+
+export function getTabsDepth(props: TabProps) {
+  return typeof props.depth === 'number' ? props.depth : parseInt(props.depth.toString(), 10)
+}
+
+export function getTabTitle(child: TabProps['children'][number]) {
+  return (isElementWithProperties(child) && child.properties.title) || ''
 }
 
 export function isTabs(props: Partial<TabProps>): props is Required<TabProps> {
@@ -172,9 +181,8 @@ export default function tabbedWrapper(uuid: string) {
         uuid={uuid}
         depth={parseInt(props.depth, 10)}
         data-kui-choice-group={props['data-kui-choice-group']}
-      >
-        {props.children}
-      </LinkableTabs>
+        tabs={props.children}
+      />
     )
   }
 }

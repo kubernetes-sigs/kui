@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { Graph } from '.'
+import { Node, Parent } from 'unist'
+import { Element, ElementContent } from 'hast'
 
-import hoistSubTasks from './hoistSubTasks'
-import propagateTitles from './propagateTitles'
-import deadCodeElimination from './deadCodeElimination'
+export function isElement(_: Node | Parent | ElementContent): _ is Element {
+  const elt = _ as Element
+  return elt && typeof elt.tagName === 'string'
+}
 
-export default function optimize(graph: Graph) {
-  return propagateTitles(deadCodeElimination(hoistSubTasks(graph)))
+export default function isElementWithProperties(_: Element | ElementContent | Parent | Node): _ is Element {
+  return isElement(_) && _.properties !== undefined
 }

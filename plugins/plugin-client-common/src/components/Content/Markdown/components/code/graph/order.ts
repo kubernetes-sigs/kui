@@ -45,7 +45,7 @@ function orderSequence(graph: Sequence = emptySequence(), ordinal = 0): Sequence
     { postorder: ordinal, sequence: [] }
   )
 
-  return { order: ordinal, postorder, sequence }
+  return { key: graph.key, order: ordinal, postorder, sequence }
 }
 
 function orderParallel(graph: Parallel, ordinal: number): Parallel<Ordered> {
@@ -59,7 +59,7 @@ function orderParallel(graph: Parallel, ordinal: number): Parallel<Ordered> {
     { postorder: ordinal, parallel: [] }
   )
 
-  return { order: ordinal, postorder, parallel }
+  return { key: graph.key, order: ordinal, postorder, parallel }
 }
 
 function orderTitledSteps(graph: TitledSteps<Unordered>, ordinal = 0): TitledSteps<Ordered> {
@@ -104,7 +104,7 @@ function orderCodeBlock(graph: CodeBlockProps, ordinal: number): CodeBlockProps 
 }
 
 // T extends Sequence ? Sequence<Ordered> : T extends Parallel ? Parallel<Ordered> : T extends Choice ? Choice<Ordered> : (CodeBlockProps & Ordered)
-export default function order<T extends Graph<Unordered>>(graph: T, ordinal = 0): Graph<Ordered> {
+export default function order(graph: Graph, ordinal = 0): Graph<Ordered> {
   if (isSequence(graph)) {
     return orderSequence(graph, ordinal)
   } else if (isParallel(graph)) {
