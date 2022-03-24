@@ -99,6 +99,12 @@ export function remarkImports() {
         data.hProperties = {
           'data-kui-code-blocks': [] // rehype-imports will populate this
         }
+      } else if (node.name === 'guide') {
+        const data = node.data || (node.data = {})
+        data.hName = 'guidebookguide'
+        data.hProperties = {
+          'data-kui-code-blocks': [] // rehype-imports will populate this
+        }
       }
     })
 

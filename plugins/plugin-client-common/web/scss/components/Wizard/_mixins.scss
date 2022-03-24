@@ -21,7 +21,7 @@
 }
 
 @mixin WizardTitle {
-  .kui--wizard-header-title {
+  .pf-c-wizard__title {
     @content;
   }
 }
@@ -45,7 +45,7 @@
 }
 
 @mixin WizardDescription {
-  .kui--wizard-header-description {
+  .pf-c-wizard__description {
     @content;
   }
 }

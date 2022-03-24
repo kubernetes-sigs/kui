@@ -21,5 +21,5 @@ export interface Tree {
 
 export default interface Input {
   input: string
-  tree: Tree[]
+  tree: (command: string) => Tree[]
 }

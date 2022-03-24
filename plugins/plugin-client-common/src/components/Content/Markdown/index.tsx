@@ -43,7 +43,7 @@ import inlineSnippets from '../../../controller/snippets'
 import emojis from 'remark-emoji'
 import frontmatter from 'remark-frontmatter'
 
-import { filepathForResponses } from '../../../controller/commentary'
+import { filepathForResponses } from '../../../controller/fetch'
 
 import tip from './rehype-tip'
 import tabbed, { hackIndentation } from './rehype-tabbed'
@@ -197,7 +197,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * react.
    */
   private prepareSource() {
-    const sourcePriorToInlining = Markdown.source(this.props)
+    const sourcePriorToInlining = Markdown.source(this.props).trim()
 
     if (this.props.tab && this.props.tab.REPL) {
       setTimeout(async () => {

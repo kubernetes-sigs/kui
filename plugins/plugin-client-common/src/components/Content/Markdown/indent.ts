@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { Graph } from '.'
+function indentArray(strings: string[], indentation: string) {
+  return (indentation.length === 0 ? strings : strings.map(_ => `${indentation}${_}`)).join('\n')
+}
 
-import hoistSubTasks from './hoistSubTasks'
-import propagateTitles from './propagateTitles'
-import deadCodeElimination from './deadCodeElimination'
+export default function indent(str: string, indentation = '    ') {
+  return indentArray(str.split(/\n/), indentation)
+}
 
-export default function optimize(graph: Graph) {
-  return propagateTitles(deadCodeElimination(hoistSubTasks(graph)))
+export function indentAll(strings: string[], indentation: string) {
+  if (indentation.length === 0) {
+    return strings.join('\n')
+  } else {
+    return strings.map(_ => indent(_, indentation)).join('\n')
+  }
 }

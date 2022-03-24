@@ -15,7 +15,12 @@
  */
 
 /** Re-serialize the given attributes and code block body */
-export default function dump(attributes: Record<string, any>, body: string) {
+export default function dump(attrs: Record<string, any>, body: string) {
+  // the nesting attribute is expensive to serialize, and we don't
+  // need to reserialize it
+  const attributes = Object.assign({}, attrs)
+  delete attributes.nesting
+
   return `
 ---
 ${require('js-yaml').dump(attributes)}

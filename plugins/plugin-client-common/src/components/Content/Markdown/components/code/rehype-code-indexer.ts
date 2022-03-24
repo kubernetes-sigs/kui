@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+import { Element } from 'hast'
 import { Parent } from 'unist'
 import { toString } from 'hast-util-to-string'
-import { Element, ElementContent } from 'hast'
-import { visitParents as visit } from 'unist-util-visit-parents'
+import { visitParents } from 'unist-util-visit-parents'
 
 import dump from './dump'
 import isExecutable from './isCodeBlock'
 import { isTab } from '../../rehype-tabbed'
+import isElementWithProperties from '../../isElement'
+import toMarkdownString, { Node } from '../../toMarkdownString'
 import {
+  isHeading,
+  isHeadingOrRemovedHeading,
   isWizard,
   isWizardStep,
   getWizardGroup,
@@ -30,18 +34,10 @@ import {
   getTitle,
   getDescription
 } from '../Wizard/rehype-wizard'
+
 import { tryFrontmatter } from '../../frontmatter'
 import { addNesting as addCodeBlockNesting } from '../Wizard/CodeBlockProps'
 import { isImports, getImportKey, getImportFilepath, getImportTitle } from '../../remark-import'
-
-export function isElement(_: Node | Parent | ElementContent): _ is Element {
-  const elt = _ as Element
-  return elt && typeof elt.tagName === 'string'
-}
-
-export function isElementWithProperties(_: Element | ElementContent | Parent | Node): _ is Element {
-  return isElement(_) && _.properties !== undefined
-}
 
 /**
  * Heuristic: Code Blocks inside of closed "tips" (i.e. default-closed
@@ -52,17 +48,31 @@ function isImplicitlyOptional(_: Parent): _ is Element {
 }
 
 /**
- * Scan backwards from childIdx in grandparent's children for a
- * heading. If found, return that heading's string form.
+ * Scan backwards from `parent` in `grandparent`'s children for a
+ * heading. If found, return that heading's string form, and collect
+ * all of the source between that heading and the given `parent`,
+ * inclusive.
  */
-function findNearestEnclosingHeadingText(grandparent: Node, childIdx: number) {
-  if (grandparent && childIdx >= 0 && isElementWithProperties(grandparent)) {
-    for (let idx = childIdx - 1; idx >= 0; idx--) {
+function findNearestEnclosingTitle(grandparent: Parent, parent: Node) {
+  const parentIdx = !grandparent ? -1 : grandparent.children.findIndex(child => child === parent)
+
+  if (grandparent && parentIdx >= 0 && isElementWithProperties(grandparent)) {
+    for (let idx = parentIdx - 1; idx >= 0; idx--) {
       const child = grandparent.children[idx]
-      if (isElementWithProperties(child) && /^h\d+$/.test(child.tagName)) {
-        return toString(child)
+      if (isHeadingOrRemovedHeading(child)) {
+        return {
+          title: isHeading(child) ? toString(child) : '',
+          source: grandparent.children
+            .slice(idx, parentIdx + 1)
+            .map(toMarkdownString)
+            .join('\n')
+        }
       }
     }
+  }
+
+  return {
+    source: toMarkdownString(parent)
   }
 }
 
@@ -75,7 +85,7 @@ export default function plugin(uuid: string) {
     let codeIdx = 0
     const allocCodeBlockId = (myCodeIdx: number) => `${uuid}-${myCodeIdx}`
 
-    visit(/* <Element> */ ast, 'element', function visitor(node, ancestors) {
+    visitParents(/* <Element> */ ast, 'element', function visitor(node, ancestors) {
       if (node.tagName === 'code') {
         // react-markdown v6+ places the language in the className
         const match = node.properties.className ? /language-([\w{.]+)/.exec(node.properties.className.toString()) : ''
@@ -155,13 +165,13 @@ export default function plugin(uuid: string) {
                         // const nestingDepth = parseInt(parent.properties['data-kui-choice-nesting-depth'].toString(), 0)
 
                         const grandparent = ancestors[idx - 2]
-                        const parentIdx = !grandparent ? -1 : grandparent.children.findIndex(child => child === parent)
                         addNesting(attributes, {
                           kind: 'Choice',
+                          source: toMarkdownString(_),
                           group,
                           title,
                           member,
-                          groupTitle: findNearestEnclosingHeadingText(grandparent, parentIdx)
+                          groupDetail: findNearestEnclosingTitle(grandparent, parent)
                         })
                       }
                     }
@@ -170,19 +180,22 @@ export default function plugin(uuid: string) {
                     if (parent && isElementWithProperties(parent) && isWizard(parent.properties)) {
                       addNesting(attributes, {
                         kind: 'WizardStep',
+                        source: toMarkdownString(_),
                         group: getWizardGroup(_.properties),
                         member: getWizardStepMember(_.properties),
                         title: getTitle(_.properties),
                         description: getDescription(_.properties),
                         wizard: {
+                          source: toMarkdownString(parent),
                           title: getTitle(parent.properties),
-                          description: getDescription(parent.properties)
+                          description: parent.children[0] ? toMarkdownString(parent.children[0]) : undefined
                         }
                       })
                     }
                   } else if (isImports(_.properties)) {
                     addNesting(attributes, {
                       kind: 'Import',
+                      source: toMarkdownString(_),
                       key: getImportKey(_.properties),
                       title: getImportTitle(_.properties),
                       filepath: getImportFilepath(_.properties)

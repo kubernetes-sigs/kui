@@ -27,27 +27,50 @@
   }
 }
 
-@include Scrollback {
-  @include RightStrip {
-    @include DependenceTree {
-      $code-font-size: 0.6875rem;
-      $font-size: 0.75rem;
-      $spacer-md: 0.875rem;
-      $guide-top: 0.6875rem;
-      $guide-width: 0.5625rem;
+@mixin DependenceTreeSubTaskIcon {
+  .kui--dependence-tree-subtask--icon {
+    @content;
+  }
+}
 
+@mixin SmallerFonts {
+  @include DependenceTree {
+    $code-font-size: 0.6875rem;
+    $font-size: 0.75rem;
+    $spacer-md: 0.875rem;
+    $guide-top: 0.6875rem;
+    $guide-width: 0.5625rem;
+
+    font-size: $font-size;
+
+    ul {
+      /** Overrides some other LeftStrip rules */
       font-size: $font-size;
-      --pf-global--FontSize--md: #{0.5 * $font-size};
-      --pf-global--spacer--sm: #{0.333 * $font-size};
-      --pf-global--spacer--md: #{$spacer-md};
-      --pf-c-tree-view--m-guides__node--before--Top: #{$guide-top};
-      --pf-c-tree-view--m-guides__node--before--Width: #{$guide-width};
+    }
 
-      code {
-        font-size: $code-font-size;
-      }
+    --pf-global--FontSize--md: #{0.5 * $font-size};
+    --pf-global--spacer--sm: #{0.333 * $font-size};
+    --pf-global--spacer--md: #{$spacer-md};
+    --pf-c-tree-view--m-guides__node--before--Top: #{$guide-top};
+    --pf-c-tree-view--m-guides__node--before--Width: #{$guide-width};
+
+    code {
+      font-size: $code-font-size;
     }
   }
+}
+
+@include Scrollback {
+  @include LeftStrip {
+    @include SmallerFonts;
+  }
+  @include RightStrip {
+    @include SmallerFonts;
+  }
+}
+
+@include DependenceTreeSubTaskIcon {
+  color: var(--color-brand-01);
 }
 
 @include DependenceTree {

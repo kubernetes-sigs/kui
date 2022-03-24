@@ -16,11 +16,13 @@
 
 import { v4 } from 'uuid'
 import { u } from 'unist-builder'
-import { Element, Root } from 'hast'
 import { visit } from 'unist-util-visit'
+import { Content, Element, Parent, Root } from 'hast'
+import { visitParents } from 'unist-util-visit-parents'
 
-import { isElement } from '../code/rehype-code-indexer'
+import { isImports } from '../../remark-import'
 import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
+import isElementWithProperties, { isElement } from '../../isElement'
 import { GroupMember as CodeBlockGroupMember } from './CodeBlockProps'
 
 type Primordial = Pick<CodeBlockGroupMember, 'group'> & {
@@ -29,6 +31,7 @@ type Primordial = Pick<CodeBlockGroupMember, 'group'> & {
   steps: Element[]
   progress: Required<WizardSteps['wizard']['progress']>
   splitCount: number
+  isOnAnImportChain: boolean
 }
 
 interface GroupMember {
@@ -73,12 +76,32 @@ export function getWizardStepMember(props: WizardStepProps) {
   return props['data-kui-wizard-member']
 }
 
+const REMOVED_HEADING_PLACEHOLDER_TEXT = '<!-- removed heading -->'
+
+function removedHeading() {
+  return u('raw', REMOVED_HEADING_PLACEHOLDER_TEXT)
+}
+
+export function isHeading(node: Content) {
+  return isElementWithProperties(node) && /^h\d+$/.test(node.tagName)
+}
+
+export function isHeadingOrRemovedHeading(node: Content) {
+  if (isHeading(node)) {
+    // normal heading
+    return true
+  } else if (node.type === 'raw' && node.value === REMOVED_HEADING_PLACEHOLDER_TEXT) {
+    // removed heading
+    return true
+  }
+}
+
 /**
  * This rehype plugin transforms wizard step headers.
  */
 function transformer(ast: Root) {
   /** Treat headings that parents of nodes marked as Wizards as wizard steps */
-  function headingVisitor() {
+  function extractStepTitlesFromHeadingsVisitor() {
     const node: Element = arguments[0] // eslint-disable-line prefer-rest-params
     const idx: number = arguments[1] // eslint-disable-line prefer-rest-params
     const parent: Element = arguments[2] // eslint-disable-line prefer-rest-params
@@ -98,7 +121,10 @@ function transformer(ast: Root) {
           parent.properties['data-kui-description'] = description
 
           // remove it from the AST, since we've folded it in as a step title
-          parent.children.splice(idx, 1)
+          parent.children[idx] = removedHeading()
+
+          // DO NOT DO THIS! the `visit` logic will skip over the next child :(
+          // parent.children.splice(idx, 1)
         }
       }
     }
@@ -110,18 +136,23 @@ function transformer(ast: Root) {
     title: '',
     description: undefined,
     progress: 'bar',
-    steps: []
+    steps: [],
+    isOnAnImportChain: false
   }
 
-  function stepsVisitor() {
-    const node: Element = arguments[0] // eslint-disable-line prefer-rest-params
-    const idx: number = arguments[1] // eslint-disable-line prefer-rest-params
-    const parent: Element = arguments[2] // eslint-disable-line prefer-rest-params
+  function extractStepsFromDivsVisitor(node: Element, ancestors: Parent[]) {
+    // const node: Element = arguments[0] // eslint-disable-line prefer-rest-params
+    // const idx: number = arguments[1] // eslint-disable-line prefer-rest-params
+    // const parent: Element = arguments[2] // eslint-disable-line prefer-rest-params
 
     if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && parent) {
       delete node.properties['data-kui-split']
 
       if (wizard.steps.length === 0) {
+        if (ancestors.find(_ => isElementWithProperties(_) && isImports(_.properties))) {
+          wizard.isOnAnImportChain = true
+        }
+
         if (node.properties['data-kui-wizard-progress']) {
           wizard.progress = node.properties['data-kui-wizard-progress'].toString() as 'bar' | 'none'
         }
@@ -160,14 +191,21 @@ function transformer(ast: Root) {
         wizard.steps.push(node)
       }
 
-      if (idx >= 0) {
-        parent.children.splice(idx, 1)
+      const parent = ancestors[ancestors.length - 1]
+      if (parent) {
+        const idx = parent.children.findIndex(child => child === node)
+        if (idx >= 0) {
+          parent.children[idx] = u('raw', '<!-- removed step source -->')
+
+          // DO NOT DO THIS! the `visit` logic will skip over the next child :(
+          // parent.children.splice(idx, 1)
+        }
       }
     }
   }
 
-  visit(ast, 'element', headingVisitor)
-  visit(ast, 'element', stepsVisitor)
+  visit(ast, 'element', extractStepTitlesFromHeadingsVisitor)
+  visitParents(ast, 'element', extractStepsFromDivsVisitor)
 
   if (wizard.steps.length > 0 || wizard.title.trim() || wizard.description) {
     ast.children.push(
@@ -180,6 +218,7 @@ function transformer(ast: Root) {
             'data-kui-title': wizard.title,
             'data-kui-split-count': wizard.splitCount,
             'data-kui-wizard-progress': wizard.progress,
+            'data-kui-is-from-import': wizard.isOnAnImportChain.toString(),
             'data-kui-code-blocks': [] // rehype-imports will populate this
           }
         },

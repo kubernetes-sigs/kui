@@ -17,8 +17,12 @@
 import {
   Choice,
   Graph,
+  Sequence,
   SubTask,
   emptySequence,
+  extractTitle,
+  hasTitle,
+  hasTitleProperty,
   isSubTask,
   isChoice,
   isSequence,
@@ -27,11 +31,29 @@ import {
   parallel,
   sequence,
   subtask
-} from '../graph'
+} from '.'
 
 import findChoiceFrontier from './choice-frontier'
 
 type LookupTable = Record<SubTask['key'], SubTask>
+
+/**
+ * As with `extractTitleBase` except with a fallback that looks for
+ * Prerequisites + SubTask, and uses the title from the latter.
+ */
+function extractTitleForPrereqsPlusSubTask(graph: Graph) {
+  const title = extractTitle(graph)
+  if (title) {
+    return title
+  } else if (
+    isSequence(graph) &&
+    graph.sequence.length === 2 &&
+    isSubTask(graph.sequence[0]) &&
+    extractTitle(graph.sequence[0]) === 'Prerequisites'
+  ) {
+    return extractTitle(graph.sequence[1])
+  }
+}
 
 function toLookupTable(list: SubTask[]): LookupTable {
   return list.reduce((M, subtask) => {
@@ -41,7 +63,7 @@ function toLookupTable(list: SubTask[]): LookupTable {
 }
 
 function removeDuplicates(list: SubTask[]): SubTask[] {
-  const uniqueKeys = Array.from(new Set(list.map(_ => _.key)))
+  const uniqueKeys = [...new Set(list.map(_ => _.key))]
   const lookupTable = toLookupTable(list)
   return uniqueKeys.map(key => lookupTable[key])
 }
@@ -54,7 +76,7 @@ function extractDominatedSubTasksUpToChoice(graph: Graph): SubTask[] {
       // even do so here, with a "Prerequisites" subtask
       return subgraphTasks
     } else {
-      return [graph, ...subgraphTasks]
+      return [...subgraphTasks, graph]
     }
   } else if (isChoice(graph)) {
     return []
@@ -225,18 +247,61 @@ function union(...Ts: SubTask[][]): SubTask[] {
   return Ts.reduce((set, subtasks) => set.concat(subtasks.filter(b => !set.find(a => a.key === b.key))), [])
 }
 
+function asPrereqs(content: Graph[]): SubTask {
+  return subtask('Prerequisites', 'Prerequisites', '', '', sequence(content))
+}
+
+function withTitle(title: string, content: Sequence) {
+  if (!title) {
+    return content
+  } else {
+    // scan our children content to see if any of them has the same
+    // name we're about to give the parent
+    const childTitles = content.sequence.map(extractTitle)
+    const childIdxWithSameTitle = childTitles.findIndex(_ => title === _)
+
+    if (childIdxWithSameTitle >= 0) {
+      // yup!
+      const elt = content.sequence[childIdxWithSameTitle]
+
+      if (hasTitleProperty(elt)) {
+        // sigh, typescript, we need to double check here
+        elt.title = 'Main Tasks'
+
+        // also, in this situation, cosmetically we'd prefer a
+        // (Prerequisites, Main Tasks) split. let's see if we can
+        // achieve that
+        if (
+          childIdxWithSameTitle === content.sequence.length - 1 &&
+          !content.sequence.find(_ => hasTitle(_) && extractTitle(_) === 'Prerequisites')
+        ) {
+          content = sequence([asPrereqs(content.sequence.slice(0, childIdxWithSameTitle)), elt])
+        }
+      }
+    }
+
+    return subtask(title, title, '', '', content)
+  }
+}
+
 /** Smash in any subTasks we hoisted */
-function recombine(graph: Graph | void, subTasks1: SubTask[]) {
+function recombine(inputGraph: Graph, graph: Graph | void, subTasks1: SubTask[]) {
   const subTasks = subTasks1.map(_ => pruneSubTasks(_, subTasks1, false)).filter(Boolean)
 
   if (subTasks.length === 0) {
     return graph
-  } else if (!graph) {
-    return sequence(subTasks)
   } else {
-    const { toplevelSubTasks, residual } = extractTopLevelSubTasks(graph)
-    const allSubTasks = union(toplevelSubTasks, subTasks)
-    return sequence([subtask('Prerequisites', 'Prerequisites', '', sequence(allSubTasks)), residual])
+    const title = extractTitle(inputGraph)
+
+    if (!graph) {
+      return withTitle(title, sequence(subTasks))
+    } else {
+      const { toplevelSubTasks, residual } = extractTopLevelSubTasks(graph)
+      const allSubTasks = union(toplevelSubTasks, subTasks)
+
+      const content = sequence([asPrereqs(allSubTasks), residual])
+      return withTitle(title || extractTitleForPrereqsPlusSubTask(content), content)
+    }
   }
 }
 
@@ -247,22 +312,26 @@ function hoist(inputGraph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
   const choiceFrontier = findChoiceFrontier(inputGraph)
   const frontierAllChoicesSubTasks = choiceFrontier.flatMap(extractSubTasksCommonToAllChoices)
 
-  const mySubTasks = union(myDominatedSubTasks, frontierAllChoicesSubTasks)
+  const mySubTasks = union(frontierAllChoicesSubTasks, myDominatedSubTasks)
   const allSubTasks = union(mySubTasks, inheritedSubTasks)
 
   if (allSubTasks.length === 0) {
+    // then there is nothing to optimize
     return inputGraph
   }
 
+  // percolate all dominated subtasks down to children
   const prunedGraph = pruneShadowedSubTasks(inputGraph, allSubTasks)
 
-  // recurse, for each control subregion
+  // then, recurse, for each control subregion
   const prunedGraph2 = findAndHoistChoiceFrontier(prunedGraph, allSubTasks)
 
   // smash in any subTasks we hoisted.
-  return recombine(prunedGraph2, mySubTasks)
-  // NOTE: do not recombine with ^^^^^^^^^^ inherited sub tasks! otherwise we will repeat them for every
-  // subtree call to hoist()!
+  return recombine(inputGraph, prunedGraph2, mySubTasks)
+  //                                         ^^^^^^^^^^
+  // NOTE:                                       |
+  // do not recombine with inherited sub tasks! otherwise we will
+  // repeat them for every subtree call to hoist()!
 }
 
 /**
@@ -271,13 +340,6 @@ function hoist(inputGraph: Graph, inheritedSubTasks: SubTask[]): Graph | void {
  * @param inputGraph the graph to optimize
  * @param maxIter to protect against infinite loop bugs
  */
-export default function hoistSubTasks(inputGraph: Graph, iter = 0, maxIter = 20): Graph {
-  const graph = hoist(inputGraph, []) || emptySequence()
-  const changed = JSON.stringify(inputGraph) !== JSON.stringify(graph)
-
-  if (changed && iter < maxIter) {
-    return hoistSubTasks(graph, iter + 1, maxIter)
-  } else {
-    return graph
-  }
+export default function hoistSubTasks(inputGraph: Graph): Graph {
+  return hoist(inputGraph, []) || emptySequence()
 }

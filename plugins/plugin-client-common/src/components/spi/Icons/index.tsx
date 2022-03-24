@@ -37,6 +37,7 @@ export type SupportedIcon =
   | 'Grid'
   | 'Github'
   | 'Guidebook'
+  | 'GuidebookOpen'
   | 'Hamburger'
   | 'Help'
   | 'Info'

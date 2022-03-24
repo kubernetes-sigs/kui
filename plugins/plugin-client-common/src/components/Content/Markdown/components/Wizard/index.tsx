@@ -34,7 +34,6 @@ import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
 import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
-import '../../../../../../web/scss/components/Wizard/_index.scss'
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 import { WizardStep } from '@patternfly/react-core'
@@ -224,14 +223,14 @@ export default class Wizard extends React.PureComponent<Props, State> {
   private title() {
     const label = this.props['data-kui-title'].trim()
     return (
-      <div className="kui--wizard-header-title" aria-label={label}>
+      <div className="kui--wizard-header-title pf-c-wizard__title" aria-label={label}>
         {label}
       </div>
     )
   }
 
   private description() {
-    return <div className="kui--wizard-header-description">{this.props.children[0]}</div>
+    return <div className="pf-c-wizard__description">{this.props.children[0]}</div>
   }
 
   private header() {
@@ -269,7 +268,11 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    return this.wizard()
+    if (this.props['data-kui-is-from-import'] === 'true') {
+      return <React.Fragment />
+    } else {
+      return this.wizard()
+    }
   }
 }
 

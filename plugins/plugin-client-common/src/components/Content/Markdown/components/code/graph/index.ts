@@ -25,12 +25,22 @@
  *
  */
 
-import CodeBlockProps, { Choice as CodeBlockChoice, Title, Description } from '../../Wizard/CodeBlockProps'
+import { v4 } from 'uuid'
+import { basename } from 'path'
+import CodeBlockProps, { Source, Choice as CodeBlockChoice, Title, Description } from '../../Wizard/CodeBlockProps'
 
-export { CodeBlockProps }
+export { CodeBlockProps, Title, Description }
 
 /* map from choice group to selected choice member */
 export type ChoicesMap = Record<CodeBlockChoice['group'], CodeBlockChoice['member']>
+
+type Key = {
+  key: string
+}
+
+type Filepath = {
+  filepath: string
+}
 
 /** Iteration order */
 export interface Ordered {
@@ -44,16 +54,19 @@ export interface Ordered {
 
 export type Unordered = Partial<Ordered>
 
-export type Sequence<T extends Unordered | Ordered = Unordered> = T & {
-  sequence: Graph<T>[]
-}
+export type Sequence<T extends Unordered | Ordered = Unordered> = T &
+  Key & {
+    sequence: Graph<T>[]
+  }
 
 export type OrderedSequence = Sequence<Ordered>
 
-export type TitledStep<T extends Unordered | Ordered = Unordered> = Title &
+export type TitledStep<T extends Unordered | Ordered = Unordered> = Source &
+  Title &
   Partial<Description> & { graph: Sequence<T> }
 
 export type TitledSteps<T extends Unordered | Ordered = Unordered> = T &
+  Source &
   Title &
   Partial<Description> & {
     steps: TitledStep<T>[]
@@ -68,12 +81,14 @@ export function isSequence<T extends Unordered | Ordered = Unordered>(graph: Gra
 export function sequence(graphs: Graph[]): Sequence {
   return {
     // here, we flatten nested sequences
+    key: v4(),
     sequence: graphs.flatMap(_ => (isSequence(_) ? _.sequence : _))
   }
 }
 
 export function parallel(parallel: Graph[]): Parallel {
   return {
+    key: v4(),
     parallel
   }
 }
@@ -103,7 +118,8 @@ export type ChoicePart<T extends Unordered | Ordered = Unordered> = {
   graph: Sequence<T>
 }
 
-export type Choice<T extends Unordered | Ordered = Unordered> = T &
+export type Choice<T extends Unordered | Ordered = Unordered> = Source &
+  T &
   Title & {
     group: ChoiceGroup
     choices: ChoicePart<T>[]
@@ -119,9 +135,10 @@ function sameChoice(A: Choice, B: Choice) {
   )
 }
 
-export type Parallel<T extends Unordered | Ordered = Unordered> = T & {
-  parallel: Graph<T>[]
-}
+export type Parallel<T extends Unordered | Ordered = Unordered> = T &
+  Key & {
+    parallel: Graph<T>[]
+  }
 
 export type OrderedParallel = Parallel<Ordered>
 
@@ -152,21 +169,32 @@ function sameTitledSteps(A: TitledSteps, B: TitledSteps) {
   )
 }
 
-export type SubTask<T extends Unordered | Ordered = Unordered> = T & {
-  key: string
-  title: string
-  filepath: string
-  graph: Sequence<T>
-}
+export type SubTask<T extends Unordered | Ordered = Unordered> = Key &
+  Source &
+  Filepath &
+  Title &
+  Partial<Description> &
+  T & {
+    graph: Sequence<T>
+  }
 
 export type OrderedSubTask = SubTask<Ordered>
 
-export function subtask(key: string, title: string, filepath: string, graph: Sequence<Unordered>): SubTask<Unordered> {
+export function subtask(
+  key: string,
+  title: string,
+  description: string,
+  filepath: string,
+  graph: Sequence<Unordered>,
+  source: Source['source'] = ''
+): SubTask<Unordered> {
   return {
     key,
     title,
+    description,
     filepath,
-    graph
+    graph,
+    source
   }
 }
 
@@ -176,13 +204,16 @@ function sameSubTask(A: SubTask, B: SubTask) {
   )
 }
 
-export type Graph<T extends Unordered | Ordered = Unordered> =
+type InteriorNode<T extends Unordered | Ordered = Unordered> =
   | Choice<T>
   | Sequence<T>
   | Parallel<T>
   | SubTask<T>
   | TitledSteps<T>
-  | (CodeBlockProps & T)
+
+type LeafNode<T extends Unordered | Ordered = Unordered> = CodeBlockProps & T
+
+export type Graph<T extends Unordered | Ordered = Unordered> = InteriorNode<T> | LeafNode<T>
 
 export type OrderedGraph = Graph<Ordered>
 
@@ -257,4 +288,49 @@ export function choose<T extends Unordered | Ordered = Unordered>(
   const choice = (selectedMember && graph.choices.find(_ => _.member === selectedMember)) || graph.choices[0]
 
   return choice.graph
+}
+
+export function hasSource(graph: Graph): graph is Graph & Source {
+  return typeof (graph as any).source === 'string'
+}
+
+export function hasKey(graph: Graph): graph is Graph & Key {
+  return typeof (graph as Key).key === 'string'
+}
+
+export function hasFilepath(graph: Graph): graph is Graph & Filepath {
+  return isSubTask(graph) && !!graph.filepath
+}
+
+export function hasTitleProperty(graph: Graph): graph is Graph & Title & Partial<Description> {
+  return isTitledSteps(graph) || isSubTask(graph)
+}
+
+export function hasTitle(graph: Graph): graph is Graph & Title & Partial<Description> {
+  return hasTitleProperty(graph) && !!graph.title
+}
+
+export function extractTitle(graph: Graph) {
+  if (hasTitle(graph)) {
+    return graph.title
+  } else if (isSubTask(graph) && graph.graph.sequence.length === 1 && hasTitleProperty(graph.graph.sequence[0])) {
+    // Heuristic: in the case that this `graph` is a thin wrapper over
+    // some other SubTask, and this graph does not have an explicit
+    // `title` property, favor whatever title we can extract from the
+    // inner subtask. This will make the models shown in `guide
+    // foo.md` compatible with those shown in `replay foo.md`.
+    return extractTitle(graph.graph.sequence[0])
+  } else if (hasFilepath(graph)) {
+    return basename(graph.filepath)
+  }
+}
+
+function hasDescriptionProperty(graph: Graph): graph is Graph & Description {
+  return isTitledSteps(graph) || isSubTask(graph)
+}
+
+export function extractDescription(graph: Graph) {
+  if (hasDescriptionProperty(graph)) {
+    return graph.description
+  }
 }

@@ -21,7 +21,7 @@ import { visitParents } from 'unist-util-visit-parents'
 
 import { Tab } from '@kui-shell/core'
 
-import { isOnAnImportChain } from './remark-import'
+import { isOnAnImportChain, visitImportContainers } from './remark-import'
 import preprocessCodeBlocks from './components/code/remark-codeblocks-topmatter'
 import KuiFrontmatter, { hasWizardSteps, isNormalSplit, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
 
@@ -86,7 +86,7 @@ function positionOf(sectionIdx: number, frontmatter: KuiFrontmatter) {
 }
 
 /** Scan and process the `wizard` schema of the given `frontmatter` */
-function preprocessWizardSteps(tree /*: Root */, frontmatter: KuiFrontmatter) {
+function preprocessWizardSteps(tree /*: Root */, frontmatter: KuiFrontmatter, ignoreImports = true) {
   if (hasWizardSteps(frontmatter)) {
     if (!frontmatter.layout) {
       frontmatter.layout = 'wizard'
@@ -97,7 +97,7 @@ function preprocessWizardSteps(tree /*: Root */, frontmatter: KuiFrontmatter) {
     let sectionIdx = 1
     visitParents(tree, (node, ancestors) => {
       if (node.type !== 'thematicBreak') return
-      else if (isOnAnImportChain(ancestors)) return
+      else if (ignoreImports && isOnAnImportChain(ancestors)) return
 
       const { position } = positionOf(sectionIdx++, frontmatter)
 
@@ -111,7 +111,7 @@ function preprocessWizardSteps(tree /*: Root */, frontmatter: KuiFrontmatter) {
 
     visitParents(/* <Heading> */ tree, (node, ancestors) => {
       if (node.type !== 'heading') return
-      else if (isOnAnImportChain(ancestors)) return
+      else if (ignoreImports && isOnAnImportChain(ancestors)) return
 
       if (ancestors.length > 0 && node.children && node.children[0]) {
         const firstChild = node.children[0]
@@ -237,6 +237,19 @@ function smashInWizardOptions(tree, frontmatter: KuiFrontmatter) {
   }
 }
 
+function preprocessWizard(tree /*: Root */, frontmatter: KuiFrontmatter, ignoreImports = true) {
+  preprocessWizardSteps(tree, frontmatter, ignoreImports)
+  extractSplitsAndSections(tree, frontmatter)
+  smashInWizardOptions(tree, frontmatter)
+}
+
+/** Process any wizard: steps frontmatter in imports */
+function preprocessWizardStepsForImports(tree /*: Root */) {
+  visitImportContainers(tree, ({ node, frontmatter }) => {
+    preprocessWizard(node, frontmatter, false)
+  })
+}
+
 /** Look for frontmatter and sections */
 export function kuiFrontmatter(opts: { tab: Tab }) {
   return (tree: Root) => {
@@ -251,9 +264,9 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
       }
 
       preprocessCodeBlocks(tree, frontmatter)
-      preprocessWizardSteps(tree, frontmatter)
-      extractSplitsAndSections(tree, frontmatter)
-      smashInWizardOptions(tree, frontmatter)
+      preprocessWizard(tree, frontmatter)
     }
+
+    preprocessWizardStepsForImports(tree)
   }
 }
