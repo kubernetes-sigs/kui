@@ -83,28 +83,46 @@ function visitDFS(root: Node, type: string, visitors: { pre?: Visitor; post?: Vi
 
 function stringifyTabs(root: Node) {
   const post = (node: Node) => {
-    if (isElementWithProperties(node) && isTabs(node.properties)) {
-      const tabStackDepth = getTabsDepth(node.properties)
-      const indentation = ''.padStart(tabStackDepth, '    ')
+    if (isElementWithProperties(node)) {
+      if (isTabs(node.properties)) {
+        const tabStackDepth = getTabsDepth(node.properties)
+        const indentation = ''.padStart(tabStackDepth, '    ')
 
-      node['value'] = indentAll(
-        node.children.map(tab => {
-          const tabTitle = getTabTitle(tab)
+        node['value'] = indentAll(
+          node.children.map(tab => {
+            const tabTitle = getTabTitle(tab)
 
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          const tabContent = indent(toMarkdownString(tab), '    ')
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            const tabContent = indent(toMarkdownString(tab))
 
-          return `=== "${tabTitle}"
+            return `=== "${tabTitle}"
 
 ${tabContent}
 `
-        }),
-        indentation
-      )
+          }),
+          indentation
+        )
 
-      delete node.tagName
-      delete node.children
-      delete node.properties
+        delete node.tagName
+        delete node.children
+        delete node.properties
+      } else if (node.tagName === 'tip') {
+        const { className, title, open } = node.properties
+
+        const tipContent = node.children
+          .map(toMarkdownString) // eslint-disable-line @typescript-eslint/no-use-before-define
+          .map(_ => indent(_))
+          .join('\n')
+
+        node['value'] = `!!!${open ? '+' : ''} ${className} "${title}"
+
+${tipContent}
+`
+
+        delete node.tagName
+        delete node.children
+        delete node.properties
+      }
     }
   }
 
