@@ -97,6 +97,7 @@
     "@types/tmp": "0.2.3",
     "@types/turndown": "5.0.1",
     "@types/uuid": "8.3.4",
+    "@types/which": "2.0.1",
     "@types/yargs-parser": "20.2.1",
     "@typescript-eslint/eslint-plugin": "2.25.0",
     "@typescript-eslint/parser": "2.25.0",

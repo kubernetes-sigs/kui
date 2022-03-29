@@ -46,12 +46,14 @@ import frontmatter from 'remark-frontmatter'
 import { filepathForResponses } from '../../../controller/fetch'
 
 import tip from './rehype-tip'
-import tabbed, { hackIndentation } from './rehype-tabbed'
+import tabbed from './rehype-tabbed'
+import hackIndentation from './rehype-tabbed/hack'
 
 import components from './components'
 import wizard from './components/Wizard/rehype-wizard'
 import rehypeImports, { remarkImports } from './remark-import'
 
+import { ChoicesMap } from './components/code/graph'
 import { CodeBlockResponse } from './components/code'
 import prefetchTableRows from './components/code/prefetch'
 import encodePriorResponses from './components/code/encoding'
@@ -64,9 +66,19 @@ import rehypeSlug from 'rehype-slug'
 import icons from './rehype-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
-const rehypePlugins = (uuid: string): Options['rehypePlugins'] => [
+export interface ChoiceState {
+  get: <K extends keyof ChoicesMap>(key: K) => ChoicesMap[K]
+  set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K]) => boolean
+}
+
+export interface Choices {
+  /** Choices made, e.g. "i want to install using curl" */
+  choices: ChoiceState
+}
+
+const rehypePlugins = (uuid: string, choices: ChoiceState): Options['rehypePlugins'] => [
   wizard,
-  tabbed,
+  [tabbed, choices],
   tip,
   [codeIndexer, uuid],
   rehypeImports,
@@ -83,7 +95,7 @@ const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) =
   emojis // [emojis, { emoticon: true }]
 ]
 
-export interface Props {
+export type Props = Partial<Choices> & {
   /** Source filepath */
   filepath?: string
 
@@ -125,7 +137,7 @@ export interface Props {
   onRender?: () => void
 }
 
-interface State {
+type State = {
   /** Did we get some severe error in rendering? */
   hasError: boolean
 
@@ -133,6 +145,8 @@ interface State {
 
   /** Has the user clicked to execute a code block? */
   codeBlockResponses: CodeBlockResponse[]
+
+  choices: ChoicesMap
 }
 
 export default class Markdown extends React.PureComponent<Props, State> {
@@ -142,6 +156,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     super(props)
     this.state = {
       source: '',
+      choices: {},
       hasError: false,
       codeBlockResponses: []
     }
@@ -272,11 +287,30 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   private readonly uuid = uuid()
 
+  private readonly choices: ChoiceState = this.props.choices || {
+    get: (key: keyof ChoicesMap) => {
+      return this.state.choices[key]
+    },
+
+    set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K]) => {
+      if (this.state.choices[key] === value) {
+        return false
+      }
+
+      this.setState(curState => ({
+        choices: Object.assign({}, curState.choices, { [key]: value })
+      }))
+
+      return true
+    }
+  }
+
   /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
     mdprops: this.props,
     repl: this.repl,
     uuid: this.uuid,
+    choices: this.choices,
     spliceInCodeExecution: this.spliceInCodeExecution.bind(this),
     codeBlockResponses: this.codeBlockHasBeenReplayed.bind(this)
   })
@@ -347,7 +381,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
         <TextContent>
           <ReactMarkdown
             remarkPlugins={remarkPlugins(this.props.tab)}
-            rehypePlugins={rehypePlugins(this.uuid)}
+            rehypePlugins={rehypePlugins(this.uuid, this.choices)}
             components={this._components()}
             data-is-nested={this.props.nested || undefined}
             className={

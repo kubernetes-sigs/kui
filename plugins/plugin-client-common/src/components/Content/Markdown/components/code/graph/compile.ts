@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ChoiceState } from '../../..'
 import { CodeBlockProps, Choice, Graph, SubTask, emptySequence, TitledSteps, parallel, seq, sequence } from '.'
 
 import {
@@ -49,7 +50,11 @@ function isWizardStepNesting(nesting: Nesting): nesting is WizardStepNesting {
 }
 
 /** Take a list of code blocks and arrange them into a control flow dag */
-export default function compile(blocks: CodeBlockProps[], ordering: 'sequence' | 'parallel' = 'parallel'): Graph {
+export default function compile(
+  blocks: CodeBlockProps[],
+  choices: ChoiceState,
+  ordering: 'sequence' | 'parallel' = 'parallel'
+): Graph {
   if (!blocks) {
     return undefined
   }
@@ -249,6 +254,7 @@ export default function compile(blocks: CodeBlockProps[], ordering: 'sequence' |
       ? parts[0]
       : ordering === 'parallel'
       ? parallel(parts)
-      : sequence(parts)
+      : sequence(parts),
+    choices
   )
 }

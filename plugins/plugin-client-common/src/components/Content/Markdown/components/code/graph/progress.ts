@@ -16,18 +16,9 @@
 
 import { ProgressStepState } from '../../../../ProgressStepper'
 
-import {
-  CodeBlockProps,
-  Graph,
-  ChoicesMap,
-  Ordered,
-  isSubTask,
-  choose,
-  isChoice,
-  isSequence,
-  isParallel,
-  isTitledSteps
-} from '.'
+import { CodeBlockProps, Graph, Ordered, isSubTask, choose, isChoice, isSequence, isParallel, isTitledSteps } from '.'
+
+import { ChoiceState } from '../../..'
 
 type Status = ProgressStepState['status']
 type Progress = { nDone: number; nError: number; nTotal: number; nextOrdinals: number[] }
@@ -36,7 +27,7 @@ type Progress = { nDone: number; nError: number; nTotal: number; nextOrdinals: n
 export default function progress(
   graph: Graph<Ordered>,
   statusMap?: Record<string, Status> /* map key is code block id */,
-  choices?: ChoicesMap,
+  choices?: ChoiceState,
   filterOut?: (props: CodeBlockProps) => boolean
 ): Progress {
   const zero = { nDone: 0, nError: 0, nTotal: 0, nextOrdinals: [] }

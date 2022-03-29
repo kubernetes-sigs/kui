@@ -20,8 +20,8 @@ import { TextContent } from '@patternfly/react-core'
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
-import { Props as MarkdownProps } from '..'
 import _tabbed, { TabProps, isTabs } from './tabbed'
+import { Props as MarkdownProps, ChoiceState } from '..'
 import { isImports, ImportProps } from '../remark-import'
 import { PositionProps, isNormalSplit } from '../KuiFrontmatter'
 
@@ -30,8 +30,8 @@ const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
-export default function div(mdprops: MarkdownProps, uuid: string) {
-  const tabbed = _tabbed(uuid)
+export default function div(mdprops: MarkdownProps, uuid: string, choices: ChoiceState) {
+  const tabbed = _tabbed(uuid, choices)
 
   return (
     props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<ImportProps> & Partial<TabProps>
@@ -59,7 +59,7 @@ export default function div(mdprops: MarkdownProps, uuid: string) {
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
       const node = isWizard(props) ? (
-        <Wizard uuid={uuid} {...props} />
+        <Wizard uuid={uuid} {...props} choices={choices} />
       ) : (
         <div data-is-maximized={maximized || undefined}>{props.children}</div>
       )
@@ -83,7 +83,7 @@ export default function div(mdprops: MarkdownProps, uuid: string) {
                 <TextContent>
                   <div className="padding-content marked-content page-content" data-is-nested>
                     {isWizard(props) ? (
-                      <Wizard uuid={uuid} {...props} />
+                      <Wizard uuid={uuid} {...props} choices={choices} />
                     ) : (
                       props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')
                     )}

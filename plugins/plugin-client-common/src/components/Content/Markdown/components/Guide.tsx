@@ -21,26 +21,22 @@ import compile from './code/graph/compile'
 import { findChoiceFrontier, findCodeBlockFrontier, findPrereqsAndMainTasks } from './code/graph/choice-frontier'
 import {
   Graph,
-  ChoicesMap,
   CodeBlockProps,
   OrderedGraph,
   extractTitle,
   extractDescription,
   hasSource,
-  // isSequence,
-  // isParallel,
   sameGraph
 } from './code/graph'
 
-import Markdown from '..'
+import Markdown, { Choices, ChoiceState } from '..'
 import Card from '../../../spi/Card'
-// import CodeBlock from '../../../Views/Terminal/Block/Inputv2'
 
 const Wizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
 
 import '../../../../../web/scss/components/Wizard/PatternFly.scss'
 
-interface Props {
+type Props = Choices & {
   /** markdown document id */
   uuid: string
 
@@ -51,9 +47,6 @@ interface Props {
 interface State {
   /** Graph of code blocks to be executed */
   graph: OrderedGraph
-
-  /** Map from tab group to currently selected tab member */
-  choices: ChoicesMap
 
   /** Choice Frontier */
   frontier: ReturnType<typeof findChoiceFrontier>
@@ -69,14 +62,14 @@ class Guide extends React.PureComponent<Props, State> {
    * TODO move to a more common location?
    *
    * It may be the case that our state.graph has no choices (or no
-   * remaining choices, subject to the `ChoicesMap`, i.e. the
-   * choices already made). In this situation, we still need to
-   * present the remaining, non-choicey work. We do so by presenting
-   * the Prerequisites and Main Tasks. If we still get nothing, then
-   * we present the raw code blocks (just below).
+   * remaining choices, subject to the `Choices`, i.e. the choices
+   * already made). In this situation, we still need to present the
+   * remaining, non-choicey work. We do so by presenting the
+   * Prerequisites and Main Tasks. If we still get nothing, then we
+   * present the raw code blocks (just below).
    *
    */
-  private static computeChoiceFrontier(graph: Graph, choices: State['choices']) {
+  private static computeChoiceFrontier(graph: Graph, choices: Props['choices']) {
     const frontier1 = findChoiceFrontier(graph, choices)
 
     const frontier2 =
@@ -103,14 +96,13 @@ class Guide extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    const newGraph = compile(props.blocks, 'sequence')
+    const newGraph = compile(props.blocks, props.choices, 'sequence')
     const noChangeToGraph = state && sameGraph(state.graph, newGraph)
 
-    const choices = !state ? {} : state.choices
     const graph = noChangeToGraph ? state.graph : order(newGraph)
-    const frontier = Guide.computeChoiceFrontier(graph, choices)
+    const frontier = Guide.computeChoiceFrontier(graph, props.choices)
 
-    return { choices, graph, frontier }
+    return { graph, frontier }
   }
 
   private allDoneWithChoices() {
@@ -121,7 +113,7 @@ class Guide extends React.PureComponent<Props, State> {
     if (hasSource(graph)) {
       return (
         <Card className="kui--markdown-tab-card">
-          <Markdown nested source={graph.source} />
+          <Markdown nested source={graph.source} choices={this.props.choices} />
         </Card>
       )
     } /* else if (isSequence(graph)) {
@@ -203,12 +195,16 @@ class Guide extends React.PureComponent<Props, State> {
   }
 }
 
-export default function guidebookGuideWrapper(uuid: string) {
+export default function guidebookGuideWrapper(uuid: string, choices: ChoiceState) {
   return function guidebookGuide(props: { 'data-kui-code-blocks': string }) {
     const blocks = props['data-kui-code-blocks']
       ? JSON.parse(props['data-kui-code-blocks']).map(_ => JSON.parse(Buffer.from(_, 'base64').toString()))
       : undefined
 
-    return !blocks ? <span className="all-pad">Nothing to do!</span> : <Guide uuid={uuid} blocks={blocks} />
+    return !blocks ? (
+      <span className="all-pad">Nothing to do!</span>
+    ) : (
+      <Guide uuid={uuid} blocks={blocks} choices={choices} />
+    )
   }
 }

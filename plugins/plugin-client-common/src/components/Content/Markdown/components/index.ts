@@ -32,12 +32,13 @@ import { details, tip } from './details'
 import { table, thead, tbody, tr, th, td } from './table'
 import _code, { CodeBlockResponse } from './code'
 
-import { Props } from '../../Markdown'
+import { Props, ChoiceState } from '../../Markdown'
 
 type Args = {
   mdprops: Props
   repl: REPL
   uuid: string
+  choices: ChoiceState
   codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean }
   spliceInCodeExecution: (
     status: CodeBlockResponse['status'],
@@ -50,7 +51,7 @@ function typedComponents(args: Args): Components {
   const { mdprops, repl, uuid, codeBlockResponses, spliceInCodeExecution } = args
 
   const a = _a(mdprops, uuid, repl)
-  const div = _div(mdprops, uuid)
+  const div = _div(mdprops, uuid, args.choices)
   const img = _img(mdprops)
   const code = _code(mdprops, uuid, codeBlockResponses, spliceInCodeExecution)
   const heading = _heading(uuid)
@@ -87,9 +88,9 @@ function components(args: Args) {
     {
       tip,
       tag,
-      guidebookimports,
-      tabbed: tabbed(args.uuid),
-      guidebookguide: guidebookguide(args.uuid)
+      guidebookimports: guidebookimports(args.choices),
+      tabbed: tabbed(args.uuid, args.choices),
+      guidebookguide: guidebookguide(args.uuid, args.choices)
     },
     typedComponents(args)
   )

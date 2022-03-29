@@ -17,6 +17,10 @@
 import { Node, Parent } from 'unist'
 import { Element, ElementContent } from 'hast'
 
+export function isParent(node: Node): node is Parent {
+  return Array.isArray((node as Parent).children)
+}
+
 export function isElement(_: Node | Parent | ElementContent): _ is Element {
   const elt = _ as Element
   return elt && typeof elt.tagName === 'string'

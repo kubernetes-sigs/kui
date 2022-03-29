@@ -19,14 +19,14 @@ import { i18n } from '@kui-shell/core'
 
 import { WizardProps } from './rehype-wizard'
 
+import { Choices } from '../..'
 import Progress from './Progress'
 import CodeBlockProps from './CodeBlockProps'
-import { onTabSwitch, offTabSwitch } from '../tabbed'
 
 import order from '../code/graph/order'
 import compile from '../code/graph/compile'
 import blocks from '../code/graph/linearize'
-import { ChoicesMap, OrderedGraph, sequence } from '../code/graph'
+import { OrderedGraph, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
@@ -45,7 +45,7 @@ const strings = i18n('plugin-client-common', 'code')
 
 type Status = ProgressStepState['status']
 
-type Props = WizardProps & { uuid: string }
+type Props = Choices & WizardProps & { uuid: string }
 
 export interface State {
   /** Is the wizard in "collapsed" mode, where we only show the title and progress bar? */
@@ -59,9 +59,6 @@ export interface State {
 
   /** Map from codeBlock ID to execution status of that code block */
   status: Record<string, Status>
-
-  /** Map from tab group to currently selected tab member */
-  choices: ChoicesMap
 }
 
 export default class Wizard extends React.PureComponent<Props, State> {
@@ -80,11 +77,10 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
     const status = !state ? {} : state.status
-    const choices = !state ? {} : state.choices
-    const codeBlocks = Wizard.children(props).map(_ => compile(Wizard.containedCodeBlocks(_)))
+    const codeBlocks = Wizard.children(props).map(_ => compile(Wizard.containedCodeBlocks(_), props.choices))
 
     const codeBlocksPerStep = codeBlocks.map(codeBlocksInStep =>
-      blocks(codeBlocksInStep, choices).map(_ => ({
+      blocks(codeBlocksInStep, props.choices).map(_ => ({
         codeBlockId: _.id,
         validate: _.validate,
         body: _.body,
@@ -98,7 +94,6 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
     return {
       status,
-      choices,
       collapsedHeader: !state ? false : state.collapsedHeader,
       codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
       graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
@@ -125,15 +120,6 @@ export default class Wizard extends React.PureComponent<Props, State> {
       subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
       this.cleaners.push(() => unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler))
     })
-
-    const switcher = (group: string, member: string) => {
-      this.setState(curState => ({
-        choices: Object.assign({}, curState.choices, { [group]: member })
-      }))
-    }
-
-    onTabSwitch(this.props.uuid, switcher)
-    this.cleaners.push(() => offTabSwitch(this.props.uuid, switcher))
   }
 
   public componentWillUnmount() {
@@ -194,7 +180,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
         <div className="kui--markdown-major-paragraph">
           <Progress
             status={this.state.status}
-            choices={this.state.choices}
+            choices={this.props.choices}
             codeBlocks={this.state.graph}
             title={strings('Completed tasks')}
           />

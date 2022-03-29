@@ -17,7 +17,6 @@
 import { v4 } from 'uuid'
 
 import {
-  ChoicesMap,
   Choice,
   CodeBlockProps,
   Graph,
@@ -28,8 +27,11 @@ import {
   isSequence,
   isParallel,
   isTitledSteps,
+  chooseIndex,
   subtask
 } from '.'
+
+import { ChoiceState } from '../../../'
 
 function key(graph: Graph) {
   if (hasKey(graph)) {
@@ -49,12 +51,12 @@ function key(graph: Graph) {
  *  the user has already indicated a selection for that choice.
  */
 
-export function findCodeBlockFrontier(graph: Graph, choices: ChoicesMap = {}): CodeBlockProps[] {
+export function findCodeBlockFrontier(graph: Graph, choices: ChoiceState): CodeBlockProps[] {
   if (isSubTask(graph)) {
-    return findCodeBlockFrontier(graph.graph)
+    return findCodeBlockFrontier(graph.graph, choices)
   } else if (isChoice(graph)) {
     if (graph.group in choices) {
-      const whatTheUserChose = choices[graph.group]
+      const whatTheUserChose = chooseIndex(graph, choices)
       return findCodeBlockFrontier(graph.choices[whatTheUserChose].graph, choices)
     } else {
       return []
@@ -99,13 +101,13 @@ export function findPrereqsAndMainTasks(graph: Graph): Graph[] {
  * Find the first set of `Choice` nodes, when scanning the given
  * `graph`. Do not scan under Choice nodes for nested
  * choices... unless the user has already made a choice (according to
- * the given `ChoicesMap`) for that choice; in which case, we tunnel
+ * the given `ChoiceState`) for that choice; in which case, we tunnel
  * through under that branch, looking for the next choice...
  *
  */
 export function findChoiceFrontier(
   graph: Graph,
-  choices: ChoicesMap = {},
+  choices: ChoiceState,
   prereqs: Graph[] = [],
   marks: Record<string, boolean> = {}
 ): { prereqs?: Graph[]; choice: Choice }[] {
@@ -121,13 +123,33 @@ export function findChoiceFrontier(
       return frontier
     } else {
       // otherwise, we continue to tunnel down that chosen branch
-      const whatTheUserChose = choices[graph.group]
+      const whatTheUserChose = chooseIndex(graph, choices)
       return findChoiceFrontier(graph.choices[whatTheUserChose].graph, choices, prereqs, marks)
     }
   } else if (isSubTask(graph)) {
     const frontier = findChoiceFrontier(graph.graph, choices, prereqs, marks)
+
+    if (graph.title === 'Prerequisites') {
+      graph.graph.sequence.forEach(_ => {
+        if (!marks[key(_)]) {
+          prereqs.push(_)
+          marks[key(_)] = true
+        }
+      })
+      marks[key(graph)] = true
+    }
+
     if (isSequence(graph.graph) && graph.graph.sequence.every(child => marks[key(child)])) {
-      marks[graph.key] = true
+      marks[key(graph)] = true
+
+      if (frontier.length === 0 && graph.title === 'Prerequisites') {
+        graph.graph.sequence.forEach(_ => {
+          if (!marks[key(_)]) {
+            prereqs.push(_)
+            marks[key(_)] = true
+          }
+        })
+      }
     }
     return frontier
   } else if (isSequence(graph)) {
@@ -175,7 +197,11 @@ export function findChoiceFrontier(
       const frontier = findChoiceFrontier(_.graph, choices, prereqs, marks)
 
       if (!marks[key(_.graph)]) {
-        prereqs.push(_.graph)
+        if (hasTitle(_.graph)) {
+          prereqs.push(_.graph)
+        } else {
+          prereqs.push(subtask(_.title, _.title, _.description, '', _.graph, _.source))
+        }
       }
 
       return frontier
@@ -196,6 +222,6 @@ export function findChoiceFrontier(
   }
 }
 
-export default function findChoicesOnFrontier(graph: Graph, choices: ChoicesMap = {}): Choice[] {
+export default function findChoicesOnFrontier(graph: Graph, choices: ChoiceState): Choice[] {
   return findChoiceFrontier(graph, choices).map(_ => _.choice)
 }
