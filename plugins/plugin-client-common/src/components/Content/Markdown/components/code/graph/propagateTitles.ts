@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { basename } from 'path'
 import { Graph, isSubTask, isChoice, isSequence, isParallel, isTitledSteps } from '.'
 
 /**
@@ -30,7 +31,7 @@ export default function propagateTitles(graph: Graph, title?: string) {
     graph.parallel.forEach(_ => propagateTitles(_, title))
   } else if (isSubTask(graph)) {
     if (graph.graph) {
-      propagateTitles(graph.graph, graph.title)
+      propagateTitles(graph.graph, graph.title || basename(graph.filepath))
     }
   } else if (isTitledSteps(graph)) {
     graph.steps.forEach(_ => {

@@ -42,6 +42,7 @@ import order from './code/graph/order'
 import compile from './code/graph/compile'
 import progress from './code/graph/progress'
 
+import { Choices } from '..'
 import Tree from './ImportsTree'
 import Icons from '../../../spi/Icons'
 import Spinner from '../../../Views/Terminal/Block/Spinner'
@@ -54,7 +55,7 @@ const debug = Debug('plugins/plugin-client-common/components/Content/Markdown/Im
 
 type Status = ProgressStepState['status']
 
-interface Props {
+type Props = Choices & {
   imports: CodeBlockProps[]
 }
 
@@ -83,7 +84,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    const newGraph = compile(props.imports, 'sequence')
+    const newGraph = compile(props.imports, props.choices, 'sequence')
     const noChange = state && sameGraph(state.imports, newGraph)
 
     const imports = noChange ? state.imports : order(newGraph)
@@ -500,10 +501,16 @@ class LabelWithStatus extends React.PureComponent<LabelWithStatusProps> {
   }
 }
 
-export default function guidebookImports(props: Props) {
-  const imports = props['data-kui-code-blocks']
-    ? JSON.parse(props['data-kui-code-blocks']).map(_ => JSON.parse(Buffer.from(_, 'base64').toString()))
-    : undefined
+export default function guidebookImportsWrapper(choices: Choices['choices']) {
+  return function guidebookImports(props: Props) {
+    const imports = props['data-kui-code-blocks']
+      ? JSON.parse(props['data-kui-code-blocks']).map(_ => JSON.parse(Buffer.from(_, 'base64').toString()))
+      : undefined
 
-  return !imports ? <span className="all-pad">No imports were found</span> : <ImportsImpl imports={imports} />
+    return !imports ? (
+      <span className="all-pad">No imports were found</span>
+    ) : (
+      <ImportsImpl imports={imports} choices={choices} />
+    )
+  }
 }

@@ -18,8 +18,6 @@ import React from 'react'
 import { i18n } from '@kui-shell/core'
 import { ProgressVariant } from '@patternfly/react-core'
 
-import { State as WizardState } from '.'
-
 import {
   ReadinessHandler,
   emitCodeBlockReadiness,
@@ -30,6 +28,8 @@ import {
 import blocks from '../code/graph/linearize'
 import progress from '../code/graph/progress'
 import { OrderedGraph } from '../code/graph'
+
+import { Choices } from '../..'
 import { ProgressStepState } from '../../../ProgressStepper'
 
 const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Progress })))
@@ -38,7 +38,7 @@ const strings = i18n('plugin-client-common', 'code')
 
 type Status = ProgressStepState['status']
 
-type Props = Pick<WizardState, 'choices'> & {
+type Props = Choices & {
   /** Title to display alongside the progress bar */
   title: string
 

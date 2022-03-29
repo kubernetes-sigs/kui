@@ -27,7 +27,6 @@
 
 import {
   CodeBlockProps,
-  ChoicesMap,
   Ordered,
   Unordered,
   Graph,
@@ -39,10 +38,12 @@ import {
   isChoice
 } from '.'
 
+import { ChoiceState } from '../../..'
+
 /** @return A linearized set of code blocks in the given `graph` */
 export default function blocks<T extends Unordered | Ordered = Unordered>(
   graph: Graph<T>,
-  choices: 'all' | 'default-path' | ChoicesMap = 'default-path'
+  choices: 'all' | 'default-path' | ChoiceState = 'default-path'
 ): (CodeBlockProps & T)[] {
   const subblocks = (subgraph: Graph<T>) => blocks(subgraph, choices)
 

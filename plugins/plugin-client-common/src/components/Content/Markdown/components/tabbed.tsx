@@ -22,6 +22,8 @@ import { EventEmitter } from 'events'
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 
 import Card from '../../../spi/Card'
+
+import { ChoiceState } from '..'
 import isElementWithProperties from '../isElement'
 
 type Props = {
@@ -33,6 +35,9 @@ type Props = {
 
   /** id for this tab group */
   'data-kui-choice-group': string
+
+  /** State of user choices */
+  choices: ChoiceState
 
   /** the tab models */
   tabs: {
@@ -67,10 +72,21 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
     this.state = {
-      activeKey: 0
+      activeKey: LinkableTabs.findActiveKey(props)
     }
 
     this.initEvents()
+  }
+
+  private static findActiveKey(props: Props) {
+    const activeTitle = props.choices.get(LinkableTabs.group(props))
+    const idx = LinkableTabs.findTabIndex(props, activeTitle)
+    return idx < 0 ? 0 : idx
+  }
+
+  private static findTabIndex(props: Props, title: string) {
+    // Note the case-insensitive comparison
+    return props.tabs.findIndex(_ => _.props.title.localeCompare(title, undefined, { sensitivity: 'accent' }) === 0)
   }
 
   private initEvents() {
@@ -94,8 +110,8 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
     this.cleaners.forEach(_ => _())
   }
 
-  private get group() {
-    return this.props['data-kui-choice-group']
+  private static group(props: Props) {
+    return props['data-kui-choice-group']
   }
 
   private member(tab: Props['tabs'][0]): string {
@@ -104,7 +120,8 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
 
   private readonly onSelect = (_, tabIndex: number) => {
     const selectedTab = this.props.tabs[tabIndex]
-    emitTabSwitch(this.props.uuid, this.group, this.member(selectedTab))
+    emitTabSwitch(this.props.uuid, LinkableTabs.group(this.props), this.member(selectedTab))
+    // props.choices.set(LinkableTabs.group(this.props), selectedTab.props.title)
 
     this.setState({
       activeKey: tabIndex
@@ -173,12 +190,13 @@ export function isTabs(props: Partial<TabProps>): props is Required<TabProps> {
   return typeof props['data-kui-choice-group'] === 'string'
 }
 
-export default function tabbedWrapper(uuid: string) {
+export default function tabbedWrapper(uuid: string, choices: ChoiceState) {
   return function tabbed(props: TabProps) {
     // isSecondary={parseInt(props.depth, 10) > 0}
     return (
       <LinkableTabs
         uuid={uuid}
+        choices={choices}
         depth={parseInt(props.depth, 10)}
         data-kui-choice-group={props['data-kui-choice-group']}
         tabs={props.children}

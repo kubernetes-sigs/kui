@@ -27,12 +27,14 @@
 
 import { v4 } from 'uuid'
 import { basename } from 'path'
+
+import { ChoiceState } from '../../..'
 import CodeBlockProps, { Source, Choice as CodeBlockChoice, Title, Description } from '../../Wizard/CodeBlockProps'
 
 export { CodeBlockProps, Title, Description }
 
 /* map from choice group to selected choice member */
-export type ChoicesMap = Record<CodeBlockChoice['group'], CodeBlockChoice['member']>
+export type ChoicesMap = Record<CodeBlockChoice['group'], CodeBlockChoice['title']>
 
 type Key = {
   key: string
@@ -273,6 +275,20 @@ export function sameGraph(A: Graph, B: Graph) {
 }
 
 /**
+ * @return the current choice index, which defaults to the first if we
+ * are not provided a set of user choices via the `choices`
+ * parameter. The decision to default to the first choice stems from a
+ * common origin UI, of presenting choices in a set of tabs; in a
+ * tabular UI, usually the first tab is open by default.
+ */
+export function chooseIndex(graph: Choice, choices: 'default-path' | ChoiceState = 'default-path') {
+  const selectedTitle = choices !== 'default-path' ? choices.get(graph.group) : undefined
+
+  const index = !selectedTitle ? 0 : graph.choices.findIndex(_ => _.title === selectedTitle)
+  return index < 0 ? 0 : index
+}
+
+/**
  * @return the current choice, which defaults to the first if we are
  * not provided a set of user choices via the `choices` parameter. The
  * decision to default to the first choice stems from a common origin
@@ -281,13 +297,9 @@ export function sameGraph(A: Graph, B: Graph) {
  */
 export function choose<T extends Unordered | Ordered = Unordered>(
   graph: Choice<T>,
-  choices: 'default-path' | ChoicesMap = 'default-path'
+  choices: 'default-path' | ChoiceState = 'default-path'
 ): Graph<T> {
-  const selectedMember = choices !== 'default-path' ? choices[graph.group] : undefined
-
-  const choice = (selectedMember && graph.choices.find(_ => _.member === selectedMember)) || graph.choices[0]
-
-  return choice.graph
+  return graph.choices[chooseIndex(graph, choices)].graph
 }
 
 export function hasSource(graph: Graph): graph is Graph & Source {
