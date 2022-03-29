@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * This is not currently in use. Let's keep it a while, in case we
+ * ever need to hack electron downloads in the future
+ */
+
 const { join } = require('path')
 const { homedir } = require('os')
 

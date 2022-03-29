@@ -266,7 +266,7 @@ const platform = process.argv[2]
 const arch = process.argv[3]
 const launcher = process.argv[4]
 
-const download = platform !== 'darwin' ? undefined : require('../electron-get-options')
+const download = undefined // platform !== 'darwin' ? undefined : require('../electron-get-options')
 
 //
 // invoke electron-packager, catching any errors it might throw
