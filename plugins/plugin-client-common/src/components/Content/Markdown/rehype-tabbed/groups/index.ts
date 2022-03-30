@@ -21,10 +21,11 @@ import { Capabilities } from '@kui-shell/core'
 import { isTabGroup } from '..'
 import { ChoiceState } from '../..'
 
+import arch from './arch'
 import platform from './platform'
 import homebrew from './homebrew'
 
-const providers = [platform, homebrew]
+const providers = [arch, platform, homebrew]
 
 /**
  * Scan tab groups to see if we can squash down the choice given our a
