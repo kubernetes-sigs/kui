@@ -28,6 +28,7 @@ import {
   isParallel,
   isTitledSteps,
   chooseIndex,
+  asSubTask,
   subtask
 } from '.'
 
@@ -80,14 +81,16 @@ export function findPrereqsAndMainTasks(graph: Graph): Graph[] {
     const child1 = graph.graph.sequence[0]
     const child2 = graph.graph.sequence[1]
 
-    if (isSubTask(child1) && child1.title === 'Prerequisites' && isSubTask(child2) && child2.title === 'Main Tasks') {
+    if (hasTitle(child1) && child1.title === 'Prerequisites' && hasTitle(child2) && child2.title === 'Main Tasks') {
       // this needs a bit more refinement. we need to find a general
       // way to deal with an arbitrary mixture of titled and untitled
       // tasks
-      if (child2.graph.sequence.every(_ => hasTitle(_))) {
-        return child1.graph.sequence.concat(child2.graph.sequence)
-      } else {
-        return child1.graph.sequence.concat(child2)
+      const children1 = isSubTask(child1) ? child1.graph.sequence : child1.steps.map(_ => _.graph)
+      const children2 = isSubTask(child2) ? child2.graph.sequence : child2.steps.map(_ => _.graph)
+      if (children1.every(_ => hasTitle(_)) && children2.every(_ => hasTitle(_))) {
+        return children1.concat(children2)
+      } else if (isTitledSteps(child2)) {
+        return children1.concat(child2.steps.map(asSubTask))
       }
     }
   } else if (isTitledSteps(graph)) {

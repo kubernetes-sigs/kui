@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { v4 } from 'uuid'
+import { v5 } from 'uuid'
 import { Node } from 'hast'
 
 import { isParent } from '../isElement'
@@ -25,7 +25,13 @@ const RE_TAB = /^===\s+"([^"]+)"/
 
 import { START_OF_TAB, END_OF_TAB, PUSH_TABS } from '.'
 
-export default function populateTabs(tree: Node): Node {
+export default function populateTabs(
+  uuid: string,
+  tree: Node,
+  recursiveDepth = 0
+): { tree: Node; tabgroupIdx: number } {
+  let tabgroupIdx = -1
+
   const tabStack = []
   let currentTabs = []
   const _flushTabs = children => {
@@ -36,7 +42,7 @@ export default function populateTabs(tree: Node): Node {
         children: currentTabs,
         properties: {
           depth: tabStack.length,
-          'data-kui-choice-group': v4(),
+          'data-kui-choice-group': v5((++tabgroupIdx).toString() + '.' + recursiveDepth.toString(), uuid),
           'data-kui-choice-nesting-depth': tabStack.length
         }
       })
@@ -84,7 +90,7 @@ export default function populateTabs(tree: Node): Node {
         }
       } else if (child.type === 'element' && child.tagName === 'div') {
         if (currentTabs.length > 0 && isImports(child.properties)) {
-          const sub = populateTabs(child)
+          const sub = populateTabs(uuid, child, recursiveDepth + 1).tree
           return addToTab(sub)
         } else {
           child.children = process(child.children)
@@ -165,5 +171,5 @@ export default function populateTabs(tree: Node): Node {
     }
   }
 
-  return tree
+  return { tree, tabgroupIdx }
 }

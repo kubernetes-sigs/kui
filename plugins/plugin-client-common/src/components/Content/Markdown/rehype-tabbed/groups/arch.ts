@@ -62,7 +62,7 @@ class Arch {
 
   /** Set the architecture choice group to use the current host arch */
   public populateChoice(choices: ChoiceState) {
-    choices.set(this.choiceGroup, process.arch)
+    choices.set(this.choiceGroup, process.arch, false)
   }
 
   /** Check if the given `node` is a tab group that we can inform */

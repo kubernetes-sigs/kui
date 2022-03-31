@@ -53,6 +53,7 @@ export type SupportedIcon =
   | 'Notification'
   | 'Pause'
   | 'Play'
+  | 'PlusSquare'
   | 'PreviousPage'
   | 'Retry'
   | 'Revert'

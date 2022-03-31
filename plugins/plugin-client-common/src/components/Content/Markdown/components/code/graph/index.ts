@@ -48,10 +48,6 @@ type Filepath = {
 export interface Ordered {
   order: number
   postorder: number
-  controlDependenceRegion?: {
-    depth: number
-    group: CodeBlockChoice['group']
-  }
 }
 
 export type Unordered = Partial<Ordered>
@@ -182,12 +178,12 @@ export type SubTask<T extends Unordered | Ordered = Unordered> = Key &
 
 export type OrderedSubTask = SubTask<Ordered>
 
-export function subtask(
+export function subtask<T extends Unordered | Ordered = Unordered>(
   key: string,
   title: string,
   description: string,
   filepath: string,
-  graph: Sequence<Unordered>,
+  graph: Sequence<T>,
   source: Source['source'] = ''
 ): SubTask<Unordered> {
   return {
@@ -198,6 +194,10 @@ export function subtask(
     graph,
     source
   }
+}
+
+export function asSubTask(step: TitledStep): SubTask {
+  return subtask(v4(), step.title, step.description, '', step.graph, step.source)
 }
 
 function sameSubTask(A: SubTask, B: SubTask) {
@@ -256,6 +256,10 @@ export function isEmpty(A: Graph): boolean {
     (isTitledSteps(A) && A.steps.length === 0) ||
     (isChoice(A) && A.choices.length === 0)
   )
+}
+
+export function sameChoices(A: ChoiceState, B: ChoiceState) {
+  return JSON.stringify(A) === JSON.stringify(B)
 }
 
 export function sameGraph(A: Graph, B: Graph) {
