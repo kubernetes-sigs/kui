@@ -62,7 +62,7 @@ class Homebrew {
     // .catch(err => debug('Homebrew probably not found', err))
     try {
       if (which('brew')) {
-        choices.set(this.choiceGroup, this.canonicalName)
+        choices.set(this.choiceGroup, this.canonicalName, false)
       }
     } catch (err) {
       debug('Homebrew probably not found', err)

@@ -23,7 +23,7 @@ const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/noteb
 interface Step {
   name: string
   description: string
-  body: string
+  body: string | ((command: string) => string)
   codeBlocks: { index: number; output: string }[]
 }
 
@@ -105,6 +105,8 @@ const IN4: Input = {
   ]
 }
 
+const aaaBody = (command: string) => (command === 'guide' ? 'Tab11' : 'AAAContent')
+
 // nested choice
 const IN5: Input = {
   input: join(ROOT, 'tests/data/nested-choice1.md'),
@@ -112,7 +114,7 @@ const IN5: Input = {
   description: 'WizardDescription',
   expectedSplitCount: 1,
   expectedCodeBlockTasks: 1,
-  steps: [{ name: 'AAA', body: 'AAAContent', description: '', codeBlocks: [{ index: 0, output: 'XXX' }] }]
+  steps: [{ name: 'AAA', body: aaaBody, description: '', codeBlocks: [{ index: 0, output: 'XXX' }] }]
 }
 
 // nested choice
@@ -125,7 +127,7 @@ const IN6: Input = {
   steps: [
     {
       name: 'AAA',
-      body: 'AAAContent',
+      body: aaaBody,
       description: '',
       codeBlocks: [
         { index: 0, output: 'XXX1' },
@@ -191,14 +193,16 @@ const IN6: Input = {
 
       markdown.steps.forEach((step, idx) => {
         if (idx === 0) {
-          it(`should show wizard body ${step.body}`, async () => {
+          const body = typeof step.body === 'string' ? step.body : step.body(command)
+
+          it(`should show wizard body ${body}`, async () => {
             try {
               const elt = await this.app.client.$(Selectors.Wizard.body)
               await elt.waitForExist({ timeout: CLI.waitTimeout })
               await this.app.client.waitUntil(
                 async () => {
                   const actualText = await elt.getText()
-                  return actualText.includes(step.body)
+                  return actualText.includes(body)
                 },
                 { timeout: CLI.waitTimeout }
               )

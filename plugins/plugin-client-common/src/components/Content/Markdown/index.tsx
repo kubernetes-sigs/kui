@@ -67,8 +67,11 @@ import icons from './rehype-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
 export interface ChoiceState {
+  keys: () => ReturnType<typeof Object.keys>
+  entries: () => ReturnType<typeof Object.entries>
   get: <K extends keyof ChoicesMap>(key: K) => ChoicesMap[K]
-  set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K]) => boolean
+  set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K], overrideRejections?: boolean) => boolean
+  remove: <K extends keyof ChoicesMap>(key: K) => boolean
 }
 
 export interface Choices {
@@ -78,7 +81,7 @@ export interface Choices {
 
 const rehypePlugins = (uuid: string, choices: ChoiceState): Options['rehypePlugins'] => [
   wizard,
-  [tabbed, choices],
+  [tabbed, uuid, choices],
   tip,
   [codeIndexer, uuid],
   rehypeImports,
@@ -146,7 +149,11 @@ type State = {
   /** Has the user clicked to execute a code block? */
   codeBlockResponses: CodeBlockResponse[]
 
+  /** Choices made, e.g. "i want to install using curl" */
   choices: ChoicesMap
+
+  /** Choices rejected, e.g. "i really don't want to install using curl" */
+  rejectedChoices: Record<keyof ChoicesMap, boolean>
 }
 
 export default class Markdown extends React.PureComponent<Props, State> {
@@ -157,6 +164,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     this.state = {
       source: '',
       choices: {},
+      rejectedChoices: {},
       hasError: false,
       codeBlockResponses: []
     }
@@ -288,18 +296,50 @@ export default class Markdown extends React.PureComponent<Props, State> {
   private readonly uuid = uuid()
 
   private readonly choices: ChoiceState = this.props.choices || {
+    keys: () => Object.keys(this.state.choices),
+    entries: () => Object.entries(this.state.choices),
+
     get: (key: keyof ChoicesMap) => {
       return this.state.choices[key]
     },
 
-    set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K]) => {
+    remove: <K extends keyof ChoicesMap>(key: K) => {
+      if (key in this.state.choices) {
+        setTimeout(() =>
+          this.setState(curState => {
+            if (key in curState.choices) {
+              delete curState.choices[key]
+              return {
+                choices: Object.assign({}, curState.choices),
+                rejectedChoices: Object.assign({}, curState.rejectedChoices, { [key]: true })
+              }
+            }
+          })
+        )
+        return true
+      } else {
+        return false
+      }
+    },
+
+    set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K], overrideRejections = true) => {
       if (this.state.choices[key] === value) {
         return false
       }
 
-      this.setState(curState => ({
-        choices: Object.assign({}, curState.choices, { [key]: value })
-      }))
+      setTimeout(() =>
+        this.setState(curState => {
+          if (overrideRejections || !(key in curState.rejectedChoices)) {
+            delete curState.rejectedChoices[key]
+            return {
+              choices: Object.assign({}, curState.choices, { [key]: value }),
+              rejectedChoices: Object.assign({}, curState.rejectedChoices)
+            }
+          } else {
+            return null
+          }
+        })
+      )
 
       return true
     }

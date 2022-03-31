@@ -128,8 +128,11 @@ body[kui-theme-style] {
     }
 
     /* odd bug in patternfly... */
-    .pf-c-tabs__list li + li {
-      margin-top: 0;
+    .pf-c-tabs__list,
+    .pf-c-chip-group__list {
+      li + li {
+        margin-top: 0;
+      }
     }
     .pf-c-breadcrumb li + li {
       margin-top: 0;

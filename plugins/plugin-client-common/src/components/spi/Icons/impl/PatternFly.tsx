@@ -19,6 +19,7 @@ import React from 'react'
 import {
   AdjustIcon as Contrast,
   BarsIcon as Hamburger,
+  PlusSquareIcon as PlusSquare,
   OutlinedDotCircleIcon as Waiting,
   EraserIcon as Clear,
   CameraIcon as Screenshot,
@@ -169,6 +170,8 @@ export default function PatternFly4Icons(props: Props) {
       return <NextPage style={Pagination} {...props} />
     case 'Notification':
       return <Notification {...props} />
+    case 'PlusSquare':
+      return <PlusSquare {...props} />
     case 'Server':
       return <Server {...props} />
     case 'Settings':

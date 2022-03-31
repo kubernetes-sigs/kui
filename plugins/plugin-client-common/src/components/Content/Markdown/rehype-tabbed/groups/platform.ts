@@ -63,7 +63,7 @@ class Platform {
 
   /** Set the platform choice group to use the current host platform */
   public populateChoice(choices: ChoiceState) {
-    choices.set(this.choiceGroup, process.platform)
+    choices.set(this.choiceGroup, process.platform, false)
   }
 
   /** Check if the given `node` is a tab group that we can inform */
