@@ -30,10 +30,11 @@ import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 const strings = i18n('plugin-client-common')
 
 type State = Events.StatusStripeChangeEvent
-export type Props = Partial<State> & {
-  noHelp?: boolean
-  noSettings?: boolean
-}
+export type Props = Partial<State> &
+  React.PropsWithChildren<{
+    noHelp?: boolean
+    noSettings?: boolean
+  }>
 
 /** see https://github.com/microsoft/TypeScript/issues/10485 */
 function hasType(
@@ -47,9 +48,11 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    Events.eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
-
     this.state = this.withStateDefaults(props)
+  }
+
+  public componentDidMount() {
+    Events.eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
   }
 
   /** Overlay default values for required state variables */

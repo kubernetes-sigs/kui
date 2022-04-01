@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Events, Tab as KuiTab, TabState, initializeSession, pexecInCurrentTab } from '@kui-shell/core'
+import { Capabilities, Events, Tab as KuiTab, TabState, initializeSession, pexecInCurrentTab } from '@kui-shell/core'
 
 import KuiContext from './context'
 const Confirm = React.lazy(() => import('../Views/Confirm'))
@@ -52,12 +52,13 @@ export type TabContentOptions = TerminalOptions & {
 }
 
 type Props = TabContentOptions &
-  WithTabUUID & {
+  WithTabUUID &
+  React.PropsWithChildren<{
     active: boolean
     state: TabState
     tabTitle?: string
     initialCommandLine?: string
-  }
+  }>
 
 type State = Partial<WithTab> & {
   active: boolean
@@ -351,7 +352,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
   /** Use client-provided (or default) proxy disconnected notice, if warranted */
   private proxyDisconnectNotice() {
-    if (this.state.sessionInit !== 'Done') {
+    if (Capabilities.inBrowser() && this.state.sessionInit !== 'Done') {
       return (
         <KuiContext.Consumer>
           {config => (
@@ -368,7 +369,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
-  private graft(node: React.ReactNode | {}, key?: number) {
+  private graft(node: Props['children'], key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
       return React.cloneElement(
@@ -421,8 +422,19 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
 
     if (!this._firstRenderDone && this.props.initialCommandLine) {
-      setTimeout(() => {
+      setTimeout(async () => {
         // execute a command onReady?
+        while (true) {
+          const hack = this.state.tab.current.querySelector(
+            '.kui--tab-content.visible .kui--scrollback[data-position="default"]'
+          )
+          if (hack) {
+            break
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 500))
+          }
+        }
+
         try {
           // const quiet = tabModel.exec && tabModel.exec === 'qexec'
           pexecInCurrentTab(this.props.initialCommandLine, this.state.tab.current)

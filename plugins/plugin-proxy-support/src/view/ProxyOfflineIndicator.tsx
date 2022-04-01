@@ -25,7 +25,7 @@ const strings = i18n('plugin-proxy-support')
 /** class designation for our offline indicator */
 const buttonDesignation = 'kui--plugin-bash-like--pty-offline-indicator'
 
-type Props = {}
+type Props = unknown
 
 interface State {
   proxyEnabled: boolean
@@ -48,7 +48,9 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
       proxyEnabled,
       offline: ProxyOfflineIndicator.rememberedOffline
     }
+  }
 
+  public componentDidMount() {
     const onOnline = () => {
       this.setState({ offline: false })
     }

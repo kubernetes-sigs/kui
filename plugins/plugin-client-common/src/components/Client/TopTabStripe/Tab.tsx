@@ -66,7 +66,11 @@ export default class Tab extends React.PureComponent<Props, State> {
       topTabNames: props.topTabNames || 'fixed'
     }
 
-    if (!props.topTabNames) {
+    this.addCommandEvaluationListeners()
+  }
+
+  public componentDidMount() {
+    if (!this.props.topTabNames) {
       setTimeout(async () => {
         const { theme } = await Themes.findThemeByName(
           (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
@@ -78,8 +82,6 @@ export default class Tab extends React.PureComponent<Props, State> {
         }
       })
     }
-
-    this.addCommandEvaluationListeners()
   }
 
   public componentWillUnmount() {

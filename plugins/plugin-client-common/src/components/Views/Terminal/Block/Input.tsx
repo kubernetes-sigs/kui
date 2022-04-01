@@ -59,6 +59,8 @@ const Icons = React.lazy(() => import('../../../spi/Icons'))
 
 const strings = i18n('plugin-client-common')
 
+export type InputElement = HTMLInputElement | HTMLTextAreaElement
+
 export interface InputOptions extends BlockOperationTraits {
   /** Optional: placeholder value for prompt */
   promptPlaceholder?: string // was: from '@kui-shell/client/config.d/style.json'
@@ -120,8 +122,6 @@ type InputProps = {
   isExperimental?: boolean
 }
 
-export type InputElement = HTMLInputElement | HTMLTextAreaElement
-
 export function isHTMLInputElement(element: InputElement): element is HTMLInputElement {
   const input = element as HTMLInputElement
   return input && input.tagName === 'INPUT'
@@ -155,6 +155,7 @@ function setNativeValue(element: HTMLElement, value: string) {
 }
 
 export type Props = InputOptions & InputProps & BlockViewTraits
+type PropsInternal = React.PropsWithChildren<Props>
 
 export interface State {
   /** Copy from props; to help with getDerivedStateFromProps */
@@ -185,7 +186,7 @@ export interface State {
   typeahead?: string
 }
 
-export abstract class InputProvider<S extends State = State> extends React.PureComponent<Props, S> {
+export abstract class InputProvider<S extends State = State> extends React.PureComponent<PropsInternal, S> {
   /** this is what the InputProvider needs to provide, minimially */
   protected abstract input()
 
@@ -339,7 +340,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 }
 
 export default class Input extends InputProvider {
-  public constructor(props: Props) {
+  public constructor(props: PropsInternal) {
     super(props)
     this.state = {
       model: props.model,
@@ -355,7 +356,7 @@ export default class Input extends InputProvider {
   }
 
   /** @return the value to be added to the prompt */
-  protected static valueToBeDisplayed(props: Props) {
+  protected static valueToBeDisplayed(props: PropsInternal) {
     return !isBeingRerun(props.model) && hasValue(props.model)
       ? props.model.value
       : hasCommand(props.model)
@@ -376,7 +377,7 @@ export default class Input extends InputProvider {
     )
   }
 
-  public static getDerivedStateFromProps(props: Props, state: State) {
+  public static getDerivedStateFromProps(props: PropsInternal, state: State) {
     if (hasUUID(props.model)) {
       return {
         model: props.model,

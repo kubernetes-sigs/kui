@@ -26,9 +26,7 @@ import { ContextWidgets, StatusStripe, TabContent, TabModel } from '../..'
 
 import '../../../web/css/static/Popup.scss'
 
-type Props = CommonClientProps & {
-  children?: React.ReactNode
-}
+type Props = React.PropsWithChildren<CommonClientProps>
 
 interface State {
   tab: KuiTab
@@ -72,9 +70,20 @@ export default class Popup extends React.PureComponent<Props, State> {
     }
   }
 
-  private onTabReady(tab: KuiTab) {
+  private async onTabReady(tab: KuiTab) {
     this.setState({ tab })
+
+    while (true) {
+      const hack = tab.querySelector('.kui--tab-content.visible .kui--scrollback[data-position="default"]')
+      if (hack) {
+        break
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+    }
+
     pexecInCurrentTab(this.props.commandLine.join(' '), tab)
+
     this.doFocusInput()
   }
 

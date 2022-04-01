@@ -345,6 +345,9 @@ export default class Markdown extends React.PureComponent<Props, State> {
     })
   }
 
+  private readonly _remarkPlugins = remarkPlugins(this.props.tab)
+  private readonly _rehypePlugins = rehypePlugins(this.uuid, this.choices, this.props.filepath)
+
   public render() {
     if (this.props.onRender) {
       this.props.onRender()
@@ -363,8 +366,8 @@ export default class Markdown extends React.PureComponent<Props, State> {
       <React.Suspense fallback={<div />}>
         <TextContent>
           <ReactMarkdown
-            remarkPlugins={remarkPlugins(this.props.tab)}
-            rehypePlugins={rehypePlugins(this.uuid, this.choices, this.props.filepath)}
+            remarkPlugins={this._remarkPlugins}
+            rehypePlugins={this._rehypePlugins}
             components={this._components()}
             data-is-nested={this.props.nested || undefined}
             className={

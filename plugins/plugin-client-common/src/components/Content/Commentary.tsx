@@ -274,9 +274,17 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   /** Percolate `SimpleEditor` edits up to the Preview view */
   private onContentChange(value: string) {
-    this.setState({ textValue: value })
+    this.setState(curState => {
+      if (!curState.isEdit) {
+        // then we've already exited edit mode, ignore this content
+        // change event
+        return null
+      } else {
+        return { textValue: value }
+      }
+    })
     if (this.props.willUpdateResponse) {
-      this.props.willUpdateResponse(this.state.textValue)
+      this.props.willUpdateResponse(value)
     }
   }
 
@@ -336,7 +344,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 }
 
-type ReactProps = React.PropsWithChildren<{}>
+type ReactProps = React.PropsWithChildren<unknown>
 
 export class ReactCommentary extends React.PureComponent<ReactProps> {
   public render() {

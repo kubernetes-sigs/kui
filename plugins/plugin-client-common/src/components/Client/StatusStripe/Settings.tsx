@@ -34,12 +34,13 @@ export default class Settings extends React.PureComponent<Props, State> {
       currentTheme: undefined,
       actions: []
     }
+  }
 
-    this.recomputeThemeList()
-
+  public componentDidMount() {
     Events.eventChannelUnsafe.on('/theme/change', ({ theme }: { theme: string }) => {
       this.setState({ currentTheme: theme })
     })
+    this.recomputeThemeList()
   }
 
   private async recomputeThemeList() {

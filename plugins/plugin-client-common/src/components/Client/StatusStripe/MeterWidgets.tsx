@@ -20,19 +20,19 @@
 import React from 'react'
 import { Props as PopoverProps } from '../../spi/Popover'
 
-interface Props {
+type Props = React.PropsWithChildren<{
   className?: string
 
   /** Override default Popover positioning for all children */
   position?: PopoverProps['position']
-}
+}>
 
 export default class MeterWidgets extends React.PureComponent<Props> {
   private className() {
     return 'kui--status-stripe-meter ' + (this.props.className || '')
   }
 
-  private graft(node: React.ReactNode | {}, key?: number) {
+  private graft(node: Props['children'], key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
       return React.cloneElement(node as React.ReactElement<{ key?: number; position: Props['position'] }>, {

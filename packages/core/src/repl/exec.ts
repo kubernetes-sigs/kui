@@ -612,12 +612,13 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
  * @param execUUID for command re-execution
  *
  */
-export const doEval = (_tab: Tab, block: Block, command: string, execUUID?: string) => {
+export const doEval = (_tab: Tab, block: Block, command: string, execUUID?: string, type?: ExecType) => {
   const tab = splitFor(_tab)
   const defaultExecOptions = new DefaultExecOptionsForTab(tab, block, execUUID)
-  const execOptions: ExecOptions = !execUUID
-    ? defaultExecOptions
-    : Object.assign(defaultExecOptions, { type: ExecType.Rerun })
+  const execOptions: ExecOptions =
+    execUUID === undefined && type === undefined
+      ? defaultExecOptions
+      : Object.assign(defaultExecOptions, { execUUID, type: type === undefined ? ExecType.Rerun : type })
 
   return exec(command, execOptions)
 }

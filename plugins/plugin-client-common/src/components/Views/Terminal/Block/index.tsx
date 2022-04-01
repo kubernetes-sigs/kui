@@ -59,31 +59,33 @@ export interface BlockOperationTraits {
   isExecutable?: boolean
 }
 
-type Props = InputOptions & {
-  /** block ordinal index */
-  idx: number
+type Props = InputOptions &
+  React.PropsWithChildren<{
+    /** block ordinal index */
+    idx: number
 
-  /** block ordinal index to be displayed to the user */
-  displayedIdx?: number
+    /** block ordinal index to be displayed to the user */
+    displayedIdx?: number
 
-  /** block model */
-  model: BlockModel
+    /** block model */
+    model: BlockModel
 
-  /** tab UUID */
-  uuid: string
+    /** tab UUID */
+    uuid: string
 
-  /** tab model */
-  tab: KuiTab
+    /** tab model */
+    tab: KuiTab
 
-  noActiveInput?: boolean
+    noActiveInput?: boolean
 
-  /** Position of the enclosing split. Default: SplitPosition.default */
-  splitPosition?: SplitPosition
+    /** Position of the enclosing split. Default: SplitPosition.default */
+    splitPosition?: SplitPosition
 
-  noOutput?: boolean
-  onOutputRender?: () => void
-  willUpdateCommand?: (idx: number, command: string) => void
-} & BlockViewTraits
+    noOutput?: boolean
+    onOutputRender?: () => void
+    willUpdateCommand?: (idx: number, command: string) => void
+  }> &
+  BlockViewTraits
 
 interface State {
   // needed temporarily to make pty/client happy
@@ -149,7 +151,7 @@ export default class Block extends React.PureComponent<Props, State> {
   private readonly _onOutputRender = this.onOutputRender.bind(this)
 
   private output() {
-    if (isFinished(this.props.model) || isProcessing(this.props.model)) {
+    if (isActive(this.props.model) || isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (
         <Output
           key={isEmpty(this.props.model) ? undefined : this.props.model.execUUID}
@@ -237,7 +239,7 @@ export default class Block extends React.PureComponent<Props, State> {
               <React.Fragment>
                 {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
                   this.output()
-                ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
+                ) : /* isActive(this.props.model) || */ isEmpty(this.props.model) ? (
                   this.input()
                 ) : (
                   <React.Fragment>

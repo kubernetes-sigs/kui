@@ -65,15 +65,16 @@ const IN3: Input = {
 }
 
 const IN4: Input = {
+  title: 'Kui Playground',
   input: join(ROOT2, 'playground.md'),
   splits: [
     {
       contentBlockIndex: 1,
-      position: Selectors.SPLIT_DEFAULT.bind(undefined, Selectors.SPLIT_N(1)),
+      position: () => Selectors.SPLIT_N_AS_DEFAULT(1),
       content: '# Welcome to the Kui Playground'
     },
     {
-      position: Selectors.SPLIT_DEFAULT.bind(undefined, Selectors.SPLIT_N(2)),
+      position: () => Selectors.SPLIT_N_AS_DEFAULT(2),
       content: 'Welcome to the Kui Playground'
     }
   ]
@@ -81,11 +82,18 @@ const IN4: Input = {
 
 async function verifySplit(this: Common.ISuite, { position, content, contentBlockIndex = 0 }: typeof IN1['splits'][0]) {
   const split = await this.app.client.$(position())
+  console.error('V1')
   await split.waitForDisplayed({ timeout: CLI.waitTimeout })
+  console.error('V2')
 
   const N = contentBlockIndex
+  await this.app.client.waitUntil(async () => {
+    const result = await split.$(`${Selectors._PROMPT_BLOCK_N(N)} ${Selectors._RESULT}`)
+    console.error('V3', `${position()} ${Selectors._PROMPT_BLOCK_N(N)} ${Selectors._RESULT}`)
+    return result.isDisplayed()
+  })
+
   const result = await split.$(`${Selectors._PROMPT_BLOCK_N(N)} ${Selectors._RESULT}`)
-  await result.waitForDisplayed({ timeout: CLI.waitTimeout })
 
   let n = 0
   await this.app.client.waitUntil(
@@ -107,24 +115,31 @@ async function verifySplit(this: Common.ISuite, { position, content, contentBloc
     }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
+      TestUtil.closeAllExceptFirstTab.bind(this)()
 
       const clear = TestUtil.doClear.bind(this)
 
       it('should clear the console from scratch', () => clear())
       it(`should load the markdown and show ${markdown.splits.length} splits`, async () => {
         try {
+          console.error('L1')
           await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
 
           // check Tab Title
           if (markdown.title) {
+            console.error('L2')
             await TestUtil.expectCurrentTabTitle(this, markdown.title)
           }
 
+          console.error('L3')
           await Util.promiseEach(markdown.splits, async split => {
+            console.error('L4', split)
             await verifySplit.bind(this)(split)
+            console.error('L5')
 
             if (split.blocks) {
               const nBlocksBeforeExecution = (await this.app.client.$$(Selectors._PROMPT_BLOCK)).length
+              console.error('L6', nBlocksBeforeExecution)
 
               const blocks = blockExecutionOrder === 'forward' ? split.blocks : split.blocks.slice().reverse()
 

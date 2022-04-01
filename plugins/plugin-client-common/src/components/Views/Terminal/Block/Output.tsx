@@ -40,12 +40,14 @@ import {
 import { BlockViewTraits, BlockOperationTraits } from './'
 
 import {
+  ActiveBlock,
   BlockModel,
   ProcessingBlock,
   FinishedBlock,
   hasUUID,
   hasCommand,
   hasBeenRerun,
+  isActive,
   isBeingRerun,
   isFinished,
   isProcessingOrBeingRerun as isProcessing,
@@ -69,7 +71,7 @@ const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSectio
 
 const strings = i18n('plugin-client-common')
 
-type Props = {
+type Props = React.PropsWithChildren<{
   /** tab UUID */
   uuid: string
 
@@ -85,10 +87,11 @@ type Props = {
   /** Position of the enclosing split. Default: SplitPosition.default */
   splitPosition?: SplitPosition
 
-  model: ProcessingBlock | FinishedBlock
+  model: ProcessingBlock | FinishedBlock | ActiveBlock
   onRender: () => void
   willUpdateCommand?: (idx: number, command: string) => void
-} & Maximizable &
+}> &
+  Maximizable &
   BlockViewTraits &
   BlockOperationTraits
 
@@ -169,7 +172,7 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if (isProcessing(props.model) && !state.alreadyListen) {
+    if (!state.alreadyListen && (isActive(props.model) || isProcessing(props.model))) {
       // listen for streaming output (unless the output has been redirected to a file)
       const tabUUID = props.uuid
       Events.eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
@@ -195,7 +198,11 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
-  private unmounted = false
+  private unmounted = true
+  public componentDidMount() {
+    this.unmounted = false
+  }
+
   public componentWillUnmount() {
     this.unmounted = true
   }
@@ -272,7 +279,7 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private result() {
-    if (isProcessing(this.props.model)) {
+    if (isActive(this.props.model) || isProcessing(this.props.model)) {
       return <div className="repl-result" />
     } else if (isEmpty(this.props.model)) {
       // no result to display for these cases
@@ -322,6 +329,7 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private cursor() {
+    return <React.Fragment />
     /* if (isProcessing(this.props.model)) {
       return (
         <div className="repl-result-spinner">

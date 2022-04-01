@@ -87,7 +87,10 @@ export default class Guide extends React.PureComponent<Props, State> {
       wizardStepStatus: undefined,
       choices: props.choices
     }
-    setTimeout(() => this.init(props))
+  }
+
+  public componentDidMount() {
+    this.init(this.props)
   }
 
   /**
@@ -275,6 +278,8 @@ export default class Guide extends React.PureComponent<Props, State> {
           return ui
         } else if (Wiz.isTaskStep(_)) {
           return this.taskUI(_)
+        } else {
+          return undefined
         }
       })
       .filter(Boolean)
@@ -463,7 +468,7 @@ export default class Guide extends React.PureComponent<Props, State> {
       }
     } catch (error) {
       console.error(error)
-      this.setState({ error })
+      setTimeout(() => this.setState({ error }))
       return 'Internal Error'
     }
   }

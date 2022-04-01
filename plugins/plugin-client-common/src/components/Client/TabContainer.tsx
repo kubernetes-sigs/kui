@@ -44,13 +44,12 @@ import '../../../web/scss/components/Page/_index.scss'
  *
  */
 
-type TabContainerOptions = TabContentOptions
 type Props = TabContentOptions &
   TopTabStripeConfiguration &
   BrandingProps &
   InterfaceProps &
   GuidebookProps &
-  Pick<CommonProps, 'closeableTabs' | 'noTopTabs'>
+  React.PropsWithChildren<Pick<CommonProps, 'closeableTabs' | 'noTopTabs'>>
 
 interface State {
   /** hamburger menu expanded? */
@@ -75,7 +74,9 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       tabs: [this.newTabModel()],
       activeIdx: 0
     }
+  }
 
+  public componentDidMount() {
     Events.eventBus.on('/tab/new/request', (evt: Events.NewTabRequestEvent) => {
       // the protocol is: if we are opening multiple tabs in the
       // "foreground", then make sure the *first* of the new tabs is
@@ -223,7 +224,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
   private readonly _onNewTab = () => this.onNewTab()
 
-  private graft(node: React.ReactNode | {}, uuid: string, key?: number) {
+  private graft(node: Props['children'], uuid: string, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
       return React.cloneElement(node as React.ReactElement<{ key?: number; uuid: string }>, {
@@ -310,7 +311,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   private readonly _onSetTabTitle = (uuid: string, title: string) => {
     this.setState(({ tabs }) => {
       const tabIdx = tabs.findIndex(_ => _.uuid === uuid)
-      if (tabIdx < 0) {
+      if (tabIdx < 0 || tabs[tabIdx].title === title) {
         return null
       } else {
         return {

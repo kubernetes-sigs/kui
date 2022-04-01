@@ -21,7 +21,7 @@ declare let __webpack_nonce__: string
 __webpack_nonce__ = _kuiNonce
 
 import React from 'react'
-import { render as ReactDomRender } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 import Client from '@kui-shell/client'
 
@@ -39,7 +39,9 @@ function renderMain(
 ) {
   // re: noBootstrap; since we do the bootstrapping here, we don't
   // need the Client to do anything more
-  ReactDomRender(
+  const root = createRoot(container)
+
+  root.render(
     <Client
       noBootstrap
       isPopup={isPopup}
@@ -47,8 +49,7 @@ function renderMain(
       title={title}
       initialTabTitle={initialTabTitle}
       quietExecCommand={quietExecCommand}
-    />,
-    container
+    />
   )
 }
 
