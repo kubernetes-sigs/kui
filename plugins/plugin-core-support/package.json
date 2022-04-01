@@ -30,7 +30,7 @@
     "debug": "4.3.4",
     "enquirer": "2.3.6",
     "listr2": "4.0.5",
-    "micromatch": "4.0.4",
+    "micromatch": "4.0.5",
     "rxjs": "^7.5.5",
     "tmp": "0.2.1"
   },
