@@ -21,7 +21,7 @@ import '../../web/scss/components/Search/Search.scss'
 
 const SearchInput = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.SearchInput })))
 
-type Props = {}
+type Props = unknown
 
 interface State {
   isActive: boolean
@@ -80,6 +80,12 @@ export default class Search extends React.Component<Props, State> {
 
   public componentWillUnmount() {
     document.body.removeEventListener('keydown', this.onKeydown)
+  }
+
+  public componentDidUpdate() {
+    if (this.state.isActive) {
+      setTimeout(() => this.doFocus())
+    }
   }
 
   private _onChange = this.onChange.bind(this)
@@ -178,7 +184,6 @@ export default class Search extends React.Component<Props, State> {
   private readonly _onRef = (c: HTMLInputElement) => {
     if (c) {
       this._input = c
-      this.doFocus()
     }
   }
 
@@ -191,25 +196,21 @@ export default class Search extends React.Component<Props, State> {
   }
 
   public render() {
-    if (!this.state.isActive) {
-      return <React.Fragment />
-    } else {
-      return (
-        <SearchInput
-          id="search-bar"
-          className="kui--search"
-          placeholder="Find by name"
-          value={this._input && this._input.value}
-          aria-label="Search"
-          onChange={this._onChange}
-          onClear={this._onClear}
-          spellCheck={false}
-          resultsCount={this.resultsRender()}
-          onNextClick={this._onNext}
-          onPreviousClick={this._onPrevious}
-          ref={this._onRef}
-        />
-      )
-    }
+    return (
+      <SearchInput
+        id="search-bar"
+        className={'kui--search ' + (!this.state.isActive ? 'hide' : '')}
+        placeholder="Find by name"
+        value={this._input && this._input.value}
+        aria-label="Search"
+        onChange={this._onChange}
+        onClear={this._onClear}
+        spellCheck={false}
+        resultsCount={this.resultsRender()}
+        onNextClick={this._onNext}
+        onPreviousClick={this._onPrevious}
+        ref={this._onRef}
+      />
+    )
   }
 }

@@ -55,8 +55,11 @@ type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: true; newExecUUID: string } & WithOriginalExecUUID
 type WithReplay = { isReplay: boolean }
 
+/** Blocks with an association to the History model */
+type WithHistoryIndex = { historyIdx: number }
+
 /** The canonical types of Blocks, which mix up the Traits as needed */
-type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
+export type ActiveBlock = WithState<BlockState.Active> & WithCWD & WithUUID & Partial<WithValue>
 export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithResponse<ScalarResponse> &
   WithCWD &
@@ -93,8 +96,9 @@ export type ProcessingBlock = WithState<BlockState.Processing> &
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 export type CompleteBlock = OkBlock | ErrorBlock
 
-/** Blocks with an association to the History model */
-type WithHistoryIndex = { historyIdx: number }
+/** A Block may be Rerunable. If so, then it can be transitioned to the BlockBeingRerun state. */
+type RerunableBlock = CompleteBlock
+type BlockBeingRerun = RerunableBlock & WithRerun
 
 /** FinishedBlocks are either ok, error, or cancelled */
 export type FinishedBlock = OkBlock | ErrorBlock | CancelledBlock | EmptyBlock
@@ -152,7 +156,7 @@ export function isAnnouncement(block: BlockModel): block is AnnouncementBlock {
 }
 
 export function hasUUID(block: BlockModel & Partial<WithUUID>): block is BlockModel & Required<WithUUID> {
-  return block && !isActive(block) && !isEmpty(block) && !isAnnouncement(block)
+  return block && /* && !isActive(block) && */ !isEmpty(block) && !isAnnouncement(block)
 }
 
 export function hasValue(block: BlockModel): block is BlockModel & Required<WithValue> {
@@ -163,6 +167,7 @@ export function hasValue(block: BlockModel): block is BlockModel & Required<With
 export function Active(initialValue?: string): ActiveBlock {
   return {
     cwd: cwd(),
+    execUUID: uuid(), // note that we pre-assign this, to avoid races later in <Output /> event registration
     state: BlockState.Active,
     value: initialValue || ''
   }
@@ -351,10 +356,6 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
 export function isOutputRedirected(block: BlockModel): boolean {
   return hasStartEvent(block) && block.startEvent.redirectDesired
 }
-
-/** A Block may be Rerunable. If so, then it can be transitioned to the BlockBeingRerun state. */
-type RerunableBlock = CompleteBlock
-type BlockBeingRerun = RerunableBlock & WithRerun
 
 /** Transform a RerunableBlock to one in the BlockBeingRerun state */
 export function Rerun(

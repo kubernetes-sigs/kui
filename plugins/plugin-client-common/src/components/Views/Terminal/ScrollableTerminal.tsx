@@ -100,7 +100,8 @@ export interface TerminalOptions {
 }
 
 type Props = TerminalOptions &
-  SplitPositionProps & {
+  SplitPositionProps &
+  React.PropsWithChildren<{
     /** tab UUID */
     uuid: string
 
@@ -131,7 +132,7 @@ type Props = TerminalOptions &
 
     /** Toggle whether we have a right strip split */
     willToggleRightStripMode(): void
-  }
+  }>
 
 interface State {
   /** Index of the focused split (index into State.splits) */
@@ -703,11 +704,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     if (opts.cmdline) {
       setTimeout(() => {
-        state.facade.REPL.pexec(opts.cmdline, { masquerade: opts.masquerade, data: opts.data })
+        const execUUID = this.execUUIDOfLastActiveBlock(state)
+        state.facade.REPL.pexec(opts.cmdline, { masquerade: opts.masquerade, data: opts.data, execUUID })
       })
     }
 
     return this.initEvents(state)
+  }
+
+  private execUUIDOfLastActiveBlock(sb: ScrollbackState): string | undefined {
+    for (let idx = sb.blocks.length - 1; idx >= 0; idx--) {
+      const block = sb.blocks[idx]
+      if (isActive(block)) {
+        return block.execUUID
+      }
+    }
   }
 
   /** @return a reasonable default split */
@@ -858,7 +869,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           }
         }
 
-        if (rerunIdx >= 0) {
+        // we are now pre-assigning a block's execUUID up front (see
+        // BlockModel.active); this may be falsely detected as a
+        // rerun, hence the guard here
+        if (rerunIdx >= 0 && !isActive(curState.blocks[rerunIdx])) {
           const block = curState.blocks[rerunIdx]
           this.removeWatchableBlock(block)
           // The use case here is that the user clicked the Rerun
@@ -1176,8 +1190,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       if (!respIf || !respIfNot) {
         const { cmdline, data, masquerade } = request.spec.options
         const mainSplit = this.findMainSplit(thisSplitIdx) || thisSplit
+        const execUUID = this.execUUIDOfLastActiveBlock(mainSplit)
         request.spec.options.cmdline = undefined // null this out, since we got it!
-        mainSplit.facade.REPL.pexec(cmdline, { data, masquerade })
+        mainSplit.facade.REPL.pexec(cmdline, { data, masquerade, execUUID })
 
         return
       }

@@ -66,7 +66,6 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
   public constructor(props: EvalProps) {
     super(props)
     this.state = Eval.getDerivedStateFromProps(props)
-    this.startLoading()
   }
 
   public static getDerivedStateFromProps(props: EvalProps, state?: EvalState) {
@@ -83,6 +82,10 @@ export default class Eval extends React.PureComponent<EvalProps, EvalState> {
     } else {
       return state
     }
+  }
+
+  public componentDidMount() {
+    this.startLoading()
   }
 
   private startLoading() {

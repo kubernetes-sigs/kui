@@ -24,18 +24,6 @@ import '../../../../web/css/static/ToolbarButton.scss'
 import '../../../../web/scss/components/Table/Events.scss'
 import '../../../../web/scss/components/Table/Toolbar.scss'
 
-export type Props = Partial<GridProps> &
-  Partial<SequenceProps> &
-  Partial<TimelineProps> &
-  Partial<HistogramProps> &
-  Partial<PaginationProps> &
-  Partial<BreadcrumbProps> &
-  Partial<CaptionProps> &
-  Partial<StreamProps> & {
-    framed?: boolean
-    className?: string
-  }
-
 interface CaptionProps {
   caption: string | React.ReactElement
 }
@@ -75,6 +63,20 @@ interface PaginationProps {
 interface StreamProps {
   stream: string[]
 }
+
+export type Props = React.PropsWithChildren<
+  Partial<GridProps> &
+    Partial<SequenceProps> &
+    Partial<TimelineProps> &
+    Partial<HistogramProps> &
+    Partial<PaginationProps> &
+    Partial<BreadcrumbProps> &
+    Partial<CaptionProps> &
+    Partial<StreamProps> & {
+      framed?: boolean
+      className?: string
+    }
+>
 
 export default class Toolbar extends React.PureComponent<Props> {
   private hasGridButtons() {

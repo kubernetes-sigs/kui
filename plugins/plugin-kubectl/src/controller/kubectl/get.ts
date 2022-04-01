@@ -384,7 +384,19 @@ export const doGet = (command: string) =>
     const response = await rawGet(args, command, fullKind)
 
     if (isKubeTableResponse(response)) {
-      return response
+      // check to see if we have an empty table
+      if (typeof response !== 'string' && response.body.length === 0 && !isWatchRequest(args)) {
+        // report an error that is consistent with the way we do it in
+        // direct/get, i.e. a simple text error rather than an empty
+        // table. note that we only do this for non-watch requests,
+        // because when watching we can't just error out and fail fast
+        const namespace = await getNamespace(args)
+        const err: CodedError = new Error(`No resources found in **${namespace}** namespace.`)
+        err.code = 404
+        throw err
+      } else {
+        return response
+      }
     } else if (response.content.code !== 0 && !isTableReq && response.content.stdout.length === 0) {
       // raw exec yielded an error!
       const err: CodedError = new Error(response.content.stderr)

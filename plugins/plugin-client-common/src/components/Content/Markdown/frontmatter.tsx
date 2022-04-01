@@ -250,7 +250,10 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
         // don't do this synchronously. react complains about
         // any transitive calls to setState() called from a
         // render() method
-        setTimeout(() => opts.tab.setTitle(frontmatter.title))
+        setTimeout(() => opts.tab.setTitle(frontmatter.title), 1000)
+        // ugh, re: 1000, somehow ReactMarkdown gets into an infinite
+        // loop with React 18. this could be our fault, bu @starpit
+        // has yet to figure it out, beyond this hack
       }
 
       if (frontmatter.className) {

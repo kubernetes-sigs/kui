@@ -101,9 +101,16 @@ async function guide(args: Arguments<HereOptions>) {
     const tree = React.createElement(Imports, { imports: blocks, choices, title })
     const guide = React.createElement(Guide, { tab: args.tab, uuid, blocks, choices, title })
 
-    const react = React.createElement(SplitInjector.Consumer, undefined, injector => {
-      injector.inject([{ uuid: v4(), node: tree, position: 'left-strip', count: 0, opts: { inverseColors: true } }])
-      return injector.modify(args.tab.uuid, guide, { maximized: true })
+    let children: React.ReactNode
+    // eslint-disable-next-line react/no-children-prop
+    const react = React.createElement(SplitInjector.Consumer, {
+      children: injector => {
+        if (!children) {
+          injector.inject([{ uuid: v4(), node: tree, position: 'left-strip', count: 0, opts: { inverseColors: true } }])
+          children = injector.modify(args.tab.uuid, guide, { maximized: true })
+        }
+        return children
+      }
     })
 
     args.tab.setTitle(title)

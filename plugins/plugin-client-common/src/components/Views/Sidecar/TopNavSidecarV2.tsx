@@ -141,6 +141,7 @@ type TopNavState = HistoryEntry &
  */
 export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNavState> {
   public static contextType = KuiContext
+  public readonly context: React.ContextType<typeof KuiContext>
 
   public constructor(props: Props<MultiModalResponse>) {
     super(props)

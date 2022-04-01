@@ -20,7 +20,17 @@
 import Debug from 'debug'
 import React from 'react'
 
-import { Capabilities, Client, Events, i18n, REPL, pexecInCurrentTab, encodeComponent, Themes } from '@kui-shell/core'
+import {
+  Capabilities,
+  Client,
+  Events,
+  i18n,
+  REPL,
+  pexecInCurrentTab,
+  encodeComponent,
+  Tab,
+  Themes
+} from '@kui-shell/core'
 
 import automount from '../../mount'
 
@@ -46,7 +56,8 @@ const defaultThemeProperties: Themes.ThemeProperties = {
 
 export type Props = Partial<KuiConfiguration> &
   GuidebookProps &
-  CommonClientProps & {
+  CommonClientProps &
+  React.PropsWithChildren<{
     /** no Kui bootstrap needed? */
     noBootstrap?: boolean
 
@@ -64,7 +75,7 @@ export type Props = Partial<KuiConfiguration> &
 
     /** document/window title */
     title?: string
-  }
+  }>
 
 type State = KuiConfiguration & {
   userOverrides?: KuiConfiguration
@@ -237,12 +248,14 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private defaultLoadingError() {
-    return err => (
-      <Alert
-        className="top-pad"
-        alert={{ type: 'error', title: strings('Error connecting to your cluster'), body: err.toString() }}
-      />
-    )
+    return function defaultLoadingError(err) {
+      return (
+        <Alert
+          className="top-pad"
+          alert={{ type: 'error', title: strings('Error connecting to your cluster'), body: err.toString() }}
+        />
+      )
+    }
   }
 
   /**
@@ -302,14 +315,25 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private firstTab = true
-  private onTabReady() {
+  private async onTabReady(tab: Tab) {
     if (this.state.commandLine && this.firstTab) {
       this.firstTab = false
 
-      pexecInCurrentTab(
-        this.state.commandLine.map(_ => encodeComponent(_)).join(' '),
-        undefined,
-        this.state.quietExecCommand
+      while (true) {
+        const hack = tab.querySelector('.kui--tab-content.visible .kui--scrollback[data-position="default"]')
+        if (hack) {
+          break
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 500))
+        }
+      }
+
+      setTimeout(() =>
+        pexecInCurrentTab(
+          this.state.commandLine.map(_ => encodeComponent(_)).join(' '),
+          tab,
+          this.state.quietExecCommand
+        )
       )
     }
   }

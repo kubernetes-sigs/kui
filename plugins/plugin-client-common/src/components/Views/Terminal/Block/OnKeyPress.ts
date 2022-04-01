@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { hasUUID } from './BlockModel'
+import { ExecType } from '@kui-shell/core'
+
+import { hasUUID, isActive } from './BlockModel'
 import { isHTMLInputElement, isHTMLTextAreaElement, InputProvider as Input } from './Input'
 import { endsWithBackSlash } from '../../util/multiline-input'
 
@@ -38,6 +40,12 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
       // execUUID. See https://github.com/IBM/kui/issues/5814
       const execUUID = hasUUID(this.props.model) ? this.props.model.execUUID : undefined
 
+      // since we now pre-allocate execUUIDs to active blocks, we may
+      // need to indicate this is indeed as TopLevel exec, rather than
+      // a Rerun (the default behavior of repl/exec if given an
+      // execUUID to use, rather than it allocating one for us)
+      const execType = execUUID !== undefined && isActive(this.props.model) ? ExecType.TopLevel : undefined // use the default behavior of repl/exec
+
       // see https://github.com/IBM/kui/issues/6311
       this.setState({ isReEdit: false })
 
@@ -46,7 +54,8 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
         this.props.tab,
         this.props._block,
         this.state.prompt.value.trim(),
-        execUUID // reusing execUUID
+        execUUID, // we may reuse an execUUID for a rerun, or use one pre-allocated for Active blocks
+        execType // tell repl/exec whether this is a TopLevel or Rerun
       )
     }
   }

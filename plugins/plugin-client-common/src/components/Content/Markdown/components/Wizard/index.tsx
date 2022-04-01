@@ -61,7 +61,6 @@ export default class Wizard extends React.PureComponent<Props, State> {
       status: undefined,
       codeBlocksPerStep: undefined
     }
-    setTimeout(() => this.init(props))
   }
 
   private readonly memos = new Memoizer()
@@ -110,6 +109,8 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
+    this.init(this.props)
+
     Graph.blocks(this.state.graph, 'all').forEach(_ => {
       subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
       this.cleaners.push(() => unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler))
@@ -190,10 +191,11 @@ export default class Wizard extends React.PureComponent<Props, State> {
     }))
 
     // onGoToStep={this._onWizardStepChange} onNext={this._onWizardStepChange} onBack={this._onWizardStepChange}
+    const description = this.props.children[0]
     return (
       <KWizard
         title={this.props['data-kui-title']}
-        description={this.props.children[0]}
+        description={React.isValidElement(description) && description}
         descriptionFooter={this.progress()}
         steps={steps}
       />

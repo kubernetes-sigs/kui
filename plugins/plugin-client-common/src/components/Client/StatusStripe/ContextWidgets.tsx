@@ -19,9 +19,9 @@
 
 import React from 'react'
 
-interface Props {
+type Props = React.PropsWithChildren<{
   className?: string
-}
+}>
 
 export default class ContextWidgets extends React.PureComponent<Props> {
   public render() {
