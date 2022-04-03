@@ -24,8 +24,8 @@ import { getTabTitle, isTabWithProperties, setTabGroup, setTabTitle } from '..'
 const debug = Debug('rehype-tabbed/gruops/homebrew')
 
 class Homebrew {
-  /** internal, the value should be namespaced and unique, but the particulars don't matter */
-  private readonly choiceGroup = 'org.kubernetes-sigs.kui/choice/has-homebrew?'
+  /** the value should be namespaced and unique, but the particulars don't matter */
+  public readonly choiceGroup = 'org.kubernetes-sigs.kui/choice/has-homebrew?'
 
   /** this helps with processing and optimizing based on the existence of homebrew on the user's system */
   private readonly canonicalName = 'Homebrew'

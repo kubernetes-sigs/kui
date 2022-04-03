@@ -39,7 +39,9 @@ export default function identifyRecognizableTabGroups(tree: Node, choices: Choic
     return
   }
 
-  providers.forEach(_ => _.populateChoice(choices))
+  providers
+    .filter(_ => !choices.contains(_.choiceGroup)) // already set?
+    .forEach(_ => _.populateChoice(choices))
 
   visit(tree, 'element', node => {
     if (isTabGroup(node)) {

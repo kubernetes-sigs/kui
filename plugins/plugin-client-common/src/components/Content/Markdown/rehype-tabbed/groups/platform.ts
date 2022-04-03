@@ -21,7 +21,7 @@ import { getTabTitle, isTabWithProperties, setTabGroup, setTabTitle } from '..'
 
 class Platform {
   /** internal, the value should be namespaced and unique, but the particulars don't matter */
-  private readonly choiceGroup = 'org.kubernetes-sigs.kui/choice/platform'
+  public readonly choiceGroup = 'org.kubernetes-sigs.kui/choice/platform'
 
   private readonly platforms: Record<string, typeof process['platform']> = {
     mac: 'darwin',
