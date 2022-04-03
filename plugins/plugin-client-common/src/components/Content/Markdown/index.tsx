@@ -69,6 +69,7 @@ import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 export interface ChoiceState {
   keys: () => ReturnType<typeof Object.keys>
   entries: () => ReturnType<typeof Object.entries>
+  contains: <K extends keyof ChoicesMap>(key: K) => boolean
   get: <K extends keyof ChoicesMap>(key: K) => ChoicesMap[K]
   set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K], overrideRejections?: boolean) => boolean
   remove: <K extends keyof ChoicesMap>(key: K) => boolean
@@ -182,7 +183,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
   }
 
   /** New props, so re-fetch inlined source if needed */
-  public componentDidUpdate(prevProps) {
+  public componentDidUpdate(prevProps: Props) {
     if (prevProps.source !== this.props.source) {
       this.prepareSource()
     }
@@ -295,9 +296,30 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   private readonly uuid = uuid()
 
+  /** Avoid back-to-back-to-back state updates from ChoiceState changes */
+  private currentBatchUpdate: ReturnType<typeof setTimeout>
+  private readonly batches: ((curState: State) => Pick<State, 'choices' | 'rejectedChoices'>)[] = []
+  private batch(fn: (curState: State) => Pick<State, 'choices' | 'rejectedChoices'> | null) {
+    if (this.currentBatchUpdate) {
+      clearTimeout(this.currentBatchUpdate)
+    }
+    this.batches.push(fn)
+    this.currentBatchUpdate = setTimeout(() => {
+      const batches = this.batches.splice(0, this.batches.length)
+      this.setState(curState => {
+        const resp = batches.reduce((curState, fn) => fn(curState) || curState, curState)
+        return resp
+      })
+    }, 20)
+  }
+
   private readonly choices: ChoiceState = this.props.choices || {
     keys: () => Object.keys(this.state.choices),
     entries: () => Object.entries(this.state.choices),
+
+    contains: (key: keyof ChoicesMap) => {
+      return key in this.state.choices
+    },
 
     get: (key: keyof ChoicesMap) => {
       return this.state.choices[key]
@@ -305,17 +327,17 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
     remove: <K extends keyof ChoicesMap>(key: K) => {
       if (key in this.state.choices) {
-        setTimeout(() =>
-          this.setState(curState => {
-            if (key in curState.choices) {
-              delete curState.choices[key]
-              return {
-                choices: Object.assign({}, curState.choices),
-                rejectedChoices: Object.assign({}, curState.rejectedChoices, { [key]: true })
-              }
+        this.batch(curState => {
+          if (key in curState.choices) {
+            delete curState.choices[key]
+            return {
+              choices: Object.assign({}, curState.choices),
+              rejectedChoices: Object.assign({}, curState.rejectedChoices, { [key]: true })
             }
-          })
-        )
+          }
+
+          return null
+        })
         return true
       } else {
         return false
@@ -327,19 +349,17 @@ export default class Markdown extends React.PureComponent<Props, State> {
         return false
       }
 
-      setTimeout(() =>
-        this.setState(curState => {
-          if (overrideRejections || !(key in curState.rejectedChoices)) {
-            delete curState.rejectedChoices[key]
-            return {
-              choices: Object.assign({}, curState.choices, { [key]: value }),
-              rejectedChoices: Object.assign({}, curState.rejectedChoices)
-            }
-          } else {
-            return null
+      this.batch(curState => {
+        if (overrideRejections || !(key in curState.rejectedChoices)) {
+          delete curState.rejectedChoices[key]
+          return {
+            choices: Object.assign({}, curState.choices, { [key]: value }),
+            rejectedChoices: Object.assign({}, curState.rejectedChoices)
           }
-        })
-      )
+        }
+
+        return null
+      })
 
       return true
     }
