@@ -114,7 +114,8 @@ ${tabContent}
           .map(_ => indent(_))
           .join('\n')
 
-        node['value'] = `!!!${open ? '+' : ''} ${className} "${title}"
+        node['value'] = `
+!!!${open ? '+' : ''} ${className} "${title}"
 
 ${tipContent}
 `
@@ -131,9 +132,24 @@ ${tipContent}
   return root
 }
 
+/**
+ * We need to back out some <span className="paragraph"> back to
+ * <p>. We might have done this in other places to avoid nested <p>.
+ */
+function paragraphs(root: Node) {
+  visit(root, 'element', node => {
+    if (isElementWithProperties(node) && node.tagName === 'span' && node.properties.className === 'paragraph') {
+      node.tagName = 'p'
+      delete node.properties.className
+    }
+  })
+
+  return root
+}
+
 /** This is the small bit of munging we need to do */
 function munge(root: Node) {
-  return stringifyTabs(pruneComments(pruneImports(root)))
+  return paragraphs(stringifyTabs(pruneComments(pruneImports(root))))
 }
 
 /**

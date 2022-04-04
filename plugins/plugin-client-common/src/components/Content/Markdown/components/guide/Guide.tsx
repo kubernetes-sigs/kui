@@ -235,14 +235,18 @@ export default class Guide extends React.PureComponent<Props, State> {
 
   /** UI to indicate what choices the user has already made */
   private chips() {
+    const chips = this.state.choices.entries().map(([key, value]) => (
+      <Chip key={key} ouiaId={key} onClick={this.removeChip}>
+        {value}
+      </Chip>
+    ))
+
     return (
-      <ChipGroup numChips={6}>
-        {this.state.choices.entries().map(([key, value]) => (
-          <Chip key={key} ouiaId={key} onClick={this.removeChip}>
-            {value}
-          </Chip>
-        ))}
-      </ChipGroup>
+      chips.length > 0 && (
+        <div className="kui--markdown-major-paragraph">
+          <ChipGroup numChips={6}>{chips}</ChipGroup>
+        </div>
+      )
     )
   }
 
@@ -251,7 +255,7 @@ export default class Guide extends React.PureComponent<Props, State> {
 
     return (
       <React.Fragment>
-        {descriptionContent && <div className="paragraph">{descriptionContent}</div>}
+        {descriptionContent && <Markdown nested source={descriptionContent} />}
 
         {this.chips()}
       </React.Fragment>
