@@ -9,12 +9,10 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "scripts": {
-    "test": "./bin/runMochaLayers.sh",
-    "testv2": "./bin/runMochaLayersv2.sh"
+    "test": "./bin/runMochaLayers.sh"
   },
   "bin": {
-    "kui-test": "./bin/runMochaLayers.sh",
-    "kui-testv2": "./bin/runMochaLayersv2.sh"
+    "kui-test": "./bin/runMochaLayers.sh"
   },
   "dependencies": {
     "spectron": "starpit/spectron#e18",

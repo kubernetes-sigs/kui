@@ -57,7 +57,7 @@ jobs:
       env:
         CLIENT: alternate
         MOCHA_RUN_TARGET: webpack
-      run: ./tools/travis/install.sh && BOTTOM_INPUT_MODE=true npx concurrently -n BOTTOM 'npm run testv2 bottom-input'
+      run: ./tools/travis/install.sh && BOTTOM_INPUT_MODE=true npx concurrently -n BOTTOM 'npm run test bottom-input'
 
   api-electron:
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
       env:
         CLIENT: test
         MOCHA_RUN_TARGET: electron
-      run: ./tools/travis/install.sh && npm run testv2 api-popup && npx concurrently -n API1,API2 'npm run test1 api1' 'npm run test2 api2'
+      run: ./tools/travis/install.sh && npm run test api-popup && npx concurrently -n API1,API2 'npm run test1 api1' 'npm run test2 api2'
 
   bash-core-browser:
     runs-on: ubuntu-latest

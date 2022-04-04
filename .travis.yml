@@ -51,7 +51,7 @@ install:
   - if [ -n "$minio" ]; then wait $minio; fi
 
 script:
-  - npm run testv2 $LAYERS
+  - npm run test $LAYERS
 
 jobs:
   allow_failures:
@@ -123,6 +123,6 @@ jobs:
         - ./bin/switch-client.sh alternate >& /tmp/alt-switch.out
         - npm run kill || true; npm run kill:proxy || true
         - npm run watch:$MOCHA_RUN_TARGET >& /tmp/alt-watch.out
-        - BOTTOM_INPUT_MODE=true concurrently -n BOTTOM 'npm run testv2 bottom-input'
+        - BOTTOM_INPUT_MODE=true concurrently -n BOTTOM 'npm run test bottom-input'
     - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="electron"
-      script: npm run testv2 api-popup && concurrently -n API1,API2 'npm run test1 api1' 'npm run test2 api2'
+      script: npm run test api-popup && concurrently -n API1,API2 'npm run test1 api1' 'npm run test2 api2'
