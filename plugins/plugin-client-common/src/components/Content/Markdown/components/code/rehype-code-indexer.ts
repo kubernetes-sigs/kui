@@ -47,6 +47,14 @@ function isImplicitlyOptional(_: Parent): _ is Element {
   return isElementWithProperties(_) && _.tagName === 'tip' && _.properties.open === false
 }
 
+/** @return the first child, if it is a paragraph  */
+function extractFirstParagraph(parent: Parent) {
+  const firstChild = parent.children[0]
+  if (firstChild && isElementWithProperties(firstChild) && firstChild.tagName === 'p') {
+    return toMarkdownString(firstChild)
+  }
+}
+
 /**
  * Scan backwards from `parent` in `grandparent`'s children for a
  * heading. If found, return that heading's string form, and collect
@@ -170,6 +178,7 @@ export default function plugin(uuid: string) {
                           source: toMarkdownString(_),
                           group,
                           title,
+                          description: extractFirstParagraph(_),
                           member,
                           groupDetail: findNearestEnclosingTitle(grandparent, parent)
                         })

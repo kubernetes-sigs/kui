@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Graph, emptySequence, isSequence, isParallel, isSubTask, isTitledSteps, isChoice } from '.'
+import { Graph, Ordered, Unordered, emptySequence, isSequence, isParallel, isSubTask, isTitledSteps, isChoice } from '.'
 
 /** Remove any subgraphs that contain no code blocks */
-function dce<G extends Graph>(graph: G): G {
+function dce<T extends Unordered | Ordered, G extends Graph<T>>(graph: G): G {
   if (isSequence(graph)) {
     const sequence = graph.sequence.map(dce).filter(Boolean)
     if (sequence.length > 0) {
@@ -28,12 +28,12 @@ function dce<G extends Graph>(graph: G): G {
     if (parallel.length > 0) {
       return Object.assign({}, graph, { parallel })
     }
-  } else if (isSubTask(graph)) {
+  } else if (isSubTask<T>(graph)) {
     const subgraph = dce(graph.graph)
     if (subgraph) {
       return Object.assign({}, graph, { graph: subgraph })
     }
-  } else if (isTitledSteps(graph)) {
+  } else if (isTitledSteps<T>(graph)) {
     const steps = graph.steps
       .map(_ => {
         const subgraph = dce(_.graph)

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Chip, ChipGroup, Flex, Tile, Wizard, WizardStep } from '@patternfly/react-core'
+import { Chip, ChipGroup, Grid, GridItem, Tile, Wizard, WizardStep } from '@patternfly/react-core'
 
 import order from '../code/graph/order'
 import compile from '../code/graph/compile'
@@ -178,24 +178,25 @@ export default class Guide extends React.PureComponent<Props, State> {
 
   private tilesForChoice(choice: Choice) {
     return this.stepContent(
-      <Flex>
-        {choice.choices.map((_, idx) => {
+      <Grid hasGutter span={4}>
+        {choice.choices.map(_ => {
           return (
-            <Tile
-              key={idx}
-              isStacked
-              title={_.title}
-              icon={<Icons icon="PlusSquare" />}
-              isSelected={this.state.choices && this.state.choices.get(choice.group) === _.title}
-              onClick={this.onChoice}
-              data-choice-group={choice.group}
-              data-choice-title={_.title}
-            >
-              {this.graph(_.graph)}
-            </Tile>
+            <GridItem key={_.title}>
+              <Tile
+                isStacked
+                title={_.title}
+                icon={<Icons icon="PlusSquare" />}
+                isSelected={this.state.choices && this.state.choices.get(choice.group) === _.title}
+                onClick={this.onChoice}
+                data-choice-group={choice.group}
+                data-choice-title={_.title}
+              >
+                {_.description && <Markdown nested source={_.description} />}
+              </Tile>
+            </GridItem>
           )
         })}
-      </Flex>
+      </Grid>
     )
   }
 

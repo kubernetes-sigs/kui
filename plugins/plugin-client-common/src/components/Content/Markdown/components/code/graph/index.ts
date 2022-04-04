@@ -110,11 +110,11 @@ function sameSequence(A: Sequence = emptySequence(), B: Sequence = emptySequence
 type ChoiceGroup = string
 type ChoiceMember = number
 
-export type ChoicePart<T extends Unordered | Ordered = Unordered> = {
-  member: ChoiceMember
-  title: string
-  graph: Sequence<T>
-}
+export type ChoicePart<T extends Unordered | Ordered = Unordered> = Title &
+  Partial<Description> & {
+    member: ChoiceMember
+    graph: Sequence<T>
+  }
 
 export type Choice<T extends Unordered | Ordered = Unordered> = Source &
   T &
