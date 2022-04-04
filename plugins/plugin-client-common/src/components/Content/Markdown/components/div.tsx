@@ -30,12 +30,12 @@ const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
-export default function div(mdprops: MarkdownProps, uuid: string, choices: ChoiceState) {
+export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices: ChoiceState) {
   const tabbed = _tabbed(uuid, choices)
 
-  return (
+  return function div(
     props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<ImportProps> & Partial<TabProps>
-  ) => {
+  ) {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const placeholder = props['data-kui-placeholder']
@@ -51,25 +51,18 @@ export default function div(mdprops: MarkdownProps, uuid: string, choices: Choic
     } else if (isImports(props)) {
       // Don't render the content of imported documents. We will process these separately.
       return <React.Fragment />
-    } else if (
-      !position ||
-      ((isNormalSplit(position) || position === 'wizard') && count === 0 && !maximized && !placeholder)
-    ) {
+    } else if (!position || ((isNormalSplit(position) || position === 'wizard') && count === 0 && !placeholder)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
-      const node = isWizard(props) ? (
-        <Wizard uuid={uuid} {...props} choices={choices} />
-      ) : (
-        <div data-is-maximized={maximized || undefined}>{props.children}</div>
-      )
-      if (!mdprops.tab || (hasActiveInput !== true && hasActiveInput !== false)) {
+      const node = isWizard(props) ? <Wizard uuid={uuid} {...props} choices={choices} /> : <div>{props.children}</div>
+      if (!maximized && (!mdprops.tab || (hasActiveInput !== true && hasActiveInput !== false))) {
         return node
       } else {
         // modify the current split to have the desired properties
         return (
           <SplitInjector.Consumer>
-            {injector => injector.modify(mdprops.tab.uuid, node, { hasActiveInput, inverseColors })}
+            {injector => injector.modify(mdprops.tab.uuid, node, { hasActiveInput, inverseColors, maximized })}
           </SplitInjector.Consumer>
         )
       }

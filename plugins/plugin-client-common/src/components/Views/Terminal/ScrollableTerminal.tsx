@@ -333,7 +333,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       (position !== 'default'
         ? this.state.splits.find(_ => _.position === position)
         : this.state.splits.filter(_ => _.position === 'default')[count]) ||
-      this.makePositionedSplit(position, { createdBy: 'kui', hasActiveInput })
+      this.makePositionedSplit(position, { createdBy: 'kui', hasActiveInput, maximized })
 
     if (split) {
       this.splice(
@@ -379,7 +379,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   public readonly modify = (
     sbuuid: string,
     node: React.ReactNode,
-    { hasActiveInput, inverseColors }: InjectorOptions
+    { hasActiveInput, inverseColors, maximized = false }: InjectorOptions
   ): React.ReactNode => {
     this.setState(curState => {
       const sbidx = this.findSplit(this.state, sbuuid)
@@ -387,6 +387,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         return null
       } else {
         const splits = curState.splits.slice()
+
+        if (typeof maximized === 'boolean') {
+          splits[sbidx].maximized = maximized
+        }
 
         if (typeof inverseColors === 'boolean') {
           splits[sbidx].inverseColors = inverseColors
@@ -1506,6 +1510,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       'data-position': scrollback.position,
       key: tab.uuid,
       'data-scrollback-id': tab.uuid,
+      'data-is-maximized': scrollback.maximized || undefined,
       'data-has-maximized-block': !!scrollback.blocks.find(isMaximized) || undefined,
       ref: scrollback.tabRefFor,
       onClick: scrollback.onClick, // fancier for bottom input (just below, too)? !this.props.noActiveInput ? scrollback.onClick : undefined,

@@ -17,7 +17,10 @@
 /** Scrollback styling */
 
 @import 'mixins';
-@import './Block';
+@import 'Block';
+@import 'Maximized';
+@import '../Card/mixins';
+@import '../Wizard/mixins';
 
 $split-padding: 0.5em;
 $split-gutter-gap: 6px;
@@ -57,5 +60,31 @@ $split-bgcolor: var(--color-repl-background);
   @include ScrollbackBlockListInner {
     flex: 1;
     overflow: auto;
+  }
+}
+@include MaximizedSplit {
+  @include ScrollbackBlockList {
+    @include FlushToContainer;
+  }
+  @include Block {
+    @include FlushToContainer;
+    @include BlockInput {
+      @include FlushToContainer;
+    }
+    @include BlockOutput {
+      @include FlushToContainer;
+    }
+  }
+  @include Commentary {
+    @include FlushToContainer;
+  }
+  @include CardBody {
+    @include FlushToContainer;
+  }
+  @include WizardNav {
+    padding-left: $inset;
+  }
+  @include WizardBody {
+    padding: $inset #{2 * $inset};
   }
 }

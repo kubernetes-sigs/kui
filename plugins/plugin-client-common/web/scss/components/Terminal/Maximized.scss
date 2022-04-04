@@ -35,3 +35,11 @@
     @content;
   }
 }
+
+@mixin MaximizedSplit {
+  @include Scrollback {
+    &[data-is-maximized] {
+      @content;
+    }
+  }
+}

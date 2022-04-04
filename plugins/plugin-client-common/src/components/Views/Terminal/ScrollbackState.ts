@@ -38,7 +38,11 @@ export type CreatedBy = {
   createdBy: 'user' | 'kui' | 'default'
 }
 
-export type ScrollbackOptions = NewSplitRequest['options'] & Partial<CreatedBy>
+export type ScrollbackOptions = NewSplitRequest['options'] &
+  Partial<CreatedBy> & {
+    /** eliminate outer padding */
+    maximized?: boolean
+  }
 
 type ScrollbackState = ScrollbackOptions &
   Required<CreatedBy> & {

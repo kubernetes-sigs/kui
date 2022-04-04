@@ -67,7 +67,9 @@ async function guide(args: Arguments<HereOptions>) {
   const data = `---
 layout:
     1: left
-    2: default
+    2: 
+        position: default
+        maximized: true
 imports:
     - ${Util.expandHomeDir(filepath)}
 ---

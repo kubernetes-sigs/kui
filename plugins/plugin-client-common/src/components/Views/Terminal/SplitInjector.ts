@@ -18,7 +18,7 @@ import React from 'react'
 import SplitPosition from './SplitPosition'
 
 export interface InjectorOptions {
-  /** @deprecated */
+  /** Eliminate padding/margins around outer content */
   maximized?: boolean
 
   /** Use inverse colors in the split? */
