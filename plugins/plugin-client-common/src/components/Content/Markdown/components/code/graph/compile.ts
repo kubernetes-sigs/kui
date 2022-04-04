@@ -63,9 +63,10 @@ export default function compile(
   let currentNesting: Nesting[] = []
 
   const newChoice = (block: CodeBlockProps, parent: CodeBlockChoice, isDeepest: boolean) => ({
+    member: parent.member,
     graph: isDeepest ? seq(block) : emptySequence(),
     title: parent.title,
-    member: parent.member
+    description: parent.description
   })
 
   const newChoices = (block: CodeBlockProps, parent: CodeBlockChoice, isDeepest: boolean): Choice => ({

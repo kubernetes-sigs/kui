@@ -49,6 +49,7 @@ export type Source = {
 export type Choice = GroupMember &
   Source &
   Title &
+  Partial<Description> &
   Kind<'Choice'> & {
     /** Title and Source for the choice group */
     groupDetail: Partial<Title> & Source
