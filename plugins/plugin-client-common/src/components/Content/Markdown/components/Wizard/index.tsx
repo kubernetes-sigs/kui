@@ -29,17 +29,13 @@ import blocks from '../code/graph/linearize'
 import { OrderedGraph, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
-import Icons from '../../../../spi/Icons'
 import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
 import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
-import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
-
 import { WizardStep } from '@patternfly/react-core'
 
-// const Prerequisites = React.lazy(() => import('./Prerequisites'))
-const PatternFlyWizard = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Wizard })))
+const KWizard = React.lazy(() => import('./KWizard'))
 
 const strings = i18n('plugin-client-common', 'code')
 
@@ -48,9 +44,6 @@ type Status = ProgressStepState['status']
 type Props = Choices & WizardProps & { uuid: string }
 
 export interface State {
-  /** Is the wizard in "collapsed" mode, where we only show the title and progress bar? */
-  collapsedHeader: boolean
-
   /** Graph of code blocks across all steps */
   graph: OrderedGraph
 
@@ -94,7 +87,6 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
     return {
       status,
-      collapsedHeader: !state ? false : state.collapsedHeader,
       codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
       graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
     }
@@ -165,14 +157,6 @@ export default class Wizard extends React.PureComponent<Props, State> {
     }
   }
 
-  private footer() {
-    // use this if you want no footer (Next, Previous buttons)
-    // return <React.Fragment />
-
-    // use this if you want the default footer
-    return undefined
-  }
-
   /** Overall progress across all steps */
   private progress() {
     if (this.props['data-kui-wizard-progress'] === 'bar' && blocks(this.state.graph).length > 0) {
@@ -193,45 +177,6 @@ export default class Wizard extends React.PureComponent<Props, State> {
     return (props.children || []).slice(1)
   }
 
-  private readonly _toggleCollapsedHeader = () =>
-    this.setState(curState => ({ collapsedHeader: !curState.collapsedHeader }))
-
-  private headerActions() {
-    return (
-      <div className="kui--wizard-header-action-buttons">
-        <a className="kui--wizard-collapse-button kui--block-action" onClick={this._toggleCollapsedHeader}>
-          <Icons icon={this.state.collapsedHeader ? 'WindowMaximize' : 'WindowMinimize'} />
-        </a>
-      </div>
-    )
-  }
-
-  private title() {
-    const label = this.props['data-kui-title'].trim()
-    return (
-      <div className="kui--wizard-header-title pf-c-wizard__title" aria-label={label}>
-        {label}
-      </div>
-    )
-  }
-
-  private description() {
-    return <div className="pf-c-wizard__description">{this.props.children[0]}</div>
-  }
-
-  private header() {
-    return (
-      <React.Fragment>
-        <div className="kui--wizard-header kui--inverted-color-context">
-          {this.headerActions()}
-          {this.title()}
-          {this.description()}
-          {this.progress()}
-        </div>
-      </React.Fragment>
-    )
-  }
-
   private wizard() {
     const steps: WizardStep[] = Wizard.children(this.props).map((_, stepIdx) => ({
       name: _.props['data-kui-title'],
@@ -244,12 +189,12 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
     // onGoToStep={this._onWizardStepChange} onNext={this._onWizardStepChange} onBack={this._onWizardStepChange}
     return (
-      <div className="kui--wizard" data-collapsed-header={this.state.collapsedHeader || undefined}>
-        {this.header()}
-        <div className="kui--wizard-main-content">
-          <PatternFlyWizard steps={steps.length === 0 ? [{ name: '', component: '' }] : steps} footer={this.footer()} />
-        </div>
-      </div>
+      <KWizard
+        title={this.props['data-kui-title']}
+        description={this.props.children[0]}
+        descriptionFooter={this.progress()}
+        steps={steps}
+      />
     )
   }
 

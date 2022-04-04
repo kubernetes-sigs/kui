@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Chip, ChipGroup, Grid, GridItem, Tile, Wizard, WizardStep } from '@patternfly/react-core'
+import { Chip, ChipGroup, Grid, GridItem, Tile, WizardStep } from '@patternfly/react-core'
 
 import order from '../code/graph/order'
 import compile from '../code/graph/compile'
@@ -32,11 +32,10 @@ import {
   sameGraph
 } from '../code/graph'
 
+import Wizard from '../Wizard/KWizard'
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
 import Markdown, { Choices } from '../..'
-
-import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
 type Props = Choices & {
   /** markdown document id */
@@ -253,13 +252,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   private wizardDescription() {
     const descriptionContent = extractDescription(this.state.graph)
 
-    return (
-      <React.Fragment>
-        {descriptionContent && <Markdown nested source={descriptionContent} />}
-
-        {this.chips()}
-      </React.Fragment>
-    )
+    return <React.Fragment>{descriptionContent && <Markdown nested source={descriptionContent} />}</React.Fragment>
   }
 
   private presentChoices() {
@@ -275,6 +268,7 @@ export default class Guide extends React.PureComponent<Props, State> {
             steps={steps}
             title={extractTitle(this.state.graph)}
             description={this.wizardDescription()}
+            descriptionFooter={this.chips()}
           />
         </div>
       </div>
