@@ -21,6 +21,7 @@ import {
   SubTask,
   emptySequence,
   extractTitle,
+  extractDescription,
   hasTitle,
   hasTitleProperty,
   isSubTask,
@@ -44,15 +45,23 @@ type LookupTable = Record<SubTask['key'], SubTask>
  */
 function extractTitleForPrereqsPlusSubTask(graph: Graph) {
   const title = extractTitle(graph)
+  const description = extractDescription(graph)
+
   if (title) {
-    return title
+    return { title, description }
   } else if (
     isSequence(graph) &&
     graph.sequence.length === 2 &&
     isSubTask(graph.sequence[0]) &&
     extractTitle(graph.sequence[0]) === 'Prerequisites'
   ) {
-    return extractTitle(graph.sequence[1])
+    const mainTask = graph.sequence[1]
+    return {
+      title: extractTitle(mainTask),
+      description: extractDescription(mainTask)
+    }
+  } else {
+    return { title, description }
   }
 }
 
@@ -257,7 +266,7 @@ function asPrereqs(content: Graph[]): SubTask {
   return subtask('Prerequisites', 'Prerequisites', '', '', sequence(content))
 }
 
-function withTitle(title: string, content: Sequence) {
+function withTitle(title: string, description: string, content: Sequence) {
   if (!title) {
     return content
   } else {
@@ -286,7 +295,7 @@ function withTitle(title: string, content: Sequence) {
       }
     }
 
-    return subtask(title, title, '', '', content)
+    return subtask(title, title, description, '', content)
   }
 }
 
@@ -298,15 +307,18 @@ function recombine(inputGraph: Graph, graph: Graph | void, subTasks1: SubTask[])
     return graph
   } else {
     const title = extractTitle(inputGraph)
+    const description = extractDescription(inputGraph)
 
     if (!graph) {
-      return withTitle(title, sequence(subTasks))
+      return withTitle(title, description, sequence(subTasks))
     } else {
       const { toplevelSubTasks, residual } = extractTopLevelSubTasks(graph)
       const allSubTasks = union(toplevelSubTasks, subTasks)
 
       const content = sequence([asPrereqs(allSubTasks), residual])
-      return withTitle(title || extractTitleForPrereqsPlusSubTask(content), content)
+      const { title: titleAlt, description } = extractTitleForPrereqsPlusSubTask(content)
+
+      return withTitle(title || titleAlt, description, content)
     }
   }
 }
