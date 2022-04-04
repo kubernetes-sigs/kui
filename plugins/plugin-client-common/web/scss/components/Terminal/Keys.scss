@@ -18,6 +18,7 @@
 
 @include Commentary {
   kbd {
+    color: var(--color-text-01);
     background-color: var(--color-base01);
     border-radius: 0.1rem;
     box-shadow: 0 0.1rem 0 0.05rem var(--color-base02), 0 0.1rem 0 var(--color-base02),
