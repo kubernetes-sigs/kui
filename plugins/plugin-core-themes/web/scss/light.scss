@@ -17,7 +17,6 @@
 @import 'common';
 @import 'dark-mixins';
 @import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
-@import '@kui-shell/plugin-client-common/web/scss/components/Wizard/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/Sidecar/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
@@ -178,9 +177,5 @@ body[kui-theme='Light'] {
   }
   @include CommentaryEditor {
     @include InvertColors;
-  }
-  @include WizardHeader {
-    @include Dark;
-    @include Reset;
   }
 }

@@ -17,7 +17,7 @@
 /**
  * This component offers a fairly thin wrapper over PatternFly's Wizard, with a few extra features:
  *
- * 1. specifies an inverted color context for the header
+ * 1. allows control of header theming
  * 2. adds a minimize/maximize toggler to the header
  *
  */
@@ -79,7 +79,7 @@ export default class KWizard extends React.PureComponent<Props, State> {
   private header() {
     return (
       <React.Fragment>
-        <div className="kui--wizard-header kui--inverted-color-context">
+        <div className="kui--wizard-header">
           {this.headerActions()}
           {this.title()}
           {this.description()}
