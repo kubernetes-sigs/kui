@@ -20,7 +20,7 @@ import { Graph, isSequence, isParallel, isChoice, isTitledSteps, isSubTask } fro
 import { Status } from '../../../../ProgressStepper'
 
 /** Succeed only if all paths succeed, fail if any path fails */
-function failFast(a: Status, b: Status) {
+function failFast(a: Status = 'success', b: Status = 'success') {
   if (a === 'success' && b === 'success') {
     return 'success'
   } else if (a === 'error' || b === 'error') {
@@ -37,7 +37,7 @@ function failFast(a: Status, b: Status) {
 }
 
 /** For choices, a success on any path is good */
-function succeedFast(a: Status, b: Status) {
+function succeedFast(a: Status = 'success', b: Status = 'success') {
   if (a === 'success' || b === 'success') {
     return 'success'
   } else {
@@ -57,7 +57,7 @@ function union(A: Promise<Status[]>) {
  * Note: this code assumes that collapseMadeChoices has already been
  * applied to the `graph`.
  */
-export default async function validate(graph: Graph): Promise<Status> {
+async function validate(graph: Graph): Promise<Status> {
   if (isSequence(graph)) {
     return intersection(Promise.all(graph.sequence.map(validate)))
   } else if (isParallel(graph)) {
@@ -68,14 +68,16 @@ export default async function validate(graph: Graph): Promise<Status> {
     return intersection(Promise.all(graph.steps.map(_ => validate(_.graph))))
   } else if (isSubTask(graph)) {
     return validate(graph.graph)
-  } else if (graph.validate) {
+  } else if (graph.validate && !graph.optional) {
     try {
       await pexecInCurrentTab(graph.validate, undefined, true, true)
       return 'success'
     } catch (err) {
       return 'blank'
     }
-  } else {
-    return 'blank'
   }
+}
+
+export default async function validateGraph(graph: Graph): Promise<Status> {
+  return (await validate(graph)) || 'blank'
 }
