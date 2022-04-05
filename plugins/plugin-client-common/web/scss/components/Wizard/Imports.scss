@@ -73,19 +73,19 @@
   color: var(--color-brand-01);
 }
 
+.kui--validator {
+  @include Success {
+    color: $complete-color;
+  }
+  @include Error {
+    color: $error-color;
+  }
+}
+
 @include DependenceTree {
   code {
     font-size: 0.75rem;
     color: var(--color-base0F);
-  }
-
-  .kui--validator {
-    @include Success {
-      color: $complete-color;
-    }
-    @include Error {
-      color: $error-color;
-    }
   }
 
   svg {

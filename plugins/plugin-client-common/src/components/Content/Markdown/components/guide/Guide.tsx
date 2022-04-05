@@ -20,6 +20,8 @@ import { Chip, ChipGroup, Grid, GridItem, Tile, WizardStep } from '@patternfly/r
 import order from '../code/graph/order'
 import compile from '../code/graph/compile'
 import { findChoiceFrontier, findCodeBlockFrontier, findPrereqsAndMainTasks } from '../code/graph/choice-frontier'
+
+import validate from '../code/graph/validate'
 import {
   Graph,
   Choice,
@@ -37,6 +39,10 @@ import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
 import Markdown, { Choices } from '../..'
 
+import { Status, statusToClassName, statusToIcon } from '../../../ProgressStepper'
+
+type WizardStepWithGraph = { graph: Graph; step: WizardStep }
+
 type Props = Choices & {
   /** markdown document id */
   uuid: string
@@ -51,6 +57,9 @@ type State = Choices & {
 
   /** Choice Frontier */
   frontier: ReturnType<typeof findChoiceFrontier>
+
+  /** validation status of each wizard step */
+  wizardStepStatus: Status[]
 }
 
 export default class Guide extends React.PureComponent<Props, State> {
@@ -111,7 +120,9 @@ export default class Guide extends React.PureComponent<Props, State> {
     const graph = noChangeToGraph ? state.graph : order(newGraph)
     const frontier = noChangeToChoices && noChangeToGraph ? state.frontier : Guide.computeChoiceFrontier(graph, choices)
 
-    return { graph, frontier, choices }
+    const wizardStepStatus = noChangeToGraph && noChangeToChoices && state ? state.wizardStepStatus : []
+
+    return { graph, frontier, choices, wizardStepStatus }
   }
 
   private stepContent(inner: React.ReactNode) {
@@ -121,27 +132,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   private graph(graph: Graph) {
     if (hasSource(graph)) {
       return this.stepContent(<Markdown nested source={graph.source} choices={this.state.choices} />)
-    } /* else if (isSequence(graph)) {
-      return <React.Fragment>{graph.sequence.map(_ => this.graph(_))}</React.Fragment>
-    } else if (isParallel(graph)) {
-      return <React.Fragment>{graph.parallel.map(_ => this.graph(_))}</React.Fragment>
-    } else {
-      return (
-        <pre key={graph.id}>
-          <CodeBlock
-            className="kui--code-block-in-markdown"
-            value={graph.body}
-            language={graph.language}
-            optional={graph.optional}
-            validate={graph.validate}
-            id={graph.id}
-            tab={undefined}
-            arg1={undefined}
-            onResponse={this.onResponse}
-          />
-        </pre>
-      )
-    } */
+    }
   }
 
   private wizardStepDescription(description: string) {
@@ -159,12 +150,15 @@ export default class Guide extends React.PureComponent<Props, State> {
    * @return a `WizardStep` for a non-choice prereq for a choice on
    * the choice frontier
    */
-  private wizardStepForPrereq(_: Graph): WizardStep {
+  private wizardStepForPrereq(graph: Graph): WizardStepWithGraph {
     return {
-      name: extractTitle(_),
-      component: this.graph(_),
-      stepNavItemProps: {
-        children: this.wizardStepDescription(extractDescription(_))
+      graph,
+      step: {
+        name: extractTitle(graph),
+        component: this.graph(graph),
+        stepNavItemProps: {
+          children: this.wizardStepDescription(extractDescription(graph))
+        }
       }
     }
   }
@@ -202,24 +196,67 @@ export default class Guide extends React.PureComponent<Props, State> {
   /**
    * @return a `WizardStep` for a choice on the choice frontier
    */
-  private wizardStepForChoiceOnFrontier(choice: Choice): WizardStep {
-    if (choice) {
-      return { name: choice.title, component: this.tilesForChoice(choice) }
+  private wizardStepForChoiceOnFrontier(graph: Choice): WizardStepWithGraph {
+    if (graph) {
+      return {
+        graph,
+        step: { name: graph.title, component: this.tilesForChoice(graph) }
+      }
     }
+  }
+
+  private withStatus(name: WizardStep['name'], status: Status) {
+    const icon = status && statusToIcon(status)
+    if (icon) {
+      return (
+        <React.Fragment>
+          {name} <span className={statusToClassName(status).join(' ') + ' kui--validator'}>{icon}</span>
+        </React.Fragment>
+      )
+    } else {
+      return name
+    }
+  }
+
+  /** Any UI bits that all wizard steps should have */
+  private readonly addCommonWizardStepProperties = (step: WizardStep, idx: number) => {
+    const status = this.state.wizardStepStatus[idx]
+    const name = this.withStatus(step.name, status)
+
+    return Object.assign(step, { name, hideCancelButton: true })
   }
 
   /**
    * @return the `WizardStep` models for this Guide */
-  private wizardSteps(): WizardStep[] {
+  private wizardSteps(): WizardStepWithGraph[] {
     // the steps will be the interleaved ((...prereqs, choice), ...)
     // dictated by the this.state.frontier model, which comes from
     // choice-frontier.ts; the flatMap just says we want to flatten
     // this nested interleaving down to a linear set of WizardSteps
-    return this.state.frontier
-      .flatMap(({ prereqs, choice }): WizardStep[] =>
-        [...prereqs.map(_ => this.wizardStepForPrereq(_)), this.wizardStepForChoiceOnFrontier(choice)].filter(Boolean)
-      )
-      .map(_ => Object.assign(_, { hideCancelButton: true }))
+    return this.state.frontier.flatMap(({ prereqs, choice }): WizardStepWithGraph[] =>
+      [...prereqs.map(_ => this.wizardStepForPrereq(_)), this.wizardStepForChoiceOnFrontier(choice)].filter(Boolean)
+    )
+  }
+
+  private validateStepsIfNeeded(steps: WizardStepWithGraph[]): WizardStep[] {
+    Promise.all(
+      steps.map(async (_, idx) => {
+        if (!this.state.wizardStepStatus[idx] || this.state.wizardStepStatus[idx] === 'blank') {
+          const status = await validate(_.graph)
+          if (status !== this.state.wizardStepStatus[idx]) {
+            this.setState(curState => ({
+              wizardStepStatus: [
+                ...curState.wizardStepStatus.slice(0, idx),
+                status,
+                ...curState.wizardStepStatus.slice(idx + 1)
+              ]
+            }))
+          }
+        }
+      })
+    )
+
+    return steps.map(_ => _.step)
   }
 
   private readonly removeChip = (evt: React.MouseEvent) => {
@@ -234,6 +271,7 @@ export default class Guide extends React.PureComponent<Props, State> {
 
   /** UI to indicate what choices the user has already made */
   private chips() {
+    // if you want key=value, this would be they key: key.split(/\/([^/]+)$/)[1]}=
     const chips = this.state.choices.entries().map(([key, value]) => (
       <Chip key={key} ouiaId={key} onClick={this.removeChip}>
         {value}
@@ -256,7 +294,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   private presentChoices() {
-    const steps = this.wizardSteps()
+    const steps = this.validateStepsIfNeeded(this.wizardSteps()).map(this.addCommonWizardStepProperties)
 
     return steps.length === 0 ? (
       'Nothing to do!'

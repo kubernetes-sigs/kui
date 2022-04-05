@@ -22,7 +22,7 @@ import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
 
 import '../../../web/scss/components/ProgressStepper/_index.scss'
 
-type Status =
+export type Status =
   | 'blank'
   | 'info'
   | 'minor'

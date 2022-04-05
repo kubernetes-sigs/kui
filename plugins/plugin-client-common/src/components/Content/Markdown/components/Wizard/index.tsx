@@ -29,8 +29,8 @@ import blocks from '../code/graph/linearize'
 import { OrderedGraph, sequence } from '../code/graph'
 
 import Card from '../../../../spi/Card'
+import { Status, statusFromStatusVector } from '../../../ProgressStepper'
 import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
-import { ProgressStepState, statusFromStatusVector } from '../../../ProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
 import { WizardStep } from '@patternfly/react-core'
@@ -38,8 +38,6 @@ import { WizardStep } from '@patternfly/react-core'
 const KWizard = React.lazy(() => import('./KWizard'))
 
 const strings = i18n('plugin-client-common', 'code')
-
-type Status = ProgressStepState['status']
 
 type Props = Choices & WizardProps & { uuid: string }
 
