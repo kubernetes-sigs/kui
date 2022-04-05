@@ -43,6 +43,8 @@ import Icons from '../../../../spi/Icons'
 import Markdown, { Choices } from '../..'
 import { Status, statusToClassName, statusToIcon } from '../../../ProgressStepper'
 
+import '../../../../../../web/scss/components/Wizard/Guide.scss'
+
 const strings = i18n('plugin-client-common', 'code')
 
 type WizardStepWithGraph = { graph: Graph; step: WizardStep }
@@ -284,9 +286,9 @@ export default class Guide extends React.PureComponent<Props, State> {
 
     return (
       chips.length > 0 && (
-        <div className="kui--markdown-major-paragraph">
-          <ChipGroup numChips={6}>{chips}</ChipGroup>
-        </div>
+        <ChipGroup className="kui--chip-group" categoryName="Choices" numChips={8}>
+          {chips}
+        </ChipGroup>
       )
     )
   }
@@ -304,35 +306,32 @@ export default class Guide extends React.PureComponent<Props, State> {
     const variant = nDone === nTotal ? 'success' : nError > 0 ? 'danger' : undefined
 
     return (
-      <div className="kui--markdown-major-paragraph">
-        <Progress
-          aria-label="wizard progress"
-          className="kui--wizard-progress"
-          min={0}
-          max={nTotal}
-          value={nDone}
-          title={strings('Completed Tasks')}
-          label={label}
-          valueText={label}
-          size="sm"
-          variant={variant}
-          measureLocation="outside"
-        />
-      </div>
+      <Progress
+        aria-label="wizard progress"
+        className="kui--wizard-progress"
+        min={0}
+        max={nTotal}
+        value={nDone}
+        title={strings('Completed Tasks')}
+        label={label}
+        valueText={label}
+        size="sm"
+        variant={variant}
+        measureLocation="outside"
+      />
     )
   }
 
   private wizardDescription() {
     const descriptionContent = extractDescription(this.state.graph)
-
-    return <React.Fragment>{descriptionContent && <Markdown nested source={descriptionContent} />}</React.Fragment>
+    return descriptionContent && <Markdown nested source={descriptionContent} />
   }
 
   private wizardDescriptionFooter(steps: WizardStep[]) {
     return (
-      <React.Fragment>
+      <div className="kui--markdown-major-paragraph">
         {this.chips()} {this.progress(steps)}
-      </React.Fragment>
+      </div>
     )
   }
 
@@ -342,15 +341,17 @@ export default class Guide extends React.PureComponent<Props, State> {
     return steps.length === 0 ? (
       'Nothing to do!'
     ) : (
-      <div className="kui--wizard">
-        <div className="kui--wizard-main-content">
-          <Wizard
-            hideClose
-            steps={steps}
-            title={extractTitle(this.state.graph)}
-            description={this.wizardDescription()}
-            descriptionFooter={this.wizardDescriptionFooter(steps)}
-          />
+      <div className="kui--guide">
+        <div className="kui--wizard">
+          <div className="kui--wizard-main-content">
+            <Wizard
+              hideClose
+              steps={steps}
+              title={extractTitle(this.state.graph)}
+              description={this.wizardDescription()}
+              descriptionFooter={this.wizardDescriptionFooter(steps)}
+            />
+          </div>
         </div>
       </div>
     )
