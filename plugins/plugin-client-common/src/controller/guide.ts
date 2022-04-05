@@ -15,10 +15,12 @@
  */
 
 import Debug from 'debug'
+import { basename } from 'path'
 import { Arguments, CommentaryResponse, ParsedOptions, Registrar, Util, encodeComponent } from '@kui-shell/core'
 
 import fetchMarkdownFile from './fetch'
 import { setTabReadonly } from './commentary' // TODO move to core?
+import { tryFrontmatter } from '../components/Content/Markdown/frontmatter-parser'
 
 const debug = Debug('plugin-client-common/controller/guide')
 
@@ -62,9 +64,11 @@ async function guide(args: Arguments<HereOptions>) {
     return true
   }
 
-  const { codeBlockResponses } = await fetchMarkdownFile(filepath, args)
+  const { data: rawData, codeBlockResponses } = await fetchMarkdownFile(filepath, args)
+  const { attributes } = tryFrontmatter(rawData)
 
   const data = `---
+title: ${attributes.title || basename(filepath)}
 layout:
     1: left
     2: 
