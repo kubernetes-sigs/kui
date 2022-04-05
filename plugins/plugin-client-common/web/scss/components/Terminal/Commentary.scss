@@ -105,9 +105,6 @@ $marginTop: 0.5em;
   & > pre:not(:first-child) {
     margin-top: $inset;
   }
-  & > p:first-child {
-    margin-top: 0;
-  }
   & > p:last-child {
     margin-bottom: 0;
   }
@@ -261,10 +258,6 @@ body[kui-theme-style] {
 @include FullWidth;
 @include narrow-window {
   @include FullWidthInScrollback;
-}
-
-@include CommentaryEditor {
-  margin-top: $marginTop;
 }
 
 @include Commentary {
@@ -423,6 +416,7 @@ body[kui-theme-style='light'] {
 
   @include MarkdownTabButton {
     font-size: $terminal-font-size;
+    --pf-c-tabs__link--after--Bottom: 1px;
   }
 
   @include Spinner {
@@ -561,6 +555,7 @@ $tip-toggle-opacity-2: 0.6;
 
 @include MarkdownTabContent {
   @include CardBody {
+    padding: 0;
     @include ParagraphBoundaryMargins;
   }
 }
