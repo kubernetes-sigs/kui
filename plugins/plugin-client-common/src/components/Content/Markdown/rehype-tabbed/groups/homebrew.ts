@@ -25,7 +25,7 @@ const debug = Debug('rehype-tabbed/gruops/homebrew')
 
 class Homebrew {
   /** the value should be namespaced and unique, but the particulars don't matter */
-  public readonly choiceGroup = 'org.kubernetes-sigs.kui/choice/has-homebrew?'
+  public readonly choiceGroup = 'org.kubernetes-sigs.kui/choice/mac-installer'
 
   /** this helps with processing and optimizing based on the existence of homebrew on the user's system */
   private readonly canonicalName = 'Homebrew'

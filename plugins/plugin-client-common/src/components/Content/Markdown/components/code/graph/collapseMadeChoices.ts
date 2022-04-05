@@ -53,7 +53,6 @@ function collapse(graph: Graph, choices: ChoiceState): Graph {
 
     if (subgraphs.length > 0) {
       const sequence = subgraphs.every(isSequence) ? subgraphs.flatMap(_ => _.sequence) : subgraphs
-
       return Object.assign({}, graph, { sequence })
     }
   } else if (isParallel(graph)) {
