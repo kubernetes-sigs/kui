@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { Chip, ChipGroup, Grid, GridItem, Tile, WizardStep } from '@patternfly/react-core'
+import { i18n } from '@kui-shell/core'
+import { Chip, ChipGroup, Grid, GridItem, Progress, Tile, WizardStep } from '@patternfly/react-core'
 
 import order from '../code/graph/order'
 import compile from '../code/graph/compile'
@@ -35,11 +36,14 @@ import {
 } from '../code/graph'
 
 import Wizard from '../Wizard/KWizard'
+
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
-import Markdown, { Choices } from '../..'
 
+import Markdown, { Choices } from '../..'
 import { Status, statusToClassName, statusToIcon } from '../../../ProgressStepper'
+
+const strings = i18n('plugin-client-common', 'code')
 
 type WizardStepWithGraph = { graph: Graph; step: WizardStep }
 
@@ -287,10 +291,49 @@ export default class Guide extends React.PureComponent<Props, State> {
     )
   }
 
+  private progress(steps: WizardStep[]) {
+    const nTotal = steps.length
+    const nError = this.state.wizardStepStatus.filter(_ => _ === 'error').length
+    const nDone = this.state.wizardStepStatus.filter(_ => _ === 'success').length
+
+    const label =
+      nError > 0
+        ? strings(nError === 1 ? 'xOfyFailingz' : 'xOfyFailingsz', nDone, nError, nTotal)
+        : strings('xOfy', nDone, nTotal)
+
+    const variant = nDone === nTotal ? 'success' : nError > 0 ? 'danger' : undefined
+
+    return (
+      <div className="kui--markdown-major-paragraph">
+        <Progress
+          aria-label="wizard progress"
+          className="kui--wizard-progress"
+          min={0}
+          max={nTotal}
+          value={nDone}
+          title={strings('Completed Tasks')}
+          label={label}
+          valueText={label}
+          size="sm"
+          variant={variant}
+          measureLocation="outside"
+        />
+      </div>
+    )
+  }
+
   private wizardDescription() {
     const descriptionContent = extractDescription(this.state.graph)
 
     return <React.Fragment>{descriptionContent && <Markdown nested source={descriptionContent} />}</React.Fragment>
+  }
+
+  private wizardDescriptionFooter(steps: WizardStep[]) {
+    return (
+      <React.Fragment>
+        {this.chips()} {this.progress(steps)}
+      </React.Fragment>
+    )
   }
 
   private presentChoices() {
@@ -306,7 +349,7 @@ export default class Guide extends React.PureComponent<Props, State> {
             steps={steps}
             title={extractTitle(this.state.graph)}
             description={this.wizardDescription()}
-            descriptionFooter={this.chips()}
+            descriptionFooter={this.wizardDescriptionFooter(steps)}
           />
         </div>
       </div>
