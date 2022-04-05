@@ -362,6 +362,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               : split.blocks.length
 
             return {
+              maximized: maximized === true || curState.maximized,
               inverseColors: inverseColors === true || curState.inverseColors,
               blocks: [...curState.blocks.slice(0, insertIdx), newBlock, ...curState.blocks.slice(insertIdx)]
             }

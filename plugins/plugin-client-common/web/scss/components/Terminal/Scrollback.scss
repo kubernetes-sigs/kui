@@ -62,6 +62,7 @@ $split-bgcolor: var(--color-repl-background);
     overflow: auto;
   }
 }
+
 @include MaximizedSplit {
   @include ScrollbackBlockList {
     @include FlushToContainer;

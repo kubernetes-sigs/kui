@@ -51,11 +51,18 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
     } else if (isImports(props)) {
       // Don't render the content of imported documents. We will process these separately.
       return <React.Fragment />
-    } else if (!position || ((isNormalSplit(position) || position === 'wizard') && count === 0 && !placeholder)) {
+    } else if (
+      !position ||
+      ((isNormalSplit(position) || position === 'wizard') && count === 0 && !maximized && !placeholder)
+    ) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
-      const node = isWizard(props) ? <Wizard uuid={uuid} {...props} choices={choices} /> : <div>{props.children}</div>
+      const node = isWizard(props) ? (
+        <Wizard uuid={uuid} {...props} choices={choices} />
+      ) : (
+        <div data-is-maximized={maximized || undefined}>{props.children}</div>
+      )
       if (!maximized && (!mdprops.tab || (hasActiveInput !== true && hasActiveInput !== false))) {
         return node
       } else {
