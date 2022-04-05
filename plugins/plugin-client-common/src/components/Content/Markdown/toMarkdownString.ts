@@ -115,7 +115,7 @@ ${tabContent}
           .join('\n')
 
         node['value'] = `
-!!!${open ? '+' : ''} ${className} "${title}"
+???${open ? '+' : ''} ${className} "${title}"
 
 ${tipContent}
 `
