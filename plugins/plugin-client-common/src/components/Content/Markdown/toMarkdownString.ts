@@ -163,6 +163,6 @@ export default function toMarkdownString(root: Node) {
 
   return toMarkdown(toMdast(munge(JSON.parse(JSON.stringify(root)) as Node)))
     .replace(/(\\)+([=`-][=`-][=`-])/g, '$2')
-    .replace(/(\\)+([*<>`])/g, '$2')
+    .replace(/(\\)+([[\]()*<>`])/g, '$2')
     .replace(/&#x20;/g, ' ')
 }
