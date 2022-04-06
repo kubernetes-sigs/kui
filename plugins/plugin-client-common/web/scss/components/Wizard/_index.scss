@@ -24,10 +24,16 @@
 
   @include CollapsedHeader {
     @include WizardHeader {
-      padding: 1.75em;
+      padding-top: 1.375em;
+      padding-bottom: 1.375em;
+
+      @include MarkdownMajorParagraph {
+        --kui--markdown-major-paragraph-margin: 1.25em;
+      }
+
       @include WizardDescription {
         font-size: $terminal-font-size;
-        max-height: 2em;
+        max-height: 2.375em;
         max-width: $max-column-width;
         overflow: hidden;
 

@@ -376,8 +376,9 @@ body[kui-theme-style='light'] {
     }
 
     @include MarkdownMajorParagraph {
-      margin-top: 1.5em;
-      margin-bottom: 1.5em;
+      --kui--markdown-major-paragraph-margin: 1.5em;
+      margin-top: var(--kui--markdown-major-paragraph-margin);
+      margin-bottom: var(--kui--markdown-major-paragraph-margin);
 
       &:first-child {
         margin-top: 0;
