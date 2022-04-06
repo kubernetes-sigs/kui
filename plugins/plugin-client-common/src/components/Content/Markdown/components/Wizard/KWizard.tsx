@@ -98,13 +98,19 @@ export default class KWizard extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const { steps } = this.props
+    const { steps, startAtStep } = this.props
 
+    // re: key={startAtStep} see https://github.com/patternfly/patternfly-react/issues/7184
     return (
       <div className="kui--wizard" data-collapsed-header={this.state.collapsedHeader || undefined}>
         {this.header()}
         <div className="kui--wizard-main-content">
-          <Wizard steps={steps.length === 0 ? [{ name: '', component: '' }] : steps} footer={this.footer()} />
+          <Wizard
+            key={startAtStep}
+            steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
+            startAtStep={startAtStep}
+            footer={this.footer()}
+          />
         </div>
       </div>
     )
