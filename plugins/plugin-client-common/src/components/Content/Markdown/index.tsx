@@ -138,6 +138,9 @@ export type Props = Partial<Choices> & {
   /** css class for top-level element */
   className?: string
 
+  /** extra css classes for top-level element */
+  extraClassName?: string
+
   /** Do not linkify external links */
   noExternalLinks?: boolean
 
@@ -443,7 +446,8 @@ export default class Markdown extends React.PureComponent<Props, State> {
             data-is-nested={this.props.nested || undefined}
             className={
               this.props.className ||
-              'padding-content marked-content page-content' +
+              'padding-content marked-content page-content ' +
+                (this.props.extraClassName || '') +
                 (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
             }
           >
