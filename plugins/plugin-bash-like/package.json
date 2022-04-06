@@ -28,7 +28,7 @@
     "cookie": "0.4.2",
     "debug": "4.3.4",
     "globby": "11.0.4",
-    "node-pty": "0.11.0-beta17",
+    "node-pty": "0.11.0-beta19",
     "shelljs": "0.8.5",
     "slash": "3.0.0",
     "speed-date": "1.0.0",
