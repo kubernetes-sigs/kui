@@ -31,7 +31,6 @@ import {
   extractTitle,
   extractDescription,
   hasSource,
-  sameChoices,
   sameGraph
 } from '../code/graph'
 
@@ -40,7 +39,7 @@ import Wizard from '../Wizard/KWizard'
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
 
-import Markdown, { Choices } from '../..'
+import Markdown, { Choices, onChoice, offChoice } from '../..'
 import { Status, statusToClassName, statusToIcon } from '../../../ProgressStepper'
 
 import '../../../../../../web/scss/components/Wizard/Guide.scss'
@@ -117,18 +116,29 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    const noChangeToChoices = state && sameChoices(props.choices, state.choices)
-    const choices = noChangeToChoices ? state.choices : props.choices
+    const choices = state ? state.choices : props.choices
 
     const newGraph = compile(props.blocks, choices, 'sequence')
     const noChangeToGraph = state && sameGraph(state.graph, newGraph)
 
     const graph = noChangeToGraph ? state.graph : order(newGraph)
-    const frontier = noChangeToChoices && noChangeToGraph ? state.frontier : Guide.computeChoiceFrontier(graph, choices)
+    const frontier =
+      noChangeToGraph && state && state.frontier ? state.frontier : Guide.computeChoiceFrontier(graph, choices)
 
-    const wizardStepStatus = noChangeToGraph && noChangeToChoices && state ? state.wizardStepStatus : []
+    const wizardStepStatus = noChangeToGraph && state ? state.wizardStepStatus : []
 
     return { graph, frontier, choices, wizardStepStatus }
+  }
+
+  private readonly onChoiceFromAbove = ({ choices }: Choices) =>
+    this.setState({ frontier: undefined, wizardStepStatus: [], choices: Object.assign({}, choices) })
+
+  public componentDidMount() {
+    onChoice(this.onChoiceFromAbove)
+  }
+
+  public componentWillUnmount() {
+    offChoice(this.onChoiceFromAbove)
   }
 
   private stepContent(inner: React.ReactNode) {
