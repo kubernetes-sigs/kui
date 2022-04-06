@@ -235,11 +235,13 @@ export default class Output extends React.PureComponent<Props, State> {
       if (streamingOutput.every(_ => typeof _ === 'string')) {
         const combined = streamingOutput.join('')
         return (
-          <div className="repl-result-like result-vertical" data-stream>
-            <React.Suspense fallback={<div />}>
-              <Ansi>{combined}</Ansi>
-            </React.Suspense>
-          </div>
+          combined.length > 0 && (
+            <div className="repl-result-like result-vertical" data-stream>
+              <React.Suspense fallback={<div />}>
+                <Ansi>{combined}</Ansi>
+              </React.Suspense>
+            </div>
+          )
         )
       }
 
