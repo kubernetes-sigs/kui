@@ -32,21 +32,12 @@
       }
 
       @include WizardDescription {
-        font-size: $terminal-font-size;
-        max-height: 2.375em;
-        max-width: $max-column-width;
-        overflow: hidden;
-
-        .paragraph {
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
+        display: none;
       }
     }
 
     @include WizardTitle {
-      font-size: var(--pf-global--FontSize--2xl);
+      font-size: var(--pf-global--FontSize--xl);
       margin-bottom: 0.5em;
     }
   }
@@ -64,6 +55,7 @@
 }
 
 @include WizardTitle {
+  font-family: var(--font-sans-serif-title);
   font-size: var(--pf-global--FontSize--3xl);
   margin-bottom: 1em;
 }
