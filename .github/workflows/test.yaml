@@ -233,7 +233,7 @@ jobs:
         HOMEBREW_NO_INSTALL_CLEANUP: 1
         TRAVIS_OS_NAME: osx
         TEST_FROM_BUILD: ${{ github.workspace }}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui
-      run: ./tools/travis/install.sh && (which jq || brew install jq) && npx concurrently -n COPY 'npm run test1 core-standalone' && npx concurrently -n CORE,EDIT,SUP1,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
+      run: ./tools/travis/install.sh && (which jq || brew install jq) && npx concurrently -n COPY 'npm run test1 core-standalone' && npx concurrently -n SUP2 'npm run test4 core-support2' && npx concurrently -n EDIT 'npm run test3 editor' && npx concurrently -n CORE,SUP1 'npm run test1 core' 'npm run test2 core-support'
 
   s3-electron:
     runs-on: ubuntu-latest

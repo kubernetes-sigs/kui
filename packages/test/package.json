@@ -17,6 +17,7 @@
     "kui-testv2": "./bin/runMochaLayersv2.sh"
   },
   "dependencies": {
+    "spectron": "starpit/spectron#e18",
     "@wdio/mocha-framework": "7.19.0"
   },
   "kui": {
