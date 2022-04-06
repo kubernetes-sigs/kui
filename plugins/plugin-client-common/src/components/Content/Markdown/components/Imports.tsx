@@ -42,9 +42,9 @@ import order from './code/graph/order'
 import compile from './code/graph/compile'
 import progress from './code/graph/progress'
 
-import { Choices } from '..'
 import Tree from './ImportsTree'
 import Icons from '../../../spi/Icons'
+import { Choices, onChoice, offChoice } from '..'
 import Spinner from '../../../Views/Terminal/Block/Spinner'
 import { ProgressStepState, statusToIcon, statusToClassName } from '../../ProgressStepper'
 
@@ -64,14 +64,15 @@ type Progress = { nDone: number; nError: number; nTotal: number }
 /** Map from treeModel node ID to the cumulative progress of that subtree */
 type ProgressMap = Record<string, Progress>
 
-type State = Pick<TreeViewProps, 'data'> & {
-  hasError: boolean
+type State = Choices &
+  Pick<TreeViewProps, 'data'> & {
+    hasError: boolean
 
-  imports: OrderedGraph
+    imports: OrderedGraph
 
-  /** Map from CodeBlockProps.id to execution status of that code block */
-  codeBlockStatus: Record<string, Status>
-}
+    /** Map from CodeBlockProps.id to execution status of that code block */
+    codeBlockStatus: Record<string, Status>
+  }
 
 function isDone({ nDone, nTotal }: Progress) {
   return nDone === nTotal
@@ -84,7 +85,8 @@ class ImportsImpl extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    const newGraph = compile(props.imports, props.choices, 'sequence')
+    const choices = state ? state.choices : props.choices
+    const newGraph = compile(props.imports, choices, 'sequence')
     const noChange = state && sameGraph(state.imports, newGraph)
 
     const imports = noChange ? state.imports : order(newGraph)
@@ -95,14 +97,22 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       ? state
       : {
           data,
+          choices,
           imports,
           hasError: false,
           codeBlockStatus
         }
   }
 
+  private readonly onChoice = ({ choices }: Choices) => this.setState({ choices: Object.assign({}, choices) })
+
   public componentDidMount() {
+    onChoice(this.onChoice)
     this.computeTreeModelIfNeeded()
+  }
+
+  public componentWillUnmount() {
+    offChoice(this.onChoice)
   }
 
   public componentDidUpdate() {

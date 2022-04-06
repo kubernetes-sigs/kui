@@ -16,9 +16,9 @@
 
 import { Raw } from 'hast-util-raw'
 import { Element, Parent } from 'hast'
-import { visit } from 'unist-util-visit'
 import { toMdast } from 'hast-util-to-mdast'
 import { Node } from 'hast-util-to-mdast/lib'
+import { visit, CONTINUE, SKIP } from 'unist-util-visit'
 import { toMarkdown } from 'mdast-util-to-markdown'
 
 import { isImports } from './remark-import'
@@ -57,17 +57,19 @@ function pruneComments(root: Node) {
   return root
 }
 
-type Visitor = (node: Node, childIdx: number, parent: Parent) => void
+type Visitor = (node: Node, childIdx: number, parent: Parent) => void | typeof SKIP | typeof CONTINUE
 
 function visitDFS(root: Node, type: string, visitors: { pre?: Visitor; post?: Visitor }) {
   const walk = (node: Node, childIdx: number, parent: Parent) => {
+    let action: typeof SKIP | typeof CONTINUE = CONTINUE
+
     if (node.type === type) {
       if (visitors.pre) {
-        visitors.pre(node, childIdx, parent)
+        action = visitors.pre(node, childIdx, parent) || CONTINUE
       }
     }
 
-    if (isElementWithProperties(node) && Array.isArray(node.children)) {
+    if (action !== SKIP && isElementWithProperties(node) && Array.isArray(node.children)) {
       node.children.forEach((child, childIdx) => walk(child, childIdx, node))
     }
 
@@ -82,7 +84,7 @@ function visitDFS(root: Node, type: string, visitors: { pre?: Visitor; post?: Vi
 }
 
 function stringifyTabs(root: Node) {
-  const post = (node: Node) => {
+  const pre = (node: Node) => {
     if (isElementWithProperties(node)) {
       if (isTabs(node.properties)) {
         const tabStackDepth = getTabsDepth(node.properties)
@@ -106,6 +108,7 @@ ${tabContent}
         delete node.tagName
         delete node.children
         delete node.properties
+        return SKIP
       } else if (node.tagName === 'tip') {
         const { className, title, open } = node.properties
 
@@ -123,11 +126,12 @@ ${tipContent}
         delete node.tagName
         delete node.children
         delete node.properties
+        return SKIP
       }
     }
   }
 
-  visitDFS(root, 'element', { post })
+  visitDFS(root, 'element', { pre })
 
   return root
 }
@@ -136,7 +140,7 @@ ${tipContent}
  * We need to back out some <span className="paragraph"> back to
  * <p>. We might have done this in other places to avoid nested <p>.
  */
-function paragraphs(root: Node) {
+function paragraphs(root: Node): Node {
   visit(root, 'element', node => {
     if (isElementWithProperties(node) && node.tagName === 'span' && node.properties.className === 'paragraph') {
       node.tagName = 'p'
@@ -148,7 +152,7 @@ function paragraphs(root: Node) {
 }
 
 /** This is the small bit of munging we need to do */
-function munge(root: Node) {
+function munge(root: Node): Node {
   return paragraphs(stringifyTabs(pruneComments(pruneImports(root))))
 }
 
@@ -156,7 +160,7 @@ function munge(root: Node) {
  * Turn a hast tree back into a markdown string. We need to do a small
  * bit of munging on the data structures to facilitate the operation.
  */
-export default function toMarkdownString(root: Node) {
+export default function toMarkdownString(root: Node): string {
   if (typeof root['value'] === 'string' && !Array.isArray(root['children'])) {
     return root['value']
   }
