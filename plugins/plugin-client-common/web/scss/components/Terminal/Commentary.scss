@@ -561,6 +561,13 @@ $tip-toggle-opacity-2: 0.6;
   }
 }
 
+/** see https://github.com/kubernetes-sigs/kui/pull/8808 */
+.kui--markdown-from-repl {
+  & > p:first-child {
+    margin-top: 0;
+  }
+}
+
 @include MarkdownTabContentCard {
   /** Nested tabs */
   @include MarkdownTabContentCard {
