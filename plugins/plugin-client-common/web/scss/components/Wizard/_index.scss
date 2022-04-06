@@ -43,6 +43,12 @@
   }
 }
 
+@include WizardDescription {
+  p:first-child {
+    margin-top: 0;
+  }
+}
+
 @include WizardHeaderActionButtons {
   position: absolute;
   top: 1em;
