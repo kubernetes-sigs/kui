@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+@import 'mixins';
+@import '../Tile/mixins';
+@import '../Terminal/Maximized';
+
 @mixin Guide {
   .kui--guide {
     @content;
@@ -39,6 +43,7 @@
 @include Guide {
   @include ChipGroup {
     padding: 0;
+    --pf-c-chip-group--m-category--BackgroundColor: transparent;
   }
   @include ChipGroupLabel {
     margin: 0;
@@ -48,5 +53,34 @@
     display: grid;
     grid-template-columns: 7rem 1fr;
     column-gap: 1rem;
+  }
+}
+
+@include Guide {
+  @include Tile {
+    height: 100%;
+    background-color: var(--color-base01);
+    --pf-c-tile__body--Color: var(--color-text-01);
+    --pf-c-tile__icon--Color: var(--color-text-01);
+    --pf-c-tile__title--Color: var(--color-text-01);
+  }
+}
+
+@include MaximizedSplit {
+  @include Guide {
+    height: 100%;
+  }
+  @include Wizard {
+    height: 100%;
+  }
+  @include WizardMainContent {
+    height: 100%;
+    overflow: hidden;
+  }
+  @include WizardNav {
+    padding-left: #{0.5 * $inset};
+  }
+  @include WizardBody {
+    padding: #{1.5 * $inset};
   }
 }

@@ -20,6 +20,7 @@
 @import 'Block';
 @import 'Maximized';
 @import '../Card/mixins';
+@import '../Text/mixins';
 @import '../Wizard/mixins';
 
 $split-padding: 0.5em;
@@ -82,10 +83,25 @@ $split-bgcolor: var(--color-repl-background);
   @include CardBody {
     @include FlushToContainer;
   }
-  @include WizardNav {
-    padding-left: #{0.5 * $inset};
+
+  /** Allow inner scrolling */
+  @include ScrollbackBlockListInner {
+    overflow: hidden;
   }
-  @include WizardBody {
-    padding: $inset #{1.5 * $inset};
+  @include BlockOutput {
+    height: 100%;
+  }
+  @include CommandOutput {
+    height: 100%;
+    flex-wrap: unset;
+  }
+  @include CardBody {
+    height: 100%;
+  }
+  @include TextContent {
+    height: 100%;
+  }
+  @include Markdown {
+    height: 100%;
   }
 }
