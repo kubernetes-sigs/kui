@@ -537,6 +537,9 @@ $tip-toggle-opacity-2: 0.6;
   @include MarkdownTipVariant(warning) {
     @include YellowTip;
   }
+  @include MarkdownTipVariant(caution) {
+    @include YellowTip;
+  }
   @include MarkdownTipVariant(todo) {
     @include BlueTip;
   }
