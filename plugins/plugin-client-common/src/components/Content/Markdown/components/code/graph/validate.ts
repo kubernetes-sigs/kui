@@ -68,13 +68,19 @@ async function validate(graph: Graph): Promise<Status> {
     return intersection(Promise.all(graph.steps.map(_ => validate(_.graph))))
   } else if (isSubTask(graph)) {
     return validate(graph.graph)
-  } else if (graph.validate && !graph.optional) {
+  } else if (graph.optional) {
+    // here we treat optional blocks as ... non-blockers
+    // w.r.t. overall success
+    return 'success'
+  } else if (graph.validate) {
     try {
       await pexecInCurrentTab(graph.validate, undefined, true, true)
       return 'success'
     } catch (err) {
       return 'blank'
     }
+  } else {
+    return 'blank'
   }
 }
 
