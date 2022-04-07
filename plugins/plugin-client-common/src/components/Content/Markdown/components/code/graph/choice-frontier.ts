@@ -18,10 +18,10 @@ import { v4 } from 'uuid'
 
 import {
   Choice,
-  CodeBlockProps,
   Graph,
   hasKey,
   hasTitle,
+  isLeafNode,
   isSubTask,
   isChoice,
   isSequence,
@@ -52,9 +52,14 @@ function key(graph: Graph) {
  *  the user has already indicated a selection for that choice.
  */
 
-export function findCodeBlockFrontier(graph: Graph, choices: ChoiceState): CodeBlockProps[] {
+export function findCodeBlockFrontier(graph: Graph, choices: ChoiceState): Graph[] {
   if (isSubTask(graph)) {
-    return findCodeBlockFrontier(graph.graph, choices)
+    const children = findCodeBlockFrontier(graph.graph, choices)
+    if (children.every(isLeafNode)) {
+      return [graph]
+    } else {
+      return children
+    }
   } else if (isChoice(graph)) {
     if (graph.group in choices) {
       const whatTheUserChose = chooseIndex(graph, choices)

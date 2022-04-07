@@ -215,6 +215,10 @@ type InteriorNode<T extends Unordered | Ordered = Unordered> =
 
 type LeafNode<T extends Unordered | Ordered = Unordered> = CodeBlockProps & T
 
+export function isLeafNode<T extends Unordered | Ordered = Unordered>(graph: Graph<T>): graph is LeafNode<T> {
+  return typeof (graph as LeafNode<T>).body === 'string'
+}
+
 export type Graph<T extends Unordered | Ordered = Unordered> = InteriorNode<T> | LeafNode<T>
 
 export type OrderedGraph = Graph<Ordered>
@@ -304,6 +308,12 @@ export function choose<T extends Unordered | Ordered = Unordered>(
   choices: 'default-path' | ChoiceState = 'default-path'
 ): Graph<T> {
   return graph.choices[chooseIndex(graph, choices)].graph
+}
+
+export function bodySource(graph: LeafNode): string {
+  return `\`\`\`${graph.language}
+${graph.body}
+\`\`\``
 }
 
 export function hasSource(graph: Graph): graph is Graph & Source {

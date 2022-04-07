@@ -30,6 +30,8 @@ import {
   OrderedGraph,
   extractTitle,
   extractDescription,
+  isLeafNode,
+  bodySource,
   hasSource,
   sameGraph
 } from '../code/graph'
@@ -146,9 +148,8 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   private graph(graph: Graph) {
-    if (hasSource(graph)) {
-      return this.stepContent(<Markdown nested source={graph.source} choices={this.state.choices} />)
-    }
+    const source = hasSource(graph) ? graph.source : isLeafNode(graph) ? bodySource(graph) : ''
+    return this.stepContent(<Markdown nested source={source} choices={this.state.choices} />)
   }
 
   private wizardStepDescription(description: string) {
@@ -170,7 +171,7 @@ export default class Guide extends React.PureComponent<Props, State> {
     return {
       graph,
       step: {
-        name: extractTitle(graph),
+        name: extractTitle(graph) || <span className="red-text">Missing title</span>,
         component: this.graph(graph),
         stepNavItemProps: {
           children: this.wizardStepDescription(extractDescription(graph))
