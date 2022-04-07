@@ -16,7 +16,6 @@
 
 @import 'mixins';
 @import '../Text/mixins';
-@import '../Tile/mixins';
 @import '../Progress/mixins';
 @import '../Terminal/mixins';
 
@@ -73,12 +72,6 @@
     p:first-child {
       margin-top: 0;
     }
-  }
-}
-
-@include WizardBody {
-  @include Tile {
-    height: 100%;
   }
 }
 

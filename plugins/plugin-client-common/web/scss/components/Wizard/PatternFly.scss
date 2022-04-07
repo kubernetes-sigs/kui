@@ -38,26 +38,6 @@
       margin-bottom: 0;
     }
   }
-
-  @include WizardBody {
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-right: 0;
-  }
-
-  .pf-c-wizard__outer-wrap {
-    padding-left: 0;
-  }
-  .pf-c-wizard__inner-wrap {
-    flex-direction: row;
-  }
-  @include WizardNav {
-    height: auto;
-    width: 16rem;
-    min-width: 16rem;
-    max-width: 16rem;
-    position: unset;
-  }
 }
 
 @include WizardFooter {

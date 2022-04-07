@@ -105,6 +105,10 @@ export default class KWizard extends React.PureComponent<Props, State> {
   public render() {
     const { steps, startAtStep } = this.props
 
+    // hmm there doesn't seem to be a better way to get the last
+    // step's Next button to be disabled; it isn't by default
+    steps[steps.length - 1].enableNext = false
+
     // re: key={startAtStep} see https://github.com/patternfly/patternfly-react/issues/7184
     return (
       <div className="kui--wizard" data-collapsed-header={this.state.collapsedHeader || undefined}>
