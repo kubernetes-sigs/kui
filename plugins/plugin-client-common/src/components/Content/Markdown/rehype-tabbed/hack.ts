@@ -78,7 +78,9 @@ export default function hackIndentation(source: string): string {
 
   const rewrite = source.split(/\n/).map(line => {
     const tabStartMatch = line.match(/^(\s*)===\s+".*"/)
-    const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|todo|bug|info|note|warning|success|question)/i)
+    const tipStartMatch = line.match(
+      /^(\s*)[?!][?!][?!](\+?)\s+(tip|todo|bug|info|note|warning|caution|success|question)/i
+    )
     const startMatch = tabStartMatch || tipStartMatch
 
     if (!inBlockquote && startMatch) {
