@@ -24,6 +24,8 @@ import isExecutable from './isCodeBlock'
 import { isTab } from '../../rehype-tabbed'
 import isElementWithProperties from '../../isElement'
 import toMarkdownString, { Node } from '../../toMarkdownString'
+import { getTipTitle, isTipWithFullTitle, isTipWithoutFullTitle } from '../../rehype-tip'
+
 import {
   isHeading,
   isHeadingOrRemovedHeading,
@@ -67,9 +69,9 @@ function findNearestEnclosingTitle(grandparent: Parent, parent: Node) {
   if (grandparent && parentIdx >= 0 && isElementWithProperties(grandparent)) {
     for (let idx = parentIdx - 1; idx >= 0; idx--) {
       const child = grandparent.children[idx]
-      if (isHeadingOrRemovedHeading(child)) {
+      if (isHeadingOrRemovedHeading(child) || isTipWithFullTitle(child)) {
         return {
-          title: isHeading(child) ? toString(child) : '',
+          title: isHeading(child) ? toString(child) : isTipWithFullTitle(child) ? getTipTitle(child) : '',
           source: grandparent.children
             .slice(idx, parentIdx + 1)
             .map(toMarkdownString)
@@ -217,6 +219,31 @@ export default function plugin(uuid: string) {
               if (attributes.nesting) {
                 attributes.nesting = attributes.nesting.reverse()
                 reserialize()
+
+                let parent = ancestors[ancestors.length - 1]
+                let grandparent = ancestors[ancestors.length - 2]
+
+                if (isTipWithoutFullTitle(grandparent)) {
+                  parent = grandparent
+                  grandparent = ancestors[ancestors.length - 3]
+                }
+
+                if (parent && grandparent && attributes.nesting.length === 1) {
+                  // Hmm, we don't have much context for this code
+                  // block. Try adding a bit more context by looking for
+                  // an enclosing heading.
+                  const parentHeading = findNearestEnclosingTitle(grandparent, parent)
+                  if (parentHeading && parentHeading.title) {
+                    const { title, source } = parentHeading
+                    addNesting(attributes, {
+                      kind: 'Import',
+                      source,
+                      title,
+                      key: title,
+                      filepath: ''
+                    })
+                  }
+                }
               }
 
               // go from bottom to top stopping at the first import,

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { Node, Element } from 'hast'
 import { i18n } from '@kui-shell/core'
+
+import isElementWithProperties from '../isElement'
 
 const strings = i18n('plugin-client-common', 'markdown')
 
@@ -24,6 +27,22 @@ const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
 
 export const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
 export const END_OF_TIP = `<!-- ____KUI_END_OF_TIP____ -->`
+
+export function isTip(node: Node): node is Element {
+  return isElementWithProperties(node) && node.tagName === 'tip'
+}
+
+export function getTipTitle(elt: Element) {
+  return elt.properties.title.toString()
+}
+
+export function isTipWithFullTitle(node: Node): node is Element {
+  return isTip(node) && !!node.properties.fullTitle
+}
+
+export function isTipWithoutFullTitle(node: Node): node is Element {
+  return isTip(node) && !node.properties.fullTitle
+}
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
@@ -108,6 +127,7 @@ export default function plugin(/* options */) {
                     properties: {
                       className: startMatch[3].toLowerCase(), // e.g. tip, todo, bug, warning, ...
                       float: startMatch[6] ? 'left' : startMatch[7] ? 'right' : undefined,
+                      hasFullTitle: !!startMatch[5],
                       title: startMatch[5] || strings(startMatch[3]),
                       open: !!startMatch[2] || startMatch[1] === '!!!'
                     },
@@ -127,6 +147,7 @@ export default function plugin(/* options */) {
                       tagName: 'tip',
                       properties: {
                         className: startMatch[3].toLowerCase(), // e.g. tip, todo, bug, warning, ...
+                        hasFullTitle: !!startMatch[5],
                         title: startMatch[5] || strings(startMatch[3]),
                         open: !!startMatch[2] || startMatch[1] === '!!!',
                         partial: true

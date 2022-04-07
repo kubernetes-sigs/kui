@@ -21,6 +21,7 @@ import { Node } from 'hast-util-to-mdast/lib'
 import { visit, CONTINUE, SKIP } from 'unist-util-visit'
 import { toMarkdown } from 'mdast-util-to-markdown'
 
+import { isTip } from './rehype-tip'
 import { isImports } from './remark-import'
 import indent, { indentAll } from './indent'
 import isElementWithProperties from './isElement'
@@ -109,7 +110,7 @@ ${tabContent}
         delete node.children
         delete node.properties
         return SKIP
-      } else if (node.tagName === 'tip') {
+      } else if (isTip(node)) {
         const { className, title, open } = node.properties
 
         const tipContent = node.children
