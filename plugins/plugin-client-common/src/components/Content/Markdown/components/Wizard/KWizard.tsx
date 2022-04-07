@@ -95,11 +95,13 @@ export default class KWizard extends React.PureComponent<Props, State> {
   }
 
   private footer() {
-    // use this if you want no footer (Next, Previous buttons)
-    // return <React.Fragment />
-
-    // use this if you want the default footer
-    return undefined
+    if (this.props.steps.length === 1) {
+      // use this if you want no footer (Next, Previous buttons)
+      return <React.Fragment />
+    } else {
+      // use this if you want the default footer
+      return undefined
+    }
   }
 
   public render() {
