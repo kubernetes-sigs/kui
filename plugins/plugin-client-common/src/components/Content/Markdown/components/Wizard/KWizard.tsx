@@ -23,7 +23,7 @@
  */
 
 import React from 'react'
-import { Wizard, WizardProps } from '@patternfly/react-core'
+import { Title, TitleSizes, Wizard, WizardProps } from '@patternfly/react-core'
 
 import Icons from '../../../../spi/Icons'
 
@@ -66,9 +66,14 @@ export default class KWizard extends React.PureComponent<Props, State> {
   private title() {
     const label = this.props.title
     return (
-      <div className="kui--wizard-header-title pf-c-wizard__title" aria-label={label}>
+      <Title
+        headingLevel="h2"
+        size={TitleSizes['3xl']}
+        className="kui--wizard-header-title pf-c-wizard__title"
+        aria-label={label}
+      >
         {label}
-      </div>
+      </Title>
     )
   }
 

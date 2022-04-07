@@ -14,39 +14,8 @@
  * limitations under the License.
  */
 
-@mixin Guide {
-  .kui--guide {
+@mixin TextContent {
+  .pf-c-content {
     @content;
-  }
-}
-
-@mixin ChipGroup {
-  .kui--chip-group {
-    @content;
-  }
-}
-@mixin ChipGroupMain {
-  .pf-c-chip-group__main {
-    @content;
-  }
-}
-@mixin ChipGroupLabel {
-  .pf-c-chip-group__label {
-    @content;
-  }
-}
-
-@include Guide {
-  @include ChipGroup {
-    padding: 0;
-  }
-  @include ChipGroupLabel {
-    margin: 0;
-    text-align: right;
-  }
-  @include ChipGroupMain {
-    display: grid;
-    grid-template-columns: 7rem 1fr;
-    column-gap: 1rem;
   }
 }

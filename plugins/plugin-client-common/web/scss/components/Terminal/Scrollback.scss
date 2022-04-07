@@ -83,9 +83,9 @@ $split-bgcolor: var(--color-repl-background);
     @include FlushToContainer;
   }
   @include WizardNav {
-    padding-left: $inset;
+    padding-left: #{0.5 * $inset};
   }
   @include WizardBody {
-    padding: $inset #{2 * $inset};
+    padding: $inset #{1.5 * $inset};
   }
 }
