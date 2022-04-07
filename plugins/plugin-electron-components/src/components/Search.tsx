@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react'
 import { SearchInput } from '@patternfly/react-core'
 import { FoundInPageResult, FindInPageOptions } from 'electron'
@@ -34,9 +35,6 @@ export default class Search extends React.Component<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    this.stopFindInPage() // <-- failsafe, in case of bugs; electron seems to persist this
-    this.initEvents()
-
     this.state = {
       isActive: false,
       result: undefined,
@@ -53,27 +51,34 @@ export default class Search extends React.Component<Props, State> {
     await getCurrentWebContents().stopFindInPage('activateSelection')
   }
 
-  private initEvents() {
-    document.body.addEventListener('keydown', evt => {
-      if (
-        !evt.defaultPrevented &&
-        evt.code === 'KeyF' &&
-        ((evt.ctrlKey && process.platform !== 'darwin') || evt.metaKey)
-      ) {
-        if (this.state.isActive && document.activeElement !== this._input) {
-          this.doFocus()
-        } else {
-          this.setState(curState => {
-            this.findInPage() // allows for search to be reinitiated when the search bar is reopened
-            const isActive = !curState.isActive
-            if (!isActive) {
-              this.stopFindInPage()
-            }
-            return { isActive, result: undefined }
-          })
+  private readonly onKeydown = (evt: KeyboardEvent) => {
+    if (
+      !evt.defaultPrevented &&
+      evt.code === 'KeyF' &&
+      ((evt.ctrlKey && process.platform !== 'darwin') || evt.metaKey)
+    ) {
+      if (this.state.isActive && document.activeElement !== this._input) {
+        this.doFocus()
+      } else {
+        this.findInPage() // allows for search to be reinitiated when the search bar is reopened
+
+        const isActive = !this.state.isActive
+        if (!isActive) {
+          this.stopFindInPage()
         }
+
+        this.setState(() => ({ isActive, result: undefined }))
       }
-    })
+    }
+  }
+
+  public componentDidMount() {
+    this.stopFindInPage() // <-- failsafe, in case of bugs; electron seems to persist this
+    document.body.addEventListener('keydown', this.onKeydown)
+  }
+
+  public componentWillUnmount() {
+    document.body.removeEventListener('keydown', this.onKeydown)
   }
 
   private _onChange = this.onChange.bind(this)
@@ -89,19 +94,25 @@ export default class Search extends React.Component<Props, State> {
   }
 
   private async findInPage(options?: FindInPageOptions) {
+    if (!this._input || !this._input.value) {
+      // protect against: "Error: Could not call remote method
+      // 'findInPage'. Check that the method signature is
+      // correct. Underlying error: Error: Must provide a non-empty
+      // search contentUnderlying stack: Error: Must provide a
+      // non-empty search content"
+      return
+    }
+
     const { getCurrentWebContents } = await import('@electron/remote')
     // Registering a callback handler
     getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
-      this.setState(curState => {
-        if (curState.isActive) {
-          // we only need hack if we're doing a find as the user is typing and the options is defined for the converse
-          if (!options) {
-            this.hack()
-          }
-
-          return { result }
+      if (this.state.isActive) {
+        // we only need hack if we're doing a find as the user is typing and the options is defined for the converse
+        if (!options) {
+          this.hack()
         }
-      })
+      }
+      this.setState(() => ({ result }))
     })
     // this is where we call the electron API to initiate a new find
     getCurrentWebContents().findInPage(this._input.value, options)
