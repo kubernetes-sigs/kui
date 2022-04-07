@@ -15,6 +15,8 @@
  */
 
 @import 'mixins';
+@import '../Text/mixins';
+@import '../Tile/mixins';
 @import '../Progress/mixins';
 @import '../Terminal/mixins';
 
@@ -43,12 +45,6 @@
   }
 }
 
-@include WizardDescription {
-  p:first-child {
-    margin-top: 0;
-  }
-}
-
 @include WizardHeaderActionButtons {
   position: absolute;
   top: 1em;
@@ -57,23 +53,48 @@
 
 @include WizardHeader {
   position: relative;
-  padding: 2em;
+  padding: 1.5em;
 }
 
-@include WizardTitle {
-  font-family: var(--font-sans-serif-title);
-  font-size: var(--pf-global--FontSize--3xl);
-  margin-bottom: 1em;
+@include Wizard {
+  @include WizardDescription {
+    padding-top: 0.5em;
+    & > {
+      @include TextContent {
+        & > {
+          @include Markdown {
+            & > p {
+              font-size: 1rem;
+            }
+          }
+        }
+      }
+    }
+    p:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+@include WizardBody {
+  @include Tile {
+    height: 100%;
+  }
 }
 
 /** Place wizard header progress title beside bar */
 @include Wizard {
+  @include WizardTitle {
+    margin: 0;
+  }
+
   @include WizardHeader {
     @include WizardProgress {
       grid-template-rows: 1fr;
       grid-template-columns: 7em 1fr 3em;
 
       @include ProgressDescription {
+        text-align: right;
         grid-row: 1;
         grid-column: 1;
       }

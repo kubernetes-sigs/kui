@@ -194,6 +194,7 @@ export default class Guide extends React.PureComponent<Props, State> {
               <Tile
                 isStacked
                 title={_.title}
+                className="kui--tile"
                 icon={<Icons icon="PlusSquare" />}
                 isSelected={this.state.choices && this.state.choices.get(choice.group) === _.title}
                 onClick={this.onChoice}
@@ -296,7 +297,7 @@ export default class Guide extends React.PureComponent<Props, State> {
 
     return (
       chips.length > 0 && (
-        <ChipGroup className="kui--chip-group" categoryName={strings('Choices')} numChips={8}>
+        <ChipGroup className="kui--chip-group" categoryName={strings('Your Choices')} numChips={8}>
           {chips}
         </ChipGroup>
       )
