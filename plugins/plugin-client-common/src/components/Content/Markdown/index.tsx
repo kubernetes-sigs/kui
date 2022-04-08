@@ -167,6 +167,9 @@ type State = {
 }
 
 export default class Markdown extends React.PureComponent<Props, State> {
+  private mounted = false
+
+  /** Handlers to be called on unmount */
   private readonly cleaners: (() => void)[] = []
 
   /** Choices made, e.g. "i want to install using curl" */
@@ -187,11 +190,13 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   /** We are going away. Invoke cleaners */
   public componentWillUnmount() {
+    this.mounted = false
     this.cleaners.forEach(_ => _())
   }
 
   /** We are coming to life */
   public componentDidMount() {
+    this.mounted = true
     this.initSnapshotEvents()
   }
 
@@ -409,6 +414,10 @@ export default class Markdown extends React.PureComponent<Props, State> {
     response: CodeBlockResponse['response'],
     codeIdx: number
   ) {
+    if (!this.mounted) {
+      return
+    }
+
     this.setState(curState => {
       const codeBlockResponses = curState.codeBlockResponses.slice()
       codeBlockResponses[codeIdx] = {
