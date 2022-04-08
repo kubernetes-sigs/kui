@@ -145,7 +145,7 @@ type State = Value &
   }
 
 export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
-  private readonly durationDom
+  private mounted = false
   private readonly cleaners: (() => void)[] = []
 
   public constructor(props: Props<T1, T2, T3>) {
@@ -154,6 +154,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   }
 
   public componentDidMount() {
+    this.mounted = true
     this.initLinkEvents()
     this.initWatchEvents()
     this.initCodeBlockEvents()
@@ -165,6 +166,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   }
 
   public componentWillUnmount() {
+    this.mounted = false
     this.cleaners.forEach(_ => _())
   }
 
@@ -177,6 +179,10 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   private doValidate() {
     if (this.props.blockId && this.props.validate) {
       setTimeout(async () => {
+        if (!this.mounted) {
+          return
+        }
+
         try {
           // .toString() in case of e.g. `validate: true` which yaml
           // parsers pass to us as a boolean
@@ -201,7 +207,9 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
 
   /** Is this code block ready for execution? E.g. perhaps the prereqs have yet to be satisfied. */
   private readonly _updateReadiness = (ready: boolean) => {
-    this.setState({ ready })
+    if (this.mounted) {
+      this.setState({ ready })
+    }
   }
 
   /** Is this code block ready for execution? E.g. perhaps the prereqs have yet to be satisfied. */
@@ -337,7 +345,9 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
 
   /** Updates coming from the CodeSnippet component */
   private readonly onContentChange = (codeSnippetValue: string) => {
-    this.setState({ codeSnippetValue })
+    if (this.mounted) {
+      this.setState({ codeSnippetValue })
+    }
   }
 
   private input(showAsExecutable: boolean, butUseSampleOutputOnRun: boolean) {
@@ -452,12 +462,16 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
    * original status of the code block execution.
    */
   private readonly _onRunUsingSampleOutput = () => {
-    if (this.props.response) {
+    if (this.props.response && this.mounted) {
       this.setState({ execution: this.props.rawStatus })
     }
   }
 
   private async onRun(cmdline: string) {
+    if (!this.mounted) {
+      return
+    }
+
     try {
       this.setState({ execution: 'processing', startTime: Date.now(), endTime: null })
       this.emitLinkStatus('processing')
@@ -498,8 +512,10 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   }
 
   private readonly _onCleanup = async () => {
-    await this.onRun(this.props.cleanup)
-    this.setState({ validated: false, execution: 'not-yet' })
+    if (this.mounted) {
+      await this.onRun(this.props.cleanup)
+      this.setState({ validated: false, execution: 'not-yet' })
+    }
   }
 
   private responseStatus() {
