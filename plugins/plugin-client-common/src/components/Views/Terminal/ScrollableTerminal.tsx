@@ -1523,22 +1523,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       <React.Fragment>
         {this.state.splits.length > 1 && (
           <SplitHeader
-            position={scrollback.position}
             onRemove={scrollback.remove}
             onClear={scrollback.clear}
             onInvert={scrollback.invert}
             createdBy={scrollback.createdBy}
-            hasLeftStrip={this.props.hasLeftStrip}
-            hasRightStrip={this.props.hasRightStrip}
-            willToggleSplitPosition={
-              this.props.hasLeftStrip && this.props.hasRightStrip && scrollback.position === 'default'
-                ? undefined // have both strips already and this is a default split? no toggle for you!
-                : (this.props.hasLeftStrip || this.props.hasRightStrip) &&
-                  this.state.splits.length === 2 &&
-                  scrollback.position === 'default'
-                ? undefined // have 2 splits, and one of them is non-default, and this is a default? also no toggler for you
-                : scrollback.willToggleSplitPosition
-            }
           />
         )}
         <div className="kui--scrollback-block-list">

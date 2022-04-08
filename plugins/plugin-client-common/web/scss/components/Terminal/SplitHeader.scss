@@ -41,7 +41,9 @@ body[kui-theme-style] {
   }
 
   @include SplitHeaderButton {
-    padding: 2px;
+    margin: 1px;
+    padding: 1px;
+
     &:hover {
       cursor: pointer;
       background-color: var(--color-base02);
