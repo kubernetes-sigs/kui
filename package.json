@@ -104,7 +104,7 @@
     "colors": "1.4.0",
     "concurrently": "7.0.0",
     "debug": "4.3.4",
-    "electron": "18.0.2",
+    "electron": "18.0.3",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-config-standard": "14.1.1",
@@ -121,7 +121,7 @@
     "prettier": "1.19.1",
     "properties-parser": "0.3.1",
     "tmp": "0.2.1",
-    "typedoc": "0.22.13",
+    "typedoc": "0.22.14",
     "typedoc-plugin-markdown": "3.11.14",
     "typescript": "4.6.3",
     "uuid": "8.3.2"
