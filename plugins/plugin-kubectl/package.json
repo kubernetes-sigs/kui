@@ -34,10 +34,10 @@
     "debug": "4.3.4",
     "fs-extra": "10.0.1",
     "js-yaml": "4.1.0",
-    "needle": "3.0.0",
+    "needle": "3.1.0",
     "parse-duration": "1.0.2",
     "pluralize": "8.0.0",
-    "semver": "7.3.5",
+    "semver": "7.3.6",
     "tmp": "0.2.1",
     "uuid": "8.3.2"
   },

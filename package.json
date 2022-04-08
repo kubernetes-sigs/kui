@@ -101,7 +101,7 @@
     "@typescript-eslint/eslint-plugin": "2.25.0",
     "@typescript-eslint/parser": "2.25.0",
     "colors": "1.4.0",
-    "concurrently": "7.0.0",
+    "concurrently": "7.1.0",
     "debug": "4.3.4",
     "electron": "18.0.3",
     "eslint": "6.8.0",
