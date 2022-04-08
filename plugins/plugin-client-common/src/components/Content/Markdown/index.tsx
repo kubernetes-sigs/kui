@@ -239,13 +239,19 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * react.
    */
   private prepareSource() {
+    if (!this.mounted) {
+      return
+    }
+
     const sourcePriorToInlining = Markdown.source(this.props).trim()
 
     if (this.props.tab && this.props.tab.REPL) {
       setTimeout(async () => {
-        const args = { REPL: this.repl }
-        const source = await inlineSnippets(args, this.snippetBasePath)(sourcePriorToInlining, this.props.filepath)
-        this.setState({ source: Markdown.hackSource(source), codeBlockResponses: [] })
+        if (this.mounted) {
+          const args = { REPL: this.repl }
+          const source = await inlineSnippets(args, this.snippetBasePath)(sourcePriorToInlining, this.props.filepath)
+          this.setState({ source: Markdown.hackSource(source), codeBlockResponses: [] })
+        }
       })
     } else {
       this.setState({ source: Markdown.hackSource(sourcePriorToInlining), codeBlockResponses: [] })
