@@ -15,10 +15,11 @@
  */
 
 import React from 'react'
-import { SearchInput } from '@patternfly/react-core'
 import { FoundInPageResult, FindInPageOptions } from 'electron'
 
 import '../../web/scss/components/Search/Search.scss'
+
+const SearchInput = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.SearchInput })))
 
 type Props = {}
 
