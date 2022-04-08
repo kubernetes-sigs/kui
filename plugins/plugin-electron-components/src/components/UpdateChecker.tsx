@@ -49,7 +49,7 @@ const FEED = () => `${baseUrl()}/releases/latest`
 const DEFAULT_INTERVAL = 24 * 60 * 60 * 1000
 
 /** By default, wait 1 minute after statup for the first check */
-const DEFAULT_LAG = 0 * 60 * 1000
+const DEFAULT_LAG = 60 * 60 * 1000
 
 /** Remember that the version "duly noted" the availability of particular version in localStorage, using this key */
 const DULY_NOTED_KEY = 'kui-shell.org/UpdateChecker/DulyNoted'
