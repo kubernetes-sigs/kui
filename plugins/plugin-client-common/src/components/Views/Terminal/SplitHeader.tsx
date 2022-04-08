@@ -22,24 +22,16 @@ import Tooltip from '../../spi/Tooltip'
 import { MutabilityContext } from '../../Client/MutabilityContext'
 
 import { CreatedBy } from './ScrollbackState'
-import SplitPosition, { SplitPositionProps } from './SplitPosition'
 
 import '../../../../web/scss/components/Terminal/SplitHeader.scss'
 
 const strings = i18n('plugin-client-common')
 
-type Props = SplitPositionProps &
-  CreatedBy & {
-    onRemove(): void
-    onInvert(): void
-    onClear(): void
-
-    /** Toggle whether we have a left or right strip split */
-    willToggleSplitPosition(): void
-
-    /** Position of the enclosing Split */
-    position: SplitPosition
-  }
+type Props = CreatedBy & {
+  onRemove(): void
+  onInvert(): void
+  onClear(): void
+}
 
 /** Render a header for the given split */
 export default class SplitHeader extends React.PureComponent<Props> {
@@ -56,53 +48,6 @@ export default class SplitHeader extends React.PureComponent<Props> {
             onClick={this.props.onRemove}
           >
             &#x2A2F;
-          </a>
-        </Tooltip>
-      )
-    )
-  }
-
-  private iconRotation() {
-    const goToDefault = ''
-    const goToLeft = ' kui--rotate-270'
-    const goToRight = ' kui--rotate-90'
-
-    if (this.props.position === 'default') {
-      // default->right if we have no right
-      // default->left if we have do have a right
-      if (this.props.hasRightStrip) {
-        return goToLeft
-      } else {
-        return goToRight
-      }
-    } else if (this.props.position === 'left-strip') {
-      // left always goes to default
-      return goToDefault
-    } else {
-      // right->left if we have no left
-      // right->default if we do have a left
-      if (!this.props.hasLeftStrip) {
-        return goToLeft
-      } else {
-        return goToDefault
-      }
-    }
-  }
-
-  private splitPositionToggleButton() {
-    return (
-      this.props.willToggleSplitPosition && (
-        <Tooltip content={strings('Toggle position')} position="bottom-end">
-          <a
-            href="#"
-            className="kui--tab-navigatable"
-            onMouseDown={this.stopFocusStealing}
-            onClick={this.props.willToggleSplitPosition}
-          >
-            <Icons
-              icon="TerminalOnly"
-              className={'kui--split-position-toggle kui--split-header-button' + this.iconRotation()}
-            />
           </a>
         </Tooltip>
       )
@@ -138,7 +83,6 @@ export default class SplitHeader extends React.PureComponent<Props> {
               <div className="flex-fill" />
               {this.invertButton()}
               {this.clearButton()}
-              {this.splitPositionToggleButton()}
               {this.closeButton()}
             </div>
           )

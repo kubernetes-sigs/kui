@@ -27,7 +27,7 @@ import {
   splitViaButton
 } from './split-helpers'
 
-describe(`right strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+xdescribe(`right strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
