@@ -213,8 +213,8 @@ jobs:
         KUI_DIST_PATH: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
       run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1 'npm run test1 k8s1' && npx concurrently -n LOGS 'npm run test1 logs' && npx concurrently -n HELM 'npm run test1 helm'
 
-  osx:
-    runs-on: macos-10.15
+  osx1:
+    runs-on: macos-11
     strategy:
       matrix:
         node-version: [16.x]
@@ -229,12 +229,29 @@ jobs:
         CLIENT: default
         MOCHA_RUN_TARGET: electron
         NEEDS_GIT: true
-        HOMEBREW_NO_AUTO_UPDATE: 1
-        HOMEBREW_NO_INSTALL_CLEANUP: 1
         TRAVIS_OS_NAME: osx
         TEST_FROM_BUILD: ${{ github.workspace }}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui
-      run: ./tools/travis/install.sh && (which jq || brew install jq) && npx concurrently -n COPY 'npm run test1 core-standalone' && npx concurrently -n SUP2 'npm run test4 core-support2' && npx concurrently -n EDIT 'npm run test3 editor' && npx concurrently -n CORE,SUP1 'npm run test1 core' 'npm run test2 core-support'
+      run: ./tools/travis/install.sh && npx concurrently -n COPY 'npm run test1 core-standalone' && npx concurrently -n SUP2 'npm run test4 core-support2' && npx concurrently -n EDIT 'npm run test3 editor'
 
+  osx2:
+    runs-on: macos-11
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: electron
+        NEEDS_GIT: true
+        TRAVIS_OS_NAME: osx
+      run: ./tools/travis/install.sh && npx concurrently -n CORE,SUP1 'npm run test1 core' 'npm run test2 core-support'
+      
   s3-electron:
     runs-on: ubuntu-latest
     strategy:
