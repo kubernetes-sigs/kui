@@ -15,21 +15,11 @@
  */
 
 import { Capabilities } from '@kui-shell/core'
-// import { notebookVFS } from '@kui-shell/plugin-core-support'
 
 export default async function preloadS3Plugin() {
-  // intentionally async prefetch of a slow-loading npm
-  import('minio')
-
   const vfsPromise = Capabilities.inBrowser()
     ? import('./vfs/browser').then(_ => _.default())
     : import('./vfs').then(_ => _.default())
-
-  /* if (!Capabilities.isHeadless()) {
-    // mount notebooks
-    notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-    notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/welcome.json'], '/kui/s3/')
-  } */
 
   await vfsPromise
 }
