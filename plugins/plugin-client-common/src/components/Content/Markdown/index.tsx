@@ -23,8 +23,8 @@ import { TextContent } from '@patternfly/react-core'
 import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
 import { Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'
 
-import { Options } from 'react-markdown'
-const ReactMarkdown = React.lazy(() => import('react-markdown'))
+import ReactMarkdown, { Options } from 'react-markdown'
+import './hack' // hack workaround for buggy prop-types in react-markdown
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
