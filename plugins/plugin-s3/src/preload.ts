@@ -16,10 +16,12 @@
 
 import { Capabilities } from '@kui-shell/core'
 
-export default async function preloadS3Plugin() {
-  const vfsPromise = Capabilities.inBrowser()
-    ? import('./vfs/browser').then(_ => _.default())
-    : import('./vfs').then(_ => _.default())
+export default function preloadS3Plugin() {
+  setTimeout(() => {
+    /* const vfsPromise = */ Capabilities.inBrowser()
+      ? import('./vfs/browser').then(_ => _.default())
+      : import('./vfs').then(_ => _.default())
+  }, 200)
 
-  await vfsPromise
+  // await vfsPromise
 }
