@@ -179,20 +179,21 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   private doValidate() {
     if (this.props.blockId && this.props.validate) {
       setTimeout(async () => {
-        if (!this.mounted) {
-          return
-        }
-
         try {
           // .toString() in case of e.g. `validate: true` which yaml
           // parsers pass to us as a boolean
           this.emitLinkStatus('processing')
           await pexecInCurrentTab(this.props.validate.toString(), undefined, true, true)
           this.emitLinkStatus('done')
-          this.setState({ validated: true })
+
+          if (this.mounted) {
+            this.setState({ validated: true })
+          }
         } catch (err) {
           this.emitLinkStatus('not-yet')
-          this.setState({ validated: false })
+          if (this.mounted) {
+            this.setState({ validated: false })
+          }
         }
       }, 1000)
     }
