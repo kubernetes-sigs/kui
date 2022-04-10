@@ -133,7 +133,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   private readonly onChoiceFromAbove = ({ choices }: Choices) =>
-    this.setState({ frontier: undefined, wizardStepStatus: [], choices: Object.assign({}, choices) })
+    setTimeout(() => this.setState({ frontier: undefined, wizardStepStatus: [], choices: Object.assign({}, choices) }))
 
   public componentDidMount() {
     onChoice(this.onChoiceFromAbove)

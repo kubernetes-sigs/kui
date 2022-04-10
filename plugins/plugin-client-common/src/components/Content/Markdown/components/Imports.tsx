@@ -104,7 +104,8 @@ class ImportsImpl extends React.PureComponent<Props, State> {
         }
   }
 
-  private readonly onChoice = ({ choices }: Choices) => this.setState({ choices: Object.assign({}, choices) })
+  private readonly onChoice = ({ choices }: Choices) =>
+    setTimeout(() => this.setState({ choices: Object.assign({}, choices) }))
 
   public componentDidMount() {
     onChoice(this.onChoice)
