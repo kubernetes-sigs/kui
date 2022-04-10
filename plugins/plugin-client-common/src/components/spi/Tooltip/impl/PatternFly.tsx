@@ -23,6 +23,10 @@ const Markdown = React.lazy(() => import('../../../Content/Markdown'))
 
 import '../../../../../web/scss/components/Tooltip/PatternFly.scss'
 
+function isMarkdownContent(str: string) {
+  return !/^\w+$/.test(str)
+}
+
 export default function PatternFlyTooltip(props: Props): React.ReactElement {
   const isMarkdown = isMarkdownProps(props)
   const isReference = isReferenceProps(props)
@@ -46,9 +50,13 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
         isReference ? (
           props.children
         ) : isMarkdown ? (
-          <React.Suspense fallback={<div />}>
-            <Markdown nested executableCodeBlocks={false} source={props.markdown} />
-          </React.Suspense>
+          !isMarkdownContent(props.markdown) ? (
+            props.markdown
+          ) : (
+            <React.Suspense fallback={<div />}>
+              <Markdown nested executableCodeBlocks={false} source={props.markdown} />
+            </React.Suspense>
+          )
         ) : (
           props.content
         )
