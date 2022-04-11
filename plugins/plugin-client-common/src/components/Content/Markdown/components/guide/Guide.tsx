@@ -350,8 +350,9 @@ export default class Guide extends React.PureComponent<Props, State> {
   private presentChoices() {
     const steps = this.validateStepsIfNeeded(this.wizardSteps()).map(this.addCommonWizardStepProperties)
 
-    // start at the first non-success step
-    const startAtStep = steps.findIndex((_, idx) => this.state.wizardStepStatus[idx] !== 'success')
+    // if you want to start at the first non-success step
+    // see https://github.com/kubernetes-sigs/kui/pull/8840
+    // const startAtStep = steps.findIndex((_, idx) => this.state.wizardStepStatus[idx] !== 'success')
 
     return steps.length === 0 ? (
       'Nothing to do!'
@@ -362,7 +363,6 @@ export default class Guide extends React.PureComponent<Props, State> {
             <Wizard
               hideClose
               steps={steps}
-              startAtStep={startAtStep < 0 ? 1 : startAtStep + 1}
               title={extractTitle(this.state.graph)}
               description={this.wizardDescription()}
               descriptionFooter={this.wizardDescriptionFooter(steps)}
