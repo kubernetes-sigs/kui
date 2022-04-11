@@ -28,7 +28,7 @@ const snippetsInTab5: Tree = {
 
 const prerequisites = {
   name: 'Prerequisites',
-  children: [importa, importe]
+  children: [importa(), importe]
 }
 
 const mainTasks = {

@@ -16,7 +16,7 @@
 
 import Input, { Tree } from '../Input'
 
-const importa: Tree = { name: 'importa.md', children: [{ name: 'echo AAA' }] }
+const importa: (name?: string) => Tree = (name = 'importa.md') => ({ name, children: [{ name: 'echo AAA' }] })
 
 const importc: Tree = { name: 'importc.md', children: [{ name: 'echo CCC' }] }
 
@@ -34,7 +34,7 @@ const importd: Tree = {
 
 const prerequisites = {
   name: 'Prerequisites',
-  children: [importa, importe, importd]
+  children: [importa(), importe, importd]
 }
 
 const mainTasks = {

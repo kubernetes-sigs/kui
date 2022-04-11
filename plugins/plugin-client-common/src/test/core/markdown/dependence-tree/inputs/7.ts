@@ -14,5 +14,22 @@
  * limitations under the License.
  */
 
-import IN6 from './6'
-export default IN6
+import Input from '../Input'
+import { importg } from './6'
+import { importa, importd } from './1'
+
+const filename = 'guidebook-tree-model7.md'
+
+export const tree: Input['tree'] = (command: string) => [
+  {
+    name: command === 'guide' ? filename : 'Tasks',
+    children: [importg('importgg.md'), importa('importaa.md'), importd]
+  }
+]
+
+const IN7: Input = {
+  input: require.resolve(`@kui-shell/plugin-client-common/tests/data/${filename}`),
+  tree
+}
+
+export default IN7
