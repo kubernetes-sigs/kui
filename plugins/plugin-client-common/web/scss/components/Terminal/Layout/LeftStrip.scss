@@ -21,11 +21,11 @@
 @include Scrollback {
   @include LeftStrip {
     /**
-         * Normally, this will have a min-width: 0, which allows the
-         * flex box to adjust to reduced width. However, the
-         * RightStrip is narrow, and so we probably would rather have
-         * horizontal overflow than wrapping.
-         */
+     * Normally, this will have a min-width: 0, which allows the flex
+     * box to adjust to reduced width. However, the LeftStrip is
+     * narrow, and so we probably would rather have horizontal
+     * overflow than wrapping.
+     */
     @include WrapNormally;
   }
 }
@@ -35,14 +35,14 @@
     @include TopLevelTab {
       @include HasOnlyLeftStrip {
         @include Split(2) {
-          @include Columns(4);
-          grid-template-areas: 'L1 T1 T1 T1';
+          @include Columns(3);
+          grid-template-areas: 'L1 T1 T1';
         }
 
         @include Split(3) {
           @include Rows(1);
-          @include Columns(5);
-          grid-template-areas: 'L1 T1 T1 T2 T2';
+          @include Columns(3);
+          grid-template-areas: 'L1 T1 T2';
         }
       }
     }
@@ -53,22 +53,22 @@
   @include HasOnlyLeftStrip {
     @include Split(2) {
       @include Rows(1);
-      @include Columns(5);
-      grid-template-areas: 'L1 T1 T1 T1 T1';
+      @include Columns(4);
+      grid-template-areas: 'L1 T1 T1 T1';
     }
 
     @include Split(3) {
       @include Rows(1);
-      @include Columns(5);
-      grid-template-areas: 'L1 T1 T1 T2 T2';
+      @include Columns(8);
+      grid-template-areas: 'L1 L1 T1 T1 T1 T2 T2 T2';
     }
 
     @include Split(4) {
       @include Rows(2);
-      @include Columns(9);
+      @include Columns(8);
       grid-template-areas:
-        'L1 L1 T1 T1 T1 T1 T2 T2 T2'
-        'L1 L1 T1 T1 T1 T1 T3 T3 T3';
+        'L1 L1 T1 T1 T1 T2 T2 T2'
+        'L1 L1 T1 T1 T1 T3 T3 T3';
     }
 
     @include Split(5) {
