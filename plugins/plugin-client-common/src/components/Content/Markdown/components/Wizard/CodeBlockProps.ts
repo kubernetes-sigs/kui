@@ -96,7 +96,7 @@ export function isImport(part: CodeBlockNestingParent): part is Import {
 }
 
 export function isWizardStep(part: CodeBlockNestingParent): part is WizardStep {
-  return isGroupMember(part) && hasTitle(part) && hasKind(part, 'WizardStep')
+  return hasKind(part, 'WizardStep')
 }
 
 export default interface CodeBlockProps {

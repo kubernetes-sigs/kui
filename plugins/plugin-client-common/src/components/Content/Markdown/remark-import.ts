@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Node } from 'hast'
+import { Element, Node } from 'hast'
 import { visit } from 'unist-util-visit'
 import { Node as Node2, toString } from 'hast-util-to-string'
 
@@ -62,7 +62,7 @@ function isHeading(node: Node): boolean {
 export function visitImportContainers(
   tree,
   visitor: (importProps: {
-    node: Node
+    node: Element
     title: string
     filepath: string
     provenance: string

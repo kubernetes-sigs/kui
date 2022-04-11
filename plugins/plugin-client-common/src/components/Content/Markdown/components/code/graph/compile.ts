@@ -15,7 +15,7 @@
  */
 
 import { ChoiceState } from '../../..'
-import { CodeBlockProps, Choice, Graph, SubTask, emptySequence, TitledSteps, parallel, seq, sequence } from '.'
+import { CodeBlockProps, Choice, Graph, SubTask, emptySequence, TitledSteps, parallel, seq, sequence, subtask } from '.'
 
 import {
   Import as CodeBlockImport,
@@ -121,13 +121,16 @@ export default function compile(
     return addWizardStep(wiz, block, parent, isDeepest)
   }
 
-  const newSubTask = (block: CodeBlockProps, parent: CodeBlockImport, isDeepest: boolean): SubTask => ({
-    key: parent.key,
-    title: parent.title,
-    source: parent.source,
-    filepath: parent.filepath,
-    graph: isDeepest ? seq(block) : emptySequence()
-  })
+  const newSubTask = (block: CodeBlockProps, parent: CodeBlockImport, isDeepest: boolean): SubTask => {
+    return subtask(
+      parent.key,
+      parent.title,
+      '',
+      parent.filepath,
+      isDeepest ? seq(block) : emptySequence(),
+      parent.source
+    )
+  }
 
   const set = (idx: number, nesting: Nesting) => {
     currentNesting = currentNesting.slice(0, idx).concat([nesting])

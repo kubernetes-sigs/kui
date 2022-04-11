@@ -16,11 +16,11 @@
 
 import { Node } from 'hast'
 import { Code } from 'mdast'
-import { visit } from 'unist-util-visit'
+import { visitParents } from 'unist-util-visit-parents'
 
 import dump from './dump'
 import { tryFrontmatter } from '../../frontmatter'
-import { visitImportContainers } from '../../remark-import'
+import { isOnAnImportChain, visitImportContainers } from '../../remark-import'
 import KuiFrontmatter, { hasCodeBlocks } from '../../KuiFrontmatter'
 
 function isCode(node: Node): node is Code {
@@ -28,14 +28,18 @@ function isCode(node: Node): node is Code {
 }
 
 /** Scan and process the `codeblocks` schema of the given `frontmatter` */
-function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: KuiFrontmatter) {
+export function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: KuiFrontmatter, ignoreImports = true) {
   if (hasCodeBlocks(frontmatter)) {
     const codeblocks = frontmatter.codeblocks.map(_ =>
       Object.assign({}, _, { match: new RegExp(_.match.replace(/\./g, '\\.')) })
     )
 
-    visit(tree, 'code', node => {
+    visitParents(tree, 'code', (node, ancestors) => {
       if (isCode(node)) {
+        if (ignoreImports && isOnAnImportChain(ancestors)) {
+          return
+        }
+
         const matched = codeblocks.find(_ => _.match.test(node.value))
 
         if (matched) {
@@ -70,14 +74,8 @@ function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: KuiFrontma
 }
 
 /** Scan and process the `codeblocks` schema of the given `frontmatter` */
-function preprocessCodeBlocksInImports(tree /*: Root */) {
+export function preprocessCodeBlocksInImports(tree /*: Root */) {
   visitImportContainers(tree, ({ node, frontmatter }) => {
-    preprocessCodeBlocksInContent(node, frontmatter)
+    preprocessCodeBlocksInContent(node, frontmatter, false)
   })
-}
-
-/** Scan and process the `codeblocks` schema of the given `frontmatter` */
-export default function preprocessCodeBlocks(tree /*: Root */, frontmatter: KuiFrontmatter) {
-  preprocessCodeBlocksInContent(tree, frontmatter)
-  preprocessCodeBlocksInImports(tree)
 }

@@ -17,7 +17,7 @@
 import React from 'react'
 import { i18n } from '@kui-shell/core'
 
-import { WizardProps } from './rehype-wizard'
+import { WizardProps, isWizardFromImports } from './rehype-wizard'
 
 import { Choices } from '../..'
 import Progress from './Progress'
@@ -197,7 +197,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (this.props['data-kui-is-from-import'] === 'true') {
+    if (isWizardFromImports(this.props)) {
       return <React.Fragment />
     } else {
       return this.wizard()

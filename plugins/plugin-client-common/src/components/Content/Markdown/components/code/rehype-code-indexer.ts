@@ -135,18 +135,18 @@ export default function plugin(uuid: string) {
                 reserialize()
               }
 
+              if (attributes.validate === '$body') {
+                attributes.validate = body
+                reserialize()
+              }
+
               // go from top to bottom, which is in reverse order, so
               // that we can synthesize the "optional" and "choices"
               // attributes
               for (let idx = ancestors.length - 1; idx >= 0; idx--) {
                 const _ = ancestors[idx]
 
-                if (attributes.validate === '$body') {
-                  attributes.validate = body
-                  reserialize()
-                }
-
-                if (attributes.optional === true || isImplicitlyOptional(_)) {
+                if (attributes.optional !== true && isImplicitlyOptional(_)) {
                   // don't propagate code blocks out of either
                   // explicitly or implicitly optional elements. Re:
                   // implicitly, the idea is that we should stop
