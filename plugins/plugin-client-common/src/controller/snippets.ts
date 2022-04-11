@@ -25,16 +25,21 @@ import { tryFrontmatter } from '../components/Content/Markdown/frontmatter-parse
 
 const debug = Debug('plugin-client-common/markdown/snippets')
 
-const RE_IMPORT = /^(\s*):import{(.*)}\s*$/
-//                 [1]          [2]
+const RE_INCLUDE = /^(\s*){%\s+include "([^"]+)"\s+%}/
+//                 [1]                    [2]
 //                  \- [1] leading whitespace
-//                               \- filepath to import
+//                                         \- filepath to import
+
+const RE_IMPORT = /^(\s*):import{(.*)}\s*$/
+//                   [1]          [2]
+//                    \- [1] leading whitespace
+//                                \- filepath to import
 
 const RE_SNIPPET = /^(\s*)--(-*)8<--(-*)\s+"([^"]+)"(\s+"([^"]+)")?\s*$/
-//                 [1]    [2]      [3]      [4]         [6]
-//                  \- [1] leading whitespace
+//                    [1]   [2]     [3]      [4]          [6]
+//                    \- [1] leading whitespace
 //                                           \- [4] snippet file name
-//                                                       \- [6] deprecated
+//                                                        \- [6] deprecated
 
 function isUrl(a: string) {
   return /^https?:/.test(a)
@@ -273,7 +278,9 @@ ${colons}
 
     const mainContent = await Promise.all(
       (includeFrontmatter ? data : body).split(/\n/).map(async line => {
-        const match = line.match(RE_SNIPPET)
+        const matchSnippet = line.match(RE_SNIPPET)
+        const match = matchSnippet || line.match(RE_INCLUDE)
+
         if (!match) {
           const matchImport = line.match(RE_IMPORT)
           if (matchImport) {
@@ -285,8 +292,8 @@ ${colons}
           }
         } else {
           const indentation = match[1]
-          const snippetFileName = match[4]
-          const optionalSnippetBasePathInSnippetLine = match[6]
+          const snippetFileName = matchSnippet ? match[4] : match[2]
+          const optionalSnippetBasePathInSnippetLine = matchSnippet ? match[6] : undefined
 
           const { snippetData } = await fetchRecursively(
             snippetFileName,
