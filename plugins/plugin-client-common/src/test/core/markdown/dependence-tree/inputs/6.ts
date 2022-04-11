@@ -27,25 +27,28 @@ const messageForElectron =
   process.platform === 'linux' ? messageForLinux : process.platform === 'darwin' ? messageForMacOS : messageForWindows
 
 // here, we will squash away the choice
-const importgForElectron: Tree = { name: 'importg.md', children: [{ name: messageForElectron }] }
+const importgForElectron: (name: string) => Tree = (name: string) => ({
+  name,
+  children: [{ name: messageForElectron }]
+})
 
 // here, we won't squash away the choice
-const importgForBrowser: Tree = {
-  name: 'importg.md',
+const importgForBrowser: (name: string) => Tree = (name: string) => ({
+  name,
   children: [
     { name: 'Option 1: MacOS', children: [{ name: messageForMacOS }] },
     { name: 'Option 2: Linux', children: [{ name: messageForLinux }] },
     { name: 'Option 3: Windows', children: [{ name: messageForWindows }] }
   ]
-}
+})
 
-const importg: Tree =
-  (process.env.MOCHA_RUN_TARGET || 'electron') === 'electron' ? importgForElectron : importgForBrowser
+export const importg: (name?: string) => Tree = (name = 'importg.md') =>
+  (process.env.MOCHA_RUN_TARGET || 'electron') === 'electron' ? importgForElectron(name) : importgForBrowser(name)
 
 const tree: Input['tree'] = (command: string) => [
   {
     name: command === 'guide' ? filename : 'Tasks',
-    children: [importg, importa, importd]
+    children: [importg(), importa(), importd]
   }
 ]
 

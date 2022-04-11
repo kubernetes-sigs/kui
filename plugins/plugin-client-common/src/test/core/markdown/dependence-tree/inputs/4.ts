@@ -31,7 +31,7 @@ const IN4: Input = {
   tree: (command: string) => [
     {
       name: command === 'guide' ? filename : 'Tasks',
-      children: [importd, importa, importe, snippetsInTab5]
+      children: [importd, importa(), importe, snippetsInTab5]
     }
   ]
 }
