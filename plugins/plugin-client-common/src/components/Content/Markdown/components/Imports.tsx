@@ -394,29 +394,33 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       setTimeout(() => this.validate(graph))
     }
 
-    const id = graph.order.toString()
-    const myStatus = status[graph.id]
+    try {
+      const id = graph.order.toString()
+      const myStatus = status[graph.id]
 
-    const data = [
-      {
-        id,
-        icon: myStatus && myStatus !== 'success' && <LabelWithStatus status={myStatus} />,
-        name: (
-          <pre>
-            <code>
-              {graph.body
-                .split(/\n/)
-                .map(_ => _.replace(/#.*/, ''))
-                .filter(Boolean)[0]
-                .trim()
-                .slice(0, 30)}
-            </code>
-          </pre>
-        )
-      }
-    ]
+      const data = [
+        {
+          id,
+          icon: myStatus && myStatus !== 'success' && <LabelWithStatus status={myStatus} />,
+          name: (
+            <pre>
+              <code>
+                {graph.body
+                  .split(/\n/)
+                  .map(_ => _.replace(/#.*/, ''))
+                  .filter(Boolean)[0]
+                  .trim()
+                  .slice(0, 30)}
+              </code>
+            </pre>
+          )
+        }
+      ]
 
-    return { data }
+      return { data }
+    } catch (err) {
+      console.error('Error rendering code block', graph, err)
+    }
   }
 
   private treeModelForLeaf(
