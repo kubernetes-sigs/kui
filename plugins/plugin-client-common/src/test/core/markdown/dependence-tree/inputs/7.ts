@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-import IN1 from './1'
-import IN2 from './2'
-import IN3 from './3'
-import IN4 from './4'
-import IN5 from './5'
 import IN6 from './6'
-import IN7 from './7'
-
-export default [IN1, IN2, IN3, IN4, IN5, IN6, IN7]
+export default IN6
