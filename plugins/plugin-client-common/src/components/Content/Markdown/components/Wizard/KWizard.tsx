@@ -23,15 +23,23 @@
  */
 
 import React from 'react'
+import { i18n } from '@kui-shell/core'
 import { Title, TitleSizes, Wizard, WizardProps } from '@patternfly/react-core'
 
+import Footer from './Footer'
 import Icons from '../../../../spi/Icons'
 
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
+const strings = i18n('plugin-client-common')
+
 type HeaderState = {
   /** Is the wizard in "collapsed" mode, where we only show the title and progress bar? */
   collapsedHeader: boolean
+}
+
+type FooterState = {
+  activeStep: number
 }
 
 type Props = WizardProps &
@@ -39,13 +47,14 @@ type Props = WizardProps &
     descriptionFooter?: React.ReactNode
   }
 
-type State = HeaderState
+type State = HeaderState & FooterState
 
 export default class KWizard extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
     this.state = {
+      activeStep: this.props.startAtStep || 1,
       collapsedHeader: props.collapsedHeader || false
     }
   }
@@ -94,18 +103,38 @@ export default class KWizard extends React.PureComponent<Props, State> {
     )
   }
 
+  private readonly onBack = () => this.setState(curState => ({ activeStep: Math.max(1, curState.activeStep - 1) }))
+  private readonly onNext = () =>
+    this.setState(curState => ({ activeStep: Math.min(this.props.steps.length, curState.activeStep + 1) }))
+
+  private readonly onClose = () => {
+    /* noop */
+  }
+
   private footer() {
     if (this.props.steps.length === 1) {
       // use this if you want no footer (Next, Previous buttons)
       return <React.Fragment />
     } else {
       // use this if you want the default footer
-      return undefined
+      return (
+        <Footer
+          onNext={this.onNext}
+          onBack={this.onBack}
+          onClose={this.onClose}
+          isValid={this.state.activeStep < this.props.steps.length}
+          firstStep={this.state.activeStep === 1}
+          activeStep={this.props.steps[this.state.activeStep - 1]}
+          nextButtonText={strings('Next')}
+          backButtonText={strings('Back')}
+          cancelButtonText={strings('Cancel')}
+        />
+      )
     }
   }
 
   public render() {
-    const { steps, startAtStep } = this.props
+    const { steps } = this.props
 
     // hmm there doesn't seem to be a better way to get the last
     // step's Next button to be disabled; it isn't by default
@@ -117,9 +146,9 @@ export default class KWizard extends React.PureComponent<Props, State> {
         {this.header()}
         <div className="kui--wizard-main-content">
           <Wizard
-            key={startAtStep}
+            key={this.state.activeStep}
             steps={steps.length === 0 ? [{ name: '', component: '' }] : steps}
-            startAtStep={startAtStep}
+            startAtStep={this.state.activeStep}
             footer={this.footer()}
           />
         </div>
