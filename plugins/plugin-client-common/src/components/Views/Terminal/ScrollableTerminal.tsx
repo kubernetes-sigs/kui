@@ -1036,6 +1036,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private async setFocusOnScrollback(scrollback: ScrollbackState, focusedBlockIdx?: number) {
+    if (!this.mounted) {
+      return
+    }
+
     const focusedIdx = this.findSplit(this.state, scrollback.uuid)
     if (this.state.focusedIdx !== focusedIdx) {
       const currentSplit = this.state.splits[this.state.focusedIdx]
@@ -1214,7 +1218,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.cleaners.forEach(cleaner => cleaner())
   }
 
+  private mounted = false
+  public componentDidMount() {
+    this.mounted = true
+  }
+
   public componentWillUnmount() {
+    this.mounted = false
     this.uninitEvents()
     this.terminateAllWatchables()
   }
