@@ -20,10 +20,10 @@ import { visit } from 'unist-util-visit'
 import { Content, Element, Parent, Root } from 'hast'
 import { visitParents } from 'unist-util-visit-parents'
 
-import { isImports } from '../../remark-import'
 import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
 import isElementWithProperties, { isElement } from '../../isElement'
 import { GroupMember as CodeBlockGroupMember } from './CodeBlockProps'
+import { isImports, visitImportContainers } from '../../remark-import'
 
 type Primordial = Pick<CodeBlockGroupMember, 'group'> & {
   title: string
@@ -113,7 +113,9 @@ function transformer(ast: Root) {
         node.children.length > 0 &&
         node.children[0].type === 'text'
       ) {
-        const firstNonCommentIdx = parent.children.findIndex(_ => _.type !== 'raw')
+        const firstNonCommentIdx = parent.children.findIndex(
+          _ => _.type !== 'raw' && (!isElementWithProperties(_) || !isImports(_.properties))
+        )
 
         if (idx === firstNonCommentIdx) {
           const [title, description] = node.children[0].value.split(/\s*:\s*/)
@@ -130,106 +132,111 @@ function transformer(ast: Root) {
     }
   }
 
-  const wizard: Primordial = {
-    group: v4(),
-    splitCount: 0,
-    title: '',
-    description: undefined,
-    progress: 'bar',
-    steps: [],
-    isOnAnImportChain: false
-  }
+  function processWizards(ast: Parent) {
+    const wizard: Primordial = {
+      group: v4(),
+      splitCount: 0,
+      title: '',
+      description: undefined,
+      progress: 'bar',
+      steps: [],
+      isOnAnImportChain: false
+    }
 
-  function extractStepsFromDivsVisitor(node: Element, ancestors: Parent[]) {
-    // const node: Element = arguments[0] // eslint-disable-line prefer-rest-params
-    // const idx: number = arguments[1] // eslint-disable-line prefer-rest-params
-    // const parent: Element = arguments[2] // eslint-disable-line prefer-rest-params
+    function extractStepsFromDivsVisitor(node: Element, ancestors: Parent[]) {
+      if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && parent) {
+        delete node.properties['data-kui-split']
 
-    if (node.tagName === 'div' && node.properties['data-kui-split'] === 'wizard' && parent) {
-      delete node.properties['data-kui-split']
+        if (wizard.steps.length === 0) {
+          if (ancestors.find(_ => isElementWithProperties(_) && isImports(_.properties))) {
+            wizard.isOnAnImportChain = true
+          }
 
-      if (wizard.steps.length === 0) {
-        if (ancestors.find(_ => isElementWithProperties(_) && isImports(_.properties))) {
-          wizard.isOnAnImportChain = true
+          if (node.properties['data-kui-wizard-progress']) {
+            wizard.progress = node.properties['data-kui-wizard-progress'].toString() as 'bar' | 'none'
+          }
+
+          const splitCount = node.properties['data-kui-split-count']
+          if (!wizard.title && typeof splitCount !== 'undefined') {
+            wizard.splitCount = typeof splitCount === 'number' ? splitCount : parseInt(splitCount.toString(), 10)
+          }
         }
 
-        if (node.properties['data-kui-wizard-progress']) {
-          wizard.progress = node.properties['data-kui-wizard-progress'].toString() as 'bar' | 'none'
+        if (!node.properties['data-kui-title']) {
+          // spurious case, problem some blank newlines
+          return
+        } else if (wizard.steps.length === 0 && !wizard.title) {
+          wizard.title =
+            (node.properties['data-kui-title'] || ' ') +
+            (node.properties['data-kui-description'] ? ': ' + node.properties['data-kui-description'] : '')
+
+          // Ugh, work around nested <p>. The div comes from us, so that
+          // part is safe (sections in the markdown become this div; and
+          // this is the first section). We also have to avoid having
+          // <div> under <p>. The offending parent <p> comes from
+          // PatternFly's Wizard header description :(
+          node.tagName = 'span' // top-most div -> span
+          node.children = node.children.map(child =>
+            !isElement(child) || child.tagName !== 'p'
+              ? child
+              : Object.assign({}, child, { tagName: 'span', properties: { className: 'paragraph' } })
+          )
+
+          wizard.description = node
+        } else {
+          node.properties.containedCodeBlocks = []
+          node.properties['data-kui-wizard-group'] = wizard.group
+          node.properties['data-kui-wizard-member'] = wizard.steps.length
+          wizard.steps.push(node)
         }
 
-        const splitCount = node.properties['data-kui-split-count']
-        if (!wizard.title && typeof splitCount !== 'undefined') {
-          wizard.splitCount = typeof splitCount === 'number' ? splitCount : parseInt(splitCount.toString(), 10)
+        const parent = ancestors[ancestors.length - 1]
+        if (parent) {
+          const idx = parent.children.findIndex(child => child === node)
+          if (idx >= 0) {
+            parent.children[idx] = u('raw', '<!-- removed step source -->')
+
+            // DO NOT DO THIS! the `visit` logic will skip over the next child :(
+            // parent.children.splice(idx, 1)
+          }
         }
       }
+    }
 
-      if (!node.properties['data-kui-title']) {
-        // spurious case, problem some blank newlines
-        return
-      } else if (wizard.steps.length === 0 && !wizard.title) {
-        wizard.title =
-          (node.properties['data-kui-title'] || ' ') +
-          (node.properties['data-kui-description'] ? ': ' + node.properties['data-kui-description'] : '')
+    visitParents(ast, 'element', extractStepsFromDivsVisitor)
 
-        // Ugh, work around nested <p>. The div comes from us, so that
-        // part is safe (sections in the markdown become this div; and
-        // this is the first section). We also have to avoid having
-        // <div> under <p>. The offending parent <p> comes from
-        // PatternFly's Wizard header description :(
-        node.tagName = 'span' // top-most div -> span
-        node.children = node.children.map(child =>
-          !isElement(child) || child.tagName !== 'p'
-            ? child
-            : Object.assign({}, child, { tagName: 'span', properties: { className: 'paragraph' } })
+    if (wizard.steps.length > 0 || wizard.title.trim() || wizard.description) {
+      ast.children.push(
+        u(
+          'element',
+          {
+            tagName: 'div',
+            properties: {
+              'data-kui-split': 'wizard',
+              'data-kui-title': wizard.title,
+              'data-kui-split-count': wizard.splitCount,
+              'data-kui-wizard-progress': wizard.progress,
+              'data-kui-is-from-import': wizard.isOnAnImportChain.toString(),
+              'data-kui-code-blocks': [] // rehype-imports will populate this
+            }
+          },
+          [wizard.description, ...wizard.steps]
         )
-
-        wizard.description = node
-      } else {
-        node.properties.containedCodeBlocks = []
-        node.properties['data-kui-wizard-group'] = wizard.group
-        node.properties['data-kui-wizard-member'] = wizard.steps.length
-        wizard.steps.push(node)
-      }
-
-      const parent = ancestors[ancestors.length - 1]
-      if (parent) {
-        const idx = parent.children.findIndex(child => child === node)
-        if (idx >= 0) {
-          parent.children[idx] = u('raw', '<!-- removed step source -->')
-
-          // DO NOT DO THIS! the `visit` logic will skip over the next child :(
-          // parent.children.splice(idx, 1)
-        }
-      }
+      )
     }
   }
 
   visit(ast, 'element', extractStepTitlesFromHeadingsVisitor)
-  visitParents(ast, 'element', extractStepsFromDivsVisitor)
-
-  if (wizard.steps.length > 0 || wizard.title.trim() || wizard.description) {
-    ast.children.push(
-      u(
-        'element',
-        {
-          tagName: 'div',
-          properties: {
-            'data-kui-split': 'wizard',
-            'data-kui-title': wizard.title,
-            'data-kui-split-count': wizard.splitCount,
-            'data-kui-wizard-progress': wizard.progress,
-            'data-kui-is-from-import': wizard.isOnAnImportChain.toString(),
-            'data-kui-code-blocks': [] // rehype-imports will populate this
-          }
-        },
-        [wizard.description, ...wizard.steps]
-      )
-    )
-  }
+  processWizards(ast)
+  visitImportContainers(ast, ({ node }) => processWizards(node))
 }
 
 export function isWizard(props: Partial<PositionProps> | WizardProps): props is WizardProps {
   return props['data-kui-split'] === 'wizard'
+}
+
+export function isWizardFromImports(props: Partial<PositionProps> | WizardProps): props is WizardProps {
+  return isWizard(props) && props['data-kui-is-from-import'] === 'true'
 }
 
 export function isWizardStep(props: Partial<WizardStepProps>): props is WizardStepProps {

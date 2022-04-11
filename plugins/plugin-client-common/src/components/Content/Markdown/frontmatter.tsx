@@ -22,8 +22,11 @@ import { visitParents } from 'unist-util-visit-parents'
 import { Tab } from '@kui-shell/core'
 
 import { isOnAnImportChain, visitImportContainers } from './remark-import'
-import preprocessCodeBlocks from './components/code/remark-codeblocks-topmatter'
 import KuiFrontmatter, { hasWizardSteps, isNormalSplit, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
+import {
+  preprocessCodeBlocksInContent,
+  preprocessCodeBlocksInImports
+} from './components/code/remark-codeblocks-topmatter'
 
 export { tryFrontmatter } from './frontmatter-parser'
 
@@ -246,7 +249,9 @@ function preprocessWizard(tree /*: Root */, frontmatter: KuiFrontmatter, ignoreI
 /** Process any wizard: steps frontmatter in imports */
 function preprocessWizardStepsForImports(tree /*: Root */) {
   visitImportContainers(tree, ({ node, frontmatter }) => {
-    preprocessWizard(node, frontmatter, false)
+    if (frontmatter) {
+      preprocessWizard(node, frontmatter, false)
+    }
   })
 }
 
@@ -263,10 +268,11 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
         setTimeout(() => opts.tab.setTitle(frontmatter.title))
       }
 
-      preprocessCodeBlocks(tree, frontmatter)
+      preprocessCodeBlocksInContent(tree, frontmatter)
       preprocessWizard(tree, frontmatter)
     }
 
+    preprocessCodeBlocksInImports(tree)
     preprocessWizardStepsForImports(tree)
   }
 }

@@ -25,7 +25,7 @@ import { Props as MarkdownProps, ChoiceState } from '..'
 import { isImports, ImportProps } from '../remark-import'
 import { PositionProps, isNormalSplit } from '../KuiFrontmatter'
 
-import { isWizard } from './Wizard/rehype-wizard'
+import { isWizard, isWizardFromImports } from './Wizard/rehype-wizard'
 const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
@@ -50,6 +50,9 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
       return tabbed(props)
     } else if (isImports(props)) {
       // Don't render the content of imported documents. We will process these separately.
+      return <React.Fragment />
+    } else if (isWizardFromImports(props)) {
+      // Don't render wizard that come in via imports.
       return <React.Fragment />
     } else if (
       !position ||
