@@ -26,8 +26,8 @@ import React from 'react'
 import { i18n } from '@kui-shell/core'
 import { Title, TitleSizes, Wizard, WizardProps } from '@patternfly/react-core'
 
-import Footer from './Footer'
 import Icons from '../../../../spi/Icons'
+import Footer, { FooterButtons } from './Footer'
 
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
@@ -43,6 +43,7 @@ type FooterState = {
 }
 
 type Props = WizardProps &
+  FooterButtons &
   Partial<HeaderState> & {
     descriptionFooter?: React.ReactNode
   }
@@ -128,6 +129,8 @@ export default class KWizard extends React.PureComponent<Props, State> {
           nextButtonText={strings('Next')}
           backButtonText={strings('Back')}
           cancelButtonText={strings('Cancel')}
+          leftButtons={this.props.leftButtons}
+          rightButtons={this.props.rightButtons}
         />
       )
     }

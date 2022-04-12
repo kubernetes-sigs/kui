@@ -22,14 +22,34 @@
  * SOFTWARE.
  */
 
-/** See https://github.com/patternfly/patternfly-react/blob/%40patternfly/react-core%404.202.25/packages/react-core/src/components/Wizard/WizardFooterInternal.tsx */
+/**
+ * Attribution: https://github.com/patternfly/patternfly-react/blob/%40patternfly/react-core%404.202.25/packages/react-core/src/components/Wizard/WizardFooterInternal.tsx
+ * Additions by:
+ *   - @starpit 20220412 Added `leftButtons` and `rightButtons` properties
+ */
 
 import React from 'react'
 import { css } from '@patternfly/react-styles'
 import styles from '@patternfly/react-styles/css/components/Wizard/wizard'
 import { Button, ButtonVariant, WizardStep } from '@patternfly/react-core'
 
-export interface WizardFooterInternalProps {
+import '../../../../../../web/scss/components/Wizard/Footer.scss'
+
+export type FooterButtons = {
+  /**
+   * Buttons to place left-aligned
+   * @author @starpit
+   */
+  leftButtons?: React.ReactNode | React.ReactNode[]
+
+  /**
+   * Extra buttons to place right-aligned
+   * @author @starpit
+   */
+  rightButtons?: React.ReactNode | React.ReactNode[]
+}
+
+export interface WizardFooterInternalProps extends FooterButtons {
   onNext: any
   onBack: any
   onClose: any
@@ -50,24 +70,31 @@ export const WizardFooterInternal: React.FunctionComponent<WizardFooterInternalP
   activeStep,
   nextButtonText,
   backButtonText,
-  cancelButtonText
+  cancelButtonText,
+  leftButtons,
+  rightButtons
 }: WizardFooterInternalProps) => (
-  <footer className={css(styles.wizardFooter)}>
-    <Button variant={ButtonVariant.primary} type="submit" onClick={onNext} isDisabled={!isValid}>
-      {nextButtonText}
-    </Button>
-    {!activeStep.hideBackButton && (
-      <Button variant={ButtonVariant.secondary} onClick={onBack} isDisabled={firstStep}>
-        {backButtonText}
+  <footer className={css(styles.wizardFooter) + ' kui--wizard-footer'}>
+    <span className="kui--wizard-footer--left">
+      {leftButtons}
+      <Button variant={ButtonVariant.primary} type="submit" onClick={onNext} isDisabled={!isValid}>
+        {nextButtonText}
       </Button>
-    )}
-    {!activeStep.hideCancelButton && (
-      <div className={styles.wizardFooterCancel}>
-        <Button variant={ButtonVariant.link} onClick={onClose}>
-          {cancelButtonText}
+      {!activeStep.hideBackButton && (
+        <Button variant={ButtonVariant.secondary} onClick={onBack} isDisabled={firstStep}>
+          {backButtonText}
         </Button>
-      </div>
-    )}
+      )}
+      {!activeStep.hideCancelButton && (
+        <div className={styles.wizardFooterCancel}>
+          <Button variant={ButtonVariant.link} onClick={onClose}>
+            {cancelButtonText}
+          </Button>
+        </div>
+      )}
+    </span>
+
+    {rightButtons && <span className="kui--wizard-footer--right">{rightButtons}</span>}
   </footer>
 )
 WizardFooterInternal.displayName = 'WizardFooterInternal'

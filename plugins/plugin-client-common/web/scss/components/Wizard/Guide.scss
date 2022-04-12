@@ -17,6 +17,7 @@
 @import 'mixins';
 @import '../Tile/mixins';
 @import '../Terminal/Maximized';
+@import '../../Themes/mixins';
 
 @mixin Guide {
   .kui--guide {
@@ -39,6 +40,36 @@
     @content;
   }
 }
+@mixin Chip {
+  .pf-c-chip {
+    @content;
+  }
+}
+@mixin ChipOverflow {
+  &.pf-m-overflow {
+    @content;
+  }
+}
+@mixin ChipLabel {
+  .pf-c-chip__text {
+    @content;
+  }
+}
+
+@include InvertedColors {
+  @include Chip {
+    --pf-c-chip--BackgroundColor: var(--color-base02);
+    svg {
+      color: var(--color-text-02);
+    }
+    @include ChipOverflow {
+      --pf-c-chip--m-overflow__text--Color: var(--color-brand-03);
+    }
+  }
+  @include ChipLabel {
+    --pf-c-chip__text--Color: var(--color-text-01);
+  }
+}
 
 @include Guide {
   @include ChipGroup {
@@ -48,11 +79,6 @@
   @include ChipGroupLabel {
     margin: 0;
     text-align: right;
-  }
-  @include ChipGroupMain {
-    display: grid;
-    grid-template-columns: 7rem 1fr;
-    column-gap: 1rem;
   }
 }
 

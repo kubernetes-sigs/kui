@@ -63,7 +63,19 @@
 }
 
 @mixin WizardFooter {
-  .pf-c-wizard__footer {
+  .kui--wizard-footer.pf-c-wizard__footer {
+    @content;
+  }
+}
+
+@mixin WizardFooterLeftButtons {
+  .kui--wizard-footer--left {
+    @content;
+  }
+}
+
+@mixin WizardFooterRightButtons {
+  .kui--wizard-footer--right {
     @content;
   }
 }
