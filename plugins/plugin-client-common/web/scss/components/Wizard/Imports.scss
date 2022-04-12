@@ -19,6 +19,13 @@
 @import '../Terminal/mixins';
 @import '../ProgressStepper/mixins';
 
+$code-color: var(--color-base0F);
+$choice-color: var(--color-base0E);
+
+@mixin ABitGray {
+  filter: grayscale(25%);
+}
+
 @mixin DependenceTree {
   @include Tree {
     &.kui--dependence-tree {
@@ -85,7 +92,8 @@
 @include DependenceTree {
   code {
     font-size: 0.75rem;
-    color: var(--color-base0F);
+    color: $code-color;
+    @include ABitGray;
   }
 
   svg {
@@ -103,7 +111,8 @@
 
   strong {
     font-weight: 500;
-    color: var(--color-base0E);
+    color: $choice-color;
+    @include ABitGray;
   }
 
   button {
