@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { u } from 'unist-builder'
 import { Raw } from 'hast-util-raw'
 import { Element, Parent } from 'hast'
 import { toMdast } from 'hast-util-to-mdast'
@@ -113,10 +114,13 @@ ${tabContent}
       } else if (isTip(node)) {
         const { className, title, open } = node.properties
 
-        const tipContent = node.children
-          .map(toMarkdownString) // eslint-disable-line @typescript-eslint/no-use-before-define
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        const tipContent = toMarkdownString(u('element', { tagName: 'p' }, node.children))
+          .split(/\n/)
           .map(_ => indent(_))
           .join('\n')
+        // ^^^ re: the <p> wrapper: otherwise, toMarkdown will oddly
+        // render each child as if it were a div ¯\_(ツ)_/¯
 
         node['value'] = `
 ???${open ? '+' : ''} ${className} "${title}"
