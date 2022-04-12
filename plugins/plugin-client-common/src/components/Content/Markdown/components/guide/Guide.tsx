@@ -296,9 +296,10 @@ export default class Guide extends React.PureComponent<Props, State> {
       </Chip>
     ))
 
+    // categoryName={strings('Your Choices')}
     return (
       chips.length > 0 && (
-        <ChipGroup className="kui--chip-group" categoryName={strings('Your Choices')} numChips={8}>
+        <ChipGroup className="kui--chip-group kui--inverted-color-context" numChips={8}>
           {chips}
         </ChipGroup>
       )
@@ -340,11 +341,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   private wizardDescriptionFooter(steps: WizardStep[]) {
-    return (
-      <div className="kui--markdown-major-paragraph">
-        {this.chips()} {this.progress(steps)}
-      </div>
-    )
+    return <div className="kui--markdown-major-paragraph">{this.progress(steps)}</div>
   }
 
   private presentChoices() {
@@ -366,6 +363,7 @@ export default class Guide extends React.PureComponent<Props, State> {
               title={extractTitle(this.state.graph)}
               description={this.wizardDescription()}
               descriptionFooter={this.wizardDescriptionFooter(steps)}
+              rightButtons={this.chips()}
             />
           </div>
         </div>
