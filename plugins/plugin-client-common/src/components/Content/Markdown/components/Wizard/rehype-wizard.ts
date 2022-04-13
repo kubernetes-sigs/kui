@@ -118,7 +118,7 @@ function transformer(ast: Root) {
         )
 
         if (idx === firstNonCommentIdx) {
-          const [title, description] = node.children[0].value.split(/\s*:\s*/)
+          const [title, description] = node.children[0].value.split(/\s*::\s*/)
           parent.properties['data-kui-title'] = title
           parent.properties['data-kui-description'] = description
 

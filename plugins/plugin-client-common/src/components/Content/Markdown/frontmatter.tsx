@@ -142,7 +142,7 @@ function preprocessWizardSteps(tree /*: Root */, frontmatter: KuiFrontmatter, ig
               if (typeof matchingStep !== 'string') {
                 firstChild.value =
                   (matchingStep.name || firstChild.value) +
-                  (matchingStep.description ? ': ' + matchingStep.description : '')
+                  (matchingStep.description ? ':: ' + matchingStep.description : '')
               }
             }
           }
