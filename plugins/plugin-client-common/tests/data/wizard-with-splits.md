@@ -14,7 +14,7 @@ WizardDescriptionWithSplits
 
 ---
 
-## Step1Title: Step1Description
+## Step1Title:: Step1Description
 
 Step1Body
 
@@ -27,7 +27,7 @@ echo aaa
 
 ---
 
-## Step2Title: Step2Description
+## Step2Title:: Step2Description
 
 Step2Body
 
