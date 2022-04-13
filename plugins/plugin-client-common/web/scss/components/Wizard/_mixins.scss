@@ -68,14 +68,32 @@
   }
 }
 
-@mixin WizardFooterLeftButtons {
-  .kui--wizard-footer--left {
+@mixin WizardFooterTopContent {
+  .kui--wizard-footer--top {
     @content;
   }
 }
 
-@mixin WizardFooterRightButtons {
-  .kui--wizard-footer--right {
+@mixin WizardFooterBottomContent {
+  .kui--wizard-footer--bottom {
+    @content;
+  }
+}
+
+@mixin WizardFooterBottomContent {
+  .kui--wizard-footer--bottom {
+    @content;
+  }
+}
+
+@mixin WizardFooterBottomLeftContent {
+  .kui--wizard-footer--bottom-left {
+    @content;
+  }
+}
+
+@mixin WizardFooterBottomRightContent {
+  .kui--wizard-footer--bottom-right {
     @content;
   }
 }

@@ -130,8 +130,8 @@ export default class Commentary extends React.PureComponent<Props, State> {
   private cancel() {
     return (
       <Button
-        kind="secondary"
-        size="small"
+        variant="secondary"
+        isSmall
         className="kui--tab-navigatable kui--commentary-button kui--commentary-cancel-button"
         onClick={this._onCancel}
       >
@@ -165,8 +165,8 @@ export default class Commentary extends React.PureComponent<Props, State> {
   private revert() {
     return (
       <Button
-        kind="tertiary"
-        size="small"
+        variant="tertiary"
+        isSmall
         className="kui--tab-navigatable kui--commentary-button kui--commentary-revert-button"
         onClick={this._onRevert}
       >
@@ -209,7 +209,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
   private done() {
     return (
       <Button
-        size="small"
+        isSmall
         className="kui--tab-navigatable kui--commentary-button kui--commentary-done-button"
         onClick={this._onDone}
       >

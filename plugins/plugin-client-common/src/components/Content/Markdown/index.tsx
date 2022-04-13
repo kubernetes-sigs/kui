@@ -121,6 +121,9 @@ export type Props = Partial<Choices> & {
   /** Render executable code blocks with the executable code block component [Default: true] */
   executableCodeBlocks?: boolean
 
+  /** Execute code blocks immediately? */
+  executeImmediately?: boolean
+
   /** Has the user clicked to execute a code block? */
   codeBlockResponses?: CodeBlockResponse[]
 
@@ -302,7 +305,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
       .map((_, idx) => fromState[idx] || fromProps[idx])
   }
 
-  private codeBlockHasBeenReplayed(codeBlockIdx: number) {
+  private codeBlockResponseWithReplayedBit(codeBlockIdx: number) {
     const fromProps = this.props.codeBlockResponses ? this.props.codeBlockResponses[codeBlockIdx] : undefined
     const fromState = this.state.codeBlockResponses[codeBlockIdx]
 
@@ -383,7 +386,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     uuid: this.uuid,
     choices: this.choices,
     spliceInCodeExecution: this.spliceInCodeExecution.bind(this),
-    codeBlockResponses: this.codeBlockHasBeenReplayed.bind(this)
+    codeBlockResponses: this.codeBlockResponseWithReplayedBit.bind(this)
   })
 
   /** `exec` controller */

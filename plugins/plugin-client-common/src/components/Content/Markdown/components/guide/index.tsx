@@ -15,11 +15,18 @@
  */
 
 import React from 'react'
-import { ChoiceState } from '../..'
+
+import { CodeBlockResponseFn } from '../../components'
+import { ChoiceState, Props as MarkdownProps } from '../../../Markdown'
 
 const Guide = React.lazy(() => import('./Guide'))
 
-export default function guidebookGuideWrapper(uuid: string, choices: ChoiceState) {
+export default function guidebookGuideWrapper(
+  mdprops: MarkdownProps,
+  uuid: string,
+  choices: ChoiceState,
+  codeBlockResponses: CodeBlockResponseFn
+) {
   return function guidebookGuide(props: { 'data-kui-code-blocks': string }) {
     const blocks = props['data-kui-code-blocks']
       ? JSON.parse(props['data-kui-code-blocks']).map(_ => JSON.parse(Buffer.from(_, 'base64').toString()))
@@ -28,7 +35,7 @@ export default function guidebookGuideWrapper(uuid: string, choices: ChoiceState
     return !blocks ? (
       <span className="all-pad">Nothing to do!</span>
     ) : (
-      <Guide uuid={uuid} blocks={blocks} choices={choices} />
+      <Guide tab={mdprops.tab} uuid={uuid} blocks={blocks} choices={choices} codeBlockResponses={codeBlockResponses} />
     )
   }
 }

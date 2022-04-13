@@ -16,12 +16,20 @@
 
 @import 'mixins';
 @import '../Tile/mixins';
+@import '../Button/mixins';
 @import '../Terminal/Maximized';
 @import '../../Themes/mixins';
 
 @mixin Guide {
   .kui--guide {
     @content;
+  }
+}
+@mixin GuideRunButton {
+  @include Button {
+    &.kui--guidebook-run {
+      @content;
+    }
   }
 }
 
@@ -79,6 +87,13 @@
   @include ChipGroupLabel {
     margin: 0;
     text-align: right;
+  }
+}
+
+@include GuideRunButton {
+  &:not(:hover) {
+    color: var(--color-base00);
+    background-color: var(--color-base0F);
   }
 }
 
