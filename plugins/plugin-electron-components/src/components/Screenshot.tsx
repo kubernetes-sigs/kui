@@ -169,10 +169,10 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   private saveToDiskButton() {
     return (
       <div className="kui--button-set">
-        <Button size="small" className="screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
+        <Button isSmall className="screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
           {strings('Save to desktop')}
         </Button>
-        <Button size="small" kind="link" onClick={() => this.setState({ isActive: false, captured: undefined })}>
+        <Button isSmall kind="link" onClick={() => this.setState({ isActive: false, captured: undefined })}>
           {strings('Done')}
         </Button>
       </div>

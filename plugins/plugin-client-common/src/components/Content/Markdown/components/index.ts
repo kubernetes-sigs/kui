@@ -34,12 +34,14 @@ import _code, { CodeBlockResponse } from './code'
 
 import { Props, ChoiceState } from '../../Markdown'
 
+export type CodeBlockResponseFn = (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean }
+
 type Args = {
   mdprops: Props
   repl: REPL
   uuid: string
   choices: ChoiceState
-  codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean }
+  codeBlockResponses: CodeBlockResponseFn
   spliceInCodeExecution: (
     status: CodeBlockResponse['status'],
     response: CodeBlockResponse['response'],
@@ -90,7 +92,7 @@ function components(args: Args) {
       tag,
       guidebookimports: guidebookimports(args.choices),
       tabbed: tabbed(args.uuid, args.choices),
-      guidebookguide: guidebookguide(args.uuid, args.choices)
+      guidebookguide: guidebookguide(args.mdprops, args.uuid, args.choices, args.codeBlockResponses)
     },
     typedComponents(args)
   )

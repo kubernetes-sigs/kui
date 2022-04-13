@@ -363,7 +363,7 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
 
     return (
       <div className="kui--tab-completions--option" key={idx} data-value={value}>
-        <Button size="small" tabIndex={1} onClick={() => this.completeWith(idx)}>
+        <Button isSmall tabIndex={1} onClick={() => this.completeWith(idx)}>
           <React.Fragment>
             <span className="kui--tab-completions--option-partial">{preText}</span>
             <span className="kui--tab-completions--option-completion">{postText}</span>

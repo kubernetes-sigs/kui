@@ -23,20 +23,33 @@
 }
 
 @include WizardFooter {
-  flex-wrap: nowrap;
   align-items: center;
   justify-content: unset;
+
+  &[data-has-box-shadow] {
+    box-shadow: var(--pf-c-wizard__footer--BoxShadow);
+  }
+
+  & > * {
+    display: flex;
+    align-items: center;
+    flex-basis: 100%;
+  }
 }
 
-@include WizardFooterLeftButtons {
-  @include ButtonMargins;
+@include WizardFooterBottomContent {
+  & > * {
+    @include ButtonMargins;
+  }
 }
 
-@include WizardFooterRightButtons {
-  @include ButtonMargins;
-  margin-left: 1em;
+@include WizardFooterBottomLeftContent {
+  flex: 1;
+}
+
+@include WizardFooterTopContent {
   flex: 1;
   display: flex;
   flex-shrink: 0;
-  justify-content: flex-end;
+  order: -1;
 }

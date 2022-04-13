@@ -20,6 +20,7 @@ import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
 
 import { Props } from '../../../Markdown'
 import { tryFrontmatter } from '../../frontmatter'
+import { CodeBlockResponseFn } from '../../components'
 
 import CodeBlock from '../../../../Views/Terminal/Block/Inputv2'
 
@@ -28,13 +29,13 @@ const SimpleEditor = React.lazy(() => import('../../../Editor/SimpleEditor'))
 type CodeBlockResponse = CommentaryResponse['props']['codeBlockResponses'][0]
 export { CodeBlockResponse }
 
-export default function code(
+export default function codeWrapper(
   mdprops: Props,
   uuid: string,
-  codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean },
+  codeBlockResponses: CodeBlockResponseFn,
   spliceInCodeExecution: (status: 'done' | 'error', response: KResponse, codeIdx: number) => void
 ) {
-  return (props: CodeProps & { codeIdx: string }) => {
+  return function code(props: CodeProps & { codeIdx: string }) {
     if (props.inline) {
       return <code className={props.className}>{props.children}</code>
     }
@@ -90,7 +91,7 @@ export default function code(
             arg1={myCodeIdx}
             onResponse={spliceInCodeExecution}
             outputOnly={outputOnly}
-            executeImmediately={attributes.execute === 'now'}
+            executeImmediately={mdprops.executeImmediately || attributes.execute === 'now'}
             data-code-index={myCodeIdx}
             data-is-maximized={attributes.maximize}
           />

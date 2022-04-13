@@ -27,7 +27,7 @@ import { i18n } from '@kui-shell/core'
 import { Title, TitleSizes, Wizard, WizardProps } from '@patternfly/react-core'
 
 import Icons from '../../../../spi/Icons'
-import Footer, { FooterButtons } from './Footer'
+import Footer, { KuiFooterExtraProps } from './Footer'
 
 import '../../../../../../web/scss/components/Wizard/PatternFly.scss'
 
@@ -42,9 +42,10 @@ type FooterState = {
   activeStep: number
 }
 
-type Props = WizardProps &
-  FooterButtons &
+export type Props = Omit<WizardProps, 'title'> &
+  KuiFooterExtraProps &
   Partial<HeaderState> & {
+    title: React.ReactNode
     descriptionFooter?: React.ReactNode
   }
 
@@ -55,7 +56,7 @@ export default class KWizard extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      activeStep: this.props.startAtStep || 1,
+      activeStep: props.startAtStep || 1,
       collapsedHeader: props.collapsedHeader || false
     }
   }
@@ -80,7 +81,7 @@ export default class KWizard extends React.PureComponent<Props, State> {
         headingLevel="h2"
         size={TitleSizes['3xl']}
         className="kui--wizard-header-title pf-c-wizard__title"
-        aria-label={label}
+        aria-label={typeof label === 'string' ? label : 'wizard title'}
       >
         {label}
       </Title>
@@ -129,8 +130,10 @@ export default class KWizard extends React.PureComponent<Props, State> {
           nextButtonText={strings('Next')}
           backButtonText={strings('Back')}
           cancelButtonText={strings('Cancel')}
+          boxShadow={this.props.boxShadow}
           leftButtons={this.props.leftButtons}
           rightButtons={this.props.rightButtons}
+          topContent={this.props.topContent}
         />
       )
     }
