@@ -159,9 +159,21 @@ export default class Tab extends React.PureComponent<Props, State> {
     this.props.onCloseTab(this.props.idx)
   }
 
-  private title() {
+  private titleText() {
     const content = this.props.title ? this.props.title : strings('Tab')
     return decode(content) // decode html entities such as &mdash;
+  }
+
+  private get tabIndex() {
+    return this.props.idx + 1
+  }
+
+  private title() {
+    if (this.isUsingCommandName()) {
+      return this.state.title
+    } else {
+      return this.titleText() + ' ' + this.tabIndex
+    }
   }
 
   public render() {
@@ -179,17 +191,13 @@ export default class Tab extends React.PureComponent<Props, State> {
           (this.props.active ? ' kui--tab--active' : '') +
           (this.state.processing ? ' processing' : '')
         }
-        data-tab-button-index={this.props.idx + 1}
+        data-tab-button-index={this.tabIndex}
         aria-label="tab"
         onMouseDown={this._onMouseDownNavItem}
         onClick={this._onClickNavItem}
       >
-        <div className="kui--tab--label">
-          {this.isUsingCommandName() && this.state.title}
-          {!this.isUsingCommandName() && <span className="kui--tab--label-text">{this.title()} </span>}
-          {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}
-        </div>
-        {/* TODO: button to toggle edit mode could */}
+        <input className="kui--tab--label" defaultValue={this.title()} />
+
         {this.props.closeable && (
           <React.Fragment>
             <div className="kui--tab-close" ref={this.closeTabRef} onClick={this._onClickCloseButton}>
