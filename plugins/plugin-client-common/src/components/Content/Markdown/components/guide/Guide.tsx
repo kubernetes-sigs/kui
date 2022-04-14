@@ -184,6 +184,11 @@ export default class Guide extends React.PureComponent<Props, State> {
     return description && <div className="kui--wizard-nav-item-description">{description}</div>
   }
 
+  /** @return a title to use for a wizard step representing the given `graph` */
+  private stepTitle(graph: Graph) {
+    return extractTitle(graph) || <span className="red-text">Missing title</span>
+  }
+
   /**
    * @return a `WizardStep` for a non-choice prereq for a choice on
    * the choice frontier
@@ -192,7 +197,7 @@ export default class Guide extends React.PureComponent<Props, State> {
     return {
       graph,
       step: {
-        name: extractTitle(graph) || <span className="red-text">Missing title</span>,
+        name: this.stepTitle(graph),
         component: this.renderGraph(graph),
         stepNavItemProps: {
           children: this.wizardStepDescription(extractDescription(graph))
