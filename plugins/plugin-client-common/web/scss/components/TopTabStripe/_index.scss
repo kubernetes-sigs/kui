@@ -133,6 +133,10 @@ $tab-label-font-size: 0.875rem;
       }
     }
     @include TabLabel {
+      /* for input */
+      border: none;
+      background: transparent;
+
       font-size: inherit;
       color: var(--color-text-02);
       padding: 0;
