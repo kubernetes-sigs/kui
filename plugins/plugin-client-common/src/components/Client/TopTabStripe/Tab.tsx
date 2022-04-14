@@ -164,6 +164,10 @@ export default class Tab extends React.PureComponent<Props, State> {
     return decode(content) // decode html entities such as &mdash;
   }
 
+  private get hasCustomLabel() {
+    return !!this.props.title
+  }
+
   private get tabIndex() {
     return this.props.idx + 1
   }
@@ -172,17 +176,20 @@ export default class Tab extends React.PureComponent<Props, State> {
     if (this.isUsingCommandName()) {
       return this.state.title
     } else {
-      return this.titleText() + ' ' + this.tabIndex
+      return this.titleText() + (this.hasCustomLabel ? '' : ' ' + this.tabIndex)
     }
   }
 
   public render() {
+    const title = this.title()
+
     return (
       <NavItem
+        key={title}
         href="#"
         data-tab-names={this.state.topTabNames}
         data-fresh={this.state.isFreshlyCreated}
-        data-custom-label={this.props.title ? true : undefined}
+        data-custom-label={this.hasCustomLabel || undefined}
         data-custom-label-text={this.props.title || undefined}
         isActive={this.props.active}
         styleChildren={false}
@@ -196,7 +203,7 @@ export default class Tab extends React.PureComponent<Props, State> {
         onMouseDown={this._onMouseDownNavItem}
         onClick={this._onClickNavItem}
       >
-        <input className="kui--tab--label" defaultValue={this.title()} />
+        <input tabIndex={-1} className="kui--tab--label" defaultValue={title} />
 
         {this.props.closeable && (
           <React.Fragment>
