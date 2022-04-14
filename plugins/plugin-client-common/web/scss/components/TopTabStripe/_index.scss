@@ -70,7 +70,6 @@ $tab-label-font-size: 0.875rem;
   }
 
   @include Tab {
-    counter-increment: tab-index;
     display: flex;
     align-items: center;
     position: relative;
@@ -105,15 +104,6 @@ $tab-label-font-size: 0.875rem;
         @include TabLabel {
           color: var(--color-base0C);
         }
-      }
-    }
-
-    /** The "1" suffix of "Tab 1", which we exclude for tabs with custom labels */
-    [data-tab-names='fixed'],
-    [data-fresh='true'] {
-      &:not([data-custom-label]) .kui--tab--label:after {
-        content: counter(tab-index);
-        transition: font-size 150ms ease-in-out;
       }
     }
 

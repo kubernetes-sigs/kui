@@ -19,7 +19,7 @@
  *
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 /** TODO could we extract this directly from welcome.json? */
 const nSplitsInWelcomeNotebook = 2
@@ -34,8 +34,8 @@ describe(`Background tab open onload ${process.env.MOCHA_RUN_TARGET || ''}`, fun
       await this.app.client.waitUntil(
         async () => {
           const [actualTitle1, actualTitle2] = await Promise.all([
-            this.app.client.$(Selectors.CURRENT_TAB_TITLE).then(_ => _.getText()), // intentional: check CURRENT, not N(1)
-            this.app.client.$(Selectors.TAB_TITLE_N(2)).then(_ => _.getText())
+            Util.getTabTitle(this, Selectors.CURRENT_TAB_TITLE), // intentional: check CURRENT, not N(1)
+            Util.getTabTitle(this, Selectors.TAB_TITLE_N(2))
           ])
           if (++idx > 5) {
             console.error(`Still waiting for tab titles; actualTitle1=${actualTitle1} actualTitle2=${actualTitle2}`)

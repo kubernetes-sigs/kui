@@ -110,18 +110,13 @@ async function verifySplit(this: Common.ISuite, { position, content, contentBloc
       const clear = TestUtil.doClear.bind(this)
 
       it('should clear the console from scratch', () => clear())
-      it(`should load the markdown and show ${IN1.splits.length} splits`, async () => {
+      it(`should load the markdown and show ${markdown.splits.length} splits`, async () => {
         try {
           await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
 
           // check Tab Title
           if (markdown.title) {
-            await this.app.client.waitUntil(async () => {
-              const tabTitle = await this.app.client.$(Selectors.CURRENT_TAB_TITLE)
-              await tabTitle.waitForDisplayed({ timeout: CLI.waitTimeout })
-              const actualTabTitle = await tabTitle.getText()
-              return actualTabTitle === markdown.title
-            })
+            await TestUtil.expectCurrentTabTitle(this, markdown.title)
           }
 
           await Util.promiseEach(markdown.splits, async split => {

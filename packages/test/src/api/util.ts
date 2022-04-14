@@ -491,3 +491,24 @@ export function clickNewTabButton(ctx: Common.ISuite, expectedNewTabIndex: numbe
     .then(_ => _.waitForDisplayed())
     .then(() => CLI.waitForRepl(ctx.app)) // should have an active repl
 }
+
+export async function getTabTitle(ctx: Common.ISuite, tabTitleSelector: string) {
+  const tabTitle = await ctx.app.client.$(tabTitleSelector)
+  await tabTitle.waitForDisplayed({ timeout: CLI.waitTimeout })
+  const actualTabTitle = await tabTitle.getValue()
+  return actualTabTitle
+}
+
+export function expectCurrentTabTitle(
+  ctx: Common.ISuite,
+  expectedTabTitle: string,
+  tabTitleSelector = Selectors.CURRENT_TAB_TITLE
+) {
+  return ctx.app.client.waitUntil(
+    async () => {
+      const actualTabTitle = await getTabTitle(ctx, tabTitleSelector)
+      return actualTabTitle === expectedTabTitle
+    },
+    { timeout: CLI.waitTimeout }
+  )
+}

@@ -208,15 +208,7 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
         .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(N)))
         .then(_ => _.waitForDisplayed())
         .then(() => (again ? Promise.resolve() : CLI.waitForSession(this))) // should have an active repl
-        .then(() =>
-          this.app.client.waitUntil(
-            async () => {
-              const actualTitle = await this.app.client.$(Selectors.CURRENT_TAB_TITLE).then(_ => _.getText())
-              return actualTitle === expectedTitle
-            },
-            { timeout: CLI.waitTimeout }
-          )
-        )
+        .then(() => Util.expectCurrentTabTitle(this, expectedTitle))
         .catch(Common.oops(this, true)))
   }
 

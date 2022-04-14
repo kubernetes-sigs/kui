@@ -16,6 +16,7 @@
 
 import { Common, CLI, Selectors, Util } from '@kui-shell/test'
 
+const timeout = { timeout: CLI.waitTimeout }
 const guidebookTitle = 'Welcome to Kui'
 
 describe(`sidebar ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -27,21 +28,19 @@ describe(`sidebar ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.
   it('should have a sidebar hamburger menu button', () =>
     this.app.client
       .$(Selectors.Sidebar.hamburgerButton)
-      .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+      .then(_ => _.waitForExist(timeout))
       .catch(Common.oops(this, true)))
 
   it('should have a hidden sidebar on load', () =>
     this.app.client
       .$(Selectors.Sidebar.contentContainerVisible(false))
-      .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+      .then(_ => _.waitForExist(timeout))
       .catch(Common.oops(this, true)))
 
   it('should show the sidebar on click of the hamburger', async () => {
     try {
       await this.app.client.$(Selectors.Sidebar.hamburgerButton).then(_ => _.click())
-      await this.app.client
-        .$(Selectors.Sidebar.contentContainerVisible(true))
-        .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+      await this.app.client.$(Selectors.Sidebar.contentContainerVisible(true)).then(_ => _.waitForExist(timeout))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -50,7 +49,7 @@ describe(`sidebar ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.
   it(`should have an sidebar item for ${guidebookTitle}`, async () => {
     try {
       const item = await this.app.client.$(Selectors.Sidebar.item(guidebookTitle))
-      await item.waitForExist({ timeout: CLI.waitTimeout })
+      await item.waitForExist(timeout)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -59,18 +58,13 @@ describe(`sidebar ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.
   it(`should show the ${guidebookTitle} guidebook on click`, async () => {
     try {
       const item = await this.app.client.$(Selectors.Sidebar.item(guidebookTitle))
-      await item.waitForExist({ timeout: CLI.waitTimeout })
+      await item.waitForExist(timeout)
       await item.click()
 
-      await this.app.client
-        .$(Selectors.TOP_TAB_WITH_TITLE(guidebookTitle))
-        .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+      await this.app.client.$(Selectors.TOP_TAB_WITH_TITLE(guidebookTitle)).then(_ => _.waitForExist(timeout))
 
       // confirm it is the current tab
-      await this.app.client.waitUntil(async () => {
-        const text = await this.app.client.$(Selectors.CURRENT_TAB_TITLE).then(_ => _.getText())
-        return text === guidebookTitle
-      })
+      await Util.expectCurrentTabTitle(this, guidebookTitle)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
