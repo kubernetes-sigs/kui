@@ -99,6 +99,7 @@
 
 @include Guide {
   @include Tile {
+    width: 100%;
     height: 100%;
     background-color: var(--color-base01);
     --pf-c-tile__body--Color: var(--color-text-01);
