@@ -20,8 +20,8 @@ import { visit } from 'unist-util-visit'
 import { Content, Element, Parent, Root } from 'hast'
 import { visitParents } from 'unist-util-visit-parents'
 
+import isElementWithProperties from '../../isElement'
 import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
-import isElementWithProperties, { isElement } from '../../isElement'
 import { GroupMember as CodeBlockGroupMember } from './CodeBlockProps'
 import { isImports, visitImportContainers } from '../../remark-import'
 
@@ -169,18 +169,6 @@ function transformer(ast: Root) {
           wizard.title =
             (node.properties['data-kui-title'] || ' ') +
             (node.properties['data-kui-description'] ? ': ' + node.properties['data-kui-description'] : '')
-
-          // Ugh, work around nested <p>. The div comes from us, so that
-          // part is safe (sections in the markdown become this div; and
-          // this is the first section). We also have to avoid having
-          // <div> under <p>. The offending parent <p> comes from
-          // PatternFly's Wizard header description :(
-          node.tagName = 'span' // top-most div -> span
-          node.children = node.children.map(child =>
-            !isElement(child) || child.tagName !== 'p'
-              ? child
-              : Object.assign({}, child, { tagName: 'span', properties: { className: 'paragraph' } })
-          )
 
           wizard.description = node
         } else {
