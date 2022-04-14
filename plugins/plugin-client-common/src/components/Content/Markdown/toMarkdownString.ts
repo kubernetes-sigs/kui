@@ -115,12 +115,14 @@ ${tabContent}
         const { className, title, open } = node.properties
 
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        const tipContent = toMarkdownString(u('element', { tagName: 'p' }, node.children))
+        const tipContent = toMarkdownString(u('element', { tagName: 'div' }, node.children))
           .split(/\n/)
           .map(_ => indent(_))
           .join('\n')
-        // ^^^ re: the <p> wrapper: otherwise, toMarkdown will oddly
-        // render each child as if it were a div ¯\_(ツ)_/¯
+        // ^^^ re: the <div> wrapper: we need some wrapper over the
+        // children; we can't use <p> since nested paragraphs is not
+        // allowed (and, worse, mdast-util-to-markdown misformats
+        // them). It also misformats if we use a <span> wrapper.
 
         node['value'] = `
 ???${open ? '+' : ''} ${className} "${title}"
