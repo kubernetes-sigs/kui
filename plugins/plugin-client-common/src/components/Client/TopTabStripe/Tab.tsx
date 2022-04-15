@@ -146,7 +146,7 @@ export default class Tab extends React.PureComponent<Props, State> {
     return this.state.topTabNames === 'command' // && !document.body.classList.contains('kui--alternate')
   }
 
-  private readonly _onMouseDownNavItem = (evt: React.SyntheticEvent) => {
+  private readonly _onMouseDown = (evt: React.SyntheticEvent) => {
     evt.preventDefault()
     evt.stopPropagation()
   }
@@ -206,14 +206,18 @@ export default class Tab extends React.PureComponent<Props, State> {
         }
         data-tab-button-index={this.tabIndex}
         aria-label="tab"
-        onMouseDown={this._onMouseDownNavItem}
         onClick={this._onClickNavItem}
       >
         <input tabIndex={-1} className="kui--tab--label" defaultValue={title} onKeyPress={this._onKeyPress} />
 
         {this.props.closeable && (
           <React.Fragment>
-            <div className="kui--tab-close" ref={this.closeTabRef} onClick={this._onClickCloseButton}>
+            <div
+              className="kui--tab-close"
+              ref={this.closeTabRef}
+              onClick={this._onClickCloseButton}
+              onMouseDown={this._onMouseDown}
+            >
               <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
             </div>
             <Tooltip reference={this.closeTabRef} position="bottom">
