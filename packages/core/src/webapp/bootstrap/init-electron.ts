@@ -19,6 +19,8 @@ import { BrowserWindow } from 'electron'
 
 interface KuiWindow extends BrowserWindow {
   subwindow?: {
+    cwd?: string
+    env?: Record<any, any>
     fullscreen?: boolean
     viewName?: string
     title?: string
@@ -58,6 +60,13 @@ export async function preinit() {
     const remote = await import('@electron/remote')
     const window = remote && (remote.getCurrentWindow() as KuiWindow)
     const subwindow = window.subwindow
+
+    // so that electron's "second window" protocol can pass through
+    // the environment variables from second+ windows
+    if (subwindow && subwindow.env) {
+      process.env = subwindow.env
+    }
+
     if (subwindow && subwindow.fullscreen === true) {
       const titleOverride = typeof subwindow === 'string' ? subwindow : subwindow.title
       if (titleOverride && typeof titleOverride === 'string') {

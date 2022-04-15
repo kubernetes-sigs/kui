@@ -53,7 +53,7 @@ interface App extends EventEmitter {
   hide(): void
   quit(): void
   exit(exitCode?: number): void
-  requestSingleInstanceLock(): boolean
+  requestSingleInstanceLock(additionalData?: Record<any, any>): boolean
 }
 
 /**
@@ -500,7 +500,12 @@ interface Command {
   subwindowPlease: boolean
   subwindowPrefs: ISubwindowPrefs
 }
-export const getCommand = (argv: string[], screen: () => Promise<{ screen: Screen; BrowserWindow: BW }>): Command => {
+export const getCommand = (
+  argv: string[],
+  cwd: string,
+  env: Record<any, any>,
+  screen: () => Promise<{ screen: Screen; BrowserWindow: BW }>
+): Command => {
   debug('getCommand', argv)
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
@@ -528,6 +533,8 @@ export const getCommand = (argv: string[], screen: () => Promise<{ screen: Scree
 
   let subwindowPlease = true
   let subwindowPrefs: ISubwindowPrefs = {
+    cwd,
+    env,
     fullscreen: true,
     width: windowDefaults.width,
     height: windowDefaults.height
@@ -537,13 +544,16 @@ export const getCommand = (argv: string[], screen: () => Promise<{ screen: Scree
     // use a full window for 'shell'
     argv = ['shell']
     subwindowPlease = false
-    subwindowPrefs = {}
+    subwindowPrefs = { cwd, env }
   } else if (process.env.KUI_POPUP) {
     argv = JSON.parse(process.env.KUI_POPUP)
+    subwindowPrefs = { cwd, env }
   }
 
   if (process.env.KUI_POPUP_WINDOW_RESIZE) {
     subwindowPrefs = {
+      cwd,
+      env,
       fullscreen: true,
       position: async () => getPositionForPopup(await screen()),
       width: popupWindowDefaults.width,
@@ -628,23 +638,31 @@ export async function initElectron(
     const widthFromCaller = subwindowPrefs && subwindowPrefs.width
     const heightFromCaller = subwindowPrefs && subwindowPrefs.height
 
-    app.on('second-instance', (event: Electron.Event, commandLine: string[]) => {
-      // Someone tried to run a second instance, open a new window
-      // to handle it
+    app.on(
+      'second-instance',
+      (event: Electron.Event, commandLine: string[], cwd: string, additionalData: { env: string }) => {
+        // Someone tried to run a second instance, open a new window
+        // to handle it
 
-      const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine, async () => import('electron'))
+        const { argv, subwindowPlease, subwindowPrefs } = getCommand(
+          commandLine,
+          cwd,
+          JSON.parse(additionalData.env),
+          async () => import('electron')
+        )
 
-      if (widthFromCaller) {
-        subwindowPrefs.width = widthFromCaller
+        if (widthFromCaller) {
+          subwindowPrefs.width = widthFromCaller
+        }
+        if (heightFromCaller) {
+          subwindowPrefs.height = heightFromCaller
+        }
+
+        debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
+        createWindow(true, argv, subwindowPlease, subwindowPrefs)
       }
-      if (heightFromCaller) {
-        subwindowPrefs.height = heightFromCaller
-      }
-
-      debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
-      createWindow(true, argv, subwindowPlease, subwindowPrefs)
-    })
-    if (!app.requestSingleInstanceLock()) {
+    )
+    if (!app.requestSingleInstanceLock({ env: JSON.stringify(process.env) })) {
       // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
       debug('exiting, since we are not the first instance')
       return app.exit(0)
