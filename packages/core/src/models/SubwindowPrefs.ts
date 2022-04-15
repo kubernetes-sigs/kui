@@ -15,6 +15,8 @@
  */
 
 interface SubwindowPrefs {
+  cwd?: string
+  env?: Record<any, any>
   fullscreen?: boolean
   useContentSize?: boolean
   synonymFor?: object
