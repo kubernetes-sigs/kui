@@ -153,6 +153,12 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   private readonly _onClickNavItem = () => this.props.onSwitchTab(this.props.idx)
 
+  private readonly _onKeyPress = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    if (evt.key === 'Enter') {
+      evt.currentTarget.blur()
+    }
+  }
+
   private readonly _onClickCloseButton = (evt: React.SyntheticEvent) => {
     evt.stopPropagation()
     evt.preventDefault()
@@ -203,7 +209,7 @@ export default class Tab extends React.PureComponent<Props, State> {
         onMouseDown={this._onMouseDownNavItem}
         onClick={this._onClickNavItem}
       >
-        <input tabIndex={-1} className="kui--tab--label" defaultValue={title} />
+        <input tabIndex={-1} className="kui--tab--label" defaultValue={title} onKeyPress={this._onKeyPress} />
 
         {this.props.closeable && (
           <React.Fragment>
