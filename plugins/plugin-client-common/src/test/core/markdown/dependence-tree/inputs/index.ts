@@ -22,4 +22,10 @@ import IN5 from './5'
 import IN6 from './6'
 import IN7 from './7'
 
-export default [IN1, IN2, IN3, IN4, IN5, IN6, IN7]
+//
+// madwizard does not yet support platform detection in-browser
+//
+const forAllTargets = [IN1, IN2, IN3, IN4, IN5]
+const forElectronTargets = process.env.MOCHA_RUN_TARGET === 'webpack' ? [] : [IN6, IN7]
+
+export default forAllTargets.concat(forElectronTargets)

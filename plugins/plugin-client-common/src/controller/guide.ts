@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
+import React from 'react'
+import { v4 } from 'uuid'
 import { basename } from 'path'
 import { Arguments, CommentaryResponse, ParsedOptions, Registrar, Util, encodeComponent } from '@kui-shell/core'
 
 import fetchMarkdownFile from './fetch'
 import { setTabReadonly } from './commentary' // TODO move to core?
 import { tryFrontmatter } from '../components/Content/Markdown/frontmatter-parser'
-
-const debug = Debug('plugin-client-common/controller/guide')
 
 interface HereOptions extends ParsedOptions {
   /** Show the content in the current tab? */
@@ -57,24 +56,61 @@ async function show(args: Arguments<HereOptions>) {
 }
 
 async function guide(args: Arguments<HereOptions>) {
-  const filepath = args.argvNoOptions[1]
+  try {
+    const filepath = args.argvNoOptions[1]
 
-  if (!args.parsedOptions.here) {
-    await args.REPL.qexec(`tab new --cmdline "guide --here ${encodeComponent(filepath)}"`)
-    return true
+    if (!args.parsedOptions.here) {
+      await args.REPL.qexec(`tab new --cmdline "guide --here ${encodeComponent(filepath)}"`)
+      return true
+    }
+
+    const reader = async (file: import('vfile').VFile) => {
+      const { data } = await fetchMarkdownFile(file.path, args)
+      file.value = data
+      return file
+    }
+
+    const { data: rawData /* , codeBlockResponses */ } = await fetchMarkdownFile(filepath, args)
+    const { attributes } = tryFrontmatter(rawData)
+
+    const { VFile } = await import('vfile')
+    const { blockify } = await import('madwizard')
+    const input = new VFile({
+      value: rawData,
+      cwd: Util.cwd(),
+      path: Util.expandHomeDir(filepath)
+    })
+    const { blocks, choices } = await blockify(input, undefined, undefined, reader)
+
+    const { default: Guide } = await import('../components/Content/Markdown/components/guide')
+    const { default: Imports } = await import('../components/Content/Markdown/components/Imports')
+    const { default: SplitInjector } = await import('../components/Views/Terminal/SplitInjector')
+
+    const title = attributes.title || basename(filepath)
+
+    const { execUUID: uuid } = args.execOptions
+    const tree = React.createElement(Imports, { imports: blocks, choices, title })
+    const guide = React.createElement(Guide, { tab: args.tab, uuid, blocks, choices, title })
+
+    const react = React.createElement(SplitInjector.Consumer, undefined, injector => {
+      injector.inject([{ uuid: v4(), node: tree, position: 'left-strip', count: 0, opts: { inverseColors: true } }])
+      return injector.modify(args.tab.uuid, guide, { maximized: true })
+    })
+
+    args.tab.setTitle(title)
+    setTabReadonly(args)
+    return { react }
+  } catch (err) {
+    console.error(err)
+    throw err
   }
-
-  const { data: rawData, codeBlockResponses } = await fetchMarkdownFile(filepath, args)
-  const { attributes } = tryFrontmatter(rawData)
-
-  const data = `---
+  /* const data = `---
 title: ${attributes.title || basename(filepath)}
 layout:
     1: left
     2: 
         position: default
         maximized: true
-imports:
     - ${Util.expandHomeDir(filepath)}
 ---
 
@@ -85,13 +121,11 @@ imports:
 ::guide
 `
 
-  debug('guide generated markdown', data)
-
   setTabReadonly(args)
   return response(filepath, {
     data,
     codeBlockResponses
-  })
+  }) */
 }
 
 /**

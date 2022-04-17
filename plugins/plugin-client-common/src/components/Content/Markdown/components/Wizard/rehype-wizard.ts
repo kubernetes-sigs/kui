@@ -23,7 +23,6 @@ import { visitParents } from 'unist-util-visit-parents'
 import isElementWithProperties from '../../isElement'
 import { WizardSteps, PositionProps } from '../../KuiFrontmatter'
 import { GroupMember as CodeBlockGroupMember } from './CodeBlockProps'
-import { isImports, visitImportContainers } from '../../remark-import'
 
 type Primordial = Pick<CodeBlockGroupMember, 'group'> & {
   title: string
@@ -113,9 +112,7 @@ function transformer(ast: Root) {
         node.children.length > 0 &&
         node.children[0].type === 'text'
       ) {
-        const firstNonCommentIdx = parent.children.findIndex(
-          _ => _.type !== 'raw' && (!isElementWithProperties(_) || !isImports(_.properties))
-        )
+        const firstNonCommentIdx = parent.children.findIndex(_ => _.type !== 'raw')
 
         if (idx === firstNonCommentIdx) {
           const [title, description] = node.children[0].value.split(/\s*::\s*/)
@@ -148,7 +145,7 @@ function transformer(ast: Root) {
         delete node.properties['data-kui-split']
 
         if (wizard.steps.length === 0) {
-          if (ancestors.find(_ => isElementWithProperties(_) && isImports(_.properties))) {
+          if (ancestors.find(_ => isElementWithProperties(_))) {
             wizard.isOnAnImportChain = true
           }
 
@@ -205,7 +202,7 @@ function transformer(ast: Root) {
               'data-kui-split-count': wizard.splitCount,
               'data-kui-wizard-progress': wizard.progress,
               'data-kui-is-from-import': wizard.isOnAnImportChain.toString(),
-              'data-kui-code-blocks': [] // rehype-imports will populate this
+              'data-kui-code-blocks': []
             }
           },
           [wizard.description, ...wizard.steps]
@@ -216,15 +213,10 @@ function transformer(ast: Root) {
 
   visit(ast, 'element', extractStepTitlesFromHeadingsVisitor)
   processWizards(ast)
-  visitImportContainers(ast, ({ node }) => processWizards(node))
 }
 
 export function isWizard(props: Partial<PositionProps> | WizardProps): props is WizardProps {
   return props['data-kui-split'] === 'wizard'
-}
-
-export function isWizardFromImports(props: Partial<PositionProps> | WizardProps): props is WizardProps {
-  return isWizard(props) && props['data-kui-is-from-import'] === 'true'
 }
 
 export function isWizardStep(props: Partial<WizardStepProps>): props is WizardStepProps {

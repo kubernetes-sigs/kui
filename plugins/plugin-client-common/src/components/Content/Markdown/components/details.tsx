@@ -15,10 +15,11 @@
  */
 
 import React from 'react'
-
+import { i18n } from '@kui-shell/core'
 import { ReactMarkdownProps } from 'react-markdown/lib/ast-to-react'
 
 const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
+const strings = i18n('plugin-client-common', 'markdown')
 
 export function tipProps(expanded: boolean) {
   return { isWidthLimited: true, expanded }
@@ -32,7 +33,7 @@ export function tip(props: React.DetailsHTMLAttributes<HTMLElement> & { float?: 
     .join(' ')
 
   return (
-    <ExpandableSection className={className} showMore={props.title} {...tipProps(props.open)}>
+    <ExpandableSection className={className} showMore={strings(props.title)} {...tipProps(props.open)}>
       {props.children}
     </ExpandableSection>
   )

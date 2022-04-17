@@ -15,8 +15,7 @@
  */
 
 import { TreeViewProps } from '@patternfly/react-core'
-
-import { isChoice, isSubTask, isTitledSteps } from './code/graph'
+import { isChoice, isSubTask, isTitledSteps } from 'madwizard'
 
 export default abstract class Tree {
   /**

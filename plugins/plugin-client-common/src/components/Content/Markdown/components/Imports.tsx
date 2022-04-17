@@ -18,7 +18,7 @@ import Debug from 'debug'
 import React from 'react'
 import { basename } from 'path'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
-import { TreeView, TreeViewProps } from '@patternfly/react-core'
+import { TreeView, TreeViewProps, TextContent } from '@patternfly/react-core'
 
 import {
   isEmpty,
@@ -35,18 +35,21 @@ import {
   OrderedParallel,
   OrderedSequence,
   OrderedSubTask,
-  OrderedTitledSteps
-} from './code/graph'
-
-import order from './code/graph/order'
-import compile from './code/graph/compile'
-import progress from './code/graph/progress'
+  OrderedTitledSteps,
+  Title,
+  Description,
+  order,
+  compile,
+  progress,
+  Choices
+} from 'madwizard'
 
 import Tree from './ImportsTree'
 import Icons from '../../../spi/Icons'
-import { Choices, onChoice, offChoice } from '..'
 import Spinner from '../../../Views/Terminal/Block/Spinner'
 import { ProgressStepState, statusToIcon, statusToClassName } from '../../ProgressStepper'
+
+const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
 import '../../../../../web/scss/components/Tree/_index.scss'
 import '../../../../../web/scss/components/Wizard/Imports.scss'
@@ -55,9 +58,11 @@ const debug = Debug('plugins/plugin-client-common/components/Content/Markdown/Im
 
 type Status = ProgressStepState['status']
 
-type Props = Choices & {
-  imports: CodeBlockProps[]
-}
+type Props = Choices &
+  Partial<Title> &
+  Partial<Description> & {
+    imports: CodeBlockProps[]
+  }
 
 type Progress = { nDone: number; nError: number; nTotal: number }
 
@@ -78,15 +83,15 @@ function isDone({ nDone, nTotal }: Progress) {
   return nDone === nTotal
 }
 
-class ImportsImpl extends React.PureComponent<Props, State> {
+class Imports extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
-    this.state = ImportsImpl.getDerivedStateFromProps(props)
+    this.state = Imports.getDerivedStateFromProps(props)
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
     const choices = state ? state.choices : props.choices
-    const newGraph = compile(props.imports, choices, 'sequence')
+    const newGraph = compile(props.imports, choices, 'sequence', props.title, props.description)
     const noChange = state && sameGraph(state.imports, newGraph)
 
     const imports = noChange ? state.imports : order(newGraph)
@@ -104,16 +109,15 @@ class ImportsImpl extends React.PureComponent<Props, State> {
         }
   }
 
-  private readonly onChoice = ({ choices }: Choices) =>
-    setTimeout(() => this.setState({ choices: Object.assign({}, choices) }))
+  private readonly onChoice = ({ choices }: Choices) => setTimeout(() => this.setState({ choices: choices.clone() }))
 
   public componentDidMount() {
-    onChoice(this.onChoice)
+    this.state.choices.onChoice(this.onChoice)
     this.computeTreeModelIfNeeded()
   }
 
   public componentWillUnmount() {
-    offChoice(this.onChoice)
+    this.state.choices.offChoice(this.onChoice)
   }
 
   public componentDidUpdate() {
@@ -183,7 +187,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
 
   /** @return progress metrics (nDone, nTotal, etc.) for the given ordered graph */
   private progress(graph: OrderedGraph, status: State['codeBlockStatus']) {
-    return progress(graph, status, undefined, ImportsImpl.ignoreCodeBlock)
+    return progress(graph, status, undefined, Imports.ignoreCodeBlock)
   }
 
   public static getDerivedStateFromError() {
@@ -223,7 +227,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       origin,
       {
         id: origin.order.toString(),
-        name: <span className="kui--fooooo">{title || basename(filepath)}</span>,
+        name: title || basename(filepath),
         defaultExpanded: !isDone(rollupStatus) && depth < 2,
         children: children.length === 0 ? undefined : children,
         icon: hasIcon && <Icons className="kui--dependence-tree-subtask--icon" icon="Guidebook" />,
@@ -442,7 +446,7 @@ class ImportsImpl extends React.PureComponent<Props, State> {
       return this.treeModelForChoice(graph, status, doValidate, idPrefix, depth)
     } else if (isSubTask(graph)) {
       return this.treeModelForSubTask(graph, status, doValidate, depth, metFirstChoice)
-    } else if (!graph.optional && !ImportsImpl.ignoreCodeBlock(graph)) {
+    } else if (!graph.optional && !Imports.ignoreCodeBlock(graph)) {
       return this.treeModelForCodeBlock(graph, status, doValidate)
     }
   }
@@ -516,16 +520,14 @@ class LabelWithStatus extends React.PureComponent<LabelWithStatusProps> {
   }
 }
 
-export default function guidebookImportsWrapper(choices: Choices['choices']) {
-  return function guidebookImports(props: Props) {
-    const imports = props['data-kui-code-blocks']
-      ? JSON.parse(props['data-kui-code-blocks']).map(_ => JSON.parse(Buffer.from(_, 'base64').toString()))
-      : undefined
-
-    return !imports ? (
-      <span className="all-pad">No imports were found</span>
-    ) : (
-      <ImportsImpl imports={imports} choices={choices} />
-    )
-  }
+export default function guidebookImports(props: Props) {
+  return (
+    <ReactCommentary>
+      <TextContent>
+        <div className="padding-content marked-content page-content" data-is-nested>
+          <Imports {...props} />
+        </div>
+      </TextContent>
+    </ReactCommentary>
+  )
 }

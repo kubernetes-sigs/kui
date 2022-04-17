@@ -15,17 +15,17 @@
  */
 
 import React from 'react'
+import { ChoiceState } from 'madwizard'
 import { TextContent } from '@patternfly/react-core'
 
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
 import _tabbed, { TabProps, isTabs } from './tabbed'
-import { Props as MarkdownProps, ChoiceState } from '..'
-import { isImports, ImportProps } from '../remark-import'
+import { Props as MarkdownProps } from '..'
 import { PositionProps, isNormalSplit } from '../KuiFrontmatter'
 
-import { isWizard, isWizardFromImports } from './Wizard/rehype-wizard'
+import { isWizard } from './Wizard/rehype-wizard'
 const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
@@ -33,9 +33,7 @@ const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({
 export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices: ChoiceState) {
   const tabbed = _tabbed(uuid, choices)
 
-  return function div(
-    props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<ImportProps> & Partial<TabProps>
-  ) {
+  return function div(props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<TabProps>) {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const placeholder = props['data-kui-placeholder']
@@ -48,12 +46,6 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
 
     if (isTabs(props)) {
       return tabbed(props)
-    } else if (isImports(props)) {
-      // Don't render the content of imported documents. We will process these separately.
-      return <React.Fragment />
-    } else if (isWizardFromImports(props)) {
-      // Don't render wizard that come in via imports.
-      return <React.Fragment />
     } else if (
       !position ||
       ((isNormalSplit(position) || position === 'wizard') && count === 0 && !maximized && !placeholder)
@@ -98,13 +90,15 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
             const positionForView = position === 'terminal' || position === 'wizard' ? 'default' : position
 
             setTimeout(() =>
-              injector.inject(
-                uuid,
-                node,
-                (positionForView + (isNormalSplit(positionForView) ? '' : '-strip')) as SplitPosition,
-                count,
-                { inverseColors, hasActiveInput, maximized }
-              )
+              injector.inject([
+                {
+                  uuid,
+                  node,
+                  position: (positionForView + (isNormalSplit(positionForView) ? '' : '-strip')) as SplitPosition,
+                  count,
+                  opts: { inverseColors, hasActiveInput, maximized }
+                }
+              ])
             )
             return <React.Fragment />
           }}

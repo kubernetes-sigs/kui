@@ -15,6 +15,7 @@
  */
 
 import { REPL } from '@kui-shell/core'
+import { ChoiceState } from 'madwizard'
 import { Components } from 'react-markdown'
 
 import _a from './a'
@@ -26,13 +27,11 @@ import tabbed from './tabbed'
 import _heading from './heading'
 import blockquote from './blockquote'
 import { list, li } from './list'
-import guidebookguide from './guide'
-import guidebookimports from './Imports'
 import { details, tip } from './details'
 import { table, thead, tbody, tr, th, td } from './table'
 import _code, { CodeBlockResponse } from './code'
 
-import { Props, ChoiceState } from '../../Markdown'
+import { Props } from '../../Markdown'
 
 export type CodeBlockResponseFn = (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean }
 
@@ -90,9 +89,7 @@ function components(args: Args) {
     {
       tip,
       tag,
-      guidebookimports: guidebookimports(args.choices),
-      tabbed: tabbed(args.uuid, args.choices),
-      guidebookguide: guidebookguide(args.mdprops, args.uuid, args.choices, args.codeBlockResponses)
+      tabbed: tabbed(args.uuid, args.choices)
     },
     typedComponents(args)
   )

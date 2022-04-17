@@ -30,6 +30,7 @@
     "anser": "2.1.1",
     "hast-util-to-mdast": "8.3.1",
     "html-entities": "2.3.3",
+    "madwizard": "0.0.5",
     "monaco-editor": "0.33.0",
     "monaco-editor-webpack-plugin": "7.0.1",
     "react-markdown": "8.0.2",
@@ -46,7 +47,6 @@
     "tmp": "0.2.1",
     "turndown": "7.1.1",
     "turndown-plugin-gfm": "1.0.2",
-    "url": "0.11.0",
     "which": "2.0.2"
   },
   "kui": {
