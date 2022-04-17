@@ -16,11 +16,10 @@
 
 import { Node } from 'hast'
 import { Code } from 'mdast'
-import { visitParents } from 'unist-util-visit-parents'
+import { visit } from 'unist-util-visit'
 
 import dump from './dump'
 import { tryFrontmatter } from '../../frontmatter'
-import { isOnAnImportChain, visitImportContainers } from '../../remark-import'
 import KuiFrontmatter, { hasCodeBlocks } from '../../KuiFrontmatter'
 
 function isCode(node: Node): node is Code {
@@ -28,18 +27,14 @@ function isCode(node: Node): node is Code {
 }
 
 /** Scan and process the `codeblocks` schema of the given `frontmatter` */
-export function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: KuiFrontmatter, ignoreImports = true) {
+export function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: KuiFrontmatter) {
   if (hasCodeBlocks(frontmatter)) {
     const codeblocks = frontmatter.codeblocks.map(_ =>
       Object.assign({}, _, { match: new RegExp(_.match.replace(/\./g, '\\.')) })
     )
 
-    visitParents(tree, 'code', (node, ancestors) => {
+    visit(tree, 'code', node => {
       if (isCode(node)) {
-        if (ignoreImports && isOnAnImportChain(ancestors)) {
-          return
-        }
-
         const matched = codeblocks.find(_ => _.match.test(node.value))
 
         if (matched) {
@@ -71,11 +66,4 @@ export function preprocessCodeBlocksInContent(tree /*: Root */, frontmatter: Kui
       }
     })
   }
-}
-
-/** Scan and process the `codeblocks` schema of the given `frontmatter` */
-export function preprocessCodeBlocksInImports(tree /*: Root */) {
-  visitImportContainers(tree, ({ node, frontmatter }) => {
-    preprocessCodeBlocksInContent(node, frontmatter, false)
-  })
 }

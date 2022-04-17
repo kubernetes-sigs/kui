@@ -16,26 +16,22 @@
 
 import React from 'react'
 
-import { CodeBlockResponseFn } from '../../components'
-import { ChoiceState, Props as MarkdownProps } from '../../../Markdown'
+import { Props as GuideProps } from './Guide'
+// import { CodeBlockResponseFn } from '../../components'
+// import { ChoiceState } from '../../../Markdown'
 
+import { TextContent } from '@patternfly/react-core'
+const ReactCommentary = React.lazy(() => import('../../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 const Guide = React.lazy(() => import('./Guide'))
 
-export default function guidebookGuideWrapper(
-  mdprops: MarkdownProps,
-  uuid: string,
-  choices: ChoiceState,
-  codeBlockResponses: CodeBlockResponseFn
-) {
-  return function guidebookGuide(props: { 'data-kui-code-blocks': string }) {
-    const blocks = props['data-kui-code-blocks']
-      ? JSON.parse(props['data-kui-code-blocks']).map(_ => JSON.parse(Buffer.from(_, 'base64').toString()))
-      : undefined
-
-    return !blocks ? (
-      <span className="all-pad">Nothing to do!</span>
-    ) : (
-      <Guide tab={mdprops.tab} uuid={uuid} blocks={blocks} choices={choices} codeBlockResponses={codeBlockResponses} />
-    )
-  }
+export default function guidebookGuideWrapper(props: GuideProps) {
+  return (
+    <ReactCommentary>
+      <TextContent>
+        <div className="padding-content marked-content page-content" data-is-nested>
+          <Guide {...props} />
+        </div>
+      </TextContent>
+    </ReactCommentary>
+  )
 }

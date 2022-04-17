@@ -17,9 +17,10 @@
 import { v5 } from 'uuid'
 import React from 'react'
 
-import SplitInjector, { InjectorOptions } from './SplitInjector'
+import SplitInjector, { InjectorOptions, SplitSpec } from './SplitInjector'
 
 import {
+  Capabilities,
   Events,
   i18n,
   isAbortableResponse,
@@ -322,13 +323,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    * `position`. Uses `uuid` to determine whether the a prior version
    * of the node already exists in that position.
    */
-  public readonly inject = (
-    uuid: string,
-    node: React.ReactNode,
-    position: SplitPosition,
-    count: number,
-    { maximized, hasActiveInput, inverseColors }: InjectorOptions
-  ) => {
+  public readonly inject = (splitSpecs: SplitSpec[]) => setTimeout(() => splitSpecs.forEach(this.injectOne))
+
+  private readonly injectOne = ({
+    uuid,
+    node,
+    position,
+    count,
+    opts: { maximized, hasActiveInput, inverseColors }
+  }) => {
     const split =
       (position !== 'default'
         ? this.state.splits.find(_ => _.position === position)
@@ -382,29 +385,32 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     node: React.ReactNode,
     { hasActiveInput, inverseColors, maximized = false }: InjectorOptions
   ): React.ReactNode => {
-    this.setState(curState => {
-      const sbidx = this.findSplit(this.state, sbuuid)
-      if (sbidx < 0) {
-        return null
-      } else {
-        const splits = curState.splits.slice()
+    setTimeout(() =>
+      this.setState(curState => {
+        const sbidx = this.findSplit(curState, sbuuid)
+        if (sbidx < 0) {
+          return null
+        } else {
+          const splits = curState.splits.slice()
 
-        if (typeof maximized === 'boolean') {
-          splits[sbidx].maximized = maximized
-        }
+          if (typeof maximized === 'boolean') {
+            splits[sbidx].maximized = maximized
+          }
 
-        if (typeof inverseColors === 'boolean') {
-          splits[sbidx].inverseColors = inverseColors
-        }
+          if (typeof inverseColors === 'boolean') {
+            splits[sbidx].inverseColors = inverseColors
+          }
 
-        if (typeof hasActiveInput === 'boolean') {
-          splits[sbidx].hasActiveInput = hasActiveInput
+          if (typeof hasActiveInput === 'boolean') {
+            splits[sbidx].hasActiveInput = hasActiveInput
+          }
+
+          return {
+            splits
+          }
         }
-        return {
-          splits
-        }
-      }
-    })
+      })
+    )
 
     return node
   }
@@ -1462,6 +1468,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return blocks.map((_, idx) => {
       if (!isAnnouncement(_) && !isOutputOnly(_)) {
         displayedIdx++
+      }
+
+      if (scrollback.maximized && Capabilities.inBrowser() && isAnnouncement(_) && idx === 0) {
+        return
       }
 
       /** To find the focused block, we check:

@@ -51,7 +51,7 @@ export default async function fetchMarkdownFile(filepath: string, args: Pick<Arg
   const { pathname } = /^https?:/.test(filepath) ? new URL(filepath) : { pathname: filepath }
 
   if (!/\.md$/.test(pathname)) {
-    throw new Error('File extension not support')
+    throw new Error('File extension not support: ' + pathname)
   } else {
     const [data, codeBlockResponses] = await Promise.all([
       loadNotebook(filepath, args),

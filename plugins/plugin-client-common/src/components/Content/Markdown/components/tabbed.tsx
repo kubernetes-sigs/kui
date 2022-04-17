@@ -19,11 +19,11 @@
 import React from 'react'
 import Slugger from 'github-slugger'
 import { EventEmitter } from 'events'
+import { ChoiceState } from 'madwizard'
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 
 import Card from '../../../spi/Card'
 
-import { ChoiceState } from '..'
 import isElementWithProperties from '../isElement'
 
 type Props = {

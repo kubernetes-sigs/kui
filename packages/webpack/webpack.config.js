@@ -375,9 +375,14 @@ const fallback = !inBrowser
       stream: require.resolve('stream-browserify'),
       timers: require.resolve('timers-browserify'),
       tty: require.resolve('tty-browserify'),
-      url: require.resolve('url/'),
       util: require.resolve('util'),
       zlib: require.resolve('browserify-zlib')
+    }
+
+const alias = !inBrowser
+  ? {}
+  : {
+      url: 'portable-url'
     }
 
 module.exports = {
@@ -395,6 +400,7 @@ module.exports = {
   },
   externals,
   resolve: {
+    alias,
     extensions: ['.tsx', '.ts', '.js'],
     fallback
   },

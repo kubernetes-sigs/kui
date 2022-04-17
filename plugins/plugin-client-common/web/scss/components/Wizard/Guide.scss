@@ -109,6 +109,11 @@
 }
 
 @include MaximizedSplit {
+  @include Block {
+    &:first-child {
+      height: 100%;
+    }
+  }
   @include Guide {
     height: 100%;
   }

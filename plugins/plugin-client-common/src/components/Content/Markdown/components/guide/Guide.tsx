@@ -19,31 +19,35 @@ import { v4 } from 'uuid'
 import { i18n, Tab } from '@kui-shell/core'
 import { Chip, ChipGroup, Grid, GridItem, Progress, Tile, WizardStep } from '@patternfly/react-core'
 
-import order from '../code/graph/order'
-import compile from '../code/graph/compile'
-import { findChoiceFrontier, findCodeBlockFrontier, findPrereqsAndMainTasks } from '../code/graph/choice-frontier'
-
-import validate from '../code/graph/validate'
 import {
   Graph,
   Choice,
+  Choices,
   CodeBlockProps,
+  Title,
+  Description,
   OrderedGraph,
   extractTitle,
   extractDescription,
   isLeafNode,
   bodySource,
   hasSource,
-  sameGraph
-} from '../code/graph'
+  sameGraph,
+  order,
+  compile,
+  validate,
+  findChoiceFrontier,
+  findCodeBlockFrontier,
+  findPrereqsAndMainTasks
+} from 'madwizard'
 
 import Wizard, { Props as WizardProps } from '../Wizard/KWizard'
 
 import Card from '../../../../spi/Card'
 import Icons from '../../../../spi/Icons'
 
-import { CodeBlockResponseFn } from '../../components'
-import Markdown, { Choices, onChoice, offChoice } from '../../../Markdown'
+// import { CodeBlockResponseFn } from '../../components'
+import Markdown from '../../../Markdown'
 import { Status, statusToClassName, statusToIcon } from '../../../ProgressStepper'
 
 import '../../../../../../web/scss/components/Wizard/Guide.scss'
@@ -52,19 +56,21 @@ const strings = i18n('plugin-client-common', 'code')
 
 type WizardStepWithGraph = { graph: Graph; step: WizardStep }
 
-type Props = Choices & {
-  /** Enclosing Kui Tab */
-  tab: Tab
+export type Props = Choices &
+  Partial<Title> &
+  Partial<Description> & {
+    /** Enclosing Kui Tab */
+    tab: Tab
 
-  /** markdown document id */
-  uuid: string
+    /** markdown document id */
+    uuid: string
 
-  /** Raw list of code blocks */
-  blocks: CodeBlockProps[]
+    /** Raw list of code blocks */
+    blocks: CodeBlockProps[]
 
-  /** Status of code blocks */
-  codeBlockResponses: CodeBlockResponseFn
-}
+    /** Status of code blocks */
+    // codeBlockResponses: CodeBlockResponseFn
+  }
 
 type State = Choices & {
   /** Graph of code blocks to be executed */
@@ -137,7 +143,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   public static getDerivedStateFromProps(props: Props, state?: State) {
     const choices = state ? state.choices : props.choices
 
-    const newGraph = compile(props.blocks, choices, 'sequence')
+    const newGraph = compile(props.blocks, choices, 'sequence', props.title, props.description)
     const noChangeToGraph = state && sameGraph(state.graph, newGraph)
 
     const graph = noChangeToGraph ? state.graph : order(newGraph)
@@ -153,11 +159,11 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    onChoice(this.onChoiceFromAbove)
+    this.state.choices.onChoice(this.onChoiceFromAbove)
   }
 
   public componentWillUnmount() {
-    offChoice(this.onChoiceFromAbove)
+    this.state.choices.offChoice(this.onChoiceFromAbove)
   }
 
   /** @return a wrapper UI for the content of a wizard step */
@@ -212,7 +218,7 @@ export default class Guide extends React.PureComponent<Props, State> {
       this.setState({
         frontier: undefined,
         wizardStepStatus: [],
-        choices: Object.assign({}, choices)
+        choices: choices.clone()
       })
     )
 

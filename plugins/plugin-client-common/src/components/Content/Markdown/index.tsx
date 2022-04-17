@@ -16,7 +16,6 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { EventEmitter } from 'events'
 import TurndownService from 'turndown'
 import { TextContent } from '@patternfly/react-core'
 
@@ -29,15 +28,9 @@ import './hack' // hack workaround for buggy prop-types in react-markdown
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
 
-// ==foo== -> <mark>foo</mark>
-import hackMarks from './remark-mark'
-
 // parses out ::import{filepath} as node.type === 'leafDirective', but
 // does not create any DOM elements
 import remarkDirective from 'remark-directive'
-
-// ++ctrl+alt+delete++== -> <kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>delete</kbd>
-import hackKeys from './remark-keys'
 
 import inlineSnippets from '../../../controller/snippets'
 
@@ -46,19 +39,22 @@ import frontmatter from 'remark-frontmatter'
 
 import { filepathForResponses } from '../../../controller/fetch'
 
-import tip from './rehype-tip'
-import tabbed from './rehype-tabbed'
-import hackIndentation from './rehype-tabbed/hack'
-
 import components from './components'
 import wizard from './components/Wizard/rehype-wizard'
-import rehypeImports, { remarkImports } from './remark-import'
 
-import { ChoicesMap } from './components/code/graph'
+import {
+  hackMarkdownSource,
+  rehypeCodeIndexer,
+  rehypeTip,
+  rehypeTabbed,
+  Choices,
+  ChoiceState,
+  newChoiceState
+} from 'madwizard'
+
 import { CodeBlockResponse } from './components/code'
 import prefetchTableRows from './components/code/prefetch'
 import encodePriorResponses from './components/code/encoding'
-import codeIndexer from './components/code/rehype-code-indexer'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
@@ -67,37 +63,11 @@ import rehypeSlug from 'rehype-slug'
 import icons from './rehype-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
-const eventBus = new EventEmitter()
-function notifyOfChoice(choices: ChoiceState) {
-  eventBus.emit('/choice/update', { choices })
-}
-export function onChoice(handler: (choices: Choices) => void) {
-  eventBus.on('/choice/update', handler)
-}
-export function offChoice(handler: (choices: Choices) => void) {
-  eventBus.off('/choice/update', handler)
-}
-
-export interface ChoiceState {
-  keys: () => ReturnType<typeof Object.keys>
-  entries: () => ReturnType<typeof Object.entries>
-  contains: <K extends keyof ChoicesMap>(key: K) => boolean
-  get: <K extends keyof ChoicesMap>(key: K) => ChoicesMap[K]
-  set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K], overrideRejections?: boolean) => boolean
-  remove: <K extends keyof ChoicesMap>(key: K) => boolean
-}
-
-export interface Choices {
-  /** Choices made, e.g. "i want to install using curl" */
-  choices: ChoiceState
-}
-
 const rehypePlugins = (uuid: string, choices: ChoiceState): Options['rehypePlugins'] => [
   wizard,
-  [tabbed, uuid, choices],
-  tip,
-  [codeIndexer, uuid],
-  rehypeImports,
+  [rehypeTabbed, uuid, choices],
+  rehypeTip,
+  [rehypeCodeIndexer, uuid],
   icons,
   rehypeRaw,
   rehypeSlug
@@ -105,7 +75,6 @@ const rehypePlugins = (uuid: string, choices: ChoiceState): Options['rehypePlugi
 const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) => [
   gfm,
   remarkDirective,
-  remarkImports,
   [frontmatter, ['yaml', 'toml']],
   [kuiFrontmatter, { tab }],
   emojis // [emojis, { emoticon: true }]
@@ -174,12 +143,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   /** Handlers to be called on unmount */
   private readonly cleaners: (() => void)[] = []
-
-  /** Choices made, e.g. "i want to install using curl" */
-  private readonly _choices: ChoicesMap = {}
-
-  /** Choices rejected, e.g. "i really don't want to install using curl" */
-  private readonly rejectedChoices: Record<keyof ChoicesMap, boolean> = {}
 
   public constructor(props: Props) {
     super(props)
@@ -323,61 +286,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   private readonly uuid = uuid()
 
-  /** Avoid back-to-back-to-back state updates from ChoiceState changes */
-  /* private currentBatchUpdate: ReturnType<typeof setTimeout>
-  private readonly batches: ((curState: State) => Pick<State, 'choices' | 'rejectedChoices'>)[] = []
-  private batch(fn: (curState: State) => Pick<State, 'choices' | 'rejectedChoices'> | null) {
-    if (this.currentBatchUpdate) {
-      clearTimeout(this.currentBatchUpdate)
-    }
-    this.batches.push(fn)
-    this.currentBatchUpdate = setTimeout(() => {
-      const batches = this.batches.splice(0, this.batches.length)
-      this.setState(curState => {
-        const resp = batches.reduce((curState, fn) => fn(curState) || curState, curState)
-        return resp
-      })
-    }, 20)
-    } */
-
-  private readonly choices: ChoiceState = this.props.choices || {
-    keys: () => Object.keys(this._choices),
-    entries: () => Object.entries(this._choices),
-
-    contains: (key: keyof ChoicesMap) => {
-      return key in this._choices
-    },
-
-    get: (key: keyof ChoicesMap) => {
-      return this._choices[key]
-    },
-
-    remove: <K extends keyof ChoicesMap>(key: K) => {
-      if (key in this._choices) {
-        delete this._choices[key]
-        this.rejectedChoices[key] = true
-        notifyOfChoice(this.choices)
-        return true
-      } else {
-        return false
-      }
-    },
-
-    set: <K extends keyof ChoicesMap>(key: K, value: ChoicesMap[K], overrideRejections = true) => {
-      if (this._choices[key] === value) {
-        return false
-      }
-
-      if (overrideRejections || !(key in this.rejectedChoices)) {
-        delete this.rejectedChoices[key]
-        this._choices[key] = value
-        notifyOfChoice(this.choices)
-        return true
-      } else {
-        return false
-      }
-    }
-  }
+  private readonly choices: ChoiceState = this.props.choices || newChoiceState()
 
   /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
@@ -411,7 +320,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * syntax from pymdown (such as target=_blank for links).
    */
   private static hackSource(source: string) {
-    return hackKeys(hackMarks(hackIndentation(source)))
+    return hackMarkdownSource(source)
       .trim()
       .replace(/\){target=[^}]+}/g, ')')
       .replace(/{draggable=(false|true)}/g, '')

@@ -22,7 +22,7 @@ import inputs from './inputs'
 import { Tree } from './Input'
 
 inputs.forEach(markdown => {
-  ;['commentary -f', 'guide'].forEach(command => {
+  ;['guide'].forEach(command => {
     describe(`markdown code block dependence tree using command="${command}" ${basename(markdown.input)} ${process.env
       .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
       before(Common.before(this))

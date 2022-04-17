@@ -32,19 +32,21 @@ export interface InjectorOptions {
   hasActiveInput?: boolean
 }
 
+export type SplitSpec = {
+  uuid: string
+  node: React.ReactNode
+  position: SplitPosition
+  count: number
+  opts?: InjectorOptions
+}
+
 /**
  * Inject the given React `node` in the given `SplitPosition`. Use the
  * given `uuid` to determine whether we have already injected this
  * content or not.
  *
  */
-type Injector = (
-  uuid: string,
-  node: React.ReactNode,
-  position: SplitPosition,
-  count: number,
-  opts?: InjectorOptions
-) => void
+type Injector = (splits: SplitSpec[]) => void
 
 /** Update the properties of an existing split */
 type Modifier = (
