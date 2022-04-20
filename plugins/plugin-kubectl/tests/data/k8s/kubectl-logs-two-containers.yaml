@@ -21,7 +21,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: quay.io/bitnami/nginx
+    image: nginx
     command: ["/bin/sh", "-c", "while true; do echo nginx-`date +'%M:%S'`; sleep 1; done"]
   - name: vim
     image: quay.io/starpit/alpine-vim

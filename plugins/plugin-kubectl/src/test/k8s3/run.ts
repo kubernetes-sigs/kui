@@ -48,7 +48,7 @@ describe(`kubectl run ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Com
     allocateNS(this, ns)
 
     it(`should create pod/deployment from ${kubectl} run`, () => {
-      return CLI.command(`${kubectl} run nginx --image quay.io/bitnami/nginx -n ${ns}`, this.app)
+      return CLI.command(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )
