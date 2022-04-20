@@ -16,38 +16,26 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { basename } from 'path'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
 import { TreeView, TreeViewProps, TextContent } from '@patternfly/react-core'
 
 import {
-  isEmpty,
-  isSequence,
-  isParallel,
-  isTitledSteps,
-  isSubTask,
-  isChoice,
   sameGraph,
-  CodeBlockProps,
-  OrderedCodeBlock,
-  OrderedChoice,
   OrderedGraph,
-  OrderedParallel,
-  OrderedSequence,
-  OrderedSubTask,
-  OrderedTitledSteps,
+  CodeBlockProps,
   Title,
   Description,
   order,
   compile,
-  progress,
-  Choices
+  Choices,
+  Decoration,
+  Treeifier,
+  UI
 } from 'madwizard'
 
-import Tree from './ImportsTree'
-import Icons from '../../../spi/Icons'
-import Spinner from '../../../Views/Terminal/Block/Spinner'
-import { ProgressStepState, statusToIcon, statusToClassName } from '../../ProgressStepper'
+import Icons, { SupportedIcon } from '../../../spi/Icons'
+// import Spinner from '../../../Views/Terminal/Block/Spinner'
+import { ProgressStepState } from '../../ProgressStepper'
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
@@ -55,6 +43,91 @@ import '../../../../../web/scss/components/Tree/_index.scss'
 import '../../../../../web/scss/components/Wizard/Imports.scss'
 
 const debug = Debug('plugins/plugin-client-common/components/Content/Markdown/Imports')
+
+class ReactUI implements UI<React.ReactNode> {
+  public span(content: string, ...decorations: Decoration[]) {
+    if (decorations.length === 0) {
+      return content
+    } else {
+      const className = decorations
+        .map(decoration =>
+          decoration === 'blue'
+            ? 'color-base0D'
+            : decoration === 'red'
+            ? 'color-base08'
+            : decoration === 'magenta'
+            ? 'color-base0E'
+            : decoration === 'cyan'
+            ? 'color-base0C'
+            : decoration === 'yellow'
+            ? 'color-base09'
+            : decoration === 'dim'
+            ? 'sub-text'
+            : ''
+        )
+        .filter(Boolean)
+        .join(' ')
+
+      if (decorations.includes('bold')) {
+        return <strong className={className}>{content}</strong>
+      } else {
+        return <span className={className}>{content}</span>
+      }
+    }
+  }
+
+  public code(body: string) {
+    return (
+      <pre>
+        <code>{body}</code>
+      </pre>
+    )
+  }
+
+  public icon(cls: string) {
+    return <Icons className="kui--dependence-tree-subtask--icon" icon={cls as SupportedIcon} />
+  }
+
+  public statusToIcon(status: Status) {
+    switch (status) {
+      case 'success':
+        return <Icons className="pf-m-success" icon="Checkmark" />
+    }
+  }
+
+  public title(title: string | string[], status?: Status) {
+    if (Array.isArray(title)) {
+      return (
+        <React.Fragment>
+          {title.map((_, idx, A) => (
+            <span key={idx}>
+              {this.title(_, status)}
+              {idx < A.length - 1 ? ' ' : ''}
+            </span>
+          ))}
+        </React.Fragment>
+      )
+    } else if (status === 'error') {
+      return <span className="red-text">{title}</span>
+    } else {
+      return title
+    }
+  }
+
+  public open(filepath: string) {
+    return (
+      <button
+        className="kui--tree-action pf-c-button pf-m-plain"
+        onClick={() => {
+          debug('drilling down to notebook', filepath)
+          pexecInCurrentTab(`replay ${encodeComponent(filepath)}`, undefined, true, true)
+        }}
+      >
+        <Icons icon="Info" />
+      </button>
+    )
+  }
+}
 
 type Status = ProgressStepState['status']
 
@@ -78,10 +151,6 @@ type State = Choices &
     /** Map from CodeBlockProps.id to execution status of that code block */
     codeBlockStatus: Record<string, Status>
   }
-
-function isDone({ nDone, nTotal }: Progress) {
-  return nDone === nTotal
-}
 
 class Imports extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
@@ -142,312 +211,10 @@ class Imports extends React.PureComponent<Props, State> {
     status = this.state.codeBlockStatus,
     doValidate = true
   ): Pick<State, 'data'> {
-    return this.treeModelForLeaf(imports, status, doValidate, undefined, undefined, false, 'Tasks')
-  }
-
-  private withIcons(
-    rollupStatus: Progress,
-    origin: OrderedGraph,
-    data: TreeViewProps['data'][0],
-    showBadge = isDone(rollupStatus)
-  ) {
-    const isTotallyDone = isDone(rollupStatus)
-    const hasErrors = rollupStatus.nError > 0
-    const doneOrErrors = isTotallyDone || hasErrors
-
-    const showIcon = data.icon || !showBadge
-
-    const badgeProps = !showBadge
-      ? { hasBadge: false }
-      : {
-          hasBadge: true,
-          badgeProps: { isRead: !isTotallyDone },
-          customBadgeContent: isTotallyDone ? (
-            <Icons className="pf-m-success" icon="Checkmark" />
-          ) : (
-            <span className="nowrap">{`${rollupStatus.nDone} of ${rollupStatus.nTotal}`}</span>
-          )
-        }
-
-    return Object.assign({ id: origin.order.toString() }, data, badgeProps, {
-      'data-origin': origin,
-      'data-has-errors': hasErrors,
-      'data-is-totally-done': isTotallyDone,
-      expandedIcon: data.expandedIcon || null,
-      icon: showIcon && (data.icon || (doneOrErrors && <LabelWithStatus status={hasErrors ? 'error' : 'success'} />))
-    })
-  }
-
-  /** We filter out code blocks with `validate: $body` */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private static ignoreCodeBlock(props: CodeBlockProps) {
-    // return validate === body <-- i don't think we need this any more
-    return false
-  }
-
-  /** @return progress metrics (nDone, nTotal, etc.) for the given ordered graph */
-  private progress(graph: OrderedGraph, status: State['codeBlockStatus']) {
-    return progress(graph, status, undefined, Imports.ignoreCodeBlock)
-  }
-
-  public static getDerivedStateFromError() {
-    return { hasError: true }
-  }
-
-  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(error, errorInfo)
-  }
-
-  private treeModelForSubTask(
-    origin: OrderedSubTask,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    depth: number,
-    metFirstChoice = false
-  ): { data: TreeViewProps['data'] } {
-    const { key, title, filepath, graph } = origin
-    const rollupStatus = this.progress(graph, status)
-    const children = Tree.xformFoldChoices(
-      graph.sequence
-        .map(_ => this.treeModelForLeaf(_, status, doValidate, key, depth + 1, metFirstChoice))
-        .filter(Boolean)
-        .flatMap(_ => _.data)
-    )
-
-    if (children.length === 0) {
-      return
-    }
-
-    const hasAction = !!filepath
-    const hasBadge = hasAction && rollupStatus.nDone > 0
-    const hasIcon = hasAction
-
-    const data = this.withIcons(
-      rollupStatus,
-      origin,
-      {
-        id: origin.order.toString(),
-        name: title || basename(filepath),
-        defaultExpanded: !isDone(rollupStatus) && depth < 2,
-        children: children.length === 0 ? undefined : children,
-        icon: hasIcon && <Icons className="kui--dependence-tree-subtask--icon" icon="Guidebook" />,
-        expandedIcon: hasIcon && <Icons className="kui--dependence-tree-subtask--icon" icon="GuidebookOpen" />,
-        action: hasAction && (
-          <button
-            className="kui--tree-action pf-c-button pf-m-plain"
-            onClick={() => {
-              debug('drilling down to notebook', filepath)
-              pexecInCurrentTab(`replay ${encodeComponent(filepath)}`, undefined, true, true)
-            }}
-          >
-            <Icons icon="Info" />
-          </button>
-        )
-      },
-      hasBadge
-    )
-
-    return { data: [Tree.xformFoldNestedSubTask(data)] }
-  }
-
-  private treeModelForTitledStep(
-    graph: OrderedTitledSteps['steps'][0],
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = '',
-    depth = 0,
-    metFirstChoice = false
-  ) {
-    return this.treeModelForSequence(graph.graph, status, doValidate, idPrefix, depth, metFirstChoice, graph.title)
-  }
-
-  private treeModelForTitledSteps(
-    graph: OrderedTitledSteps,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = '',
-    depth = 0,
-    metFirstChoice = false
-  ) {
-    const _children = graph.steps
-      .map((_, childIdx) =>
-        this.treeModelForTitledStep(_, status, doValidate, `${idPrefix}-s${childIdx}`, depth + 1, metFirstChoice)
-      )
-      .filter(Boolean)
-    const rollupStatus = this.progress(graph, status)
-    const children = _children.flatMap(_ => _.data)
-
     return {
-      data: [
-        this.withIcons(rollupStatus, graph, {
-          name: graph.title,
-          defaultExpanded: !metFirstChoice || depth < 2,
-          children
-        })
-      ]
-    }
-  }
-
-  private treeModelForSequence(
-    graph: OrderedSequence,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = '',
-    depth = 0,
-    metFirstChoice = false,
-    name: React.ReactNode = ''
-  ) {
-    const _children = graph.sequence
-      .map((_, childIdx) =>
-        this.treeModelForLeaf(_, status, doValidate, `${idPrefix}-s${childIdx}`, depth + 1, metFirstChoice, name)
+      data: new Treeifier<React.ReactNode>(new ReactUI(), status, doValidate && this.validate.bind(this)).toTree(
+        imports
       )
-      .filter(Boolean)
-    const rollupStatus = this.progress(graph, status)
-    const children = Tree.optimize(
-      _children.flatMap(_ => _.data),
-      depth
-    )
-
-    // only show the "n of m" text for the root
-    const hasBadge = isDone(rollupStatus) || depth === 0
-
-    const data = [
-      this.withIcons(
-        rollupStatus,
-        graph,
-        {
-          name: name || 'Sequence',
-          defaultExpanded: !metFirstChoice || depth < 1,
-          children: children.length === 0 ? undefined : children
-        },
-        hasBadge
-      )
-    ]
-
-    return { data: Tree.xformFoldSingletonSubTask(data) }
-  }
-
-  private treeModelForParallel(
-    graph: OrderedParallel,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = '',
-    depth = 0,
-    metFirstChoice = false,
-    name: React.ReactNode = ''
-  ) {
-    const _children = graph.parallel
-      .map((_, childIdx) =>
-        this.treeModelForLeaf(_, status, doValidate, `${idPrefix}-p${childIdx}`, depth + 1, metFirstChoice, name)
-      )
-      .filter(Boolean)
-    const rollupStatus = this.progress(graph, status)
-    const children = _children.flatMap(_ => _.data)
-
-    const data =
-      children.length === 1
-        ? children // [Object.assign(children[0], { name: name || children[0].name })]
-        : [
-            this.withIcons(rollupStatus, graph, {
-              name: name || 'Parallel',
-              defaultExpanded: depth < 1,
-              children: children.length === 0 ? undefined : children
-            })
-          ]
-    return { data }
-  }
-
-  private treeModelForChoice(
-    graph: OrderedChoice,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = '',
-    depth = 0
-  ) {
-    const _children = graph.choices
-      .filter(_ => !isEmpty(_.graph))
-      .map(_ =>
-        this.treeModelForLeaf(
-          _.graph,
-          status,
-          doValidate,
-          `${idPrefix}-g${graph.group}-m${_.member}`,
-          depth + 1,
-          true,
-          <span>
-            <strong>Option {_.member + 1}</strong>: {_.title}
-          </span>
-        )
-      )
-      .filter(Boolean)
-    const rollupStatus = this.progress(graph, status)
-    const children = _children.flatMap(_ => _.data)
-
-    const data = [
-      this.withIcons(rollupStatus, graph, {
-        name: graph.title || <span className="italic red-text">Missing heading for choice</span>,
-        defaultExpanded: true,
-        children
-      })
-    ]
-    return { data }
-  }
-
-  private treeModelForCodeBlock(graph: OrderedCodeBlock, status: State['codeBlockStatus'], doValidate: boolean) {
-    if (doValidate) {
-      setTimeout(() => this.validate(graph))
-    }
-
-    try {
-      const id = graph.order.toString()
-      const myStatus = status[graph.id]
-
-      const data = [
-        {
-          id,
-          icon: myStatus && myStatus !== 'success' && <LabelWithStatus status={myStatus} />,
-          name: (
-            <pre>
-              <code>
-                {graph.body
-                  .split(/\n/)
-                  .map(_ => _.replace(/#.*/, ''))
-                  .filter(Boolean)[0]
-                  .trim()
-                  .slice(0, 30)}
-              </code>
-            </pre>
-          )
-        }
-      ]
-
-      return { data }
-    } catch (err) {
-      console.error('Error rendering code block', graph, err)
-    }
-  }
-
-  private treeModelForLeaf(
-    graph: OrderedGraph,
-    status: State['codeBlockStatus'],
-    doValidate: boolean,
-    idPrefix = '',
-    depth = 0,
-    metFirstChoice = false,
-    name: React.ReactNode = ''
-  ): { data: TreeViewProps['data'] } {
-    if (isSequence(graph)) {
-      return this.treeModelForSequence(graph, status, doValidate, idPrefix, depth, metFirstChoice, name)
-    } else if (isTitledSteps(graph)) {
-      return this.treeModelForTitledSteps(graph, status, doValidate, idPrefix, depth, metFirstChoice)
-    } else if (isParallel(graph)) {
-      return this.treeModelForParallel(graph, status, doValidate, idPrefix, depth, metFirstChoice, name)
-    } else if (isChoice(graph)) {
-      return this.treeModelForChoice(graph, status, doValidate, idPrefix, depth)
-    } else if (isSubTask(graph)) {
-      return this.treeModelForSubTask(graph, status, doValidate, depth, metFirstChoice)
-    } else if (!graph.optional && !Imports.ignoreCodeBlock(graph)) {
-      return this.treeModelForCodeBlock(graph, status, doValidate)
     }
   }
 
@@ -490,7 +257,7 @@ class Imports extends React.PureComponent<Props, State> {
   }
 }
 
-type LabelWithStatusProps = { label?: string; status: Status }
+/* type LabelWithStatusProps = { label?: string; status: Status }
 
 class LabelWithStatus extends React.PureComponent<LabelWithStatusProps> {
   private get status() {
@@ -518,7 +285,7 @@ class LabelWithStatus extends React.PureComponent<LabelWithStatusProps> {
       )
     )
   }
-}
+} */
 
 export default function guidebookImports(props: Props) {
   return (
