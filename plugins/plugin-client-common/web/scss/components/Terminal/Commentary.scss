@@ -566,9 +566,10 @@ $tip-toggle-opacity-2: 0.6;
 }
 
 /** see https://github.com/kubernetes-sigs/kui/pull/8808 */
-.kui--markdown-from-repl {
-  & > p:first-child {
+.kui--markdown-from-repl.marked-content {
+  & > p {
     margin-top: 0;
+    margin-bottom: 0;
   }
 }
 
