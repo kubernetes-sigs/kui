@@ -32,6 +32,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: quay.io/bitnami/nginx:1.18.0
+        image: nginx:1.18.0
         ports:
         - containerPort: 80

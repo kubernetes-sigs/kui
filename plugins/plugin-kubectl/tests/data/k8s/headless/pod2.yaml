@@ -24,6 +24,6 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: quay.io/bitnami/nginx
+    image: nginx
     ports:
     - containerPort: 80

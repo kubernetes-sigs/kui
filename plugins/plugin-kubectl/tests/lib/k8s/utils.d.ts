@@ -130,5 +130,11 @@ declare function waitForTerminalText(this: Common.ISuite, res: ReplExpect.AppAnd
 /** URL of remote pod yaml */
 declare const remotePodYaml: string
 
+/** Name of remote pod */
+declare const remotePodName: string
+
 /** URL of second remote pod yaml */
 declare const remotePodYaml2: string
+
+/** Name of remote pod2 */
+declare const remotePodName2: string

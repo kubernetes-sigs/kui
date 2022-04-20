@@ -309,8 +309,14 @@ exports.waitForTerminalText = async function(res, checker) {
 
 /** URL of remote pod yaml */
 exports.remotePodYaml =
-  'https://raw.githubusercontent.com/IBM/kui/master/plugins/plugin-kubectl/tests/data/k8s/headless/pod.yaml'
+  'https://raw.githubusercontent.com/kubernetes/website/main/content/en/examples/pods/simple-pod.yaml'
+
+/** Name of remote pod */
+exports.remotePodName = 'nginx'
 
 /** URL of remote pod yaml */
 exports.remotePodYaml2 =
-  'https://raw.githubusercontent.com/IBM/kui/master/plugins/plugin-kubectl/tests/data/k8s/headless/pod2.yaml'
+  'https://raw.githubusercontent.com/kubernetes/website/main/content/en/examples/pods/lifecycle-events.yaml'
+
+/** Name of remote pod2 */
+exports.remotePodName2 = 'lifecycle-demo'

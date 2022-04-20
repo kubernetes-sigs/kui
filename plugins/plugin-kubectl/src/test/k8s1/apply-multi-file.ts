@@ -17,7 +17,9 @@
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
   openSidecarByList,
+  remotePodName,
   remotePodYaml,
+  remotePodName2,
   remotePodYaml2,
   waitForRed,
   createNS,
@@ -27,7 +29,7 @@ import {
 
 const synonyms = ['kubectl']
 const dashFs = ['-f']
-const resources = ['nginx', 'nginx2']
+const resources = [remotePodName, remotePodName2]
 
 describe(`kubectl apply multi-file ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
