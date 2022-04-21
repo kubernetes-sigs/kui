@@ -33,7 +33,7 @@
     "madwizard": "0.0.9",
     "monaco-editor": "0.33.0",
     "monaco-editor-webpack-plugin": "7.0.1",
-    "react-markdown": "8.0.2",
+    "react-markdown": "8.0.3",
     "rehype-raw": "6.1.1",
     "rehype-slug": "5.0.1",
     "remark-code-frontmatter": "1.0.0",

@@ -23,7 +23,6 @@ import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
 import { Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'
 
 import ReactMarkdown, { Options } from 'react-markdown'
-import './hack' // hack workaround for buggy prop-types in react-markdown
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'

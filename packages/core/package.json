@@ -36,7 +36,7 @@
     "colors": "1.4.0",
     "columnify": "1.6.0",
     "debug": "4.3.4",
-    "fs-extra": "10.0.1",
+    "fs-extra": "10.1.0",
     "mkdirp": "1.0.4",
     "needle": "3.1.0",
     "pretty-ms": "7.0.1",
