@@ -13,5 +13,5 @@
       "@kui-shell/plugin-core-support/*": ["src/*"]
     }
   },
-  "references": [{ "path": "./about" }, { "path": "./up" }]
+  "references": [{ "path": "./about" }]
 }
