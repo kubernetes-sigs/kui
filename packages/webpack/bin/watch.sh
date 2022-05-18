@@ -41,6 +41,10 @@ THEME="${MODULE_HOME}"/client
 
 rm -rf "$KUI_BUILDDIR"/dist/webpack/*
 
+if [ "$TARGET" != "electron-renderer" ]; then
+    (cd "${MODULE_HOME}"/proxy && npm install --no-package-lock)
+fi
+
 if [ -n "$OPEN" ]; then
     OPEN="--open"
 else
