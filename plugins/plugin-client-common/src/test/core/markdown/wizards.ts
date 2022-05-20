@@ -80,10 +80,24 @@ const IN3: Input = {
   title: 'Getting Started with Knative',
   description: 'WizardDescriptionInTopmatter',
   expectedSplitCount: 1,
-  expectedCodeBlockTasks: 6,
+  expectedCodeBlockTasks: 19,
   steps: [
     { name: 'TestRewritingOfStepName', body: 'This topic describes', description: '', codeBlocks: [] },
-    { name: 'Before you begin', body: 'Before you can get started', description: 'TestDescription2', codeBlocks: [] }
+    { name: 'Before you begin', body: 'Before you can get started', description: 'TestDescription2', codeBlocks: [] },
+    { name: 'Install the Knative CLI', body: 'provides a quick and easy interface', description: '', codeBlocks: [] },
+    {
+      name: 'Install the Knative quickstart plugin',
+      body: 'To get started, install the Knative',
+      description: 'This gives you a kn quickstart command',
+      codeBlocks: []
+    },
+    {
+      name: 'Run the Knative quickstart plugin',
+      body: 'plugin completes the following functions',
+      description: 'This will quickly set up Knative against kind or minikube',
+      codeBlocks: []
+    },
+    { name: 'Next steps', body: "Now you've installed Knative", description: '', codeBlocks: [] }
   ],
 
   // the guide does not yet show non-code block steps
@@ -113,7 +127,7 @@ const IN5: Input = {
   title: 'WizardTitle',
   description: 'WizardDescription',
   expectedSplitCount: 1,
-  expectedCodeBlockTasks: 1,
+  expectedCodeBlockTasks: 2,
   steps: [{ name: 'AAA', body: aaaBody, description: '', codeBlocks: [{ index: 0, output: 'XXX' }] }]
 }
 
@@ -123,7 +137,7 @@ const IN6: Input = {
   title: 'WizardTitle',
   description: 'WizardDescription',
   expectedSplitCount: 1,
-  expectedCodeBlockTasks: 2,
+  expectedCodeBlockTasks: 3,
   steps: [
     {
       name: 'AAA',

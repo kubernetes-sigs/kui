@@ -19,7 +19,12 @@ import { importd } from './1'
 
 const IN5: Input = {
   input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model5.md'),
-  tree: () => [importd]
+  tree: () => [
+    {
+      name: 'Prerequisites',
+      children: [importd]
+    }
+  ]
 }
 
 export default IN5

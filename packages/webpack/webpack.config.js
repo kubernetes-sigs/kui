@@ -17,6 +17,7 @@
 const fs = require('fs')
 const path = require('path')
 const requireAll = require('require-all')
+const { NormalModuleReplacementPlugin } = require('webpack')
 
 const mode = process.env.MODE || 'development'
 const target = process.env.TARGET || 'web'
@@ -302,6 +303,31 @@ plugins.push({
     })
   }
 })
+
+// this handles the node:path, node:process imports that came about in
+// node 16
+if (inBrowser) {
+  plugins.push(
+    new NormalModuleReplacementPlugin(/node:/, resource => {
+      const mod = resource.request.replace(/^node:/, '')
+
+      switch (mod) {
+        case 'path':
+          resource.request = 'path-browserify'
+          break
+        case 'process':
+          resource.request = require.resolve('./process.js')
+          break
+        case 'readline':
+          resource.request = require.resolve('./readline.js')
+          break
+
+        default:
+          throw new Error(`Not found ${mod}`)
+      }
+    })
+  )
+}
 
 console.log('webpack plugins', plugins)
 

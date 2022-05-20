@@ -33,7 +33,7 @@ type MiniProps = {
   codeBlockId: string
   body: string
   language: string
-  validate?: string
+  validate?: string | number | boolean
   optional?: boolean
 
   status: Status
@@ -87,7 +87,7 @@ class MiniProgressStep extends React.PureComponent<MiniProps> {
       setTimeout(async () => {
         try {
           emitLinkUpdate(this.props.codeBlockId, 'in-progress')
-          await pexecInCurrentTab(this.props.validate, undefined, true, true)
+          await pexecInCurrentTab(this.props.validate.toString(), undefined, true, true)
           emitLinkUpdate(this.props.codeBlockId, 'success')
         } catch (err) {
           emitLinkUpdate(this.props.codeBlockId, 'blank')

@@ -48,21 +48,15 @@ export function filepathForResponses(filepath: string) {
 }
 
 export default async function fetchMarkdownFile(filepath: string, args: Pick<Arguments, 'REPL'>) {
-  const { pathname } = /^https?:/.test(filepath) ? new URL(filepath) : { pathname: filepath }
+  const [data, codeBlockResponses] = await Promise.all([
+    loadNotebook(filepath, args),
+    loadNotebook(filepathForResponses(filepath), args, true)
+  ])
 
-  if (!/\.md$/.test(pathname)) {
-    throw new Error('File extension not support: ' + pathname)
-  } else {
-    const [data, codeBlockResponses] = await Promise.all([
-      loadNotebook(filepath, args),
-      loadNotebook(filepathForResponses(filepath), args, true)
-    ])
-
-    return {
-      data: typeof data === 'string' ? data : JSON.stringify(data),
-      codeBlockResponses: (typeof codeBlockResponses === 'string'
-        ? JSON.parse(codeBlockResponses)
-        : codeBlockResponses) as CommentaryResponse['props']['codeBlockResponses']
-    }
+  return {
+    data: typeof data === 'string' ? data : JSON.stringify(data),
+    codeBlockResponses: (typeof codeBlockResponses === 'string'
+      ? JSON.parse(codeBlockResponses)
+      : codeBlockResponses) as CommentaryResponse['props']['codeBlockResponses']
   }
 }

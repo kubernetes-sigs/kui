@@ -15,7 +15,7 @@
  */
 
 import Input, { Tree } from '../Input'
-import { importa, importe, importd } from './1'
+import { importe, importd } from './1'
 
 const snippetsInTab5: Tree = {
   name: 'snippets-in-tab5.md',
@@ -28,7 +28,7 @@ const snippetsInTab5: Tree = {
 
 const prerequisites = {
   name: 'Prerequisites',
-  children: [importa(), importe]
+  children: [importe]
 }
 
 const mainTasks = {
@@ -40,7 +40,7 @@ const IN3: Input = {
   input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model3.md'),
   tree: () => [
     {
-      name: snippetsInTab5.name,
+      name: 'AAA',
       children: [prerequisites, mainTasks]
     }
   ]

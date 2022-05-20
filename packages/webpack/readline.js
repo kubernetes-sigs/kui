@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-import Input from '../Input'
-import { importg } from './6'
-import { importd } from './1'
-
-const filename = 'guidebook-tree-model7.md'
-
-export const tree: Input['tree'] = (command: string) => [
-  {
-    name: command === 'guide' ? filename : 'Tasks',
-    children: [importg('importgg.md'), importd]
-  }
-]
-
-const IN7: Input = {
-  input: require.resolve(`@kui-shell/plugin-client-common/tests/data/${filename}`),
-  tree
-}
-
-export default IN7
+module.exports = new Error('Unsupported in browser')

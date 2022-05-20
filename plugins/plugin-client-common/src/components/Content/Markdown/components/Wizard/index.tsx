@@ -16,13 +16,12 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-import { Choices, CodeBlockProps, order, compile, blocks, OrderedGraph, sequence } from 'madwizard'
-
-import { WizardProps } from './rehype-wizard'
+import { Choices, CodeBlockProps, OrderedGraph, WizardProps, order, compile, blocks, sequence } from 'madwizard'
 
 import Progress from './Progress'
 
 import Card from '../../../../spi/Card'
+import Loading from '../../../../spi/Loading'
 import { Status, statusFromStatusVector } from '../../../ProgressStepper'
 import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
@@ -57,31 +56,40 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    this.state = Wizard.getDerivedStateFromProps(props)
+    this.state = {
+      graph: undefined,
+      status: undefined,
+      codeBlocksPerStep: undefined
+    }
+    setTimeout(() => this.init(props))
   }
 
-  public static getDerivedStateFromProps(props: Props, state?: State) {
-    const status = !state ? {} : state.status
-    const codeBlocks = Wizard.children(props).map(_ => compile(Wizard.containedCodeBlocks(_), props.choices))
-
-    const codeBlocksPerStep = codeBlocks.map(codeBlocksInStep =>
-      blocks(codeBlocksInStep, props.choices).map(_ => ({
-        codeBlockId: _.id,
-        validate: _.validate,
-        body: _.body,
-        language: _.language,
-        optional: _.optional,
-        status: status[_.id]
-      }))
+  public async init(props: Props) {
+    const codeBlocks = await Promise.all(
+      Wizard.children(props).map(_ => compile(Wizard.containedCodeBlocks(_), props.choices))
     )
 
-    const noChangeToCodeBlocks = state && Wizard.sameCodeBlocks(state.codeBlocksPerStep, codeBlocksPerStep)
+    this.setState(state => {
+      const status = state.status || {}
+      const codeBlocksPerStep = codeBlocks.map(codeBlocksInStep =>
+        blocks(codeBlocksInStep, props.choices).map(_ => ({
+          codeBlockId: _.id,
+          validate: _.validate,
+          body: _.body,
+          language: _.language,
+          optional: _.optional,
+          status: status[_.id]
+        }))
+      )
 
-    return {
-      status,
-      codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
-      graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
-    }
+      const noChangeToCodeBlocks = state && Wizard.sameCodeBlocks(state.codeBlocksPerStep, codeBlocksPerStep)
+
+      return {
+        status,
+        codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
+        graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
+      }
+    })
   }
 
   private static sameCodeBlock(a: State['codeBlocksPerStep'][0][0], b: State['codeBlocksPerStep'][0][0]) {
@@ -96,7 +104,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   private static sameCodeBlocks(AA: State['codeBlocksPerStep'], BB: State['codeBlocksPerStep']) {
-    return AA.every((A, idx1) => A.every((a, idx2) => Wizard.sameCodeBlock(a, BB[idx1][idx2])))
+    return AA && BB && AA.every((A, idx1) => A.every((a, idx2) => Wizard.sameCodeBlock(a, BB[idx1][idx2])))
   }
 
   public componentDidMount() {
@@ -191,7 +199,11 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    return this.wizard()
+    if (!this.state.graph) {
+      return <Loading />
+    } else {
+      return this.wizard()
+    }
   }
 }
 

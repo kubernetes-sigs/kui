@@ -80,7 +80,7 @@ async function guide(args: Arguments<HereOptions>) {
       cwd: Util.cwd(),
       path: Util.expandHomeDir(filepath)
     })
-    const { blocks, choices } = await blockify(input, undefined, undefined, reader)
+    const { blocks, choices } = await blockify(input, reader, undefined, undefined)
 
     const { default: Guide } = await import('../components/Content/Markdown/components/guide')
     const { default: Imports } = await import('../components/Content/Markdown/components/Imports')
