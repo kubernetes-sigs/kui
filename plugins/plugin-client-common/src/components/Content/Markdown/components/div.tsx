@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { ChoiceState } from 'madwizard'
+import { ChoiceState, isWizard } from 'madwizard'
 import { TextContent } from '@patternfly/react-core'
 
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
@@ -25,7 +25,6 @@ import _tabbed, { TabProps, isTabs } from './tabbed'
 import { Props as MarkdownProps } from '..'
 import { PositionProps, isNormalSplit } from '../KuiFrontmatter'
 
-import { isWizard } from './Wizard/rehype-wizard'
 const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))

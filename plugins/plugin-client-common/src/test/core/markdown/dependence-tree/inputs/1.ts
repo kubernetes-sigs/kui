@@ -20,7 +20,7 @@ const importa: (name?: string) => Tree = (name = 'importa.md') => ({ name, child
 
 const importc: Tree = { name: 'importc.md', children: [{ name: 'echo CCC' }] }
 
-const option2Tab2: Tree = { name: 'Option 2: Tab2', children: [importc] }
+// const option2Tab2: Tree = { name: 'Option 2: Tab2', children: [importc] }
 
 const importe: Tree = { name: 'EEE', children: [{ name: 'Option 1: TabE1', children: [{ name: 'echo EEE' }] }] }
 
@@ -34,22 +34,12 @@ const importd: Tree = {
 
 const prerequisites = {
   name: 'Prerequisites',
-  children: [importa(), importe, importd]
-}
-
-const mainTasks = {
-  name: 'Main Tasks',
-  children: [option2Tab2]
+  children: [importe, importd]
 }
 
 const IN1: Input = {
   input: require.resolve('@kui-shell/plugin-client-common/tests/data/guidebook-tree-model1.md'),
-  tree: () => [
-    {
-      name: 'snippets-in-tab3.md',
-      children: [prerequisites, mainTasks]
-    }
-  ]
+  tree: () => [prerequisites]
 }
 
 export { importa, importc, importe, importd }

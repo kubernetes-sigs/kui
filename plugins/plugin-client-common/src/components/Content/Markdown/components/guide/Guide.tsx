@@ -20,7 +20,6 @@ import { i18n, Tab } from '@kui-shell/core'
 import { Chip, ChipGroup, Grid, GridItem, Progress, Tile, WizardStep } from '@patternfly/react-core'
 
 import {
-  Graph,
   Choice,
   Choices,
   CodeBlockProps,
@@ -29,16 +28,17 @@ import {
   OrderedGraph,
   extractTitle,
   extractDescription,
-  isLeafNode,
-  bodySource,
-  hasSource,
   sameGraph,
   order,
   compile,
   validate,
   findChoiceFrontier,
-  findCodeBlockFrontier,
-  findPrereqsAndMainTasks
+  wizardify,
+  Wizard as WizardModel,
+  ChoiceStep,
+  isChoiceStep,
+  TaskStep,
+  isTaskStep
 } from 'madwizard'
 
 import Wizard, { Props as WizardProps } from '../Wizard/KWizard'
@@ -53,8 +53,6 @@ import { Status, statusToClassName, statusToIcon } from '../../../ProgressSteppe
 import '../../../../../../web/scss/components/Wizard/Guide.scss'
 
 const strings = i18n('plugin-client-common', 'code')
-
-type WizardStepWithGraph = { graph: Graph; step: WizardStep }
 
 export type Props = Choices &
   Partial<Title> &
@@ -73,11 +71,17 @@ export type Props = Choices &
   }
 
 type State = Choices & {
+  /** Internal error in rendering? */
+  error?: Error
+
   /** Graph of code blocks to be executed */
   graph: OrderedGraph
 
   /** Choice Frontier */
   frontier: ReturnType<typeof findChoiceFrontier>
+
+  /** Instance of Wizard model */
+  wizard: WizardModel
 
   /** validation status of each wizard step */
   wizardStepStatus: Status[]
@@ -95,7 +99,16 @@ export default class Guide extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    this.state = Guide.getDerivedStateFromProps(props)
+    this.state = {
+      startAtStep: 0,
+      isRunning: false,
+      graph: undefined,
+      frontier: undefined,
+      wizard: undefined,
+      wizardStepStatus: undefined,
+      choices: props.choices
+    }
+    setTimeout(() => this.init(props))
   }
 
   /**
@@ -105,57 +118,24 @@ export default class Guide extends React.PureComponent<Props, State> {
     return frontier.length > 0 && frontier.every(_ => _.prereqs.length > 0 || !!_.choice)
   }
 
-  /**
-   * TODO move to a more common location?
-   *
-   * It may be the case that our state.graph has no choices (or no
-   * remaining choices, subject to the `Choices`, i.e. the choices
-   * already made). In this situation, we still need to present the
-   * remaining, non-choicey work. We do so by presenting the
-   * Prerequisites and Main Tasks. If we still get nothing, then we
-   * present the raw code blocks (just below).
-   *
-   */
-  private static computeChoiceFrontier(graph: Graph, choices: Props['choices']) {
-    const frontier1 = findChoiceFrontier(graph, choices)
+  private async init(props: Props, useTheseChoices?: State['choices']) {
+    const choices = useTheseChoices || props.choices
+    const newGraph = await compile(props.blocks, choices, undefined, 'sequence', props.title, props.description)
 
-    const frontier2 = Guide.isValidFrontier(frontier1)
-      ? frontier1
-      : [
-          {
-            prereqs: findPrereqsAndMainTasks(graph),
-            choice: undefined
-          }
-        ]
+    this.setState(state => {
+      const noChangeToGraph = state && sameGraph(state.graph, newGraph)
 
-    const frontier = Guide.isValidFrontier(frontier2)
-      ? frontier2
-      : [
-          {
-            prereqs: findCodeBlockFrontier(graph, choices),
-            choice: undefined
-          }
-        ]
+      const graph = noChangeToGraph ? state.graph : order(newGraph)
+      const frontier = noChangeToGraph && state && state.frontier ? state.frontier : findChoiceFrontier(graph)
 
-    return frontier
-  }
+      const startAtStep = state ? state.startAtStep : 1
+      const wizard = wizardify(graph, { previous: state.wizard })
+      const wizardStepStatus = noChangeToGraph && state ? state.wizardStepStatus : []
 
-  public static getDerivedStateFromProps(props: Props, state?: State) {
-    const choices = state ? state.choices : props.choices
+      const isRunning = state ? state.isRunning : false
 
-    const newGraph = compile(props.blocks, choices, 'sequence', props.title, props.description)
-    const noChangeToGraph = state && sameGraph(state.graph, newGraph)
-
-    const graph = noChangeToGraph ? state.graph : order(newGraph)
-    const frontier =
-      noChangeToGraph && state && state.frontier ? state.frontier : Guide.computeChoiceFrontier(graph, choices)
-
-    const startAtStep = state ? state.startAtStep : 1
-    const wizardStepStatus = noChangeToGraph && state ? state.wizardStepStatus : []
-
-    const isRunning = state ? state.isRunning : false
-
-    return { graph, frontier, choices, wizardStepStatus, startAtStep, isRunning }
+      return { graph, frontier, choices, wizard, wizardStepStatus, startAtStep, isRunning }
+    })
   }
 
   public componentDidMount() {
@@ -171,17 +151,24 @@ export default class Guide extends React.PureComponent<Props, State> {
     return <Card className="kui--markdown-tab-card">{actualContent}</Card>
   }
 
-  /** @return a UI component to visualize the given `graph` */
-  private renderGraph(graph: Graph) {
-    const source = hasSource(graph) ? graph.source : isLeafNode(graph) ? bodySource(graph) : ''
-    return this.stepContent(
-      <Markdown
-        tab={this.props.tab}
-        nested
-        source={source}
-        choices={this.state.choices}
-        executeImmediately={this.state.isRunning}
-      />
+  public static getDerivedStateFromError(error: Error) {
+    console.error(error)
+    return { error }
+  }
+
+  /** @return a UI component to visualize the given markdown source */
+  private renderContent(source: TaskStep['step']['content']) {
+    return (
+      source &&
+      this.stepContent(
+        <Markdown
+          tab={this.props.tab}
+          nested
+          source={typeof source === 'string' ? source : source()}
+          choices={this.state.choices}
+          executeImmediately={this.state.isRunning}
+        />
+      )
     )
   }
 
@@ -190,37 +177,8 @@ export default class Guide extends React.PureComponent<Props, State> {
     return description && <div className="kui--wizard-nav-item-description">{description}</div>
   }
 
-  /** @return a title to use for a wizard step representing the given `graph` */
-  private stepTitle(graph: Graph) {
-    return extractTitle(graph) || <span className="red-text">Missing title</span>
-  }
-
-  /**
-   * @return a `WizardStep` for a non-choice prereq for a choice on
-   * the choice frontier
-   */
-  private wizardStepForPrereq(graph: Graph): WizardStepWithGraph {
-    return {
-      graph,
-      step: {
-        name: this.stepTitle(graph),
-        component: this.renderGraph(graph),
-        stepNavItemProps: {
-          children: this.wizardStepDescription(extractDescription(graph))
-        }
-      }
-    }
-  }
-
   /** A choice was made somewhere in the UI */
-  private readonly onChoiceFromAbove = ({ choices }: Choices) =>
-    setTimeout(() =>
-      this.setState({
-        frontier: undefined,
-        wizardStepStatus: [],
-        choices: choices.clone()
-      })
-    )
+  private readonly onChoiceFromAbove = ({ choices }: Choices) => this.init(this.props, choices.clone())
 
   /**
    * A choice was made in *this* UI. The `this.props.choices.set()`
@@ -259,26 +217,6 @@ export default class Guide extends React.PureComponent<Props, State> {
     )
   }
 
-  /**
-   * @return a `WizardStep` for a choice on the choice frontier
-   */
-  private wizardStepForChoiceOnFrontier(graph: Choice, isFirstChoice: boolean): WizardStepWithGraph {
-    if (graph) {
-      return {
-        graph,
-        step: {
-          name: graph.title,
-          component: this.tilesForChoice(graph),
-          stepNavItemProps: isFirstChoice && {
-            children: this.wizardStepDescription(
-              <span className="sub-text">{this.choiceIcon1} This step requires you to choose how to proceed</span>
-            )
-          }
-        }
-      }
-    }
-  }
-
   private withStatus(name: WizardStep['name'], status: Status) {
     const icon = status && statusToIcon(status)
     if (icon) {
@@ -303,26 +241,59 @@ export default class Guide extends React.PureComponent<Props, State> {
     return Object.assign(step, { name, hideCancelButton: true })
   }
 
-  /** @return the `WizardStep` models for this Guide */
-  private wizardSteps(): WizardStepWithGraph[] {
-    // the steps will be the interleaved ((...prereqs, choice), ...)
-    // dictated by the this.state.frontier model, which comes from
-    // choice-frontier.ts; the flatMap just says we want to flatten
-    // this nested interleaving down to a linear set of WizardSteps
-    const idxOfFirstChoice = this.state.frontier.findIndex(_ => _.choice)
-    return this.state.frontier.flatMap(({ prereqs, choice }, idx): WizardStepWithGraph[] =>
-      [
-        ...prereqs.map(_ => this.wizardStepForPrereq(_)),
-        this.wizardStepForChoiceOnFrontier(choice, idx === idxOfFirstChoice)
-      ].filter(Boolean)
-    )
+  /** Add React `component` to the given choice step */
+  private choiceUI({ status, step, graph }: ChoiceStep, isFirstChoice: boolean) {
+    return {
+      status,
+      graph,
+      step: Object.assign({}, step, {
+        name: graph.title,
+        component: this.tilesForChoice(graph),
+        stepNavItemProps: isFirstChoice && {
+          children: this.wizardStepDescription(
+            <span className="sub-text">{this.choiceIcon1} This step requires you to choose how to proceed</span>
+          )
+        }
+      })
+    }
   }
 
-  private validateStepsIfNeeded(steps: WizardStepWithGraph[]): WizardStep[] {
+  /** Add React `component` to the given task execution step */
+  private taskUI({ status, step, graph }: TaskStep) {
+    return {
+      status,
+      graph,
+      step: {
+        name: step.name === 'Missing title' ? <span className="red-text">{step.name}</span> : step.name,
+        component: this.renderContent(step.content),
+        stepNavItemProps: {
+          children: this.wizardStepDescription(extractDescription(graph))
+        }
+      }
+    }
+  }
+
+  /** @return the `WizardStep` models for this Guide */
+  private wizardSteps() {
+    let isFirstChoice = true
+    return this.state.wizard
+      .map(_ => {
+        if (isChoiceStep(_)) {
+          const ui = this.choiceUI(_, isFirstChoice)
+          isFirstChoice = false
+          return ui
+        } else if (isTaskStep(_)) {
+          return this.taskUI(_)
+        }
+      })
+      .filter(Boolean)
+  }
+
+  private validateStepsIfNeeded(steps: ReturnType<typeof this.wizardSteps>): WizardStep[] {
     Promise.all(
       steps.map(async (_, idx) => {
         if (!this.state.wizardStepStatus[idx] || this.state.wizardStepStatus[idx] === 'blank') {
-          const status = await validate(_.graph)
+          const status = await validate(_.graph, { validator: (cmdline: string) => this.props.tab.REPL.qexec(cmdline) })
           if (status !== this.state.wizardStepStatus[idx]) {
             this.setState(curState => ({
               wizardStepStatus: [
@@ -487,12 +458,20 @@ export default class Guide extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (!this.state) {
-      return <React.Fragment />
-    } else if (this.state.frontier.length === 0) {
-      return this.allDoneWithChoices()
-    } else {
-      return this.presentChoices()
+    try {
+      if (!this.state || !this.state.frontier) {
+        return <React.Fragment />
+      } else if (this.state.error) {
+        return 'Internal error'
+      } else if (this.state.frontier.length === 0) {
+        return this.allDoneWithChoices()
+      } else {
+        return this.presentChoices()
+      }
+    } catch (error) {
+      console.error(error)
+      this.setState({ error })
+      return 'Internal Error'
     }
   }
 }

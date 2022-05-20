@@ -37,6 +37,7 @@ import Icons, { SupportedIcon } from '../../../spi/Icons'
 // import Spinner from '../../../Views/Terminal/Block/Spinner'
 import { ProgressStepState } from '../../ProgressStepper'
 
+import Markdown from '../../Markdown'
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
 import '../../../../../web/scss/components/Tree/_index.scss'
@@ -45,6 +46,10 @@ import '../../../../../web/scss/components/Wizard/Imports.scss'
 const debug = Debug('plugins/plugin-client-common/components/Content/Markdown/Imports')
 
 class ReactUI implements UI<React.ReactNode> {
+  public markdown(body: string) {
+    return <Markdown nested source={body} />
+  }
+
   public span(content: string, ...decorations: Decoration[]) {
     if (decorations.length === 0) {
       return content
@@ -144,7 +149,7 @@ type ProgressMap = Record<string, Progress>
 
 type State = Choices &
   Pick<TreeViewProps, 'data'> & {
-    hasError: boolean
+    error?: Error
 
     imports: OrderedGraph
 
@@ -155,30 +160,44 @@ type State = Choices &
 class Imports extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
-    this.state = Imports.getDerivedStateFromProps(props)
+
+    this.state = {
+      data: null,
+      imports: undefined,
+      choices: props.choices,
+      codeBlockStatus: undefined
+    }
   }
 
-  public static getDerivedStateFromProps(props: Props, state?: State) {
-    const choices = state ? state.choices : props.choices
-    const newGraph = compile(props.imports, choices, 'sequence', props.title, props.description)
-    const noChange = state && sameGraph(state.imports, newGraph)
+  private async init(props: Props, useTheseChoices?: State['choices']) {
+    const choices = useTheseChoices || props.choices
+    const newGraph = await compile(props.imports, choices, undefined, 'sequence', props.title, props.description)
 
-    const imports = noChange ? state.imports : order(newGraph)
-    const data = noChange ? state.data : null
-    const codeBlockStatus = state ? state.codeBlockStatus : {}
+    this.setState(state => {
+      const noChange = state && sameGraph(state.imports, newGraph)
 
-    return noChange
-      ? state
-      : {
-          data,
-          choices,
-          imports,
-          hasError: false,
-          codeBlockStatus
-        }
+      const imports = noChange ? state.imports : order(newGraph)
+      const codeBlockStatus = state ? this.state.codeBlockStatus : {}
+      const data = noChange ? state.data : this.computeTreeModel(imports, codeBlockStatus).data
+
+      return noChange
+        ? null
+        : {
+            data,
+            choices,
+            imports,
+            error: undefined,
+            codeBlockStatus
+          }
+    })
   }
 
-  private readonly onChoice = ({ choices }: Choices) => setTimeout(() => this.setState({ choices: choices.clone() }))
+  private readonly onChoice = ({ choices }: Choices) => this.init(this.props, choices.clone())
+
+  public static getDerivedStateFromError(error: Error) {
+    console.error(error)
+    return { error }
+  }
 
   public componentDidMount() {
     this.state.choices.onChoice(this.onChoice)
@@ -196,13 +215,7 @@ class Imports extends React.PureComponent<Props, State> {
   /** Compute or re-compute tree model */
   private computeTreeModelIfNeeded() {
     if (!this.state.data) {
-      this.setState(curState => {
-        if (!curState.data) {
-          return this.computeTreeModel()
-        } else {
-          return null
-        }
-      })
+      this.init(this.props)
     }
   }
 
@@ -211,15 +224,20 @@ class Imports extends React.PureComponent<Props, State> {
     status = this.state.codeBlockStatus,
     doValidate = true
   ): Pick<State, 'data'> {
-    return {
-      data: new Treeifier<React.ReactNode>(new ReactUI(), status, doValidate && this.validate.bind(this)).toTree(
-        imports
-      )
+    try {
+      return {
+        data: new Treeifier<React.ReactNode>(new ReactUI(), status, doValidate && this.validate.bind(this)).toTree(
+          imports
+        )
+      }
+    } catch (error) {
+      console.error(error)
+      this.setState({ error })
     }
   }
 
   private async validate(props: CodeBlockProps) {
-    const status = this.state.codeBlockStatus[props.id]
+    const status = this.state.codeBlockStatus ? this.state.codeBlockStatus[props.id] : 'blank'
 
     if (props.validate && status !== 'in-progress' && status !== 'success') {
       try {
@@ -245,7 +263,7 @@ class Imports extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (this.state.hasError) {
+    if (this.state.error) {
       return 'Internal Error'
     }
 

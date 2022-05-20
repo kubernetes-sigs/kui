@@ -20,7 +20,7 @@ import TurndownService from 'turndown'
 import { TextContent } from '@patternfly/react-core'
 
 import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
-import { Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'
+import { Capabilities, Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'
 
 import ReactMarkdown, { Options } from 'react-markdown'
 
@@ -39,13 +39,13 @@ import frontmatter from 'remark-frontmatter'
 import { filepathForResponses } from '../../../controller/fetch'
 
 import components from './components'
-import wizard from './components/Wizard/rehype-wizard'
 
 import {
   hackMarkdownSource,
   rehypeCodeIndexer,
   rehypeTip,
   rehypeTabbed,
+  rehypeWizard as wizard,
   Choices,
   ChoiceState,
   newChoiceState
@@ -62,11 +62,11 @@ import rehypeSlug from 'rehype-slug'
 import icons from './rehype-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
-const rehypePlugins = (uuid: string, choices: ChoiceState): Options['rehypePlugins'] => [
+const rehypePlugins = (uuid: string, choices: ChoiceState, filepath: string): Options['rehypePlugins'] => [
   wizard,
-  [rehypeTabbed, uuid, choices],
+  [rehypeTabbed, uuid, choices, { optimize: { aprioris: Capabilities.inElectron() } }],
   rehypeTip,
-  [rehypeCodeIndexer, uuid],
+  [rehypeCodeIndexer, uuid, filepath, undefined, true],
   icons,
   rehypeRaw,
   rehypeSlug
@@ -367,7 +367,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
         <TextContent>
           <ReactMarkdown
             remarkPlugins={remarkPlugins(this.props.tab)}
-            rehypePlugins={rehypePlugins(this.uuid, this.choices)}
+            rehypePlugins={rehypePlugins(this.uuid, this.choices, this.props.filepath)}
             components={this._components()}
             data-is-nested={this.props.nested || undefined}
             className={

@@ -17,10 +17,10 @@
 import { join } from 'path'
 
 import Input, { Tree } from '../Input'
-import { importa, importe, importd } from './1'
+import { importe, importd } from './1'
 
 const snippetsInTab5: Tree = {
-  name: 'snippets-in-tab5.md',
+  name: 'AAA',
   children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
 }
 
@@ -31,7 +31,7 @@ const IN4: Input = {
   tree: (command: string) => [
     {
       name: command === 'guide' ? filename : 'Tasks',
-      children: [importd, importa(), importe, snippetsInTab5]
+      children: [importd, importe, snippetsInTab5]
     }
   ]
 }
