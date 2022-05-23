@@ -60,7 +60,7 @@ type Modifier = (
   opts: InjectorOptions
 ) => React.ReactNode
 
-interface InjectProvider {
+export interface InjectProvider {
   inject: Injector
   modify: Modifier
 }
