@@ -67,6 +67,9 @@ export const Alert = React.lazy(() => import('./components/spi/Alert'))
 export const Button = React.lazy(() => import('./components/spi/Button'))
 export { Props as ButtonProps } from './components/spi/Button'
 export const Card = React.lazy(() => import('./components/spi/Card'))
+export const CardResponse = React.lazy(() =>
+  import('./components/Content/Commentary').then(_ => ({ default: _.ReactCommentary }))
+)
 export const Popover = React.lazy(() => import('./components/spi/Popover'))
 export const Select = React.lazy(() => import('./components/spi/Select'))
 export const Tag = React.lazy(() => import('./components/spi/Tag'))

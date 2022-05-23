@@ -16,6 +16,7 @@
 
 import React from 'react'
 import { EventEmitter } from 'events'
+import { TextContent } from '@patternfly/react-core'
 import { CommentaryResponse, Tab, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
@@ -342,7 +343,9 @@ export class ReactCommentary extends React.PureComponent<ReactProps> {
     return (
       <div className="kui--commentary">
         <span className="kui--commentary-card">
-          <Card>{this.props.children}</Card>
+          <Card>
+            <TextContent>{this.props.children}</TextContent>
+          </Card>
         </span>
       </div>
     )

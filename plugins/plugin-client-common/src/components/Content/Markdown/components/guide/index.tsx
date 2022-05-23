@@ -20,18 +20,15 @@ import { Props as GuideProps } from './Guide'
 // import { CodeBlockResponseFn } from '../../components'
 // import { ChoiceState } from '../../../Markdown'
 
-import { TextContent } from '@patternfly/react-core'
 const ReactCommentary = React.lazy(() => import('../../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 const Guide = React.lazy(() => import('./Guide'))
 
 export default function guidebookGuideWrapper(props: GuideProps) {
   return (
     <ReactCommentary>
-      <TextContent>
-        <div className="padding-content marked-content page-content" data-is-nested>
-          <Guide {...props} />
-        </div>
-      </TextContent>
+      <div className="padding-content marked-content page-content" data-is-nested>
+        <Guide {...props} />
+      </div>
     </ReactCommentary>
   )
 }
