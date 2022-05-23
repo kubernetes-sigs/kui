@@ -65,11 +65,13 @@ export const LeftNavSidecar = React.lazy(() => import('./components/Views/Sideca
 // SPI
 export const Alert = React.lazy(() => import('./components/spi/Alert'))
 export const Button = React.lazy(() => import('./components/spi/Button'))
+export { Props as ButtonProps } from './components/spi/Button'
 export const Card = React.lazy(() => import('./components/spi/Card'))
 export const Popover = React.lazy(() => import('./components/spi/Popover'))
 export const Select = React.lazy(() => import('./components/spi/Select'))
 export const Tag = React.lazy(() => import('./components/spi/Tag'))
 export const Icons = React.lazy(() => import('./components/spi/Icons'))
+export { SupportedIcon } from './components/spi/Icons'
 export const DropDown = React.lazy(() => import('./components/spi/DropDown'))
 export { Action as DropDownAction } from './components/spi/DropDown/model'
 export { default as Tooltip } from './components/spi/Tooltip'
