@@ -76,16 +76,23 @@ const ignore = [
   /plugins/,
   /\.scss$/,
   /\.woff$/,
-  /tmp\//,
   /CHANGELOG\.md/,
   /tsconfig\..*/,
   /package-lock\.json/,
   /\/docs/,
-  /\/node_modules\/(?!(@electron|@electron\/remote|node-pty\/build|@kui-shell\/build))/,
-  /\/tools/,
-  /\/bin/,
-  /\/design/,
-  /\/dist\/webpack/
+  ...(process.env.KUI_KEEP_NODE_MODULES
+    ? []
+    : [
+        new RegExp(
+          `/node_modules/(?!(@electron|@electron/remote|node-pty/build|@kui-shell/build${
+            process.env.KUI_KEEP_NODE_MODULE ? '|' + process.env.KUI_KEEP_NODE_MODULE : ''
+          }))`
+        )
+      ]),
+  /^\/tools/,
+  /^\/bin/,
+  /^\/design/,
+  /^\/dist\/webpack/
 ]
 
 /**
