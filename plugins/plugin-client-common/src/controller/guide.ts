@@ -17,7 +17,15 @@
 import React from 'react'
 import { v4 } from 'uuid'
 import { basename } from 'path'
-import { Arguments, CommentaryResponse, ParsedOptions, Registrar, Util, encodeComponent } from '@kui-shell/core'
+import {
+  Arguments,
+  CommentaryResponse,
+  ParsedOptions,
+  Registrar,
+  Util,
+  encodeComponent,
+  isPopup
+} from '@kui-shell/core'
 
 import fetchMarkdownFile from './fetch'
 import { setTabReadonly } from './commentary' // TODO move to core?
@@ -59,7 +67,7 @@ async function guide(args: Arguments<HereOptions>) {
   try {
     const filepath = args.argvNoOptions[1]
 
-    if (!args.parsedOptions.here) {
+    if (!args.parsedOptions.here && !isPopup()) {
       await args.REPL.qexec(`tab new --cmdline "guide --here ${encodeComponent(filepath)}"`)
       return true
     }
