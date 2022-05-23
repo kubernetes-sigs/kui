@@ -16,7 +16,6 @@
 
 import React from 'react'
 import { ChoiceState, isWizard } from 'madwizard'
-import { TextContent } from '@patternfly/react-core'
 
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
@@ -74,15 +73,13 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
           {injector => {
             const node = (
               <ReactCommentary>
-                <TextContent>
-                  <div className="padding-content marked-content page-content" data-is-nested>
-                    {isWizard(props) ? (
-                      <Wizard uuid={uuid} {...props} choices={choices} />
-                    ) : (
-                      props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')
-                    )}
-                  </div>
-                </TextContent>
+                <div className="padding-content marked-content page-content" data-is-nested>
+                  {isWizard(props) ? (
+                    <Wizard uuid={uuid} {...props} choices={choices} />
+                  ) : (
+                    props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')
+                  )}
+                </div>
               </ReactCommentary>
             )
 

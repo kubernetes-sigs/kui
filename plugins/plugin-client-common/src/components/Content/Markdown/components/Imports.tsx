@@ -16,8 +16,8 @@
 
 import Debug from 'debug'
 import React from 'react'
+import { TreeView, TreeViewProps } from '@patternfly/react-core'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
-import { TreeView, TreeViewProps, TextContent } from '@patternfly/react-core'
 
 import {
   sameGraph,
@@ -308,11 +308,9 @@ class LabelWithStatus extends React.PureComponent<LabelWithStatusProps> {
 export default function guidebookImports(props: Props) {
   return (
     <ReactCommentary>
-      <TextContent>
-        <div className="padding-content marked-content page-content" data-is-nested>
-          <Imports {...props} />
-        </div>
-      </TextContent>
+      <div className="padding-content marked-content page-content" data-is-nested>
+        <Imports {...props} />
+      </div>
     </ReactCommentary>
   )
 }
