@@ -82,13 +82,13 @@ async function guide(args: Arguments<HereOptions>) {
     const { attributes } = tryFrontmatter(rawData)
 
     const { VFile } = await import('vfile')
-    const { blockify } = await import('madwizard')
+    const { Parser } = await import('madwizard')
     const input = new VFile({
       value: rawData,
       cwd: Util.cwd(),
       path: Util.expandHomeDir(filepath)
     })
-    const { blocks, choices } = await blockify(input, reader, undefined, undefined)
+    const { blocks, choices } = await Parser.blockify(input, reader, undefined, undefined)
 
     const { default: Guide } = await import('../components/Content/Markdown/components/guide')
     const { default: Imports } = await import('../components/Content/Markdown/components/Imports')

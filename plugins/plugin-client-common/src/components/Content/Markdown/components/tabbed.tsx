@@ -19,14 +19,14 @@
 import React from 'react'
 import Slugger from 'github-slugger'
 import { EventEmitter } from 'events'
-import { ChoiceState } from 'madwizard'
+import { Choices } from 'madwizard'
 import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 
 import Card from '../../../spi/Card'
 
 import isElementWithProperties from '../isElement'
 
-type Props = {
+type Props = Choices.Choices & {
   /** markdown document id */
   uuid: string
 
@@ -35,9 +35,6 @@ type Props = {
 
   /** id for this tab group */
   'data-kui-choice-group': string
-
-  /** State of user choices */
-  choices: ChoiceState
 
   /** the tab models */
   tabs: {
@@ -190,7 +187,7 @@ export function isTabs(props: Partial<TabProps>): props is Required<TabProps> {
   return typeof props['data-kui-choice-group'] === 'string'
 }
 
-export default function tabbedWrapper(uuid: string, choices: ChoiceState) {
+export default function tabbedWrapper(uuid: string, choices: Choices.ChoiceState) {
   return function tabbed(props: TabProps) {
     // isSecondary={parseInt(props.depth, 10) > 0}
     return (

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { Choices } from 'madwizard'
 import { REPL } from '@kui-shell/core'
-import { ChoiceState } from 'madwizard'
 import { Components } from 'react-markdown'
 
 import _a from './a'
@@ -39,7 +39,7 @@ type Args = {
   mdprops: Props
   repl: REPL
   uuid: string
-  choices: ChoiceState
+  choices: Choices.ChoiceState
   codeBlockResponses: CodeBlockResponseFn
   spliceInCodeExecution: (
     status: CodeBlockResponse['status'],

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { ChoiceState, isWizard } from 'madwizard'
+import { Choices, Parser } from 'madwizard'
 
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
@@ -28,7 +28,7 @@ const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
-export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices: ChoiceState) {
+export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices: Choices.ChoiceState) {
   const tabbed = _tabbed(uuid, choices)
 
   return function div(props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<TabProps>) {
@@ -51,7 +51,7 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
-      const node = isWizard(props) ? (
+      const node = Parser.isWizard(props) ? (
         <Wizard uuid={uuid} {...props} choices={choices} />
       ) : (
         <div data-is-maximized={maximized || undefined}>{props.children}</div>
@@ -74,7 +74,7 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
             const node = (
               <ReactCommentary>
                 <div className="padding-content marked-content page-content" data-is-nested>
-                  {isWizard(props) ? (
+                  {Parser.isWizard(props) ? (
                     <Wizard uuid={uuid} {...props} choices={choices} />
                   ) : (
                     props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')

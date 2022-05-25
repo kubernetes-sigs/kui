@@ -25,7 +25,7 @@ import {
   offGetCodeBlockReadiness
 } from '../../../../Views/Terminal/Block/CodeBlockEvents'
 
-import { blocks, progress, OrderedGraph, Choices } from 'madwizard'
+import { Graph, Choices } from 'madwizard'
 
 import { ProgressStepState } from '../../../ProgressStepper'
 
@@ -35,18 +35,18 @@ const strings = i18n('plugin-client-common', 'code')
 
 type Status = ProgressStepState['status']
 
-type Props = Choices & {
+type Props = Choices.Choices & {
   /** Title to display alongside the progress bar */
   title: string
 
   /** The tasks to be accomplished */
-  codeBlocks: OrderedGraph
+  codeBlocks: Graph.OrderedGraph
 
   /** The key is a codeBlockId */
   status: Record<string, Status>
 }
 
-type State = ReturnType<typeof progress> & {
+type State = ReturnType<typeof Graph.progress> & {
   nextCodeBlocks: string[]
 }
 
@@ -60,9 +60,9 @@ export default class Progress extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    const prog = progress(props.codeBlocks, props.status, props.choices)
+    const prog = Graph.progress(props.codeBlocks, props.status, props.choices)
 
-    const allCodeBlocks = blocks(props.codeBlocks)
+    const allCodeBlocks = Graph.blocks(props.codeBlocks)
     if (!state) {
       // initialize all blocks as not ready
       allCodeBlocks.forEach(_ => emitCodeBlockReadiness(_.id, false))
@@ -85,7 +85,7 @@ export default class Progress extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    blocks(this.props.codeBlocks).forEach(({ id }) => {
+    Graph.blocks(this.props.codeBlocks).forEach(({ id }) => {
       onGetCodeBlockReadiness(id, this._onGetReadiness)
       this.cleaners.push(() => offGetCodeBlockReadiness(id, this._onGetReadiness))
     })

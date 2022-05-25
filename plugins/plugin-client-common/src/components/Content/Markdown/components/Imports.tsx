@@ -19,19 +19,7 @@ import React from 'react'
 import { TreeView, TreeViewProps } from '@patternfly/react-core'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
 
-import {
-  sameGraph,
-  OrderedGraph,
-  CodeBlockProps,
-  Title,
-  Description,
-  order,
-  compile,
-  Choices,
-  Decoration,
-  Treeifier,
-  UI
-} from 'madwizard'
+import { Tree, Graph, Choices, CodeBlock } from 'madwizard'
 
 import Icons, { SupportedIcon } from '../../../spi/Icons'
 // import Spinner from '../../../Views/Terminal/Block/Spinner'
@@ -45,12 +33,12 @@ import '../../../../../web/scss/components/Wizard/Imports.scss'
 
 const debug = Debug('plugins/plugin-client-common/components/Content/Markdown/Imports')
 
-class ReactUI implements UI<React.ReactNode> {
+class ReactUI implements Tree.UI<React.ReactNode> {
   public markdown(body: string) {
     return <Markdown nested source={body} />
   }
 
-  public span(content: string, ...decorations: Decoration[]) {
+  public span(content: string, ...decorations: Tree.Decoration[]) {
     if (decorations.length === 0) {
       return content
     } else {
@@ -93,14 +81,14 @@ class ReactUI implements UI<React.ReactNode> {
     return <Icons className="kui--dependence-tree-subtask--icon" icon={cls as SupportedIcon} />
   }
 
-  public statusToIcon(status: Status) {
+  public statusToIcon(status: Graph.Status) {
     switch (status) {
       case 'success':
         return <Icons className="pf-m-success" icon="Checkmark" />
     }
   }
 
-  public title(title: string | string[], status?: Status) {
+  public title(title: string | string[], status?: Graph.Status) {
     if (Array.isArray(title)) {
       return (
         <React.Fragment>
@@ -136,10 +124,10 @@ class ReactUI implements UI<React.ReactNode> {
 
 type Status = ProgressStepState['status']
 
-type Props = Choices &
-  Partial<Title> &
-  Partial<Description> & {
-    imports: CodeBlockProps[]
+type Props = Choices.Choices &
+  Partial<CodeBlock.Title> &
+  Partial<CodeBlock.Description> & {
+    imports: CodeBlock.CodeBlockProps[]
   }
 
 type Progress = { nDone: number; nError: number; nTotal: number }
@@ -147,11 +135,11 @@ type Progress = { nDone: number; nError: number; nTotal: number }
 /** Map from treeModel node ID to the cumulative progress of that subtree */
 type ProgressMap = Record<string, Progress>
 
-type State = Choices &
+type State = Choices.Choices &
   Pick<TreeViewProps, 'data'> & {
     error?: Error
 
-    imports: OrderedGraph
+    imports: Graph.OrderedGraph
 
     /** Map from CodeBlockProps.id to execution status of that code block */
     codeBlockStatus: Record<string, Status>
@@ -171,12 +159,12 @@ class Imports extends React.PureComponent<Props, State> {
 
   private async init(props: Props, useTheseChoices?: State['choices']) {
     const choices = useTheseChoices || props.choices
-    const newGraph = await compile(props.imports, choices, undefined, 'sequence', props.title, props.description)
+    const newGraph = await Graph.compile(props.imports, choices, undefined, 'sequence', props.title, props.description)
 
     this.setState(state => {
-      const noChange = state && sameGraph(state.imports, newGraph)
+      const noChange = state && Graph.sameGraph(state.imports, newGraph)
 
-      const imports = noChange ? state.imports : order(newGraph)
+      const imports = noChange ? state.imports : Graph.order(newGraph)
       const codeBlockStatus = state ? this.state.codeBlockStatus : {}
       const data = noChange ? state.data : this.computeTreeModel(imports, codeBlockStatus).data
 
@@ -192,7 +180,7 @@ class Imports extends React.PureComponent<Props, State> {
     })
   }
 
-  private readonly onChoice = ({ choices }: Choices) => this.init(this.props, choices.clone())
+  private readonly onChoice = ({ choices }: Choices.Choices) => this.init(this.props, choices.clone())
 
   public static getDerivedStateFromError(error: Error) {
     console.error(error)
@@ -226,7 +214,7 @@ class Imports extends React.PureComponent<Props, State> {
   ): Pick<State, 'data'> {
     try {
       return {
-        data: new Treeifier<React.ReactNode>(new ReactUI(), status, doValidate && this.validate.bind(this)).toTree(
+        data: new Tree.Treeifier<React.ReactNode>(new ReactUI(), status, doValidate && this.validate.bind(this)).toTree(
           imports
         )
       }
@@ -236,7 +224,7 @@ class Imports extends React.PureComponent<Props, State> {
     }
   }
 
-  private async validate(props: CodeBlockProps) {
+  private async validate(props: CodeBlock.CodeBlockProps) {
     const status = this.state.codeBlockStatus ? this.state.codeBlockStatus[props.id] : 'blank'
 
     if (props.validate && status !== 'in-progress' && status !== 'success') {
