@@ -467,6 +467,13 @@ module.exports = {
   optimization,
   module: {
     rules: kuiPluginRules.concat([
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false
+        }
+      },
+
       // patternfly has some huge image assets for demos; we can't use IgnorePlugin, because about-modal-box.css uses this demo image. sigh
       {
         test: new RegExp(
