@@ -40,16 +40,7 @@ import { filepathForResponses } from '../../../controller/fetch'
 
 import components from './components'
 
-import {
-  hackMarkdownSource,
-  rehypeCodeIndexer,
-  rehypeTip,
-  rehypeTabbed,
-  rehypeWizard as wizard,
-  Choices,
-  ChoiceState,
-  newChoiceState
-} from 'madwizard'
+import { Parser, Choices } from 'madwizard'
 
 import { CodeBlockResponse } from './components/code'
 import prefetchTableRows from './components/code/prefetch'
@@ -62,11 +53,11 @@ import rehypeSlug from 'rehype-slug'
 import icons from './rehype-icons'
 import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
-const rehypePlugins = (uuid: string, choices: ChoiceState, filepath: string): Options['rehypePlugins'] => [
-  wizard,
-  [rehypeTabbed, uuid, choices, { optimize: { aprioris: Capabilities.inElectron() } }],
-  rehypeTip,
-  [rehypeCodeIndexer, uuid, filepath, undefined, true],
+const rehypePlugins = (uuid: string, choices: Choices.ChoiceState, filepath: string): Options['rehypePlugins'] => [
+  Parser.rehypeWizard,
+  [Parser.rehypeTabbed, uuid, choices, { optimize: { aprioris: Capabilities.inElectron() } }],
+  Parser.rehypeTip,
+  [Parser.rehypeCodeIndexer, uuid, filepath, undefined, true],
   icons,
   rehypeRaw,
   rehypeSlug
@@ -79,7 +70,7 @@ const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) =
   emojis // [emojis, { emoticon: true }]
 ]
 
-export type Props = Partial<Choices> & {
+export type Props = Partial<Choices.Choices> & {
   /** Source filepath */
   filepath?: string
 
@@ -285,7 +276,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   private readonly uuid = uuid()
 
-  private readonly choices: ChoiceState = this.props.choices || newChoiceState()
+  private readonly choices: Choices.ChoiceState = this.props.choices || Choices.newChoiceState()
 
   /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
@@ -319,7 +310,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * syntax from pymdown (such as target=_blank for links).
    */
   private static hackSource(source: string) {
-    return hackMarkdownSource(source)
+    return Parser.hackMarkdownSource(source)
       .trim()
       .replace(/\){target=[^}]+}/g, ')')
       .replace(/{draggable=(false|true)}/g, '')

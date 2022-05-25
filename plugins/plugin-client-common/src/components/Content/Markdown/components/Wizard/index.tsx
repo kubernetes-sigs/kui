@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-import { Choices, CodeBlockProps, OrderedGraph, WizardProps, order, compile, blocks, sequence } from 'madwizard'
+import { Choices, CodeBlock, Graph, Parser } from 'madwizard'
 
 import Progress from './Progress'
 
@@ -32,17 +32,17 @@ const KWizard = React.lazy(() => import('./KWizard'))
 
 const strings = i18n('plugin-client-common', 'code')
 
-type Props = Choices & WizardProps & { uuid: string }
+type Props = Choices.Choices & Parser.WizardProps & { uuid: string }
 
 export interface State {
   /** Graph of code blocks across all steps */
-  graph: OrderedGraph
+  graph: Graph.OrderedGraph
 
   /** Code blocks contained in each step */
   codeBlocksPerStep: StepperProps['steps'][]
 
   /** Map from codeBlock ID to execution status of that code block */
-  status: Record<string, Status>
+  status: Record<string, Graph.Status>
 }
 
 export default class Wizard extends React.PureComponent<Props, State> {
@@ -66,13 +66,13 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   public async init(props: Props) {
     const codeBlocks = await Promise.all(
-      Wizard.children(props).map(_ => compile(Wizard.containedCodeBlocks(_), props.choices))
+      Wizard.children(props).map(_ => Graph.compile(Wizard.containedCodeBlocks(_), props.choices))
     )
 
     this.setState(state => {
       const status = state.status || {}
       const codeBlocksPerStep = codeBlocks.map(codeBlocksInStep =>
-        blocks(codeBlocksInStep, props.choices).map(_ => ({
+        Graph.blocks(codeBlocksInStep, props.choices).map(_ => ({
           codeBlockId: _.id,
           validate: _.validate,
           body: _.body,
@@ -87,7 +87,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
       return {
         status,
         codeBlocksPerStep: noChangeToCodeBlocks ? state.codeBlocksPerStep : codeBlocksPerStep,
-        graph: noChangeToCodeBlocks ? state.graph : order(sequence(codeBlocks.filter(Boolean)))
+        graph: noChangeToCodeBlocks ? state.graph : Graph.order(Graph.sequence(codeBlocks.filter(Boolean)))
       }
     })
   }
@@ -108,7 +108,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    blocks(this.state.graph, 'all').forEach(_ => {
+    Graph.blocks(this.state.graph, 'all').forEach(_ => {
       subscribeToLinkUpdates(_.id, this._statusUpdateHandler)
       this.cleaners.push(() => unsubscribeToLinkUpdates(_.id, this._statusUpdateHandler))
     })
@@ -146,12 +146,12 @@ export default class Wizard extends React.PureComponent<Props, State> {
     )
   }
 
-  private static containedCodeBlocks(_: WizardProps['children'][0]): CodeBlockProps[] {
+  private static containedCodeBlocks(_: Parser.WizardProps['children'][0]): CodeBlock.CodeBlockProps[] {
     if (typeof _.props.containedCodeBlocks === 'string' && _.props.containedCodeBlocks.length > 0) {
       return _.props.containedCodeBlocks
         .split(' ')
         .filter(Boolean)
-        .map(_ => JSON.parse(Buffer.from(_, 'base64').toString()) as CodeBlockProps)
+        .map(_ => JSON.parse(Buffer.from(_, 'base64').toString()) as CodeBlock.CodeBlockProps)
     } else {
       return undefined
     }
@@ -159,7 +159,7 @@ export default class Wizard extends React.PureComponent<Props, State> {
 
   /** Overall progress across all steps */
   private progress() {
-    if (this.props['data-kui-wizard-progress'] === 'bar' && blocks(this.state.graph).length > 0) {
+    if (this.props['data-kui-wizard-progress'] === 'bar' && Graph.blocks(this.state.graph).length > 0) {
       return (
         <div className="kui--markdown-major-paragraph">
           <Progress
