@@ -15,8 +15,13 @@
  */
 
 import { Capabilities } from '@kui-shell/core'
+import isEnabled from './isEnabled'
 
 export default async function preloadS3Plugin() {
+  if (!isEnabled()) {
+    return
+  }
+
   const vfsPromise = Capabilities.inBrowser()
     ? import('./vfs/browser').then(_ => _.default())
     : import('./vfs').then(_ => _.default())

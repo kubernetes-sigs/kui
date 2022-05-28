@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
+import { isEnabled } from '@kui-shell/plugin-s3'
 import { CommandHandler, KResponse, ParsedOptions, Registrar, UsageModel } from '@kui-shell/core'
-
-import validateConfig from './controller/validate'
-import findServiceInstances from './controller/find'
-import findAndBindCredentials from './controller/bind'
-import setEndpoint from './controller/endpoint'
-import defaultRegion from './controller/defaultRegion'
 
 function On(this: Registrar, command: string, handler: CommandHandler<KResponse, ParsedOptions>, usage?: UsageModel) {
   ;['cos', 'cloud-object-storage'].forEach(cos => {
@@ -29,7 +24,19 @@ function On(this: Registrar, command: string, handler: CommandHandler<KResponse,
 }
 
 export default async (registrar: Registrar) => {
+  if (!isEnabled()) {
+    return
+  }
+
   const on = On.bind(registrar)
+
+  const [validateConfig, findServiceInstances, findAndBindCredentials, setEndpoint, defaultRegion] = await Promise.all([
+    import('./controller/validate').then(_ => _.default),
+    import('./controller/find').then(_ => _.default),
+    import('./controller/bind').then(_ => _.default),
+    import('./controller/endpoint').then(_ => _.default),
+    import('./controller/defaultRegion').then(_ => _.default)
+  ])
 
   on('service-instances', findServiceInstances)
   on('bind', findAndBindCredentials)
