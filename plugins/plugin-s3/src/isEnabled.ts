@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  MinioConfig,
-  Provider as S3Provider,
-  addProviderInitializer,
-  ProviderInitializer,
-  UnsupportedS3ProviderError
-} from './providers'
-
-export { default as eventBus } from './vfs/events'
-export { minioConfig, mounts as getCurrentMounts, Mount } from './vfs/responders'
-
-export { default as isEnabled } from './isEnabled'
+/**
+ * Allow clients to selectively disable plugin-s3; e.g. perhaps
+ * plugin-s3 is not needed in headless mode.
+ */
+export default function isEnabled() {
+  return process.env.KUI_S3 !== 'false'
+}
