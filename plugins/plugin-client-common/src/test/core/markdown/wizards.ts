@@ -82,13 +82,11 @@ const IN3: Input = {
   expectedSplitCount: 1,
   expectedCodeBlockTasks: 19,
   steps: [
-    { name: 'TestRewritingOfStepName', body: 'This topic describes', description: '', codeBlocks: [] },
-    { name: 'Before you begin', body: 'Before you can get started', description: 'TestDescription2', codeBlocks: [] },
-    { name: 'Install the Knative CLI', body: 'provides a quick and easy interface', description: '', codeBlocks: [] },
+    { name: 'TestRewritingOfStepName', body: 'provides a quick and easy interface', description: '', codeBlocks: [] },
     {
       name: 'Install the Knative quickstart plugin',
       body: 'To get started, install the Knative',
-      description: 'This gives you a kn quickstart command',
+      description: 'TestDescription2',
       codeBlocks: []
     },
     {
