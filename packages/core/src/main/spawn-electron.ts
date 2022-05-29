@@ -190,7 +190,7 @@ export function createWindow(
     // when jumping directly to the UI from bash, getAppPath() may
     // include dist/headless; if so, we need to back out of that
     const appPath = app.getAppPath()
-    const root = join(appPath, /dist\/headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
+    const root = join(appPath, /headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
 
     if (process.platform === 'linux') {
       const icon = join(root, 'build', filesystem.linux)
