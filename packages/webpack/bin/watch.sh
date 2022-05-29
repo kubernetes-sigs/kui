@@ -22,6 +22,11 @@ set -o pipefail
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export CLIENT_HOME=$(cd "$SCRIPTDIR"/../../ && pwd)
 
+if [ ! -d "$CLIENT_HOME/node_modules/@kui-shell" ]; then
+    # npm on windows does some hacks to work around windows symlink nonsense
+    CLIENT_HOME="$CLIENT_HOME/../.."
+fi
+
 export KUI_BUILDDIR=${BUILDDIR-"$CLIENT_HOME"/dist/webpack}
 
 if [ -d "$SCRIPTDIR"/../@kui-shell ]; then

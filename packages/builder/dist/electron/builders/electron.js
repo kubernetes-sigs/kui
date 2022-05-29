@@ -108,12 +108,22 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
 
   const asyncs /*: Promise<void>[]*/ = []
 
+  const env = Object.assign({}, process.env, {
+    CLIENT_HOME,
+    MODE: 'production',
+    TARGET: 'electron-renderer',
+    KUI_STAGE: buildPath,
+    KUI_MAIN: `${CLIENT_HOME}/node_modules/@kui-shell/react`,
+    KUI_BUILDER_HOME: `${CLIENT_HOME}/node_modules/@kui-shell/builder`
+  })
+
   if (process.env.KUI_HEADLESS_WEBPACK) {
     console.log('Building headless bundles via webpack')
     asyncs.push(
       new Promise((resolve, reject) => {
         exec(
-          `TARGET=electron-renderer KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
+          `npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
+          { env },
           (err, stdout, stderr) => {
             console.log('stdout', stdout)
             if (err) {
@@ -132,7 +142,8 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
   asyncs.push(
     new Promise((resolve, reject) => {
       exec(
-        `TARGET=electron-renderer KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" TARGET=electron-renderer MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/webpack.config.js"`,
+        `npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/webpack.config.js"`,
+        { env },
         (err, stdout, stderr) => {
           console.log('stdout', stdout)
           if (err) {
