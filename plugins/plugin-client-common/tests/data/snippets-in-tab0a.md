@@ -1,4 +1,4 @@
 BBB
 
---8<-- "importb.md"
+--8<-- "./importb.md"
 

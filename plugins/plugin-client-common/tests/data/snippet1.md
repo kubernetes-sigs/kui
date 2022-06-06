@@ -4,11 +4,11 @@
 aaa
 
 <!-- intentional trailing whitespace on line below!!! -->
---8<-- "snippeta.md"  
+--8<-- "./snippeta.md"
 <!-- intentional trailing whitespace on the line above!!! -->
 
 bbb
 
-----8<------ "snippetb.md"
+----8<------ "./snippetb.md"
 
 ccc
