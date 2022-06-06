@@ -1,8 +1,8 @@
 ---
 imports:
-    - importgg.md
-    - importaa.md
-    - importdd.md
+    - ./importgg.md
+    - ./importaa.md
+    - ./importdd.md
 ---
 
 ::imports

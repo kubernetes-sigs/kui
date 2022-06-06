@@ -1,3 +1,3 @@
 aaa
 
---8<-- "snippet4b.md"
+--8<-- "./snippets/snippet4b.md"

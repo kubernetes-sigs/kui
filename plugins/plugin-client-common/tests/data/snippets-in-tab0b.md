@@ -1,4 +1,4 @@
---8<-- "importc.md"
+--8<-- "./importc.md"
 
 ???+ tip "TipTitle"
     TipContent

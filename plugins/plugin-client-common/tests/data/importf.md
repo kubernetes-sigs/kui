@@ -1,4 +1,4 @@
 ---
 imports:
-    - importd.md
+    - ./importd.md
 ---

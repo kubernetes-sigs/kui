@@ -1,6 +1,6 @@
 ---
 imports:
-    - importb.md
+    - ./importb.md
 ---
 
 BBB

@@ -2,8 +2,8 @@
 layout:
     1: right
 imports:
-    - importa.md
-    - importe.md
+    - ./importa.md
+    - ./importe.md
 ---
 
 ::imports
@@ -13,9 +13,9 @@ imports:
 # AAA
 
 === "Tab1"
-    --8<-- "snippets-in-tab3a.md"
+    --8<-- "./snippets-in-tab3a.md"
 
 === "Tab2"
-    --8<-- "snippets-in-tab4b.md"
+    --8<-- "./snippets-in-tab4b.md"
 
 DDD

@@ -1,6 +1,6 @@
 ---
 imports:
-    - importc.md
+    - ./importc.md
 ---
 
 ???+ tip "TipTitle"

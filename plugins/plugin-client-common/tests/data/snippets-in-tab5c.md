@@ -1,6 +1,6 @@
 ---
 imports:
-    - importd.md
+    - ./importd.md
 ---
 
 CCCoo
