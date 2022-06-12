@@ -223,6 +223,11 @@ export class TestTable {
     const clickCell = (row: Row, command: string) => {
       it(`should click to execute from test table: ${command}`, async () => {
         try {
+          // work around tooltips not going away when clicking on
+          // consecutive/nearby table rows in sequence
+          await ctx.app.client.$(Selectors.STATUS_STRIPE).then(_ => _.moveTo())
+          await new Promise(resolve => setTimeout(resolve, 1000))
+
           const cell = await ctx.app.client.$(
             `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
           )
