@@ -104,7 +104,7 @@ function createWindowWithArgv(executeThisArgvPlease?: string[]) {
 }
 
 /** Open a new Electron window */
-export function createWindow(
+export async function createWindow(
   noHeadless = false,
   executeThisArgvPlease?: string[],
   subwindowPlease?: boolean,
@@ -189,6 +189,8 @@ export function createWindow(
 
     // when jumping directly to the UI from bash, getAppPath() may
     // include dist/headless; if so, we need to back out of that
+    await promise // wait for `app` to be defined, since we're about to use it
+    if (!app) return // then we will go a different route to opening the electron window
     const appPath = app.getAppPath()
     const root = join(appPath, /headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
 
