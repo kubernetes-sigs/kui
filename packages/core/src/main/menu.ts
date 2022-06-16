@@ -20,7 +20,6 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
 import open from './open'
-import saveAsGuidebook from './save'
 import tellRendererToExecute from './tell'
 import loadClientNotebooksMenuDefinition from './load'
 import { openNotebook, clientNotebooksDefinitionToElectron } from './notebooks'
@@ -91,11 +90,6 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         enabled: !(isReadOnlyClient() || isOfflineClient()),
         click: () => tellRendererToExecute('tab edit toggle --current-tab')
         // TODO find exactly what keyboard shortcut => accelerator: 'CommandOrControl+E'
-      },
-      {
-        label: 'Save as Guidebook',
-        click: saveAsGuidebook,
-        accelerator: 'CommandOrControl+S'
       },
       { type: 'separator' },
       {
