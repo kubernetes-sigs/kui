@@ -16,7 +16,7 @@
 
 import { NewSplitRequest } from '@kui-shell/core'
 
-type SplitPosition = NewSplitRequest['options']['position']
+type SplitPosition = Required<Required<NewSplitRequest>['options']>['position']
 
 export default SplitPosition
 

@@ -126,7 +126,7 @@ export interface Event {
 
 export interface ParsedOptions {
   _?: string[]
-  [key: string]: string | boolean | number | string[]
+  [key: string]: any
 }
 
 /**
