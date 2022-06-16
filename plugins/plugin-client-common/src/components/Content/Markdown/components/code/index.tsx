@@ -26,7 +26,7 @@ import CodeBlock from '../../../../Views/Terminal/Block/Inputv2'
 
 const SimpleEditor = React.lazy(() => import('../../../Editor/SimpleEditor'))
 
-type CodeBlockResponse = CommentaryResponse['props']['codeBlockResponses'][0]
+type CodeBlockResponse = Required<CommentaryResponse['props']>['codeBlockResponses'][number]
 export { CodeBlockResponse }
 
 export default function codeWrapper(
