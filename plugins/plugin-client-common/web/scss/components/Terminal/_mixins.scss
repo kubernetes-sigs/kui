@@ -57,6 +57,7 @@ $action-hover-delay: 210ms;
 @mixin FlushToContainer {
   margin: 0;
   padding: 0;
+  max-width: unset;
 }
 
 @mixin Scrollback {
