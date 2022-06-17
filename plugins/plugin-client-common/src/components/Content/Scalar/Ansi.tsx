@@ -28,7 +28,7 @@ interface Props {
 
 /** Special overrides for CSS classes; otherwise, we will use the raw values from `anser`, e.g. "italic" and "underline" and "strikethrough" */
 const decos = {
-  dim: 'sub-text semi-transparent'
+  dim: 'semi-transparent'
 }
 
 function tagOf(entry: AnserJsonEntry) {
