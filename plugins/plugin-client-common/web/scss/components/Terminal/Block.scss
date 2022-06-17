@@ -87,10 +87,6 @@
   }
 }
 
-@include MaximizedBlock {
-  height: 100%;
-}
-
 /** Coloring the context border by status of the block */
 @include Scrollback {
   .repl-input:hover,
