@@ -30,17 +30,19 @@ export default class XtermDom extends React.PureComponent<Props> {
       // directly into the row element.
       const cell = cells[0]
       if (cell.classList && cell.classList.length === 0 && cell.style && Object.keys(cell.style).length === 0) {
-        return cell.innerText.length === 0 ? '\u00a0' : cell.innerText
+        const text = cell.innerText || cell.textContent || '\u00a0' // whitespace seems to be in textContent
+        return text
       }
     }
 
     return cells.map((cell, idx) => {
-      const className = cell.classList ? cell.classList.join(' ') : ''
-      const style = cell.style || {}
+      const text = cell.innerText || cell.textContent || '\u00a0' // whitespace seems to be in textContent
 
-      return (
-        <span key={idx} className={className} style={style}>
-          {cell.innerText}
+      return cell.classList.length === 0 && !cell.style ? (
+        text
+      ) : (
+        <span key={idx} className={cell.classList.join(' ')} style={cell.style || {}}>
+          {text || '\u00a0'}
         </span>
       )
     })

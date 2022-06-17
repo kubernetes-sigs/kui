@@ -46,6 +46,7 @@ function sameStyle(cell1: IBufferCell, cell2: IBufferCell): boolean {
     cell1.isItalic() === cell2.isItalic() &&
     cell1.isDim() === cell2.isDim() &&
     cell1.isUnderline() === cell2.isUnderline() &&
+    cell1.isStrikethrough() === cell2.isStrikethrough() &&
     cell1.isBlink() === cell2.isBlink() &&
     cell1.isInvisible() === cell2.isInvisible()
   ) {

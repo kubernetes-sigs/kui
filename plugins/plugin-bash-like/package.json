@@ -24,7 +24,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/xterm-helpers": "1.0.1",
+    "@kui-shell/xterm-helpers": "1.0.2",
     "cookie": "0.4.2",
     "debug": "4.3.4",
     "globby": "11.0.4",
