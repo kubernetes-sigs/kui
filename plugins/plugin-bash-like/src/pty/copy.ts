@@ -116,9 +116,9 @@ export default function copy(terminal: Terminal): XtermResponse['rows'] {
   const current = terminal.buffer.active.getNullCell()
 
   const nLines = lastFullLineIdx(terminal, current) + 1
-  let prevRow: XtermResponseCell[]
-  for (let idx = 0; idx < nLines; idx++) {
-    const line = terminal.buffer.active.getLine(idx)
+  let prevRow: XtermResponseCell[] = undefined // eslint-disable-line
+  for (let ridx = 0; ridx < nLines; ridx++) {
+    const line = terminal.buffer.active.getLine(ridx)
 
     if (line.isWrapped && prevRow !== undefined) {
       squashRow(line, previous, current, prevRow)
