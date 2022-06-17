@@ -89,6 +89,10 @@ body[kui-theme-style] .kui--tab-content {
     display: none;
   }
 
+  .xterm-dim {
+    opacity: 0.6;
+  }
+
   .xterm-container .xterm-fg-7.xterm-dim {
     opacity: 1;
     color: var(--color-text-02);
