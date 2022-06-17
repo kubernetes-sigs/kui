@@ -26,6 +26,9 @@ export async function loadNotebook(
   errOk = false
 ): Promise<string | object> {
   try {
+    // replace any environment variable references
+    filepath = filepath.replace(/\${?([^/s]+)}?/g, (_, p1) => process.env[p1])
+
     debug('attempting to load guidebook data', filepath)
     if (/^https:/.test(filepath)) {
       return (await REPL.rexec<(string | object)[]>(`vfs _fetchfile ${encodeComponent(filepath)}`)).content[0]
