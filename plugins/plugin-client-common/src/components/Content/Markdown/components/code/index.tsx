@@ -22,6 +22,7 @@ import { Props } from '../../../Markdown'
 import { tryFrontmatter } from '../../frontmatter'
 import { CodeBlockResponseFn } from '../../components'
 
+import Ansi from '../../../Scalar/Ansi'
 import CodeBlock from '../../../../Views/Terminal/Block/Inputv2'
 
 const SimpleEditor = React.lazy(() => import('../../../Editor/SimpleEditor'))
@@ -48,6 +49,10 @@ export default function codeWrapper(
     // react-markdown v6+ places the language in the className
     const match = /language-(\w+)/.exec(props.className || '')
     const language = match ? match[1] : undefined
+
+    if (language === 'ansi') {
+      return <Ansi>{body}</Ansi>
+    }
 
     if (mdprops.nested && props.codeIdx && mdprops.executableCodeBlocks !== false) {
       // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
