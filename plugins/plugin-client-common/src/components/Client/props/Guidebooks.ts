@@ -35,6 +35,6 @@ export default interface GuidebookProps {
   /** Command prefix to execute to open a guidebook [default: replay] */
   guidebooksCommand?: string
 
-  /** Present a fixed set of guidebook content */
-  guidebooks?: MenuItem[]
+  /** Present a fixed set of guidebook content. If `false`, then don't show the hamburger menu in the upper left. */
+  guidebooks?: MenuItem[] | false
 }
