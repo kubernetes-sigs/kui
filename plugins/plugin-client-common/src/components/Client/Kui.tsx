@@ -343,7 +343,9 @@ export class Kui extends React.PureComponent<Props, State> {
                 onTabReady={this.state.commandLine && this._onTabReady}
                 closeableTabs={this.props.closeableTabs}
                 noTopTabs={this.props.noTopTabs || Client.singletonGuidebooks()}
-                guidebooks={this.props.guidebooks || Client.guidebooksMenu()}
+                guidebooks={
+                  this.props.guidebooks === false ? undefined : this.props.guidebooks || Client.guidebooksMenu()
+                }
                 guidebooksCommand={
                   this.props.guidebooksCommand ||
                   (Client.singletonGuidebooks() ? 'commentary --replace --readonly -f' : undefined)
