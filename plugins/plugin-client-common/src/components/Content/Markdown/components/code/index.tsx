@@ -18,6 +18,8 @@ import React from 'react'
 import { CodeProps } from 'react-markdown/lib/ast-to-react'
 import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
 
+import bodyAndLanguage from './filter'
+
 import { Props } from '../../../Markdown'
 import { tryFrontmatter } from '../../frontmatter'
 import { CodeBlockResponseFn } from '../../components'
@@ -103,6 +105,8 @@ export default function codeWrapper(
         </React.Fragment>
       )
     } else {
+      const { bodyForView, languageForView } = bodyAndLanguage(body, language, attributes)
+
       return (
         <div className={'paragraph' + (mdprops.executableCodeBlocks === false ? ' kui--inverted-color-context' : '')}>
           {!language ? (
@@ -113,8 +117,8 @@ export default function codeWrapper(
             <code className="kui--code--editor">
               <SimpleEditor
                 tabUUID={tabUUID}
-                content={code}
-                contentType={language}
+                content={bodyForView}
+                contentType={languageForView}
                 fontSize={12}
                 simple
                 minHeight={0}
