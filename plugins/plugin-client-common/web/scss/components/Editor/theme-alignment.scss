@@ -170,6 +170,7 @@ body[kui-theme-style] .monaco-editor .view-overlays .current-line {
 
 /* cursor */
 body[kui-theme-style] .monaco-editor .cursor {
+  mix-blend-mode: color-burn;
   background-color: var(--color-support-01);
 }
 
