@@ -28,23 +28,34 @@ function dump(field: any, language: string): string {
   }
 }
 
-function filterIn(json: Record<string, any>, include: string, language: string) {
-  return dump(json[include], language)
-}
-
-function filterOut(json: Record<string, any>, exclude: string[], language: string) {
-  exclude.forEach(key => {
-    delete json[key]
-  })
-  return dump(json, language)
-}
-
-function asFilter(filter: string | string[]): string[] {
-  if (typeof filter === 'string') {
-    return [filter]
+function project(json: Record<string, any>, path: string[], idx = 0) {
+  const field = json[path[idx]]
+  if (idx === path.length - 1) {
+    return field
   } else {
-    return filter
+    return project(field, path, idx + 1)
   }
+}
+
+function asFilter(filter: string | string[]): string[][] {
+  return (typeof filter === 'string' ? [filter] : filter).map(filt => filt.split(/\./).slice(1))
+}
+
+function filterIn(json: Record<string, any>, include: string[]) {
+  return project(json, asFilter(include)[0])
+}
+
+function remove(json: Record<string, any>, path: string[], idx = 0) {
+  if (idx === path.length - 1) {
+    delete json[path[idx]]
+  } else {
+    return remove(json[path[idx]], path, idx + 1)
+  }
+}
+
+function filterOut(json: Record<string, any>, exclude: string[][]) {
+  exclude.forEach(path => remove(json, path))
+  return json
 }
 
 export default function bodyAndLanguage(body: string, language: string, attributes: Record<string, any>) {
@@ -53,14 +64,14 @@ export default function bodyAndLanguage(body: string, language: string, attribut
       const json = JSON.parse(body)
 
       const languageForView =
-        attributes.language || (attributes.languageFrom && json[attributes.languageFrom]) || language
+        attributes.language ||
+        (attributes.languageFrom && project(json, asFilter(attributes.languageFrom)[0])) ||
+        language
 
-      const bodyForView =
-        (attributes.include
-          ? filterIn(json, attributes.include, languageForView)
-          : attributes.exclude
-          ? filterOut(json, asFilter(attributes.exclude), languageForView)
-          : body) || ''
+      const json2 = attributes.include ? filterIn(json, attributes.include) : json
+      const json3 = attributes.exclude ? filterOut(json2, asFilter(attributes.exclude)) : json2
+
+      const bodyForView = dump(json3, languageForView)
 
       return { bodyForView, languageForView }
     } catch (err) {
