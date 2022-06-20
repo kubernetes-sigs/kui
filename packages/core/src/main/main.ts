@@ -43,7 +43,10 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
     debug('shortcut to graphics', argv)
     const { getCommand, initElectron } = await import(/* webpackChunkName: "electron-main" */ './spawn-electron')
     const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv, process.cwd(), env, async () =>
-      import('electron')
+      import('electron').catch(err => {
+        debug('Error importing electron. We are probably running a headless client.', err)
+        return { screen: undefined, BrowserWindow: undefined }
+      })
     )
     initElectron(
       strippedArgv,

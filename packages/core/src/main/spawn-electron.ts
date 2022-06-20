@@ -87,7 +87,7 @@ function getPositionForRegularWindow({ screen, BrowserWindow }: { screen: Screen
  *
  */
 function getPositionForPopup({ screen, BrowserWindow }: { screen: Screen; BrowserWindow: BW }) {
-  if (screen) {
+  if (screen && BrowserWindow) {
     const nWindows = BrowserWindow.getAllWindows().length
     const { bounds } = screen.getPrimaryDisplay()
     return {
