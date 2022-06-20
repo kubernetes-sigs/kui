@@ -155,342 +155,347 @@ export async function createWindow(
   // note: titleBarStyle on macOS needs to be customButtonsOnHover if we want to support cursor:pointer
   // but this doesn't render the inset window buttons
   // see https://github.com/electron/electron/issues/10243
-  promise.then(async () => {
-    const { productName }: { productName: string } = await import('@kui-shell/client/config.d/name.json')
-    const { filesystem }: { filesystem: { linux: string; win32: string } } = await import(
-      '@kui-shell/client/config.d/icons.json'
-    )
+  promise
+    .then(async () => {
+      const { productName }: { productName: string } = await import('@kui-shell/client/config.d/name.json')
+      const { filesystem }: { filesystem: { linux: string; win32: string } } = await import(
+        '@kui-shell/client/config.d/icons.json'
+      )
 
-    const { screen, BrowserWindow, app } = await import('electron')
-    const position =
-      subwindowPrefs && subwindowPrefs.position
-        ? await subwindowPrefs.position()
-        : getPositionForRegularWindow({ screen, BrowserWindow })
-    const opts: BrowserWindowConstructorOptions = Object.assign(
-      {
-        title: productName,
-        width,
-        height,
-        webPreferences: {
-          enableRemoteModule: true,
-          backgroundThrottling: false,
-          contextIsolation: false, // prior to electron 12, nodeIntegration: true did not need this
-          nodeIntegration: true // prior to electron 5, this was the default
-        }
-        // titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
-      },
-      position
-    )
+      const { screen, BrowserWindow, app } = await import('electron')
+      const position =
+        subwindowPrefs && subwindowPrefs.position
+          ? await subwindowPrefs.position()
+          : getPositionForRegularWindow({ screen, BrowserWindow })
+      const opts: BrowserWindowConstructorOptions = Object.assign(
+        {
+          title: productName,
+          width,
+          height,
+          webPreferences: {
+            enableRemoteModule: true,
+            backgroundThrottling: false,
+            contextIsolation: false, // prior to electron 12, nodeIntegration: true did not need this
+            nodeIntegration: true // prior to electron 5, this was the default
+          }
+          // titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
+        },
+        position
+      )
 
-    // if user ups zoom level, reloads, we're stuck at a higher zoom
-    // see https://github.com/electron/electron/issues/10572
-    // note that this requires show: false above
-    opts.webPreferences.zoomFactor = 1
+      // if user ups zoom level, reloads, we're stuck at a higher zoom
+      // see https://github.com/electron/electron/issues/10572
+      // note that this requires show: false above
+      opts.webPreferences.zoomFactor = 1
 
-    // when jumping directly to the UI from bash, getAppPath() may
-    // include dist/headless; if so, we need to back out of that
-    await promise // wait for `app` to be defined, since we're about to use it
-    if (!app) return // then we will go a different route to opening the electron window
-    const appPath = app.getAppPath()
-    const root = join(appPath, /headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
+      // when jumping directly to the UI from bash, getAppPath() may
+      // include dist/headless; if so, we need to back out of that
+      await promise // wait for `app` to be defined, since we're about to use it
+      if (!app) return // then we will go a different route to opening the electron window
+      const appPath = app.getAppPath()
+      const root = join(appPath, /headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
 
-    if (process.platform === 'linux') {
-      const icon = join(root, 'build', filesystem.linux)
-      opts.icon = icon
-    } else if (process.platform === 'win32') {
-      const icon = join(root, 'build', filesystem.win32)
-      opts.icon = icon
-    }
-
-    if (subwindowPlease) {
-      // this tells electron to size content to the given width and height,
-      // (i.e. NOT vice versa, to size the window to the content!)
-      opts.useContentSize = true
-    }
-
-    if (electronRemoteNeedsInit) {
-      require('@electron/remote/main').initialize()
-      electronRemoteNeedsInit = false
-    }
-
-    if (process.env.KUI_POSITION_X) {
-      opts.x = parseInt(process.env.KUI_POSITION_X, 10)
-    }
-    if (process.env.KUI_POSITION_Y) {
-      opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
-    }
-    debug('createWindow::new BrowserWindow')
-    interface KuiBrowserWindow extends BrowserWindowType {
-      executeThisArgvPlease?: string[]
-      subwindow?: ISubwindowPrefs
-    }
-    const mainWindow = new BrowserWindow(opts) as KuiBrowserWindow
-    require('@electron/remote/main').enable(mainWindow.webContents)
-    nWindows++
-    debug('createWindow::new BrowserWindow success')
-
-    mainWindow.once('ready-to-show', () => {
-      mainWindow.setVisibleOnAllWorkspaces(true)
-      mainWindow.show()
-      mainWindow.setVisibleOnAllWorkspaces(false)
-    })
-
-    // remember certain classes of windows, so we don't have multiple
-    // open; e.g. one for docs, one for videos...
-    interface Win {
-      window?: BrowserWindowType
-      url?: string
-    }
-    const fixedWindows: Record<string, Win> = {}
-    const openFixedWindow = (opts: {
-      type: string
-      event: Event
-      url: string
-      size?: { width: number; height: number }
-      position?: { x: number; y: number }
-      options?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-    }) => {
-      const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
-
-      const existing = fixedWindows[type] || ({} as Win)
-      const { window: existingWindow, url: currentURL } = existing
-
-      if (!existingWindow || existingWindow.isDestroyed()) {
-        const window = new BrowserWindow({
-          width: size.width,
-          height: size.height,
-          frame: true
-        })
-        fixedWindows[type] = { window, url }
-        window.setPosition(position.x + 62, position.y + 62)
-        // window.on('closed', () => { docsWindow = null })
-        window.loadURL(url)
-      } else {
-        if (currentURL !== url) {
-          existingWindow.loadURL(url)
-          existing.url = url
-        }
-        existingWindow.focus()
+      if (process.platform === 'linux') {
+        const icon = join(root, 'build', filesystem.linux)
+        opts.icon = icon
+      } else if (process.platform === 'win32') {
+        const icon = join(root, 'build', filesystem.win32)
+        opts.icon = icon
       }
 
-      event.preventDefault()
-    }
-
-    /** this event handler will be called when the window's content finishes loading */
-    mainWindow.webContents.on('did-finish-load', async () => {
-      if (mainWindow) {
-        try {
-          // const { switchToPersistedThemeChoice } = await import('../webapp/themes/persistence')
-          // await switchToPersistedThemeChoice(mainWindow.webContents /*, Electron.nativeTheme.shouldUseDarkColors */)
-        } catch (err) {
-          console.error('error initializing themes', err)
-        }
+      if (subwindowPlease) {
+        // this tells electron to size content to the given width and height,
+        // (i.e. NOT vice versa, to size the window to the content!)
+        opts.useContentSize = true
       }
-    })
 
-    /**
-     * Intercept window.location=...
-     * see https://github.com/IBM/kui/issues/2881
-     */
-    mainWindow.webContents.on('will-navigate', async (event, url) => {
-      if (!/kui-shell\/build\/index.html/.test(url)) {
-        // webpack-dev-server causes this navigation; ignore
-        event.preventDefault()
-        ;(await import('electron')).shell.openExternal(url)
+      if (electronRemoteNeedsInit) {
+        require('@electron/remote/main').initialize()
+        electronRemoteNeedsInit = false
       }
-    })
 
-    /** jump in and manage the way popups create new windows */
-    mainWindow.webContents.on(
-      'new-window',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (event: Event, url: string, frameName: string, disposition: string, options: any) => {
-        if (url.startsWith('https://youtu.be')) {
-          // special handling of youtube links
-          openFixedWindow({
-            type: 'videos',
-            event,
-            url,
-            options,
-            size: { width: 800, height: 600 }
+      if (process.env.KUI_POSITION_X) {
+        opts.x = parseInt(process.env.KUI_POSITION_X, 10)
+      }
+      if (process.env.KUI_POSITION_Y) {
+        opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
+      }
+      debug('createWindow::new BrowserWindow')
+      interface KuiBrowserWindow extends BrowserWindowType {
+        executeThisArgvPlease?: string[]
+        subwindow?: ISubwindowPrefs
+      }
+      const mainWindow = new BrowserWindow(opts) as KuiBrowserWindow
+      require('@electron/remote/main').enable(mainWindow.webContents)
+      nWindows++
+      debug('createWindow::new BrowserWindow success')
+
+      mainWindow.once('ready-to-show', () => {
+        mainWindow.setVisibleOnAllWorkspaces(true)
+        mainWindow.show()
+        mainWindow.setVisibleOnAllWorkspaces(false)
+      })
+
+      // remember certain classes of windows, so we don't have multiple
+      // open; e.g. one for docs, one for videos...
+      interface Win {
+        window?: BrowserWindowType
+        url?: string
+      }
+      const fixedWindows: Record<string, Win> = {}
+      const openFixedWindow = (opts: {
+        type: string
+        event: Event
+        url: string
+        size?: { width: number; height: number }
+        position?: { x: number; y: number }
+        options?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
+
+        const existing = fixedWindows[type] || ({} as Win)
+        const { window: existingWindow, url: currentURL } = existing
+
+        if (!existingWindow || existingWindow.isDestroyed()) {
+          const window = new BrowserWindow({
+            width: size.width,
+            height: size.height,
+            frame: true
           })
+          fixedWindows[type] = { window, url }
+          window.setPosition(position.x + 62, position.y + 62)
+          // window.on('closed', () => { docsWindow = null })
+          window.loadURL(url)
         } else {
+          if (currentURL !== url) {
+            existingWindow.loadURL(url)
+            existing.url = url
+          }
+          existingWindow.focus()
+        }
+
+        event.preventDefault()
+      }
+
+      /** this event handler will be called when the window's content finishes loading */
+      mainWindow.webContents.on('did-finish-load', async () => {
+        if (mainWindow) {
+          try {
+            // const { switchToPersistedThemeChoice } = await import('../webapp/themes/persistence')
+            // await switchToPersistedThemeChoice(mainWindow.webContents /*, Electron.nativeTheme.shouldUseDarkColors */)
+          } catch (err) {
+            console.error('error initializing themes', err)
+          }
+        }
+      })
+
+      /**
+       * Intercept window.location=...
+       * see https://github.com/IBM/kui/issues/2881
+       */
+      mainWindow.webContents.on('will-navigate', async (event, url) => {
+        if (!/kui-shell\/build\/index.html/.test(url)) {
+          // webpack-dev-server causes this navigation; ignore
           event.preventDefault()
           ;(await import('electron')).shell.openExternal(url)
         }
+      })
+
+      /** jump in and manage the way popups create new windows */
+      mainWindow.webContents.on(
+        'new-window',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        async (event: Event, url: string, frameName: string, disposition: string, options: any) => {
+          if (url.startsWith('https://youtu.be')) {
+            // special handling of youtube links
+            openFixedWindow({
+              type: 'videos',
+              event,
+              url,
+              options,
+              size: { width: 800, height: 600 }
+            })
+          } else {
+            event.preventDefault()
+            ;(await import('electron')).shell.openExternal(url)
+          }
+        }
+      )
+
+      let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => /--command-context/.test(_))
+      if (commandContext) {
+        executeThisArgvPlease = executeThisArgvPlease.filter(_ => !_.match(/--command-context/))
+
+        // strip off the leading --, to help with URL window.location.search
+        commandContext = commandContext.replace(/^--/, '')
       }
-    )
 
-    let commandContext = executeThisArgvPlease && executeThisArgvPlease.find(_ => /--command-context/.test(_))
-    if (commandContext) {
-      executeThisArgvPlease = executeThisArgvPlease.filter(_ => !_.match(/--command-context/))
-
-      // strip off the leading --, to help with URL window.location.search
-      commandContext = commandContext.replace(/^--/, '')
-    }
-
-    if (noHeadless === true && executeThisArgvPlease) {
-      debug('setting argv', executeThisArgvPlease)
-      mainWindow.executeThisArgvPlease = executeThisArgvPlease
-    }
-    debug('subwindowPrefs', subwindowPrefs)
-    if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
-      mainWindow.subwindow = subwindowPrefs
-    }
-
-    // and load the index.html of the app.
-    const urlSpec = {
-      pathname: join(root, 'build', 'index.html'),
-      protocol: 'file:',
-      search: commandContext ? `?${commandContext}` : '',
-      slashes: true
-    }
-    debug('mainWindow::loadURL', urlSpec)
-    try {
-      mainWindow.loadURL(require('url').format(urlSpec))
-    } catch (err) {
-      const errorIsNavigatedError: boolean =
-        err.message.includes('Inspected target navigated or closed') ||
-        err.message.includes('cannot determine loading status') ||
-        err.message.includes('Inspected target navigated or closed')
-
-      if (!process.env.TRAVIS_JOB_ID || !errorIsNavigatedError) {
-        throw err
+      if (noHeadless === true && executeThisArgvPlease) {
+        debug('setting argv', executeThisArgvPlease)
+        mainWindow.executeThisArgvPlease = executeThisArgvPlease
       }
-    }
-
-    debug('install menus')
-    require('./menu').install(createWindowWithArgv)
-
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
-
-    // Emitted when the window is closed.
-    mainWindow.once('closed', function() {
-      // Dereference the window object, usually you would store windows
-      // in an array if your app supports multi windows, this is the time
-      // when you should delete the corresponding element.
-      if (--nWindows === 0) {
-        cleaners.forEach(cleaner => cleaner())
-        cleaners = []
+      debug('subwindowPrefs', subwindowPrefs)
+      if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
+        mainWindow.subwindow = subwindowPrefs
       }
-    })
 
-    if (!secondary && cleaners.length === 0) {
-      //
-      // set up ipc from renderer
-      //
-      const { ipcMain } = await import('electron')
+      // and load the index.html of the app.
+      const urlSpec = {
+        pathname: join(root, 'build', 'index.html'),
+        protocol: 'file:',
+        search: commandContext ? `?${commandContext}` : '',
+        slashes: true
+      }
+      debug('mainWindow::loadURL', urlSpec)
+      try {
+        mainWindow.loadURL(require('url').format(urlSpec))
+      } catch (err) {
+        const errorIsNavigatedError: boolean =
+          err.message.includes('Inspected target navigated or closed') ||
+          err.message.includes('cannot determine loading status') ||
+          err.message.includes('Inspected target navigated or closed')
 
-      //
-      // take a screenshot; note that this has to be done in the main
-      // process, due to the way clipboard.writeImage is implemented on
-      // Linux. on macOS, this could be done entirely in the renderer
-      // process. on Linux, however, the nativeImages aren't
-      // translatable between the renderer and main processes as fluidly
-      // as they are on macOS. oh well! this is why the screenshot
-      // plugin has to pollute main.js
-      //
-      debug('ipc registration')
+        if (!process.env.TRAVIS_JOB_ID || !errorIsNavigatedError) {
+          throw err
+        }
+      }
 
-      const onCaptureToClipboard = async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
-        try {
-          const { clipboard, nativeImage, webContents } = await import('electron')
-          const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
+      debug('install menus')
+      require('./menu').install(createWindowWithArgv)
+
+      // Open the DevTools.
+      // mainWindow.webContents.openDevTools()
+
+      // Emitted when the window is closed.
+      mainWindow.once('closed', function() {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        if (--nWindows === 0) {
+          cleaners.forEach(cleaner => cleaner())
+          cleaners = []
+        }
+      })
+
+      if (!secondary && cleaners.length === 0) {
+        //
+        // set up ipc from renderer
+        //
+        const { ipcMain } = await import('electron')
+
+        //
+        // take a screenshot; note that this has to be done in the main
+        // process, due to the way clipboard.writeImage is implemented on
+        // Linux. on macOS, this could be done entirely in the renderer
+        // process. on Linux, however, the nativeImages aren't
+        // translatable between the renderer and main processes as fluidly
+        // as they are on macOS. oh well! this is why the screenshot
+        // plugin has to pollute main.js
+        //
+        debug('ipc registration')
+
+        const onCaptureToClipboard = async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
           try {
-            const buf = image.toPNG()
-            clipboard.writeImage(nativeImage.createFromBuffer(buf))
-            event.sender.send('capture-page-to-clipboard-done', buf)
+            const { clipboard, nativeImage, webContents } = await import('electron')
+            const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
+            try {
+              const buf = image.toPNG()
+              clipboard.writeImage(nativeImage.createFromBuffer(buf))
+              event.sender.send('capture-page-to-clipboard-done', buf)
+            } catch (err) {
+              console.log(err)
+              event.sender.send('capture-page-to-clipboard-done')
+            }
           } catch (err) {
             console.log(err)
             event.sender.send('capture-page-to-clipboard-done')
           }
-        } catch (err) {
-          console.log(err)
-          event.sender.send('capture-page-to-clipboard-done')
         }
-      }
-      // end of screenshot logic
+        // end of screenshot logic
 
-      const onSynchronousMessage = (event: IpcMainEvent, arg: string) => {
-        const message = JSON.parse(arg)
-        switch (message.operation) {
-          case 'quit':
-            app.quit()
-            break
-          case 'new-window':
-            createWindow(
-              true,
-              message.argv,
-              undefined,
-              {
-                initialTabTitle: message.title,
-                quietExecCommand: message.quietExecCommand !== undefined ? message.quietExecCommand : false
-              },
-              true
+        const onSynchronousMessage = (event: IpcMainEvent, arg: string) => {
+          const message = JSON.parse(arg)
+          switch (message.operation) {
+            case 'quit':
+              app.quit()
+              break
+            case 'new-window':
+              createWindow(
+                true,
+                message.argv,
+                undefined,
+                {
+                  initialTabTitle: message.title,
+                  quietExecCommand: message.quietExecCommand !== undefined ? message.quietExecCommand : false
+                },
+                true
+              )
+              break
+            case 'open-graphical-shell':
+              createWindow(true)
+              break
+            case 'enlarge-window':
+              mainWindow.setContentSize(1400, 1050, true)
+              break
+            case 'reduce-window':
+              mainWindow.setContentSize(1024, 768, true)
+              break
+            case 'maximize-window':
+              mainWindow.maximize()
+              break
+            case 'unmaximize-window':
+              mainWindow.unmaximize()
+              break
+          }
+          event.returnValue = 'ok'
+        }
+
+        const onExecInvoke = async (event: IpcMainEvent, arg: string) => {
+          const message = JSON.parse(arg)
+          const channel = `/exec/response/${message.hash}`
+          debug('invoke', message)
+
+          try {
+            const mod = await import('@kui-shell/plugin-' + webpackPath(message.module) + '/mdist/electron-main.js')
+            debug('invoke got module')
+
+            const returnValue = await mod[message.main || 'main'](message.args, event.sender)
+            debug('invoke got returnValue', returnValue)
+
+            event.sender.send(
+              channel,
+              JSON.stringify({
+                success: true,
+                returnValue
+              })
             )
-            break
-          case 'open-graphical-shell':
-            createWindow(true)
-            break
-          case 'enlarge-window':
-            mainWindow.setContentSize(1400, 1050, true)
-            break
-          case 'reduce-window':
-            mainWindow.setContentSize(1024, 768, true)
-            break
-          case 'maximize-window':
-            mainWindow.maximize()
-            break
-          case 'unmaximize-window':
-            mainWindow.unmaximize()
-            break
+          } catch (error) {
+            debug('error in exec', error)
+            event.sender.send(
+              channel,
+              JSON.stringify({
+                success: false,
+                error
+              })
+            )
+          }
         }
-        event.returnValue = 'ok'
+
+        ipcMain.on('/exec/invoke', onExecInvoke)
+        ipcMain.on('synchronous-message', onSynchronousMessage)
+        ipcMain.on('capture-page-to-clipboard', onCaptureToClipboard)
+
+        cleaners.push(() => ipcMain.off('/exec/invoke', onExecInvoke))
+        cleaners.push(() => ipcMain.off('synchronous-message', onSynchronousMessage))
+        cleaners.push(() => ipcMain.off('capture-page-to-clipboard', onCaptureToClipboard))
       }
 
-      const onExecInvoke = async (event: IpcMainEvent, arg: string) => {
-        const message = JSON.parse(arg)
-        const channel = `/exec/response/${message.hash}`
-        debug('invoke', message)
-
-        try {
-          const mod = await import('@kui-shell/plugin-' + webpackPath(message.module) + '/mdist/electron-main.js')
-          debug('invoke got module')
-
-          const returnValue = await mod[message.main || 'main'](message.args, event.sender)
-          debug('invoke got returnValue', returnValue)
-
-          event.sender.send(
-            channel,
-            JSON.stringify({
-              success: true,
-              returnValue
-            })
-          )
-        } catch (error) {
-          debug('error in exec', error)
-          event.sender.send(
-            channel,
-            JSON.stringify({
-              success: false,
-              error
-            })
-          )
-        }
-      }
-
-      ipcMain.on('/exec/invoke', onExecInvoke)
-      ipcMain.on('synchronous-message', onSynchronousMessage)
-      ipcMain.on('capture-page-to-clipboard', onCaptureToClipboard)
-
-      cleaners.push(() => ipcMain.off('/exec/invoke', onExecInvoke))
-      cleaners.push(() => ipcMain.off('synchronous-message', onSynchronousMessage))
-      cleaners.push(() => ipcMain.off('capture-page-to-clipboard', onCaptureToClipboard))
-    }
-
-    debug('createWindow done')
-  })
+      debug('createWindow done')
+    })
+    .catch(err => {
+      // headless
+      debug('not ready for graphics (2)', err)
+    })
 }
 
 /**
