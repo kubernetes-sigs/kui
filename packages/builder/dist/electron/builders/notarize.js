@@ -23,6 +23,8 @@ function notarizationOptionsForOSX(name /*: string */) {
 
     return {
       appPath,
+      tool: 'notarytool',
+      teamId: process.env.ASC_PROVIDER, // team short name
       ascProvider: process.env.ASC_PROVIDER, // team short name
       appBundleId: process.env.APP_BUNDLE_ID, // app bundle id
       appleId: process.env.APPLEID, // login ID for your AppleID account
