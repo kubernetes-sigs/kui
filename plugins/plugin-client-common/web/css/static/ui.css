@@ -140,7 +140,7 @@ body.still-loading .repl {
   white-space: pre;
 }
 .kui--ignore-if-empty {
-  display: span;
+  display: flex;
   flex: 1;
   &:empty {
     display: none;
