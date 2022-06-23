@@ -176,7 +176,13 @@ kuiPluginExternals.forEach(_ => {
   externals[_] = _
 })
 
-const config = (entry, target, extraPlugins = [], filename = productName.toLowerCase(), nameSuffix = '') => ({
+const config = (
+  entry,
+  target,
+  extraPlugins = [],
+  filename = productName.toLowerCase().replace(/\s/g, '-'),
+  nameSuffix = ''
+) => ({
   context: process.env.CLIENT_HOME,
   stats: {
     // while developing, you should set this to true
