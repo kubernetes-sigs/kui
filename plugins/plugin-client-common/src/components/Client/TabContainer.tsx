@@ -25,6 +25,7 @@ import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 
 import CommonProps from './props/Common'
 import BrandingProps from './props/Branding'
+import InterfaceProps from './props/Interface'
 import GuidebookProps from './props/Guidebooks'
 
 import '../../../web/css/static/TabContainer.scss'
@@ -47,6 +48,7 @@ type TabContainerOptions = TabContentOptions
 type Props = TabContentOptions &
   TopTabStripeConfiguration &
   BrandingProps &
+  InterfaceProps &
   GuidebookProps &
   Pick<CommonProps, 'closeableTabs' | 'noTopTabs'>
 
@@ -298,6 +300,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         isSidebarOpen={this.state.isSidebarOpen}
         onToggleSidebar={this.toggleSidebar}
         noTopTabs={this.props.noTopTabs}
+        noNewTabButton={this.props.noNewTabButton}
+        noNewSplitButton={this.props.noNewSplitButton}
         closeableTabs={this.state.tabs.length > 1 && (this.props.closeableTabs || !isReadOnlyClient())}
       />
     )

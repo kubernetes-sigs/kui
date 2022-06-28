@@ -30,6 +30,12 @@ $height: 3em;
   }
 }
 
+@mixin TopTabButtons {
+  .kui--top-tab-buttons {
+    @content;
+  }
+}
+
 @mixin TopTabStripeTabOverflowButton {
   .pf-c-nav__scroll-button {
     @content;

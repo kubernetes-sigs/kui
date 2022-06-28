@@ -31,6 +31,7 @@ import TabModel from '../TabModel'
 import KuiContext from '../context'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
+import InterfaceProps from '../props/Interface'
 import SplitTerminalButton from './SplitTerminalButton'
 
 import Icons from '../../spi/Icons'
@@ -62,19 +63,20 @@ import '../../../../web/scss/components/TopTabStripe/_index.scss'
 
 export type TopTabStripeConfiguration = TabConfiguration
 
-type Props = TopTabStripeConfiguration & {
-  tabs: TabModel[]
-  activeIdx: number
-  noTopTabs: boolean
-  closeableTabs: boolean
-  onNewTab: () => void
-  onCloseTab: (idx: number) => void
-  onSwitchTab: (idx: number) => void
+type Props = TopTabStripeConfiguration &
+  InterfaceProps & {
+    tabs: TabModel[]
+    activeIdx: number
+    noTopTabs: boolean
+    closeableTabs: boolean
+    onNewTab: () => void
+    onCloseTab: (idx: number) => void
+    onSwitchTab: (idx: number) => void
 
-  needsSidebar: boolean
-  isSidebarOpen: boolean
-  onToggleSidebar: () => void
-}
+    needsSidebar: boolean
+    isSidebarOpen: boolean
+    onToggleSidebar: () => void
+  }
 
 export default class TopTabStripe extends React.PureComponent<Props> {
   public componentDidMount() {
@@ -149,10 +151,10 @@ export default class TopTabStripe extends React.PureComponent<Props> {
               ))}
             </NavList>
           </Nav>
-          {!isReadOnlyClient() && (
+          {!isReadOnlyClient() && !(this.props.noNewTabButton && this.props.noNewSplitButton) && (
             <div className="kui--top-tab-buttons">
-              <NewTabButton onNewTab={this.props.onNewTab} />
-              <SplitTerminalButton />
+              {!this.props.noNewTabButton && <NewTabButton onNewTab={this.props.onNewTab} />}
+              {!this.props.noNewSplitButton && <SplitTerminalButton />}
             </div>
           )}
         </React.Fragment>
