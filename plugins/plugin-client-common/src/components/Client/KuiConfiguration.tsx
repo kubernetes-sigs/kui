@@ -15,6 +15,7 @@
  */
 
 import InputProps from './props/Input'
+import InterfaceProps from './props/Interface'
 import SessionProps from './props/Session'
 import BrandingProps from './props/Branding'
 import FeatureFlags from './props/FeatureFlags'
@@ -26,6 +27,7 @@ type TestingFlags = {
 
 type KuiConfiguration = Partial<Themes.ThemeProperties> &
   Partial<InputProps> &
+  Partial<InterfaceProps> &
   Partial<SessionProps> &
   Partial<BrandingProps> &
   Partial<FeatureFlags> &

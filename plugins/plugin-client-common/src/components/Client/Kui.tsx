@@ -339,6 +339,8 @@ export class Kui extends React.PureComponent<Props, State> {
                 version={this.props.version}
                 noActiveInput={this.props.noActiveInput || !!this.props.bottomInput || Client.isOffline()}
                 bottom={bottom}
+                noNewTabButton={this.props.noNewTabButton}
+                noNewSplitButton={this.props.noNewSplitButton}
                 title={this.props.initialTabTitle || (Client.isOffline() ? ' ' : undefined)}
                 onTabReady={this.state.commandLine && this._onTabReady}
                 closeableTabs={this.props.closeableTabs}
