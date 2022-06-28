@@ -25,4 +25,4 @@ export {
 export { default as eventBus } from './vfs/events'
 export { minioConfig, mounts as getCurrentMounts, Mount } from './vfs/responders'
 
-export { default as isEnabled } from './isEnabled'
+export { enable, default as isEnabled } from './isEnabled'
