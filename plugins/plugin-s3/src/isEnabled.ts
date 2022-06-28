@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
+let enabled = process.env.KUI_S3 !== 'false'
+
 /**
  * Allow clients to selectively disable plugin-s3; e.g. perhaps
  * plugin-s3 is not needed in headless mode.
  */
 export default function isEnabled() {
-  return process.env.KUI_S3 !== 'false'
+  return enabled
+}
+
+export function enable() {
+  enabled = true
+
+  return import('./preload').then(_ => _.default())
 }
