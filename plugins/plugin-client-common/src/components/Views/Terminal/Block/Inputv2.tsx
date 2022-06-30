@@ -436,7 +436,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
         <div className="repl-output repl-result-has-content">
           <div className="result-vertical">
             <div className="repl-result">
-              {this.state.execution === 'processing' && this.streamingOutput()}
+              {/* this.state.execution === 'processing' && */ this.streamingOutput()}
               {this.nonstreamingOutput()}
             </div>
           </div>
