@@ -32,11 +32,18 @@ export default function registerOcProjectGet(registrar: Registrar) {
 
   registrar.listen(
     '/oc/projects',
-    args => args.REPL.qexec('oc get projects', undefined, undefined, args.execOptions),
+    args => args.REPL.qexec('oc get ns', undefined, undefined, args.execOptions),
     defaultFlags
   )
+  ;['project', 'projects', 'Project', 'Projects'].forEach(project => {
+    registrar.listen(
+      `/oc/get/${project}`,
+      args => args.REPL.qexec('oc get ns', undefined, undefined, args.execOptions),
+      defaultFlags
+    )
+  })
 
-  const aliases = ['project', 'projects', 'ns', 'namespace', 'namespaces']
+  const aliases = ['ns', 'namespace', 'namespaces']
   aliases.forEach(ns => {
     registrar.listen(`/oc/get/${ns}`, doGet('oc'), defaultFlags)
   })
