@@ -151,12 +151,18 @@ export default class Output extends React.PureComponent<Props, State> {
           // use setTimeout to introduce hysteresis, so we aren't
           // forcing a react re-render for a bunch of tiny streaming
           // updates
-          setTimeout(() => {
+          const update = () => {
             this.setState({
               nStreamingOutputs: this.streamingOutput.length
             })
             setTimeout(done, 10)
-          }, 10)
+          }
+
+          if (this.state.nStreamingOutputs === 0) {
+            update()
+          } else {
+            setTimeout(update, 10)
+          }
         }
       }
     }
