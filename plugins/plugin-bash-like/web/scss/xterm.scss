@@ -196,11 +196,6 @@ body[kui-theme-style] .kui--tab-content {
     background-color: var(--color-text-01);
     color: var(--color-ui-01);
   }
-
-  /* we never want to see inner scrollbars */
-  .xterm-container .xterm-viewport::-webkit-scrollbar {
-    background-color: transparent;
-  }
 }
 
 /* selection */
