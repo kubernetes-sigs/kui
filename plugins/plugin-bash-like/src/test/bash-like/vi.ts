@@ -80,14 +80,14 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
 
       await CLI.command(`cat ${file.name}`, this.app).then(ReplExpect.okWithPtyOutput('hello there'))
     } catch (err) {
-      return Common.oops(this)(err)
+      return Common.oops(this, false)(err)
     }
   })
 
   Common.pit('should cat the file contents', () =>
     CLI.command(`cat "${file.name}"`, this.app)
       .then(ReplExpect.okWithPtyOutput('hello there'))
-      .catch(Common.oops(this))
+      .catch(Common.oops(this, false))
   )
 
   Common.pit('should remove the temp file', async () => {
@@ -121,7 +121,7 @@ describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
       // expect a clean exit, i.e. no error output on the console
       await ReplExpect.blank(res)
     } catch (err) {
-      return Common.oops(this)(err)
+      return Common.oops(this, false)(err)
     }
   })
 })

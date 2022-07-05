@@ -23,15 +23,15 @@ describe(`false command should have failed block ${process.env.MOCHA_RUN_TARGET 
   it('should show failure for `false` command', () =>
     CLI.command(`false`, this.app)
       .then(ReplExpect.error(1))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, false)))
 
   it('should show failure for `true && false` command', () =>
     CLI.command(`true && false`, this.app)
       .then(ReplExpect.error(1))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, false)))
 
   it('should show failure for `false >& /dev/null` command', () =>
     CLI.command(`(echo hi && false) >& /dev/null`, this.app)
       .then(ReplExpect.error(1))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, false)))
 })
