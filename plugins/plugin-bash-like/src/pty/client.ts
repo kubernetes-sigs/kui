@@ -276,6 +276,12 @@ class Resizer {
     }
 
     const { rows, cols } = this.getSize(flush)
+    if (isNaN(rows) || isNaN(cols)) {
+      // see https://github.com/kubernetes-sigs/kui/pull/8925
+      setTimeout(() => this.resize(flush, force), 50)
+      return
+    }
+
     if (this.terminal.rows !== rows || this.terminal.cols !== cols || force) {
       debug('resize', cols, rows, this.terminal.cols, this.terminal.rows, this.inAltBufferMode())
       try {
