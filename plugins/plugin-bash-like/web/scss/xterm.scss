@@ -1,15 +1,6 @@
 @import 'xterm/css/xterm.css';
 
-/* Explanation for width hacks:
-   see https://github.com/xtermjs/xterm.js/pull/2067
-   see https://github.com/IBM/kui/issues/1518
-*/
 body[kui-theme-style] .kui--tab-content {
-  .xterm-screen,
-  .xterm-rows > div {
-    width: 100% !important;
-  }
-
   .xterm-terminated .xterm-rows > div {
     white-space: pre-wrap;
   }
