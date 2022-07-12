@@ -82,8 +82,9 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
 
     // pass through process.env.KUI_* to the user
     // see https://github.com/kubernetes-sigs/kui/issues/8120
+    // @starpit 20220712 added GB_ (guidebook) as a safe prefix
     for (const key in process.env) {
-      if (/^KUI_/.test(key) && !options.env[key]) {
+      if (/^(GB|KUI)_/.test(key) && !options.env[key]) {
         options.env[key] = process.env[key]
       }
     }
