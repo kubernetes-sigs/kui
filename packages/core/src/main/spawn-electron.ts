@@ -459,7 +459,9 @@ export async function createWindow(
             const mod = await import('@kui-shell/plugin-' + webpackPath(message.module) + '/mdist/electron-main.js')
             debug('invoke got module')
 
-            const returnValue = await mod[message.main || 'main'](message.args, event.sender)
+            const returnValue = await mod[message.main || 'main'](message.args, event.sender, (argv: string[]) =>
+              createWindow(true, argv)
+            )
             debug('invoke got returnValue', returnValue)
 
             event.sender.send(
