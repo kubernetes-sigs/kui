@@ -251,6 +251,7 @@ export * from './api'
 
 // Electron
 export { tellMain } from './webapp/electron-events'
+export { default as tellRendererToExecute } from './main/tell'
 
 // main
 // export { main } from './main/main'
