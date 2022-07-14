@@ -253,6 +253,22 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
         setTimeout(() => opts.tab.setTitle(frontmatter.title))
       }
 
+      if (frontmatter.className) {
+        setTimeout(() => {
+          if (typeof frontmatter.className === 'string') {
+            opts.tab.addTopClass(frontmatter.className)
+          } else if (Array.isArray(frontmatter.className)) {
+            frontmatter.className.forEach(_ => opts.tab.addTopClass(_))
+          } else {
+            console.error(
+              'Syntax error in markdown frontmatter className attribute',
+              typeof frontmatter.className,
+              frontmatter.className
+            )
+          }
+        })
+      }
+
       preprocessCodeBlocksInContent(tree, frontmatter)
       preprocessWizard(tree, frontmatter)
     }
