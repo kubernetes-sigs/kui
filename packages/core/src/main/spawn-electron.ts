@@ -438,6 +438,8 @@ export async function createWindow(
                 message.argv,
                 undefined,
                 {
+                  width: message.width,
+                  height: message.height,
                   initialTabTitle: message.title,
                   quietExecCommand: message.quietExecCommand !== undefined ? message.quietExecCommand : false
                 },
