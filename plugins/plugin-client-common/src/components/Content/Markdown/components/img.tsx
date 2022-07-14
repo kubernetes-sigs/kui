@@ -37,8 +37,16 @@ function handleImage(mdprops: Props, props: ImgProps, key?: string) {
   const srcIsHttp = /^http/i.test(src)
   const isHttp = srcIsHttp || baseUrlIsHttp
   const isLocal = !isHttp && !allContentIsRemote(mdprops)
+  const isClientRelativeMatch = !isHttp && src.match(/^@kui-shell\/client\/(images|icons)\/(.+)\.svg$/)
 
-  if (isLocal) {
+  if (isClientRelativeMatch) {
+    const subdir = isClientRelativeMatch[1]
+    if (subdir === 'icons') {
+      src = require('@kui-shell/client/icons/' + isClientRelativeMatch[2] + '.svg')
+    } else {
+      src = require('@kui-shell/client/images/' + isClientRelativeMatch[2] + '.svg')
+    }
+  } else if (isLocal) {
     const absoluteSrc = isAbsolute(src)
       ? src
       : join(mdprops.fullpath ? dirname(mdprops.fullpath) : mdprops.baseUrl || process.cwd(), src)
