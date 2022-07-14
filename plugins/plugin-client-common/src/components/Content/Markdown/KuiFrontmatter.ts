@@ -90,12 +90,16 @@ type KuiFrontmatter = Partial<WizardSteps> &
     /** Title of the Notebook */
     title?: string
 
-    layoutCount?: Record<string, number>
+    /** CSS class to add to the containing tab */
+    className?: string | string[]
 
     /**
      * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
      */
     layout?: 'wizard' | Record<number | 'default', SplitPositionSpec>
+
+    /** Internal */
+    layoutCount?: Record<string, number>
   }
 
 export function hasWizardSteps(frontmatter: KuiFrontmatter): frontmatter is KuiFrontmatter & Required<WizardSteps> {

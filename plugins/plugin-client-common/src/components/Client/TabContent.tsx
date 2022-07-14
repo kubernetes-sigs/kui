@@ -262,6 +262,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
           }
         })
       }
+      tab.addTopClass = tab.addClass
 
       tab.removeClass = (cls: string) => {
         this.setState(curState => {
@@ -274,6 +275,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
           }
         })
       }
+      tab.removeTopClass = tab.removeClass
 
       tab.setTitle = (title: string) => {
         if (this.props.willSetTitle) {

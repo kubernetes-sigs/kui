@@ -643,9 +643,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         scrollback.facade.splitCount = () => this.state.splits.length
         scrollback.facade.hasSideBySideTerminals = () => this.numDefaultSplits() > 1
 
+        scrollback.facade.addTopClass = this.props.tab.addClass
         scrollback.facade.addClass = (cls: string) => {
           ref.classList.add(cls)
         }
+        scrollback.facade.removeTopClass = this.props.tab.removeClass
         scrollback.facade.removeClass = (cls: string) => {
           ref.classList.remove(cls)
         }

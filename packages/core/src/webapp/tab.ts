@@ -33,8 +33,17 @@ export interface Tab extends HTMLDivElement {
   onActivate(handler: (isActive: boolean) => void): void
   offActivate(handler: (isActive: boolean) => void): void
 
+  /** Add a class to the nearest enclosing tab-like (e.g. Split) */
   addClass(cls: string): void
+
+  /** Add a class to the top-level enclosing tab-like (e.g. Tab) */
+  addTopClass(cls: string): void
+
+  /** Remove a class from the nearest enclosing tab-like (e.g. Split) */
   removeClass(cls: string): void
+
+  /** Remove a class from the top-level enclosing tab-like (e.g. Tab) */
+  removeTopClass(cls: string): void
 
   scrollToTop(): void
 
