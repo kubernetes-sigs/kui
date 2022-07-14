@@ -103,6 +103,18 @@ function createWindowWithArgv(executeThisArgvPlease?: string[]) {
   createWindow(true, executeThisArgvPlease)
 }
 
+function getClientProductName(): Promise<string> {
+  return import('@kui-shell/client/config.d/name.json').then(_ => _.productName)
+}
+
+function getClientIcons(): Promise<{ linux: string; win32: string }> {
+  return import('@kui-shell/client/config.d/icons.json').then(_ => _.filesystem)
+}
+
+function getClientStyles(): Promise<{ width?: number; height?: number; defaultTheme?: string }> {
+  return import('@kui-shell/client/config.d/style.json').then(_ => _.default)
+}
+
 /** Open a new Electron window */
 export async function createWindow(
   noHeadless = false,
@@ -120,20 +132,20 @@ export async function createWindow(
   }
 
   // Create the browser window.
-  let width = (subwindowPrefs && subwindowPrefs.width) || 1280
-  let height = (subwindowPrefs && subwindowPrefs.height) || 960
+  let width = subwindowPrefs && subwindowPrefs.width
+  let height = subwindowPrefs && subwindowPrefs.height
   if (process.env.WINDOW_WIDTH) {
     width = parseInt(process.env.WINDOW_WIDTH, 10)
     if (isNaN(width)) {
       console.error('Cannot parse WINDOW_WIDTH ' + process.env.WINDOW_WIDTH)
-      width = 1280
+      width = undefined
     }
   }
   if (process.env.WINDOW_HEIGHT) {
     height = parseInt(process.env.WINDOW_HEIGHT, 10)
     if (isNaN(height)) {
       console.error('Cannot parse WINDOW_HEIGHT ' + process.env.WINDOW_HEIGHT)
-      height = 960
+      height = undefined
     }
   }
 
@@ -157,10 +169,11 @@ export async function createWindow(
   // see https://github.com/electron/electron/issues/10243
   promise
     .then(async () => {
-      const { productName }: { productName: string } = await import('@kui-shell/client/config.d/name.json')
-      const { filesystem }: { filesystem: { linux: string; win32: string } } = await import(
-        '@kui-shell/client/config.d/icons.json'
-      )
+      const [productName, icons, styles] = await Promise.all([
+        getClientProductName(),
+        getClientIcons(),
+        getClientStyles()
+      ])
 
       const { screen, BrowserWindow, app } = await import('electron')
       const position =
@@ -170,8 +183,8 @@ export async function createWindow(
       const opts: BrowserWindowConstructorOptions = Object.assign(
         {
           title: productName,
-          width,
-          height,
+          width: width || styles.width || 1280,
+          height: height || styles.height || 960,
           webPreferences: {
             enableRemoteModule: true,
             backgroundThrottling: false,
@@ -196,10 +209,10 @@ export async function createWindow(
       const root = join(appPath, /headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
 
       if (process.platform === 'linux') {
-        const icon = join(root, 'build', filesystem.linux)
+        const icon = join(root, 'build', icons.linux)
         opts.icon = icon
       } else if (process.platform === 'win32') {
-        const icon = join(root, 'build', filesystem.win32)
+        const icon = join(root, 'build', icons.win32)
         opts.icon = icon
       }
 
