@@ -34,7 +34,8 @@ function renderMain(
   isPopup: boolean,
   commandLine?: string[],
   initialTabTitle?: string,
-  quietExecCommand?: boolean
+  quietExecCommand?: boolean,
+  title?: string
 ) {
   // re: noBootstrap; since we do the bootstrapping here, we don't
   // need the Client to do anything more
@@ -43,6 +44,7 @@ function renderMain(
       noBootstrap
       isPopup={isPopup}
       commandLine={commandLine}
+      title={title}
       initialTabTitle={initialTabTitle}
       quietExecCommand={quietExecCommand}
     />,

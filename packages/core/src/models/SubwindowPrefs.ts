@@ -22,6 +22,7 @@ interface SubwindowPrefs {
   synonymFor?: object
   width?: number
   height?: number
+  title?: string
   initialTabTitle?: string
   quietExecCommand?: boolean
   position?: () => Promise<{ x: number; y: number }>

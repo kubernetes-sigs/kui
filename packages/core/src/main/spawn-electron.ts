@@ -184,7 +184,7 @@ export async function createWindow(
         {},
         styles,
         {
-          title: productName,
+          title: subwindowPrefs.title || productName,
           width: width || styles.width || 1280,
           height: height || styles.height || 960,
           webPreferences: {
@@ -442,7 +442,8 @@ export async function createWindow(
                 {
                   width: message.width,
                   height: message.height,
-                  initialTabTitle: message.title,
+                  title: message.title,
+                  initialTabTitle: message.initialTabTitle || message.title,
                   quietExecCommand: message.quietExecCommand !== undefined ? message.quietExecCommand : false
                 },
                 true

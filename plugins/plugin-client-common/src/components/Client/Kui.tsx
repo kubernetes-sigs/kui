@@ -61,6 +61,9 @@ export type Props = Partial<KuiConfiguration> &
 
     /** initial tab title */
     initialTabTitle?: string
+
+    /** document/window title */
+    title?: string
   }
 
 type State = KuiConfiguration & {
