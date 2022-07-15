@@ -111,7 +111,7 @@ function getClientIcons(): Promise<{ linux: string; win32: string }> {
   return import('@kui-shell/client/config.d/icons.json').then(_ => _.filesystem)
 }
 
-function getClientStyles(): Promise<{ width?: number; height?: number; defaultTheme?: string }> {
+function getClientStyles(): Promise<BrowserWindowConstructorOptions & { defaultTheme?: string }> {
   return import('@kui-shell/client/config.d/style.json').then(_ => _.default)
 }
 
@@ -181,6 +181,8 @@ export async function createWindow(
           ? await subwindowPrefs.position()
           : getPositionForRegularWindow({ screen, BrowserWindow })
       const opts: BrowserWindowConstructorOptions = Object.assign(
+        {},
+        styles,
         {
           title: productName,
           width: width || styles.width || 1280,
