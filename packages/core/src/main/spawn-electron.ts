@@ -184,7 +184,7 @@ export async function createWindow(
         {},
         styles,
         {
-          title: subwindowPrefs.title || productName,
+          title: (subwindowPrefs && subwindowPrefs.title) || productName,
           width: width || styles.width || 1280,
           height: height || styles.height || 960,
           webPreferences: {
