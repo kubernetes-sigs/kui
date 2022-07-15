@@ -105,11 +105,16 @@ export async function render(client: Client, root: Element) {
   const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
   const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
 
+  if (prefs && prefs.title) {
+    document.title = prefs.title
+  }
+
   client(
     root,
     !!prefs && prefs.fullscreen,
     !fullShell ? maybeExecuteThis : undefined,
     prefs ? prefs.initialTabTitle : undefined,
-    prefs ? prefs.quietExecCommand : undefined
+    prefs ? prefs.quietExecCommand : undefined,
+    prefs ? prefs.title : undefined
   )
 }

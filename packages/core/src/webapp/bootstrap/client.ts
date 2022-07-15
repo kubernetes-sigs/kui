@@ -24,7 +24,8 @@ type ClientRender = (
   isPopup: boolean,
   commandLine?: string[],
   initialTabTitle?: string,
-  quietExecCommand?: boolean
+  quietExecCommand?: boolean,
+  windowTitle?: string
 ) => void
 
 export default ClientRender
