@@ -286,7 +286,17 @@ const config = (
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'ignore-loader' },
       { test: /\.jpg$/, use: 'ignore-loader' },
-      { test: /\.png$/, use: 'ignore-loader' },
+
+      // handles template images for Tray menus
+      { test: x => x.endsWith('.png') && !/Template(@[^.]+)?\.png$/.test(x), use: 'ignore-loader' },
+      {
+        test: /Template(@[^.]+)?\.png$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]'
+        }
+      },
+
       { test: /\.svg$/, use: 'ignore-loader' },
       { test: /\.sh$/, use: 'raw-loader' },
       { test: /\.html$/, type: 'raw-loader' },
