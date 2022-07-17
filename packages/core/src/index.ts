@@ -285,3 +285,5 @@ export {
 } from './api/Client'
 
 export * from './api/window-events'
+
+export type CreateWindowFunction = (argv: string[], prefs?: import('./models/SubwindowPrefs').default) => void
