@@ -72,6 +72,15 @@ export interface CommandOptions extends CapabilityRequirements {
   // optional name for the view being presented
   viewName?: string
 
+  /**
+   * Desired window title; this only pertains to situations where the
+   * command execution will result in opening a new window specific to
+   * the execution of the command. You may either provide a fixed
+   * title (the `string` case), or a function that returns the title
+   * to use for the given arguments.
+   */
+  title?: string | ((argv: string[]) => string)
+
   // hint for screen width in popup mode
   width?: number
 
