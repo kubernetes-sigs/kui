@@ -365,9 +365,17 @@ class InProcessExecutor implements Executor {
         !(parsedOptions.h || parsedOptions.help) &&
         ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) || (evaluator.options && evaluator.options.needsUI))
       ) {
-        import('../main/headless').then(({ createWindow }) =>
-          createWindow(argv, evaluator.options.fullscreen, evaluator.options, true)
-        )
+        import('../main/headless').then(({ createWindow }) => {
+          const desiredWindowTitle = evaluator.options
+            ? typeof evaluator.options.title === 'string'
+              ? evaluator.options.title
+              : typeof evaluator.options.title === 'function'
+              ? evaluator.options.title(argv)
+              : undefined
+            : undefined
+          const options = Object.assign({}, evaluator.options, { title: desiredWindowTitle })
+          return createWindow(argv, evaluator.options.fullscreen, options, true)
+        })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (true as any) as T
       }
