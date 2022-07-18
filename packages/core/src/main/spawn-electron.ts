@@ -33,6 +33,29 @@ import ISubwindowPrefs from '../models/SubwindowPrefs'
 import { webpackPath } from '../plugins/path'
 
 /**
+ * Information passed to the primary process from a "second instance"
+ * IPC. We will be opening a new window for this new request (which
+ * happens in a new process), and so we need to pass through some
+ * state, such as environment variables, to the first/primary process,
+ * so that the window it opens has the desired state.
+ */
+type KuiSecondInstanceAdditionalData = {
+  /**
+   * The environment variables from thse cond instance to use for this
+   * new window. We stringify it, so that it survives the IPC
+   * (@starpit i can't remember why this is needed; one would think
+   * that electron's "second instance" ipc mechanism would take care
+   * of that for us).
+   */
+  env: string
+
+  /**
+   * Window preferences from the controller.
+   */
+  subwindowPrefs: ISubwindowPrefs
+}
+
+/**
  * Keep a global reference of the window object, if you don't, the window will
  * be closed automatically when the JavaScript object is garbage collected.
  *
@@ -669,29 +692,43 @@ export async function initElectron(
 
     app.on(
       'second-instance',
-      (event: Electron.Event, commandLine: string[], cwd: string, additionalData: { env: string }) => {
+      (event: Electron.Event, commandLine: string[], cwd: string, additionalData: KuiSecondInstanceAdditionalData) => {
         // Someone tried to run a second instance, open a new window
         // to handle it
 
-        const { argv, subwindowPlease, subwindowPrefs } = getCommand(
+        const { argv, subwindowPlease, subwindowPrefs: defaultSubwindowPrefs } = getCommand(
           commandLine,
           cwd,
           JSON.parse(additionalData.env),
           async () => import('electron')
         )
 
-        if (widthFromCaller) {
-          subwindowPrefs.width = widthFromCaller
+        const mySubwindowPrefs = additionalData.subwindowPrefs || defaultSubwindowPrefs
+        if (!mySubwindowPrefs.width && widthFromCaller) {
+          mySubwindowPrefs.width = widthFromCaller
         }
-        if (heightFromCaller) {
-          subwindowPrefs.height = heightFromCaller
+        if (!mySubwindowPrefs.height && heightFromCaller) {
+          mySubwindowPrefs.height = heightFromCaller
         }
 
-        debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
-        createWindow(true, argv, subwindowPlease, subwindowPrefs)
+        debug('opening window for second instance', commandLine, subwindowPlease, mySubwindowPrefs)
+        createWindow(true, argv, subwindowPlease, mySubwindowPrefs)
       }
     )
-    if (!app.requestSingleInstanceLock({ env: JSON.stringify(process.env) })) {
+
+    // data to pass along with our request, to preserve some context
+    // info, such as desired window size and window title, and
+    // environment variables from this second process that we need to
+    // pass back to the first, so that the desired env appears in the
+    // new window
+    const additionalData: KuiSecondInstanceAdditionalData = {
+      env: JSON.stringify(process.env),
+      subwindowPrefs: !subwindowPrefs
+        ? undefined
+        : { width: subwindowPrefs.width, height: subwindowPrefs.height, title: subwindowPrefs.title }
+    }
+
+    if (!app.requestSingleInstanceLock(additionalData)) {
       // The primary instance of app failed to optain the lock, which means another instance of app is already running with the lock
       debug('exiting, since we are not the first instance')
       return app.exit(0)
