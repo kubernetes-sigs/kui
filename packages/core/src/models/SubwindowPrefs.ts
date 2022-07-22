@@ -33,6 +33,9 @@ interface SubwindowPrefs {
   /** Use this as the initial title for the first tab */
   initialTabTitle?: string
 
+  /** Internal: this is not a Kui window */
+  _notAKuiWindow?: boolean
+
   quietExecCommand?: boolean
   position?: () => Promise<{ x: number; y: number }>
   bringYourOwnWindow?: () => void
