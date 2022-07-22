@@ -286,4 +286,15 @@ export {
 
 export * from './api/window-events'
 
-export type CreateWindowFunction = (argv: string[], prefs?: import('./models/SubwindowPrefs').default) => void
+/**
+ * Open a new Kui window.
+ *
+ * @param argv If given a string, it will be treated as a URL to be
+ * displayed in the new Kui window. Otherwise, it will be treated as a
+ * command line to be executed in the new window.
+ *
+ * @param prefs? Options for the new window, such as desired width and height.
+ *
+ * @return a `Promise` that will resolve when the window closes
+ */
+export type CreateWindowFunction = (argv: string | string[], prefs?: import('./models/SubwindowPrefs').default) => void

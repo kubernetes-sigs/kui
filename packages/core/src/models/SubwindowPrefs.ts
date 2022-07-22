@@ -20,10 +20,19 @@ interface SubwindowPrefs {
   fullscreen?: boolean
   useContentSize?: boolean
   synonymFor?: object
+
+  /** Use this window width */
   width?: number
+
+  /** Use this window height */
   height?: number
+
+  /** Use this window title */
   title?: string
+
+  /** Use this as the initial title for the first tab */
   initialTabTitle?: string
+
   quietExecCommand?: boolean
   position?: () => Promise<{ x: number; y: number }>
   bringYourOwnWindow?: () => void
