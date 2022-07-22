@@ -293,6 +293,9 @@ const config = (
         test: /Template(@[^.]+)?\.png$/,
         type: 'asset/resource',
         generator: {
+          // here, we make sure to preserve the original name, because
+          // electron depends on the tray image file being named
+          // fooTemplate.png, i.e. the Template.png part is important
           filename: 'images/[name][ext]'
         }
       },
