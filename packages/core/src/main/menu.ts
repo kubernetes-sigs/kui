@@ -21,6 +21,7 @@ import { Menu, MenuItemConstructorOptions } from 'electron'
 
 import open from './open'
 import tellRendererToExecute from './tell'
+import ISubwindowPrefs from '../models/SubwindowPrefs'
 import loadClientNotebooksMenuDefinition from './load'
 import { openNotebook, clientNotebooksDefinitionToElectron } from './notebooks'
 import { isOfflineClient, isReadOnlyClient } from '..'
@@ -43,7 +44,16 @@ const newSplit = () => tellRendererToExecute('split')
  * tell the current window to close the current tab
  *
  */
-const closeTab = () => tellRendererToExecute('tab close -A')
+const closeTab = (
+  _: import('electron').MenuItem,
+  browserWindow: import('electron').BrowserWindow & { subwindow: ISubwindowPrefs }
+) => {
+  if (browserWindow.subwindow && browserWindow.subwindow._notAKuiWindow) {
+    browserWindow.close()
+  } else {
+    tellRendererToExecute('tab close -A')
+  }
+}
 
 const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'

@@ -222,6 +222,18 @@ export async function createWindow(
           position
         )
 
+        // if we are opening a random URL, then we cannot use a
+        // frameless window; otherwise, it is unlikely the window will
+        // be moveable
+        if (typeof executeThisArgvPlease === 'string') {
+          delete opts.frame
+          delete opts.titleBarStyle
+          if (!subwindowPrefs) {
+            subwindowPrefs = {}
+          }
+          subwindowPrefs._notAKuiWindow = true
+        }
+
         // if user ups zoom level, reloads, we're stuck at a higher zoom
         // see https://github.com/electron/electron/issues/10572
         // note that this requires show: false above
