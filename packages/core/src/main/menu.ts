@@ -48,7 +48,7 @@ const closeTab = (
   _: import('electron').MenuItem,
   browserWindow: import('electron').BrowserWindow & { subwindow: ISubwindowPrefs }
 ) => {
-  if (browserWindow.subwindow && browserWindow.subwindow._notAKuiWindow) {
+  if (browserWindow && browserWindow.subwindow && browserWindow.subwindow._notAKuiWindow) {
     browserWindow.close()
   } else {
     tellRendererToExecute('tab close -A')
