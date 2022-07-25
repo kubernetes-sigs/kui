@@ -162,6 +162,7 @@ const allFiles = /.*/
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/@kui-shell\/build/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /tsconfig\.cjs\.spec\.json/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /\.node$/ }))
 
 if (inBrowser) {
   plugins.push(
