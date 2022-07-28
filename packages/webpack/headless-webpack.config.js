@@ -287,6 +287,9 @@ const config = (
       { test: /\.ico$/, use: 'ignore-loader' },
       { test: /\.jpg$/, use: 'ignore-loader' },
 
+      // support for asciinema "casts"
+      { test: /\.cast$/, type: 'ignore-loader' },
+
       // handles template images for Tray menus
       { test: x => x.endsWith('.png') && !/Template(@[^.]+)?\.png$/.test(x), use: 'ignore-loader' },
       {
