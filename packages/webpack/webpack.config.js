@@ -548,6 +548,10 @@ module.exports = {
       // { test: /\.js$/, use: ['source-map-loader'], enforce: 'pre' },
       // { test: /samples\/.*\.js$/, use: 'raw-loader' }, // don't try to parse out sample input, e.g. for dependencies
       // { test: /\.js.map$/, use: 'ignore-loader' },
+
+      // support for asciinema "casts"
+      { test: /\.cast$/, type: 'asset' },
+
       { test: /\.py$/, use: 'file-loader' },
       { test: /\.ico$/, use: 'url-loader' },
       { test: /\.jpg$/, use: 'url-loader' },
