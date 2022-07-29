@@ -15,11 +15,9 @@
  */
 
 import React from 'react'
-import { encodeComponent, Events, i18n, pexecInCurrentTab, Settings as Setting, Themes, Util } from '@kui-shell/core'
+import { encodeComponent, Events, pexecInCurrentTab, Settings as Setting, Themes, Util } from '@kui-shell/core'
 
 import DropdownWidget, { Props as DropdownWidgetProps } from './DropdownWidget'
-
-const strings = i18n('plugin-client-common')
 
 type Props = Pick<DropdownWidgetProps, 'position'>
 
@@ -67,13 +65,6 @@ export default class Settings extends React.PureComponent<Props, State> {
       return <React.Fragment />
     }
 
-    return (
-      <DropdownWidget
-        noPadding
-        id="kui--settings-widget"
-        title={strings('Switch theme')}
-        actions={this.state.actions}
-      />
-    )
+    return <DropdownWidget noPadding id="kui--settings-widget" actions={this.state.actions} />
   }
 }
