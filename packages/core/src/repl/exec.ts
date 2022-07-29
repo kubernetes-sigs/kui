@@ -278,7 +278,7 @@ class InProcessExecutor implements Executor {
 
     const allFlags = {
       configuration: Object.assign(
-        { 'camel-case-expansion': false },
+        { 'camel-case-expansion': false, 'populate--': true },
         (evaluator.options && evaluator.options.flags && evaluator.options.flags.configuration) ||
           (usage && usage.configuration) ||
           {}
