@@ -141,7 +141,6 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
         activeKey={this.state.activeKey}
         onSelect={this.onSelect}
         mountOnEnter
-        unmountOnExit
         data-depth={this.props.depth}
         isSecondary={this.isSecondary}
       >
