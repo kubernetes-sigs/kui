@@ -25,7 +25,7 @@
   "types": "mdist/index.d.ts",
   "dependencies": {
     "@electron/remote": "2.0.8",
-    "@supercharge/promise-pool": "2.1.0",
+    "@supercharge/promise-pool": "2.3.0",
     "debug": "4.3.4",
     "tmp": "0.2.1"
   },

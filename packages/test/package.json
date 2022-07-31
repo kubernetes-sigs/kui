@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "spectron": "starpit/spectron#e18",
-    "@wdio/mocha-framework": "7.20.3"
+    "@wdio/mocha-framework": "7.20.7"
   },
   "kui": {
     "electron": false,
