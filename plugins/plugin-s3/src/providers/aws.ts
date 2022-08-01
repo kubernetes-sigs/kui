@@ -15,25 +15,28 @@
  */
 
 import Debug from 'debug'
+import { join } from 'path'
 import { parse } from 'ini'
 import { REPL } from '@kui-shell/core'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 
 import Provider, { ProviderInitializer } from './model'
 
-const mountName = 'aws'
+const baseMountName = 'aws'
 const debug = Debug('plugin-s3/providers/aws')
 
 class AWSS3Provider implements Provider {
-  public readonly mountName = mountName
-  public readonly endPoint: string
   public readonly accessKey: string
   public readonly secretKey: string
 
   public readonly understandsFolders = true
 
-  public constructor(creds?: ValidCredential) {
-    this.endPoint = 's3.amazonaws.com'
+  public constructor(
+    profile: string,
+    creds?: ValidCredential,
+    public readonly endPoint = 's3.amazonaws.com',
+    public readonly mountName = join(baseMountName, profile)
+  ) {
     this.accessKey = creds ? creds.aws_access_key_id : ''
     this.secretKey = creds ? creds.aws_secret_access_key : ''
   }
@@ -41,6 +44,10 @@ class AWSS3Provider implements Provider {
 
 class PublicAWSS3Provider extends AWSS3Provider {
   public publicOnly = true
+
+  public constructor() {
+    super('public')
+  }
 }
 
 type ValidCredential = {
@@ -54,55 +61,49 @@ function isValidCredential(value: any | ValidCredential): value is ValidCredenti
 
 type ValidConfig = Record<string, ValidCredential>
 
-type WithDefaultCredentials = ValidConfig & {
-  default: ValidCredential
-}
-
-function hasDefaultCredential(config: void | Record<string, any>): config is WithDefaultCredentials {
-  const conf = config as WithDefaultCredentials
-  return conf && conf.default && isValidCredential(conf.default)
-}
-
-function getFirstValidCreds(config: void | Record<string, any>): ValidCredential {
-  if (config) {
-    const validKey = Object.keys(config).find(key => isValidCredential(config[key]))
-    if (validKey && isValidCredential(config[validKey])) {
-      return config[validKey]
-    }
+function extractValidCredentials(
+  creds: void | Record<string, any>,
+  config: void | Record<string, any>
+): { profile: string; creds: ValidCredential; endpoint: string }[] {
+  if (!creds) {
+    return []
+  } else {
+    return Object.entries(creds)
+      .filter(([, creds]) => isValidCredential(creds))
+      .map(([profile, creds]) => {
+        const endpoint = config ? config[profile].endpoint_url : undefined
+        return { profile, creds, endpoint: endpoint ? endpoint.replace(/https?:\/\//, '') : undefined }
+      })
   }
 }
-
-/* function isValidConfig(config: void | Record<string, any>): config is ValidConfig {
-  return config && (hasDefaultCredential(config) || !!getFirstValidCreds(config))
-} */
 
 async function init(repl: REPL /*, reinit: () => void */) {
   try {
     // to test publicOnly: throw new Error('test')
-    const { data } = (await repl.rexec<FStat>('vfs fstat --with-data ~/.aws/credentials')).content
-    if (data) {
-      const config = parse(data)
-      if (hasDefaultCredential(config)) {
-        return new AWSS3Provider(config.default)
-      } else {
-        const creds = getFirstValidCreds(config)
-        if (creds) {
-          return new AWSS3Provider(creds)
-        }
+    const [{ data: configData }, { data: credsData }] = await Promise.all([
+      repl.rexec<FStat>('vfs fstat --with-data ~/.aws/config').then(_ => _.content),
+      repl.rexec<FStat>('vfs fstat --with-data ~/.aws/credentials').then(_ => _.content)
+    ])
+    if (credsData) {
+      const config = configData ? parse(configData) : {}
+      const creds = extractValidCredentials(parse(credsData), config)
+      if (creds.length > 0) {
+        // one mount per aws profile, e.g. /s3/aws/default and /s3/aws/myOtherProfile
+        return creds.map(({ profile, creds, endpoint }) => new AWSS3Provider(profile, creds, endpoint))
       }
     }
 
     // throw new UnsupportedS3ProviderError('Could not find AWS S3 credentials')
-    return new PublicAWSS3Provider()
+    return [new PublicAWSS3Provider()]
   } catch (err) {
     debug('Got an error setting up S3 provider; backing out to use public access only', err)
-    return new PublicAWSS3Provider()
+    return [new PublicAWSS3Provider()]
   }
 }
 
 const initializer: ProviderInitializer = {
   init,
-  mountName
+  mountName: baseMountName
 }
 
 export default initializer
