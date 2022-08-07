@@ -540,6 +540,9 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
     Events.eventChannelUnsafe.on('/theme/change', inject)
     perTerminalCleaners.push(() => Events.eventChannelUnsafe.on('/theme/change', inject))
 
+    Events.eventChannelUnsafe.on('/zoom', inject)
+    perTerminalCleaners.push(() => Events.eventChannelUnsafe.off('/zoom', inject))
+
     const fitAddon = new FitAddon()
     xterm.loadAddon(fitAddon)
 
