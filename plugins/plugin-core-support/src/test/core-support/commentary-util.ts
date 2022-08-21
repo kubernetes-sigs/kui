@@ -34,14 +34,18 @@ export function startEditing(ctx: Common.ISuite) {
   })
 }
 
-/** set the monaco editor text */
-export async function type(ctx: Common.ISuite, text: string, inNotebook: boolean): Promise<void> {
+/** focus the monaco editor component */
+export async function focus(ctx: Common.ISuite, inNotebook: boolean): Promise<void> {
   const selector = `${lastOutput(inNotebook)} .monaco-editor-wrapper .view-lines`
   await ctx.app.client.$(selector).then(async _ => {
     await _.click()
     await _.waitForEnabled()
   })
+}
 
+/** set the monaco editor text */
+export async function type(ctx: Common.ISuite, text: string, inNotebook: boolean): Promise<void> {
+  await focus(ctx, inNotebook)
   await ctx.app.client.keys(text)
 }
 
