@@ -32,7 +32,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { IgnorePlugin, ProvidePlugin } = require('webpack')
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 // in case the client has some oddities that require classnames to be preserved
 const terserOptions = process.env.KEEP_CLASSNAMES
@@ -149,9 +149,9 @@ console.log('clientHome', process.env.CLIENT_HOME)
  */
 const plugins = []
 
-if (process.env.WEBPACK_ANALYZER) {
-  plugins.push(new BundleAnalyzerPlugin())
-}
+// if (process.env.WEBPACK_ANALYZER) {
+//  plugins.push(new BundleAnalyzerPlugin())
+// }
 
 // any compression plugins?
 if (CompressionPlugin) {
