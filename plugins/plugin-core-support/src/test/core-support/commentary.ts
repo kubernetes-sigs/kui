@@ -18,7 +18,7 @@ import { dirname } from 'path'
 import { Common, CLI, ReplExpect, Selectors, Util, Keys } from '@kui-shell/test'
 
 import { splitViaButton } from '../core-support2/split-helpers'
-import { lastOutput, typeAndVerify, verifyTextInMonaco } from './commentary-util'
+import { focus, lastOutput, typeAndVerify, verifyTextInMonaco } from './commentary-util'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
@@ -180,6 +180,7 @@ describe('edit commentary', function(this: Common.ISuite) {
   const escapeCancel = (expect: string, inNotebook: boolean) => {
     it('should close the editor by typing Escape', async () => {
       try {
+        await focus(this, inNotebook)
         await this.app.client.keys('Escape')
         await this.app.client
           .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
