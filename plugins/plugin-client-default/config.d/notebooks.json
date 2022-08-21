@@ -23,57 +23,6 @@
       "label": "Iter8",
       "expanded": false,
       "submenu": [{ "notebook": "Load testing with SLO validation", "filepath": "/kui/iter8/tutorial1.md" }]
-    },
-    {
-      "label": "Knative",
-      "expanded": false,
-      "submenu": [
-        {
-          "label": "Getting Started",
-          "expanded": false,
-          "submenu": [
-            { "notebook": "Quick start", "filepath": "/kui/kubernetes/install-knative-quickstart.md" },
-            {
-              "label": "Serving",
-              "submenu": [
-                { "notebook": "Scaling to Zero", "filepath": "/kui/kubernetes/knative-first-autoscale.md" },
-                { "notebook": "Traffic Splitting", "filepath": "/kui/kubernetes/knative-traffic-splitting.md" }
-              ]
-            },
-            {
-              "label": "Eventing",
-              "submenu": [
-                {
-                  "notebook": "Introducing Knative Eventing",
-                  "filepath": "/kui/kubernetes/knative-introducing-eventing.md"
-                },
-                {
-                  "notebook": "Sources, Brokers, Triggers, Sinks",
-                  "filepath": "/kui/kubernetes/knative-eventing-components.md"
-                },
-                {
-                  "notebook": "Introducing the CloudEvents Player",
-                  "filepath": "/kui/kubernetes/knative-cloud-events-player.md"
-                },
-                {
-                  "notebook": "Creating your first Trigger",
-                  "filepath": "/kui/kubernetes/knative-first-trigger.md"
-                }
-              ]
-            },
-            { "notebook": "What's Next?", "filepath": "/kui/kubernetes/knative-whats-next.md" }
-          ]
-        },
-        {
-          "label": "Knative Serving Examples",
-          "expanded": false,
-          "submenu": [
-            { "notebook": "Hello World Deployment", "filepath": "/kui/kubernetes/knative-serving-hello-world.md" },
-            { "notebook": "Autoscaling Using Go", "filepath": "/kui/kubernetes/knative-serving-autoscaling-go.md" },
-            { "notebook": "Traffic Management", "filepath": "/kui/kubernetes/knative-serving-traffic-management.md" }
-          ]
-        }
-      ]
     }
   ]
 }
