@@ -55,7 +55,8 @@ function signingOptionsForOSX(name /*: string */) {
  */
 function sign(name /*: string*/, platform /*: string */) {
   return async (apps /*: string[]*/) => {
-    if (platform === 'darwin') {
+    // a) only sign for darwin targets; and b) signing only works on darwin hosts
+    if (platform === 'darwin' && process.platform === 'darwin') {
       if (process.env.OSX_SIGNING_IDENTITY) {
         await Promise.all(apps.map(signingOptionsForOSX(name)).map(signForOSX))
       } else {
