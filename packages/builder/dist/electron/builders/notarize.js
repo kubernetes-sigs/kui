@@ -49,7 +49,8 @@ function notarizationOptionsForOSX(name /*: string */) {
  */
 function notarize(name /*: string*/, platform /*: string */) {
   return async (apps /*: string[] */) => {
-    if (process.platform === 'darwin') {
+    // a) only notarize for darwin targets; and b) notarization only works on darwin hosts
+    if (platform === 'darwin' && process.platform === 'darwin') {
       if (
         process.env.APPLEID &&
         process.env.APPLEID_PASSWORD &&
