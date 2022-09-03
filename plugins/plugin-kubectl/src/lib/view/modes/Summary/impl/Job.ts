@@ -34,7 +34,7 @@ export default function JobSummary(job: Job) {
 
   return toDescriptionList({
     Name: metadata.name,
-    Completions: `${status.succeeded}/${spec.completions}`,
+    Completions: `${status.succeeded || 0}/${spec.completions}`,
     Duration: age(job, status.completionTime),
     Age: age(job),
     Containers: containers.map(_ => _.image).join(', '),
