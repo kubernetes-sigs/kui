@@ -23,6 +23,7 @@ import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, withKubeconfigFrom } from './options'
 
 import fastPathCases from './explain-fastpath'
+import OpenShiftFasthpathCases from './explain-openshift-fasthpath'
 
 const strings = i18n('plugin-kubectl')
 
@@ -308,7 +309,7 @@ async function fetch(command: string, args: Arguments, kindAsProvidedByUser: str
 
 export function getKindAndVersion(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<Explained> {
   if (kindAsProvidedByUser) {
-    const fastPath = fastPathCases[kindAsProvidedByUser]
+    const fastPath = fastPathCases[kindAsProvidedByUser] || OpenShiftFasthpathCases[kindAsProvidedByUser]
     if (fastPath) {
       // we have precomputed some of the common cases
       return Promise.resolve(fastPath)
