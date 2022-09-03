@@ -81,6 +81,9 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
     }
   }
 
+  private readonly _onSubmit = this.onConfirm.bind(this, true)
+  private readonly _onClose = this.onConfirm.bind(this, false)
+
   public render() {
     if (!isActive(this.state)) {
       return <React.Fragment />
@@ -93,8 +96,8 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
           title={strings('pleaseConfirm')}
           primaryButtonText={strings('yesIAmSure')}
           secondaryButtonText={strings('cancel')}
-          onSubmit={() => this.onConfirm(true)}
-          onClose={() => this.onConfirm(false)}
+          onSubmit={this._onSubmit}
+          onClose={this._onClose}
         >
           <p className="bx--modal-content__text">{strings('aboutToExecute')}</p>
           <p className="bx--modal-content__text">

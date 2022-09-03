@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Events,
-  getPrimaryTabId,
-  Registrar,
-  ExecType,
-  UsageModel,
-  i18n,
-  pexecInCurrentTab
-} from '@kui-shell/core'
+import { Events, getPrimaryTabId, Registrar, ExecType, UsageModel, i18n, pexecInCurrentTab } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 
@@ -65,7 +57,7 @@ export default async (commandTree: Registrar) => {
           if (!confirmed) {
             reject(strings('operationCancelled'))
           } else if (execOptions.type === ExecType.Nested) {
-            pexecInCurrentTab(command).then(resolve, reject)
+            pexecInCurrentTab(command, tab).then(resolve, reject)
           } else {
             REPL.qexec(command, undefined, undefined, { tab }).then(resolve, reject)
           }
