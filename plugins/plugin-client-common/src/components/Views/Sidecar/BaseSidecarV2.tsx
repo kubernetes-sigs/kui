@@ -49,6 +49,7 @@ export type Props<R extends KResponse> = SidecarOptions &
     argvNoOptions?: string[]
     parsedOptions?: ParsedOptions
     onRender?: (hasContent: boolean) => void
+    executable?: boolean
   }
 
 export interface State {
@@ -93,14 +94,7 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
     this.setState({ isMaximized: true })
   }
 
-  protected onRestore() {
-    if (this.props.willChangeSize) {
-      this.props.willChangeSize(this.defaultWidth())
-    }
-    this.setState({ isMaximized: false })
-  }
-
-  protected onClose() {
+  private _onClose = () => {
     if (this.props.onClose) {
       this.props.onClose()
     }
@@ -112,10 +106,6 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
 
   protected isFixedWidth() {
     return false
-  }
-
-  protected width(): Required<string> {
-    return 'visible' + (this.state.isMaximized ? ' maximized' : '')
   }
 
   protected title(
@@ -130,7 +120,7 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
         notCloseable
         repl={this.props.tab.REPL}
         width={this.defaultWidth()}
-        onClose={this.onClose.bind(this)}
+        onClose={this._onClose}
       />
     )
   }

@@ -120,11 +120,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, NavigationM
     }
 
     return (
-      <div
-        className={'kui--sidecar kui--nav-view kui--sidecar-nested ' + this.width()}
-        ref={this.dom}
-        data-view="leftnav"
-      >
+      <div className={'kui--sidecar kui--nav-view kui--sidecar-nested visible'} ref={this.dom} data-view="leftnav">
         {' '}
         {/* data-view helps with tests */}
         {this.title({ breadcrumbs: this.current.response.breadcrumbs })}

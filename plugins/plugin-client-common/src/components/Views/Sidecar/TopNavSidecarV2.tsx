@@ -38,7 +38,6 @@ import ToolbarContainer from './ToolbarContainer'
 import Toolbar from './Toolbar'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
 import BaseSidecar, { Props, State } from './BaseSidecarV2'
-import { MutabilityContext } from '../../Client/MutabilityContext'
 
 import '../../../../web/css/static/ToolbarButton.scss'
 import '../../../../web/scss/components/Sidecar/PatternFly.scss'
@@ -249,13 +248,14 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
   private readonly _onSelect = this.onSelect.bind(this)
 
   // first div used to be sidecar-top-stripe
-  private tabs() {
+  private tabs(executable: boolean) {
     return (
       <div className="kui--sidecar-tabs-container zoomable full-height" onClick={this._stopPropagation}>
         <Tabs
           className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container kui--sidecar-tabs"
           activeKey={this.eventKey(this.current.currentTabIndex)}
           onSelect={this._onSelect}
+          mountOnEnter
         >
           {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
             <Tab
@@ -268,7 +268,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
               data-is-selected={idx === this.current.currentTabIndex || undefined}
               onMouseDown={this._preventDefault}
             >
-              {this.tabContent(idx)}
+              {this.tabContent(idx, executable)}
             </Tab>
           ))}
         </Tabs>
@@ -276,46 +276,44 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     )
   }
 
+  private _bodyContentMemo: React.ReactElement[] = []
   protected bodyContent(idx: number) {
-    const mode = this.current.tabs[idx]
-
-    return (
-      <KuiContent
-        tab={this.props.tab}
-        mode={mode}
-        isActive={idx === this.current.currentTabIndex}
-        args={this.state.args}
-        response={this.state.response}
-        execUUID={this.props.execUUID}
-      />
-    )
+    if (!this._bodyContentMemo[idx]) {
+      this._bodyContentMemo[idx] = (
+        <KuiContent
+          tab={this.props.tab}
+          mode={this.current.tabs[idx]}
+          isActive={true /* idx === this.current.currentTabIndex */}
+          args={this.state.args}
+          response={this.state.response}
+          execUUID={this.props.execUUID}
+        />
+      )
+    }
+    return this._bodyContentMemo[idx]
   }
 
-  private tabContent(idx: number) {
+  private tabContent(idx: number, executable: boolean) {
     return (
-      <MutabilityContext.Consumer>
-        {value => (
-          <div
-            className="sidecar-content-container kui--tab-content"
-            hidden={idx !== this.current.currentTabIndex || undefined}
+      <div
+        className="sidecar-content-container kui--tab-content"
+        hidden={idx !== this.current.currentTabIndex || undefined}
+      >
+        <div className="custom-content">
+          <ToolbarContainer
+            tab={this.props.tab}
+            execUUID={this.props.execUUID}
+            response={this.state.response}
+            args={this.state.args}
+            didUpdateToolbar={this._didUpdateToolbar}
+            toolbarText={this.state.toolbarText}
+            noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
+            buttons={executable ? this.current.viewButtons : []}
           >
-            <div className="custom-content">
-              <ToolbarContainer
-                tab={this.props.tab}
-                execUUID={this.props.execUUID}
-                response={this.state.response}
-                args={this.state.args}
-                didUpdateToolbar={this._didUpdateToolbar}
-                toolbarText={this.state.toolbarText}
-                noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
-                buttons={value.executable ? this.current.viewButtons : []}
-              >
-                {this.bodyContent(idx)}
-              </ToolbarContainer>
-            </div>
-          </div>
-        )}
-      </MutabilityContext.Consumer>
+            {this.bodyContent(idx)}
+          </ToolbarContainer>
+        </div>
+      </div>
     )
   }
 
@@ -374,20 +372,16 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
    */
   private footer() {
     return (
-      <MutabilityContext.Consumer>
-        {value =>
-          value.executable && (
-            <Toolbar
-              bottom={true}
-              tab={this.props.tab}
-              execUUID={this.props.execUUID}
-              response={this.state.response}
-              args={this.state.args}
-              buttons={this.current.drilldownButtons}
-            />
-          )
-        }
-      </MutabilityContext.Consumer>
+      this.props.executable && (
+        <Toolbar
+          bottom={true}
+          tab={this.props.tab}
+          execUUID={this.props.execUUID}
+          response={this.state.response}
+          args={this.state.args}
+          buttons={this.current.drilldownButtons}
+        />
+      )
     )
   }
 
@@ -437,6 +431,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     }
   }
 
+  private readonly _style = { flexDirection: 'column' as const }
+
   public render() {
     if (!this.current || !this.state.response) {
       if (this.props.onRender) {
@@ -465,7 +461,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
       // Note: data-view helps with tests
       return (
         <div
-          className={'kui--sidecar kui--sidecar-nested ' + this.width()}
+          className="kui--sidecar kui--sidecar-nested visible"
           ref={this.dom}
           data-view="topnav"
           onClick={this._stopPropagation}
@@ -474,9 +470,9 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
             this.title({
               breadcrumbs
             })}
-          <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
+          <div className="kui--sidecar-header-and-body" style={this._style}>
             {this.header()}
-            {this.tabs()}
+            {this.tabs(this.props.executable)}
             {this.footer()}
           </div>
         </div>
