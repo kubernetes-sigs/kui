@@ -282,7 +282,12 @@ async function rawGet(
         return response
       }
     } catch (err) {
-      if (err.code !== 500 && err.code !== undefined && !/page not found/.test(err.message)) {
+      if (
+        err.code !== 'ENOTFOUND' &&
+        err.code !== 500 &&
+        err.code !== undefined &&
+        !/page not found/.test(err.message)
+      ) {
         // expected apiServer error, i.e. Kubernetes Status errors
         throw err
       } else {
