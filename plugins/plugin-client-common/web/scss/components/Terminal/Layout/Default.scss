@@ -42,17 +42,25 @@
   grid-area: T8;
 }
 
-/** Case: no splits */
+/** Case: 1 split */
 .kui--terminal-split-container[data-split-count='1'] {
   @include Rows(1);
   @include Columns(1);
   grid-template-areas: 'T1';
 }
 
+/** Case: 2 splits */
 @include Split(2) {
   @include Rows(1);
   @include Columns(2);
   grid-template-areas: 'T1 T2';
+}
+@media all and (max-width: 950px) {
+  @include Split(2) {
+    @include Rows(3);
+    @include Columns(1);
+    grid-template-areas: 'T1' 'T2' 'T2';
+  }
 }
 
 @include Split(3) {
