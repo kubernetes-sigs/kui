@@ -62,8 +62,6 @@ export const SIDECAR_ACTIVATION_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash`
 export const SIDECAR_TITLE = (N: number, splitIndex = 1, clickable = true) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name` + (clickable ? ' a' : '')
-export const SIDECAR_HERO_TITLE = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .sidecar-header .sidecar-header-name`
 export const SIDECAR_LEFTNAV_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-header-name-content button`
 export const SIDECAR_HEADER_NAVIGATION = (N: number, splitIndex = 1) =>
@@ -73,7 +71,6 @@ export const SIDECAR_BREADCRUMBS = (N: number, splitIndex = 1) =>
 export const SIDECAR_PACKAGE_NAME_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-namespace`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
-export const SIDECAR_POPUP_HERO_TITLE = SIDECAR_HERO_TITLE
 export const SIDECAR_KIND = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .kui--sidecar-kind`
 export const SIDECAR_CONTENT = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .sidecar-content`
 export const SIDECAR_WEB_ACTION_URL = (N: number, splitIndex = 1) =>
