@@ -20,7 +20,7 @@ import kubectl from '../../../controller/cli'
 import { getCommandFromArgs } from '../../util/util'
 import { selectorToString } from '../../util/selectors'
 import { KubeOptions } from '../../../controller/kubectl/options'
-import { KubeResource, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
+import { KubeResource, isJob, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
@@ -53,6 +53,7 @@ function hasPods(resource: KubeResource) {
     isKubeResource(resource) &&
     (isDeployment(resource) ||
       isReplicaSet(resource) ||
+      isJob(resource) ||
       (resource.status !== undefined && resource.status.podName !== undefined))
   )
 }
