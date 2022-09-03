@@ -23,8 +23,8 @@ type FeatureFlags = {
   /** [Optional] when drilling down a table cell, open a new window to execute the comamnd?  */
   drilldownTo?: Table['drilldownTo']
 
-  /** [Optional] show sidecar name as breadcrumb or hero text, default: 'breadcrumb' */
-  sidecarName?: 'breadcrumb' | 'heroText'
+  /** [Optional] show sidecar name as breadcrumb, default: 'breadcrumb' */
+  sidecarName?: 'breadcrumb'
 
   /** [Optional] Show bottom status stripe? [default: true] */
   statusStripe?: boolean

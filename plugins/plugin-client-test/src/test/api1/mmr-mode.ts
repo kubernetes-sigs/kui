@@ -156,7 +156,7 @@ testReact.toolbarText({
 })
 
 testDiff.diffPlainText('diff', 'barrrrrrrrr')
-testDefault.name({ heroName: true })
+testDefault.name({})
 testDefault.modes(expectModes, expectModes[0])
 testDefault2.modes(expectModes2, expectModes2[0])
 testDefault3.modes(expectModes3, expectModes3[0])

@@ -142,8 +142,6 @@ const show = (expected: string, selector: string) => async (res: AppAndCount): P
 
 export const name = (count: number, expectedName: string) => show(expectedName, Selectors.SIDECAR_TITLE(count))
 
-export const heroName = (count: number, expectedName: string) => show(expectedName, Selectors.SIDECAR_HERO_TITLE(count))
-
 export const namehash = (count: number, expectedNameHash: string) =>
   show(expectedNameHash, Selectors.SIDECAR_ACTIVATION_TITLE(count))
 
@@ -248,7 +246,7 @@ export async function popupTitle(res: AppAndCount, expectedTitle: string) {
   return res.app.client.waitUntil(
     async () => {
       const actualTitle = await res.app.client
-        .$(Selectors.SIDECAR_POPUP_HERO_TITLE(res.count, res.splitIndex))
+        .$(Selectors.SIDECAR_POPUP_TITLE(res.count, res.splitIndex))
         .then(_ => _.getText())
       return actualTitle === expectedTitle
     },
