@@ -48,7 +48,8 @@ export async function doGetDeployment(args: Arguments<KubeOptions>) {
             const numerator = parseInt(match[1], 10)
             const denominator = parseInt(match[2], 10)
             attr.css =
-              numerator === denominator ? TrafficLight.Green : numerator === 0 ? TrafficLight.Red : TrafficLight.Yellow
+              numerator === denominator ? TrafficLight.Green : numerator === 0 ? TrafficLight.Gray : TrafficLight.Yellow
+            // ^^^ re: Gray, see #8976
           }
         }
       })
