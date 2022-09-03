@@ -51,6 +51,7 @@ import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
 const TopNavSidecar = React.lazy(() => import('../../Views/Sidecar/TopNavSidecarV2'))
 const LeftNavSidecar = React.lazy(() => import('../../Views/Sidecar/LeftNavSidecarV2'))
+import { MutabilityContext } from '../../Client/MutabilityContext'
 
 const strings = i18n('plugin-client-common', 'errors')
 
@@ -229,17 +230,22 @@ export default class Scalar extends React.PureComponent<Props, State> {
       return <Markdown tab={tab} source={strings('randomError2', response.errno)} onRender={this._onRender} />
     } else if (isMultiModalResponse(response)) {
       return (
-        <TopNavSidecar
-          uuid={tab.uuid}
-          tab={tab}
-          execUUID={this.props.execUUID}
-          active
-          response={response}
-          onRender={this.props.onRender}
-          willChangeSize={this.props.willChangeSize}
-          argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
-          parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
-        />
+        <MutabilityContext.Consumer>
+          {value => (
+            <TopNavSidecar
+              uuid={tab.uuid}
+              tab={tab}
+              execUUID={this.props.execUUID}
+              active
+              response={response}
+              executable={value.executable}
+              onRender={this.props.onRender}
+              willChangeSize={this.props.willChangeSize}
+              argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+              parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+            />
+          )}
+        </MutabilityContext.Consumer>
       )
     } else if (isNavResponse(response)) {
       return (
