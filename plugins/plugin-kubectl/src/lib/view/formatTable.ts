@@ -81,6 +81,15 @@ export const outerCSSForKey = {
   // api-resources
   APIGROUP: 'hide-with-sidecar',
 
+  // PVC and PV
+  VOLUME: 'hide-with-sidecar kui--hide-in-narrower-windows',
+  STORAGECLASS: 'hide-with-sidecar kui--hide-in-narrower-windows',
+  'ACCESS MODES': 'hide-with-sidecar kui--hide-in-narrower-windows',
+
+  // PV
+  CLAIM: 'hide-with-sidecar kui--hide-in-narrower-windows',
+  'RECLAIM POLICY': 'hide-with-sidecar kui--hide-in-narrower-windows',
+
   REVISION: 'hide-with-sidecar', // helm ls
   AGE: 'hide-with-sidecar', // e.g. helm status and kubectl get svc
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
