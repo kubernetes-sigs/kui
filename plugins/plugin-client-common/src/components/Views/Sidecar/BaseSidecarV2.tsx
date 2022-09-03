@@ -108,6 +108,10 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
     return false
   }
 
+  protected header(): React.ReactElement {
+    return undefined
+  }
+
   protected title(
     props?: Omit<
       TitleBarProps,
@@ -115,13 +119,9 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
     >
   ) {
     return (
-      <TitleBar
-        {...props}
-        notCloseable
-        repl={this.props.tab.REPL}
-        width={this.defaultWidth()}
-        onClose={this._onClose}
-      />
+      <TitleBar {...props} notCloseable repl={this.props.tab.REPL} width={this.defaultWidth()} onClose={this._onClose}>
+        {this.header()}
+      </TitleBar>
     )
   }
 }

@@ -33,7 +33,6 @@ $toolbar-height: 1.5rem;
   .header-top-bits {
     display: flex;
     padding-left: 1em;
-    margin: 0.75em 0 0;
   }
 
   .sidecar-header-text {
