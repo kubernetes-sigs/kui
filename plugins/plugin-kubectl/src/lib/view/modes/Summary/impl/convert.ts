@@ -25,7 +25,7 @@ export default function toDescriptionList(obj: Record<string, number | boolean |
     spec: {
       groups: Object.keys(obj).map(term => ({
         term,
-        description: obj[term] ? obj[term].toString() : obj[term] === null ? 'null' : ''
+        description: obj[term] === null ? 'null' : obj[term] !== undefined ? obj[term].toString() : ''
       }))
     }
   }
