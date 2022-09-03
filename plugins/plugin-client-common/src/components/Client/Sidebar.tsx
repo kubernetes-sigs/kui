@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { encodeComponent, i18n, pexecInCurrentTab } from '@kui-shell/core'
+import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
 import { PageSidebar, PageSidebarProps } from '@patternfly/react-core'
 
 import CommonProps from './props/Common'
@@ -28,8 +28,6 @@ const Nav = React.lazy(() => import('@patternfly/react-core').then(_ => ({ defau
 const NavItem = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavItem })))
 const NavList = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavList })))
 const NavExpandable = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavExpandable })))
-
-const strings = i18n('plugin-client-common')
 
 type Props = Pick<CommonProps, 'noTopTabs'> &
   BrandingProps &
@@ -63,17 +61,6 @@ export default class Sidebar extends React.PureComponent<Props, State> {
     return this.state ? this.state.currentGuidebook : undefined
   }
 
-  private readonly onKeyup = (evt: KeyboardEvent) => {
-    if (evt.key === 'Escape') {
-      this.props.toggleOpen()
-    }
-  }
-
-  public componentDidMount() {
-    document.addEventListener('keyup', this.onKeyup)
-    this.cleaners.push(() => document.removeEventListener('keyup', this.onKeyup))
-  }
-
   public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
   }
@@ -84,8 +71,7 @@ export default class Sidebar extends React.PureComponent<Props, State> {
       this.props.productName &&
       this.props.version && (
         <div className="kui--tab-container-sidebar-other flex-layout">
-          <span className="flex-fill sub-text">{strings('Toggle via <Esc>')}</span>
-          <span className="inline-flex flex-align-end semi-bold">v{this.props.version}</span>
+          <span className="inline-flex flex-fill flex-align-end semi-bold">v{this.props.version}</span>
         </div>
       )
     )
