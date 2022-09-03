@@ -195,7 +195,16 @@ export function hasLabel(args: Arguments<KubeOptions>) {
 /** @return the namespace as expressed in the command line, or undefined if not */
 export function getNamespaceAsExpressed(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
   const ns = args.parsedOptions.n || args.parsedOptions.namespace
-  if (Array.isArray(ns)) {
+  if (!ns) {
+    // look for -nfoo, which yargs-parser doesn't handle very well
+    // this will show up as a parsedOption of { nfoo: true }
+    const maybeNs = Object.entries(args.parsedOptions).find(
+      ([key, value]) => value === true && key.length > 1 && key[0] === 'n'
+    )
+    if (maybeNs) {
+      return maybeNs[0].slice(1)
+    }
+  } else if (Array.isArray(ns)) {
     return ns[ns.length - 1]
   } else {
     return ns

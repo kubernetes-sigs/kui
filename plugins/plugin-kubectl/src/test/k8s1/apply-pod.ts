@@ -32,7 +32,8 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   after(Common.after(this))
 
   const ns: string = createNS()
-  const inNamespace = `-n ${ns}`
+  const inNamespace = `-n${ns}`
+  // ^^^ intentionally no space between -n and ${ns} to cover #8992
 
   allocateNS(this, ns)
 
