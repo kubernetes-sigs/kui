@@ -49,7 +49,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
             this,
             `${kubectl} apply ${dashF} ${remotePodYaml} ${inNamespace}`,
             'nginx'
-          ).then(SidecarExpect.descriptionList({ Status: 'Running' }))
+          ).then(SidecarExpect.descriptionList({ Ready: '1/1' }))
         } catch (err) {
           return Common.oops(this, true)(err)
         }

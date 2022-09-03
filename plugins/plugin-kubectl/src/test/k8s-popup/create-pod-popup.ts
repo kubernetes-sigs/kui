@@ -72,7 +72,7 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
     const textExists = verifyTextExists.bind(this)
 
     const waitForDescribeContent = async () => {
-      await SidecarExpect.yaml({ Name: name, Status: spec.status })(res)
+      await SidecarExpect.yaml({ Name: name })(res)
     }
 
     const waitForRawContent = async () => {
