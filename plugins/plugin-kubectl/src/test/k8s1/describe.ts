@@ -73,7 +73,7 @@ commands.forEach(command => {
      *
      */
     const testSummaryTab = async (ctx: Common.ISuite, res: ReplExpect.AppAndCount) => {
-      await Util.switchToTab(defaultModeForGet)(res).then(SidecarExpect.descriptionList({ Status: 'Running' }))
+      await Util.switchToTab(defaultModeForGet)(res).then(SidecarExpect.descriptionList({ Ready: '1/1' }))
     }
 
     allocateNS(this, ns, command)
