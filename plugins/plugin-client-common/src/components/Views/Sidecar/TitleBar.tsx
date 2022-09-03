@@ -21,7 +21,7 @@ import Width from './width'
 import Icons from '../../spi/Icons'
 import Breadcrumb, { BreadcrumbView } from '../../spi/Breadcrumb'
 
-export interface Props {
+export type Props = React.PropsWithChildren<{
   kind?: string
   name?: string
   namespace?: string
@@ -38,7 +38,7 @@ export interface Props {
 
   back?: { enabled: boolean; onClick: () => void }
   forward?: { enabled?: boolean; onClick: () => void }
-}
+}>
 
 /**
  * TitleBar
@@ -146,6 +146,8 @@ export default class Window extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">{!this.props.notCloseable && this.quitButton()}</div>
         </div>
+
+        {this.props.children}
       </div>
     )
   }

@@ -58,15 +58,23 @@ function readinessGates(pod: Pod) {
 export default function PodSummary(pod: Pod) {
   const { spec, status } = pod
 
-  return toDescriptionList({
+  const model = {
     // Name: metadata.name,
     Ready: ready(pod),
-    Status: status.phase,
+    // Status: status.phase,
     Restarts: restarts(pod),
     Age: age(pod),
     IP: status.podIP,
-    Node: spec.nodeName,
-    'Nominated node': spec.nominatedNodeName || none(),
-    'Readiness gates': readinessGates(pod)
-  })
+    Node: spec.nodeName
+  }
+
+  if (spec.readinessGates) {
+    model['Readiness gates'] = readinessGates(pod)
+  }
+
+  if (spec.nominatedNodeName) {
+    model['Nominated node'] = spec.nominatedNodeName
+  }
+
+  return toDescriptionList(model)
 }

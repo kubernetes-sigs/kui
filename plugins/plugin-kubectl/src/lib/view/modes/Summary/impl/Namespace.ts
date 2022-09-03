@@ -33,10 +33,9 @@ import toDescriptionList from './convert'
 const debug = Debug('plugin-kubectl/view/modes/Summary')
 
 export default async function NamespaceSummary(ns: Namespace, repl: REPL) {
-  const { metadata, status } = ns
+  const { metadata } = ns
   const summary = {
     Name: metadata.name,
-    Status: status.phase,
     Age: age(ns)
   }
 

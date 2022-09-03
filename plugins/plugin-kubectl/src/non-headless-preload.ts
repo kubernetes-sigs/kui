@@ -36,6 +36,7 @@ import { eventsMode, eventsBadge } from './lib/view/modes/Events'
 // import managedFieldsMode from './lib/view/modes/ManagedFields'
 import annotationsMode from './lib/view/modes/Annotations'
 import labelsMode from './lib/view/modes/Labels'
+import statusBadge from './lib/view/modes/StatusBadge'
 
 import tabCompletionProvider from './lib/tab-completion'
 
@@ -67,7 +68,7 @@ export default async (registrar: PreloadRegistrar) => {
   )
 
   // register badges
-  const p2 = registrar.registerBadges(eventsBadge)
+  const p2 = registrar.registerBadges(eventsBadge, statusBadge)
 
   // mount notebooks
   notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })

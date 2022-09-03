@@ -179,37 +179,12 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     )
   }
 
-  /** display the unadulterated name from the response as sidecar header */
-  private namePart() {
-    return (
-      this.context.sidecarName === 'heroText' &&
-      this.state.response &&
-      this.state.response.metadata &&
-      this.state.response.metadata.name && (
-        <div className="header-left-bits">
-          <div className="sidecar-header-text">
-            <div className="sidecar-header-name" data-base-class="sidecar-header-name">
-              <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
-                {this.state.response.metadata.name}
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    )
-  }
-
   /** ToolbarContainer updated the toolbar */
   private didUpdateToolbar(toolbarText: MultiModalResponse['toolbarText']) {
     this.setState({ toolbarText })
   }
 
   private readonly _didUpdateToolbar = this.didUpdateToolbar.bind(this)
-
-  /** Special case with no hero name, but badges... we need a filler element */
-  private fillerNamePart() {
-    return <div className="header-left-bits" />
-  }
 
   /** Tell the world that we have changed the focused mode */
   private broadcastFocusChange(idx: number) {
@@ -341,17 +316,16 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     )
   }
 
-  private header() {
-    const namePart = this.namePart()
+  protected header() {
     const badges = this.badges()
 
-    if (namePart || badges) {
+    if (badges) {
       return (
         <header className="sidecar-header">
           <div className="header-main-content">
             <div className="kui--sidecar-header-and-toolbar">
               <div className="header-top-bits">
-                {namePart || this.fillerNamePart()}
+                <div className="header-left-bits" />
 
                 <div className="header-right-bits">
                   <div className="custom-header-content">{badges}</div>
@@ -390,7 +364,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     return { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' }
   }
 
-  /** show name as breadcrumb when not showing context as hero text in sidecar header  */
+  /** Show resource name as breadcrumb */
   private nameBreadcrumb(): BreadcrumbView {
     const { onclick } = this.state.response
 
@@ -449,9 +423,6 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
         ? [this.nameBreadcrumb(), this.versionBreadcrumb(), this.nameHashBreadcrumb()]
         : []
 
-    // we want to show the titlebar, in order to show the breadcrumbs
-    const showingBreadcrumbs = true
-
     try {
       const breadcrumbs = [this.kindBreadcrumb()]
         .concat(nameBreadCrumbs)
@@ -466,12 +437,10 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
           data-view="topnav"
           onClick={this._stopPropagation}
         >
-          {showingBreadcrumbs &&
-            this.title({
-              breadcrumbs
-            })}
+          {this.title({
+            breadcrumbs
+          })}
           <div className="kui--sidecar-header-and-body" style={this._style}>
-            {this.header()}
             {this.tabs(this.props.executable)}
             {this.footer()}
           </div>
