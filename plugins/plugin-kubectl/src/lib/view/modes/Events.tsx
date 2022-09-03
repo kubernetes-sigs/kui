@@ -41,7 +41,7 @@ function hasEvents(resource: KubeResource): boolean {
  */
 function command(_, resource: KubeResource, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) {
   // limit events to those intersecting with the giving resource
-  const filter = `involvedObject.apiVersion=${resource.apiVersion},involvedObject.kind=${resource.kind},involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace},involvedObject.resourceVersion=${resource.metadata.resourceVersion}`
+  const filter = `involvedObject.apiVersion=${resource.apiVersion},involvedObject.kind=${resource.kind},involvedObject.name=${resource.metadata.name},involvedObject.namespace=${resource.metadata.namespace},involvedObject.uid=${resource.metadata.uid}`
 
   // this is the command that will fetch the events table; we specify a watchable table
   const argv = [
