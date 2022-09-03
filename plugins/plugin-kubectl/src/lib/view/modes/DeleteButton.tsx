@@ -15,18 +15,19 @@
  */
 
 import React from 'react'
-import { i18n, Tab } from '@kui-shell/core'
+import { i18n, Tab, ParsedOptions } from '@kui-shell/core'
 import { Icons } from '@kui-shell/plugin-client-common'
 
 import { KubeResource, isCrudableKubeResource as when } from '../../model/resource'
 import { fqnOf } from '../../../controller/kubectl/fqn'
 import { getCommandFromArgs } from '../../../lib/util/util'
+import { withKubeconfigFrom } from '../../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl')
 
 /** Formulate the delete command line */
-function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string[] }) {
-  return `${getCommandFromArgs(args)} delete ${fqnOf(resource)}`
+function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) {
+  return withKubeconfigFrom(args, `${getCommandFromArgs(args)} delete ${fqnOf(resource)}`)
 }
 
 /** The Delete button mode */
