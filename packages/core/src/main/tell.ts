@@ -36,7 +36,7 @@ const tellRendererToExecute = async (command: string, exec = 'qexec') => {
     if (owningWindow) {
       owningWindow.closeDevTools()
     }
-  } else {
+  } else if (focusedWindow) {
     // debug('closing kui window')
     focusedWindow.send(`/repl/${exec}`, { command })
   }

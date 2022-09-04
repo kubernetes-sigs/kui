@@ -132,6 +132,7 @@ jobs:
         NEEDS_BASH_PREP: true
         NEEDS_GIT: true
         TEST_FROM_BUILD: ${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui
+        KUI_NO_TRAY_MENU: true # i have no idea, but something in tray/main fails on linux, just in github actions
       run: ./tools/travis/install.sh && npm run test1 bash-like-wait && npm run test1 bash-like
 
   k8s-browser:
@@ -211,6 +212,7 @@ jobs:
         NEEDS_HELM: true
         TEST_FROM_BUILD: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
         KUI_DIST_PATH: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
+        KUI_NO_TRAY_MENU: true # i have no idea, but something in tray/main fails on linux, just in github actions
       run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1 'npm run test1 k8s1' && npx concurrently -n LOGS 'npm run test1 logs' && npx concurrently -n HELM 'npm run test1 helm'
 
   osx1:
