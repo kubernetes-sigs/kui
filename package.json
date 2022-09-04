@@ -102,7 +102,7 @@
     "colors": "1.4.0",
     "concurrently": "7.3.0",
     "debug": "4.3.4",
-    "electron": "18.3.9",
+    "electron": "20.1.1",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-config-standard": "14.1.1",
@@ -116,6 +116,7 @@
     "husky": "3.1.0",
     "lint-staged": "12.4.1",
     "mocha": "10.0.0",
+    "nan": "github:jkleinsc/nan#remove_accessor_signature",
     "prettier": "1.19.1",
     "properties-parser": "0.3.1",
     "tmp": "0.2.1",
@@ -183,6 +184,7 @@
     "temp-dir": "packages/test/.nyc_output"
   },
   "overrides": {
+    "nan": "$nan",
     "colors": "$colors"
   }
 }
