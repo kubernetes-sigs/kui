@@ -25,6 +25,8 @@ export default function PatternFlyTag(props: Props) {
   const color =
     props.type === 'ok'
       ? 'green-background'
+      : props.type === 'done'
+      ? 'blue-background'
       : props.type === 'error'
       ? 'red-background'
       : props.type === 'warning'

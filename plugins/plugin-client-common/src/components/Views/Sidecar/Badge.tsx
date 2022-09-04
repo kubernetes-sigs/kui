@@ -66,7 +66,14 @@ function oneTimeRender(badgeText: KuiBadge) {
       badge.classList.add('badge-as-fontawesome')
       badge.appendChild(awesome) */
     } else {
-      const type = className === 'green-background' ? 'ok' : className === 'red-background' ? 'error' : 'warning'
+      const type =
+        className === 'green-background'
+          ? 'ok'
+          : className === 'red-background'
+          ? 'error'
+          : className === 'blue-background'
+          ? 'done'
+          : 'warning'
 
       return (
         <div className={className || 'gray-background'} onClick={badgeText.onclick}>
