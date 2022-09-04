@@ -19,7 +19,7 @@ import { ReactNode } from 'react'
 interface Props {
   id?: string
   title?: string
-  type?: 'ok' | 'error' | 'warning'
+  type?: 'ok' | 'error' | 'warning' | 'done'
   className?: string
   spanclassname?: string
   children: ReactNode
