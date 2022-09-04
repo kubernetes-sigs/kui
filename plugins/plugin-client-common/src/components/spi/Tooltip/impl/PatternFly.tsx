@@ -43,6 +43,7 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
       maxWidth={props.maxWidth}
       isContentLeftAligned={isMarkdown}
       position={props.position || 'auto'}
+      distance={10}
       entryDelay={props.entryDelay || 200}
       data-is-markdown={isMarkdown || undefined}
       reference={isReference && props.reference}
