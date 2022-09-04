@@ -17,26 +17,59 @@
 import React from 'react'
 import { LabelGroup, Label } from '@patternfly/react-core'
 
-import Props from '../model'
+import BaseProps from '../model'
+
+import Tooltip from '../../Tooltip'
 
 import '../../../../../web/scss/components/DescriptionList/PatternFlyLabelList.scss'
 
-export default function PatternFlyDescriptionList(props: Omit<Props, 'as'>) {
-  return (
-    <div
-      className={[props.className, 'kui--description-list', 'kui--label-list', 'flex-fill', 'padding-content'].join(
-        ' '
-      )}
-    >
-      <LabelGroup className="kui--description-list-group" numLabels={10}>
-        {props.groups.map((group, idx) => (
-          <Label key={idx} className="kui--description-list-term" data-term={group.term}>
-            <span className="kui--description-list-label-key">{group.term}</span>
-            <strong className="slightly-deemphasize small-left-pad small-right-pad">|</strong>
-            <span className="map-value">{group.description}</span>
-          </Label>
-        ))}
-      </LabelGroup>
-    </div>
-  )
+type Props = Omit<BaseProps, 'as'>
+type State = {
+  className: string
+}
+
+export default class PatternFlyDescriptionList extends React.PureComponent<Props, State> {
+  public constructor(props: Props) {
+    super(props)
+    this.state = {
+      className: [
+        this.props.className,
+        'kui--description-list',
+        'kui--label-list',
+        'flex-fill',
+        'padding-content'
+      ].join(' ')
+    }
+  }
+
+  private readonly _onClick = (evt: React.MouseEvent<HTMLSpanElement>) => {
+    const key = evt.currentTarget.getAttribute('data-term')
+    const value = evt.currentTarget.getAttribute('data-description')
+    navigator.clipboard.writeText(`${key}=${value}`)
+  }
+
+  public render() {
+    return (
+      <div className={this.state.className}>
+        <LabelGroup className="kui--description-list-group" numLabels={10}>
+          {this.props.groups.map((group, idx) => (
+            <Tooltip key={idx} content="Click to copy" position="bottom">
+              <Label
+                className="kui--description-list-term"
+                data-term={group.term}
+                data-description={group.description}
+                onClick={this._onClick}
+              >
+                <div>
+                  <span className="kui--description-list-label-key">{group.term}</span>
+                  <span className="slightly-deemphasize">=</span>
+                  <span className="map-value">{group.description}</span>
+                </div>
+              </Label>
+            </Tooltip>
+          ))}
+        </LabelGroup>
+      </div>
+    )
+  }
 }
