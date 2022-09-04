@@ -34,7 +34,6 @@ export BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
 MODULE_HOME="$CLIENT_HOME"/node_modules/@kui-shell
 export BUILDDIR="$CLIENT_HOME"/dist/electron
 export HEADLESS_BUILDDIR="$CLIENT_HOME"/dist/headless
-export KUI_HEADLESS_WEBPACK
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"

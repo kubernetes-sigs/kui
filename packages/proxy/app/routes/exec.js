@@ -74,7 +74,6 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
         SHELL: execOptions.env.SHELL || process.env.SHELL,
         KUBECONFIG: process.env.KUBECONFIG,
         KUI_HEADLESS: true,
-        KUI_HEADLESS_WEBPACK: true,
         KUI_REPL_MODE: 'stdout',
         KUI_EXEC_OPTIONS: JSON.stringify(execOptions)
       })

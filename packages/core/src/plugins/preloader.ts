@@ -23,8 +23,7 @@ debug('loading')
 import { PrescanModel } from './prescan'
 
 import { Tab } from '../webapp/tab'
-import { mainPath, webpackPath } from './path'
-import { isHeadless } from '../core/capabilities'
+import { webpackPath } from './path'
 import { MetadataBearing } from '../models/entity'
 import { ImplForPlugins } from '../core/command-tree'
 import { registerSidecarBadge as registerBadge, BadgeRegistration } from '../webapp/views/registrar/badges'
@@ -77,8 +76,6 @@ export default async (prescan: PrescanModel) => {
         const registrationRef =
           module.path.charAt(0) === '/'
             ? await import(/* webpackIgnore: true */ module.path)
-            : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
-            ? await import(/* webpackIgnore: true */ mainPath(module.path))
             : module.route === 'client'
             ? require('@kui-shell/client/' + 'mdist/preload')
             : await import('@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload')
@@ -118,8 +115,6 @@ export default async (prescan: PrescanModel) => {
             const registrationRef =
               module.path.charAt(0) === '/'
                 ? await import(/* webpackIgnore: true */ module.path)
-                : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
-                ? await import(/* webpackIgnore: true */ mainPath(module.path))
                 : module.route === 'client'
                 ? require(/* webpackMode: "lazy" */ '@kui-shell/client/' + 'mdist/preload')
                 : await import(

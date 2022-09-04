@@ -59,16 +59,14 @@ else
     rm -f $LOCKFILE
 fi
 
-if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
-    echo "Watching Kui Headless bundles via webpack"
-    if [ -n "$LOCKFILE" ]; then
-        LOCKFILE2=/tmp/kui-build-lock2.${PORT_OFFSET-0}
-        rm -f $LOCKFILE2
-    fi
-
-    LOCKFILE=$LOCKFILE2 npx --no-install webpack watch --progress --config "$HEADLESS_CONFIG" &
-    echo $! > /tmp/kuiwatch-headless.pid
+echo "Watching Kui Headless bundles via webpack"
+if [ -n "$LOCKFILE" ]; then
+    LOCKFILE2=/tmp/kui-build-lock2.${PORT_OFFSET-0}
+    rm -f $LOCKFILE2
 fi
+
+LOCKFILE=$LOCKFILE2 npx --no-install webpack watch --progress --config "$HEADLESS_CONFIG" &
+echo $! > /tmp/kuiwatch-headless.pid
 
 echo "Watching Kui Client bundles via webpack"
 LOCKFILE=$LOCKFILE npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
@@ -92,7 +90,7 @@ elif [ "$WATCH_ARGS" = "wait" ]; then
     wait
 fi
 
-if [ -n "$KUI_HEADLESS_WEBPACK" ] && [ "$TARGET" != "electron-renderer" ]; then
+if [ "$TARGET" != "electron-renderer" ]; then
     npm run proxy &
 
     if [ -z "$RUNNING_KUI_TEST" ]; then

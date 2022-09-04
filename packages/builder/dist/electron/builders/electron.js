@@ -117,26 +117,24 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
     KUI_BUILDER_HOME: `${CLIENT_HOME}/node_modules/@kui-shell/builder`
   })
 
-  if (process.env.KUI_HEADLESS_WEBPACK) {
-    console.log('Building headless bundles via webpack')
-    asyncs.push(
-      new Promise((resolve, reject) => {
-        exec(
-          `npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
-          { env },
-          (err, stdout, stderr) => {
-            console.log('stdout', stdout)
-            if (err) {
-              console.error(err)
-              reject(stderr)
-            } else {
-              resolve()
-            }
+  console.log('Building headless bundles via webpack')
+  asyncs.push(
+    new Promise((resolve, reject) => {
+      exec(
+        `npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
+        { env },
+        (err, stdout, stderr) => {
+          console.log('stdout', stdout)
+          if (err) {
+            console.error(err)
+            reject(stderr)
+          } else {
+            resolve()
           }
-        )
-      })
-    )
-  }
+        }
+      )
+    })
+  )
 
   console.log('Building electron bundles via webpack')
   asyncs.push(
@@ -215,14 +213,12 @@ async function copySignableBits(buildPath, electronVersion, targetPlatform, targ
     // NO!!! TODO find a better way to remove kubect-kui await remove(source)
   }
 
-  // copy in the headless build?
-  if (process.env.KUI_HEADLESS_WEBPACK) {
-    const source = process.env.HEADLESS_BUILDDIR
-    const target = join(buildPath, 'dist', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
-    console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
-    await emptyDir(target)
-    await copy(source, target)
-  }
+  // copy in the headless build
+  const source = process.env.HEADLESS_BUILDDIR
+  const target = join(buildPath, 'dist', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+  console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
+  await emptyDir(target)
+  await copy(source, target)
 }
 /**
  * Use electron-packager to create the application package
