@@ -69,7 +69,7 @@ function oneTimeRender(badgeText: KuiBadge) {
       const type = className === 'green-background' ? 'ok' : className === 'red-background' ? 'error' : 'warning'
 
       return (
-        <div className={className || 'gray-background'} onClick={() => badgeText.onclick()}>
+        <div className={className || 'gray-background'} onClick={badgeText.onclick}>
           <Tag type={type}>{badgeText.title}</Tag>
         </div>
       )
