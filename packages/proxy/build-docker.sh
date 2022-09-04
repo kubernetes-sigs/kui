@@ -61,7 +61,7 @@ function kubeconfig {
 function webpack {
     echo "Building webpack bundles"
     rm -rf "$BUILDDIR"/*
-    KUI_PROXY_WEBPACK=true KUI_HEADLESS_WEBPACK=true npx kui-build-webpack
+    KUI_PROXY_WEBPACK=true npx kui-build-webpack
 }
 
 function nginx {

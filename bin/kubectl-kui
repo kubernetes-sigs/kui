@@ -26,10 +26,6 @@ export KUI_POPUP_WINDOW_RESIZE=true
 export NODE_NO_WARNINGS=1
 export NODE_OPTIONS="--no-warnings"
 
-# This tells the core Kui plugin resolver that we are using webpack to
-# build our headless bundles, not the old headless hacks.
-export KUI_HEADLESS_WEBPACK=true
-
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)                                                              
 
 if [ -f "${SCRIPTDIR}"/../node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
