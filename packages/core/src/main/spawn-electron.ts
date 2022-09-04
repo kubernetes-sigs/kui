@@ -212,7 +212,6 @@ export async function createWindow(
             width: width || styles.width || 1280,
             height: height || styles.height || 960,
             webPreferences: {
-              enableRemoteModule: true,
               backgroundThrottling: false,
               contextIsolation: false, // prior to electron 12, nodeIntegration: true did not need this
               nodeIntegration: true // prior to electron 5, this was the default

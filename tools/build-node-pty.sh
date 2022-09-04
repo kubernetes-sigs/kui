@@ -1,7 +1,14 @@
+#
+# The purpose of this utility is to rebuild the node-pty prebuilt
+# modules. By default, it will generate a `/tmp/node-pty.tar.gz` when
+# done.
+#
+
 set -e
 set -o pipefail
 
 T=$(mktemp -d)
+T2=$(mktemp -d)
 
 PLATFORM=$(uname | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
@@ -15,18 +22,21 @@ TARGET="$PWD"/packages/builder/dist/electron/vendor/node-pty/build/$PLATFORM-$AR
 
 cd "$T"
 npm init -y
-npm install node-pty@0.11.0-beta19
+npm install node-pty@0.11.0-beta21 electron@20.1.1 electron-rebuild github:jkleinsc/nan#remove_accessor_signature
+npx electron-rebuild -f -w node-pty
+
 cd node_modules/node-pty
 
-cat > .npmrc <<EOF
-runtime=electron
-target=18.0.0
-build_from_source=true
-disturl=https://atom.io/download/electron
-EOF
+if [ -e build/Release/obj.target ]; then
+    mv build/Release/obj.target $T2
+fi
+if [ -e build/Release/.deps ]; then
+    mv build/Release/.deps $T2
+fi
+if [ -e build/Release/.forge-meta ]; then
+    mv build/Release/.forge-meta $T2
+fi
 
-npm run install
-rm -f build/Release/*.pdb
 gzip -9 build/Release/*
 
 if [ "$1" = "install" ]; then
