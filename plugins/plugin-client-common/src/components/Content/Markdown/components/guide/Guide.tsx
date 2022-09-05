@@ -17,9 +17,8 @@
 import React from 'react'
 import { v4 } from 'uuid'
 import { i18n, Tab } from '@kui-shell/core'
+import { Choices, CodeBlock, Graph, Memoizer, Wizard as Wiz } from 'madwizard'
 import { Chip, ChipGroup, Grid, GridItem, Progress, Tile, WizardStep } from '@patternfly/react-core'
-
-import { Choices, CodeBlock, Graph, Wizard as Wiz } from 'madwizard'
 
 import Wizard, { Props as WizardProps } from '../Wizard/KWizard'
 
@@ -98,9 +97,23 @@ export default class Guide extends React.PureComponent<Props, State> {
     return frontier.length > 0 && frontier.every(_ => _.prereqs.length > 0 || !!_.choice)
   }
 
+  private readonly memos = new Memoizer()
+
   private async init(props: Props, useTheseChoices?: State['choices']) {
-    const choices = useTheseChoices || props.choices
-    const newGraph = await Graph.compile(props.blocks, choices, undefined, 'sequence', props.title, props.description)
+    const choices = useTheseChoices || props.choices || Choices.newChoiceState('default')
+    if (!useTheseChoices && !props.choices) {
+      choices.onChoice(this.onChoiceFromAbove)
+    }
+
+    const newGraph = await Graph.compile(
+      props.blocks,
+      choices,
+      this.memos,
+      undefined,
+      'sequence',
+      props.title,
+      props.description
+    )
 
     this.setState(state => {
       const noChangeToGraph = state && Graph.sameGraph(state.graph, newGraph)
@@ -109,7 +122,7 @@ export default class Guide extends React.PureComponent<Props, State> {
       const frontier = noChangeToGraph && state && state.frontier ? state.frontier : Graph.findChoiceFrontier(graph)
 
       const startAtStep = state ? state.startAtStep : 1
-      const wizard = Wiz.wizardify(graph, { previous: state.wizard })
+      const wizard = Wiz.wizardify(graph, this.memos, { previous: state.wizard })
       const wizardStepStatus = noChangeToGraph && state ? state.wizardStepStatus : []
 
       const isRunning = state ? state.isRunning : false
@@ -118,12 +131,10 @@ export default class Guide extends React.PureComponent<Props, State> {
     })
   }
 
-  public componentDidMount() {
-    this.state.choices.onChoice(this.onChoiceFromAbove)
-  }
-
   public componentWillUnmount() {
-    this.state.choices.offChoice(this.onChoiceFromAbove)
+    if (this.state.choices) {
+      this.state.choices.offChoice(this.onChoiceFromAbove)
+    }
   }
 
   /** @return a wrapper UI for the content of a wizard step */
@@ -168,7 +179,7 @@ export default class Guide extends React.PureComponent<Props, State> {
   private readonly onChoice = (evt: React.MouseEvent) => {
     const group = evt.currentTarget.getAttribute('data-choice-group')
     const title = evt.currentTarget.getAttribute('data-choice-title')
-    this.props.choices.set(group, title)
+    this.props.choices.setKey(group, title)
   }
 
   /** @return UI that offers the user a choice */
@@ -183,7 +194,7 @@ export default class Guide extends React.PureComponent<Props, State> {
                 title={_.title}
                 className="kui--tile"
                 icon={this.choiceIcon2}
-                isSelected={this.state.choices && this.state.choices.get(choice.group) === _.title}
+                isSelected={this.state.choices && this.state.choices.getKey(choice.group) === _.title}
                 onClick={this.onChoice}
                 data-choice-group={choice.group}
                 data-choice-title={_.title}
@@ -273,7 +284,7 @@ export default class Guide extends React.PureComponent<Props, State> {
     Promise.all(
       steps.map(async (_, idx) => {
         if (!this.state.wizardStepStatus[idx] || this.state.wizardStepStatus[idx] === 'blank') {
-          const status = await Graph.validate(_.graph, {
+          const status = await Graph.validate(_.graph, this.memos, {
             validator: (cmdline: string) => this.props.tab.REPL.qexec(cmdline)
           })
           if (status !== this.state.wizardStepStatus[idx]) {
@@ -298,7 +309,7 @@ export default class Guide extends React.PureComponent<Props, State> {
     if (node) {
       const key = node.getAttribute('data-ouia-component-id')
       if (key) {
-        this.state.choices.remove(key)
+        this.state.choices.removeKey(key)
       }
     }
   }

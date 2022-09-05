@@ -18,8 +18,7 @@ import Debug from 'debug'
 import React from 'react'
 import { TreeView, TreeViewProps } from '@patternfly/react-core'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
-
-import { Tree, Graph, Choices, CodeBlock } from 'madwizard'
+import { Tree, Graph, Choices, CodeBlock, Memoizer } from 'madwizard'
 
 import Icons, { SupportedIcon } from '../../../spi/Icons'
 // import Spinner from '../../../Views/Terminal/Block/Spinner'
@@ -157,27 +156,51 @@ class Imports extends React.PureComponent<Props, State> {
     }
   }
 
+  private readonly memos = new Memoizer()
+
   private async init(props: Props, useTheseChoices?: State['choices']) {
-    const choices = useTheseChoices || props.choices
-    const newGraph = await Graph.compile(props.imports, choices, undefined, 'sequence', props.title, props.description)
+    try {
+      const choices = useTheseChoices || props.choices || Choices.newChoiceState('default')
+      if (!useTheseChoices && !props.choices) {
+        choices.onChoice(this.onChoice)
+      }
 
-    this.setState(state => {
-      const noChange = state && Graph.sameGraph(state.imports, newGraph)
+      const newGraph = await Graph.compile(
+        props.imports,
+        choices,
+        this.memos,
+        undefined,
+        'sequence',
+        props.title,
+        props.description
+      )
 
-      const imports = noChange ? state.imports : Graph.order(newGraph)
-      const codeBlockStatus = state ? this.state.codeBlockStatus : {}
-      const data = noChange ? state.data : this.computeTreeModel(imports, codeBlockStatus).data
+      this.setState(state => {
+        try {
+          const noChange = state && Graph.sameGraph(state.imports, newGraph)
 
-      return noChange
-        ? null
-        : {
-            data,
-            choices,
-            imports,
-            error: undefined,
-            codeBlockStatus
-          }
-    })
+          const imports = noChange ? state.imports : Graph.order(newGraph)
+          const codeBlockStatus = state ? this.state.codeBlockStatus : {}
+          const data = noChange ? state.data : this.computeTreeModel(imports, codeBlockStatus).data
+
+          return noChange
+            ? null
+            : {
+                data,
+                choices,
+                imports,
+                error: undefined,
+                codeBlockStatus
+              }
+        } catch (error) {
+          console.error(error)
+          return Object.assign({}, state, { error })
+        }
+      })
+    } catch (error) {
+      console.error(error)
+      this.setState({ error })
+    }
   }
 
   private readonly onChoice = ({ choices }: Choices.Choices) => this.init(this.props, choices.clone())
@@ -187,8 +210,11 @@ class Imports extends React.PureComponent<Props, State> {
     return { error }
   }
 
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('catastrophic error in Imports', error, errorInfo)
+  }
+
   public componentDidMount() {
-    this.state.choices.onChoice(this.onChoice)
     this.computeTreeModelIfNeeded()
   }
 
@@ -197,7 +223,9 @@ class Imports extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate() {
-    this.computeTreeModelIfNeeded()
+    if (!this.state.error) {
+      this.computeTreeModelIfNeeded()
+    }
   }
 
   /** Compute or re-compute tree model */
@@ -212,6 +240,10 @@ class Imports extends React.PureComponent<Props, State> {
     status = this.state.codeBlockStatus,
     doValidate = true
   ): Pick<State, 'data'> {
+    if (this.state.error) {
+      return
+    }
+
     try {
       return {
         data: new Tree.Treeifier<React.ReactNode>(new ReactUI(), status, doValidate && this.validate.bind(this)).toTree(
@@ -225,29 +257,36 @@ class Imports extends React.PureComponent<Props, State> {
   }
 
   private async validate(props: CodeBlock.CodeBlockProps) {
-    const status = this.state.codeBlockStatus ? this.state.codeBlockStatus[props.id] : 'blank'
+    try {
+      const status = this.state.codeBlockStatus ? this.state.codeBlockStatus[props.id] : 'blank'
 
-    if (props.validate && status !== 'in-progress' && status !== 'success') {
-      try {
-        this.onValidate(props.id, 'in-progress')
-        // emitLinkUpdate(this.props.codeBlockId, 'in-progress')
-        await pexecInCurrentTab(props.validate.toString(), undefined, true, true)
-        this.onValidate(props.id, 'success')
-        // emitLinkUpdate(this.props.codeBlockId, 'success')
-      } catch (err) {
-        this.onValidate(props.id, 'blank')
-        // this.setState({ status: 'blank' })
-        // emitLinkUpdate(this.props.codeBlockId, 'blank')
+      if (props.validate && status !== 'in-progress' && status !== 'success') {
+        try {
+          this.onValidate(props.id, 'in-progress')
+          // emitLinkUpdate(this.props.codeBlockId, 'in-progress')
+          await pexecInCurrentTab(props.validate.toString(), undefined, true, true)
+          this.onValidate(props.id, 'success')
+          // emitLinkUpdate(this.props.codeBlockId, 'success')
+        } catch (err) {
+          this.onValidate(props.id, 'blank')
+          // this.setState({ status: 'blank' })
+          // emitLinkUpdate(this.props.codeBlockId, 'blank')
+        }
       }
+    } catch (error) {
+      console.error(error)
+      this.setState({ error })
     }
   }
 
   private readonly onValidate = (id: string, status: Status) => {
-    this.setState(curState => {
-      const codeBlockStatus = Object.assign({}, curState.codeBlockStatus, { [id]: status })
-      const { data } = this.computeTreeModel(curState.imports, codeBlockStatus, false)
-      return { data, codeBlockStatus }
-    })
+    setTimeout(() =>
+      this.setState(curState => {
+        const codeBlockStatus = Object.assign({}, curState.codeBlockStatus, { [id]: status })
+        const { data } = this.computeTreeModel(curState.imports, codeBlockStatus, false)
+        return { data, codeBlockStatus }
+      })
+    )
   }
 
   public render() {

@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import Input from '../Input'
-import { importg } from './6'
-import { importd } from './1'
+const RE_KEY = /\+\+([^+]+)(\+([^+]+))*\+\+/g
 
-const filename = 'guidebook-tree-model7.md'
-
-export const tree: Input['tree'] = () => [
-  {
-    name: filename,
-    children: [importg('importgg.md'), importd]
-  }
-]
-
-const IN7: Input = {
-  input: require.resolve(`@kui-shell/plugin-client-common/tests/data/${filename}`),
-  tree
+/**
+ * Allows us to support pymdown's `++ctrl+alt+delete` which they
+ * transform to HTML5 <kbd>...</kbd>.
+ */
+export default function plugin(markdownText: string) {
+  return markdownText.replace(RE_KEY, match => {
+    return (
+      '<span class="kui--markdown-keys">' +
+      match
+        .split(/\+/)
+        .filter(Boolean)
+        .map(_ => _.replace(/^"(.+)"$/, '$1'))
+        .map(_ => `<kbd class="kui--markdown-key--${_}">${_}</kbd>`)
+        .join('<span>+</span>') +
+      '</span>'
+    )
+  })
 }
-
-export default IN7

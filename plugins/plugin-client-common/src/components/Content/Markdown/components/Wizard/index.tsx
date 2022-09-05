@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-import { Choices, CodeBlock, Graph, Parser } from 'madwizard'
+import { Choices, CodeBlock, Graph, Memoizer, Parser } from 'madwizard'
 
 import Progress from './Progress'
 
@@ -64,9 +64,11 @@ export default class Wizard extends React.PureComponent<Props, State> {
     setTimeout(() => this.init(props))
   }
 
+  private readonly memos = new Memoizer()
+
   public async init(props: Props) {
     const codeBlocks = await Promise.all(
-      Wizard.children(props).map(_ => Graph.compile(Wizard.containedCodeBlocks(_), props.choices))
+      Wizard.children(props).map(_ => Graph.compile(Wizard.containedCodeBlocks(_), props.choices, this.memos))
     )
 
     this.setState(state => {

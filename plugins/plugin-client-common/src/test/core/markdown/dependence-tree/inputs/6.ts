@@ -45,9 +45,9 @@ const importgForBrowser: (name: string) => Tree = (name: string) => ({
 export const importg: (name?: string) => Tree = (name = 'importg.md') =>
   (process.env.MOCHA_RUN_TARGET || 'electron') === 'electron' ? importgForElectron(name) : importgForBrowser(name)
 
-const tree: Input['tree'] = (command: string) => [
+const tree: Input['tree'] = () => [
   {
-    name: command === 'guide' ? filename : 'Tasks',
+    name: filename,
     children: [importg(), importd]
   }
 ]

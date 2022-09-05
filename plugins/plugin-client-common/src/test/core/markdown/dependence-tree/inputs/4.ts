@@ -28,9 +28,9 @@ const filename = 'guidebook-tree-model4.md'
 
 const IN4: Input = {
   input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: (command: string) => [
+  tree: () => [
     {
-      name: command === 'guide' ? filename : 'Tasks',
+      name: filename,
       children: [importd, importe, snippetsInTab5]
     }
   ]

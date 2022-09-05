@@ -27,6 +27,12 @@ import ReactMarkdown, { Options } from 'react-markdown'
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
 
+// ==foo== -> <mark>foo</mark>
+import hackMarks from './remark-mark.js'
+
+// ++ctrl+alt+delete++== -> <kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>delete</kbd>
+import hackKeys from './remark-keys.js'
+
 // parses out ::import{filepath} as node.type === 'leafDirective', but
 // does not create any DOM elements
 import remarkDirective from 'remark-directive'
@@ -276,7 +282,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   private readonly uuid = uuid()
 
-  private readonly choices: Choices.ChoiceState = this.props.choices || Choices.newChoiceState()
+  private readonly choices: Choices.ChoiceState = this.props.choices || Choices.newChoiceState('default')
 
   /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
@@ -310,7 +316,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * syntax from pymdown (such as target=_blank for links).
    */
   private static hackSource(source: string) {
-    return Parser.hackMarkdownSource(source)
+    return hackKeys(hackMarks(Parser.hackMarkdownSource(source)))
       .trim()
       .replace(/\){target=[^}]+}/g, ')')
       .replace(/{draggable=(false|true)}/g, '')
