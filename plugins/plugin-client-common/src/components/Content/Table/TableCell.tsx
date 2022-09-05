@@ -199,15 +199,16 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
               onClick={onclick ? onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table, mutability) : undefined}
             >
               {tag === 'badge' && (
-                <span
-                  key={css /* force restart of animation if color changes */}
-                  title={title}
-                  className={css || 'kui--status-unknown'}
-                  data-tag="badge-circle"
-                  data-just-updated={justUpdated || undefined}
-                >
-                  {/red-background/.test(css) ? <ErrorCell /> : undefined}
-                </span>
+                <Tooltip content={title}>
+                  <span
+                    key={css /* force restart of animation if color changes */}
+                    className={css || 'kui--status-unknown'}
+                    data-tag="badge-circle"
+                    data-just-updated={justUpdated || undefined}
+                  >
+                    {/red-background/.test(css) ? <ErrorCell /> : undefined}
+                  </span>
+                </Tooltip>
               )}
               {innerSpanWithTooltip}
             </div>
