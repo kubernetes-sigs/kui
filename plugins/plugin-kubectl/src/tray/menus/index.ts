@@ -23,6 +23,9 @@ import section from './section'
 import contexts from './contexts'
 import namespaces from './namespaces'
 import UpdateFunction from '../update'
+import storage from './resources/storage'
+import workloads from './resources/workloads'
+import networking from './resources/networking'
 import { bugIcon, powerOffIcon, productIcon } from '../icons'
 
 /** @return an Electron `Menu` model for our tray menu */
@@ -33,11 +36,12 @@ export default async function buildContextMenu(
   const { Menu } = await import('electron')
 
   const contextMenu = Menu.buildFromTemplate([
+    ...section('Resources', [workloads(createWindow), networking(createWindow), storage(createWindow)]),
     ...section('Kubernetes Clusters', contexts(createWindow, updateFn)),
     ...section('Kubernetes Namespaces', namespaces(createWindow, updateFn)),
     { type: 'separator' },
     { label: `${productName} ${version}`, icon: productIcon, click: () => createWindow([], { width, height }) },
-    { label: `Report a Bug`, icon: bugIcon, click: () => import('open').then(_ => _.default(bugs.url)) },
+    { label: `File Bug or Feature Request`, icon: bugIcon, click: () => import('open').then(_ => _.default(bugs.url)) },
     { label: `Quit ${productName}`, icon: powerOffIcon, role: 'quit' }
   ])
 
