@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { MenuItemConstructorOptions } from 'electron'
+import Debug from 'debug'
 import { CreateWindowFunction } from '@kui-shell/core'
+import { MenuItemConstructorOptions } from 'electron'
 
 import Loading from '../loading'
 import { get, set } from './current'
+import { errorIcon } from '../../icons'
 import { onRefresh } from '../../events'
 import UpdateFunction from '../../update'
 
@@ -59,6 +61,10 @@ class NamespaceWatcher {
     this.scan()
   }
 
+  private unauthorized() {
+    this.namespaces = [{ label: 'Your token has probably expired', enabled: false, icon: errorIcon }]
+  }
+
   private async scan() {
     try {
       const currentNamespaceP = get().catch(() => '')
@@ -68,25 +74,35 @@ class NamespaceWatcher {
         'kubectl',
         ['get', 'ns', '--no-headers', '--output=custom-columns=NAME:.metadata.name,STATUS:.status.phase', '--watch'],
         {
-          stdio: ['inherit', 'pipe', 'inherit']
+          stdio: ['inherit', 'pipe', 'pipe']
         }
       )
 
       child.on('exit', async code => {
-        if (code === 1 && this.namespaces.length === 0) {
-          this.namespaces = [{ label: 'Your token has probably timed out', enabled: false }]
+        if (
+          code === 1 &&
+          (this.namespaces.length === 0 || (this.namespaces.length === 1 && this.namespaces[0] === Loading))
+        ) {
+          this.unauthorized()
         }
         await new Promise(resolve => setTimeout(resolve, 2000))
         this.scan()
       })
 
       child.on('error', err => {
-        if (!/ENOENT/.test(err.message)) {
-          // ENOENT if kubectl is not found
-          console.error(err.message)
+        if (/Unauthorized/.test(err.message)) {
+          this.unauthorized()
+        } else {
+          if (!/ENOENT/.test(err.message)) {
+            // ENOENT if kubectl is not found
+            console.error(err.message)
+          }
+          this.namespaces = [{ label: '<none>', enabled: false }]
         }
-        this.namespaces = [{ label: '<none>', enabled: false }]
       })
+
+      const debug = Debug('plugin-kubectl/tray/menus/namespaces')
+      child.stderr.on('data', data => debug(data.toString()))
 
       // partial line from last batch
       let leftover = ''
