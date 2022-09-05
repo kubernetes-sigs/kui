@@ -19,6 +19,7 @@ import { app } from 'electron'
 
 import bug from '@kui-shell/client/icons/png/bugTemplate.png'
 import grid from '@kui-shell/client/icons/png/gridTemplate.png'
+import error from '@kui-shell/client/icons/png/errorTemplate.png'
 import powerOff from '@kui-shell/client/icons/png/powerOffTemplate.png'
 
 // these our are tray menu icons; the electron api specifies that if
@@ -48,6 +49,7 @@ function iconFor(filepath: string) {
 
 export const bugIcon = iconFor(bug)
 export const gridIcon = iconFor(grid)
+export const errorIcon = iconFor(error)
 export const powerOffIcon = iconFor(powerOff)
 export const trayIcon = iconFor(tray)
 export const trayIcon2x = iconFor(tray2x)
