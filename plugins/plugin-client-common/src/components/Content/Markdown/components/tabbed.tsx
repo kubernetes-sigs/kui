@@ -76,7 +76,7 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
   }
 
   private static findActiveKey(props: Props) {
-    const activeTitle = props.choices.get(LinkableTabs.group(props))
+    const activeTitle = props.choices.getKey(LinkableTabs.group(props))
     const idx = LinkableTabs.findTabIndex(props, activeTitle)
     return idx < 0 ? 0 : idx
   }
