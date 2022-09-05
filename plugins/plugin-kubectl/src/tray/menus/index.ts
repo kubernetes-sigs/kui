@@ -36,13 +36,15 @@ export default async function buildContextMenu(
   const { Menu } = await import('electron')
 
   const contextMenu = Menu.buildFromTemplate([
-    ...section('Resources', [workloads(createWindow), networking(createWindow), storage(createWindow)]),
-    ...section('Kubernetes Clusters', contexts(createWindow, updateFn)),
+    ...section('Kubernetes Resources', [workloads(createWindow), networking(createWindow), storage(createWindow)]),
+    ...section('Kubernetes Contexts', contexts(createWindow, updateFn)),
     ...section('Kubernetes Namespaces', namespaces(createWindow, updateFn)),
     { type: 'separator' },
-    { label: `${productName} ${version}`, icon: productIcon, click: () => createWindow([], { width, height }) },
-    { label: `File Bug or Feature Request`, icon: bugIcon, click: () => import('open').then(_ => _.default(bugs.url)) },
-    { label: `Quit ${productName}`, icon: powerOffIcon, role: 'quit' }
+    ...section(`${productName} ${version}`, [
+      { label: 'New Window', icon: productIcon, click: () => createWindow([], { width, height }) },
+      { label: 'Contact Us', icon: bugIcon, click: () => import('open').then(_ => _.default(bugs.url)) },
+      { label: `Quit ${productName}`, icon: powerOffIcon, role: 'quit' }
+    ])
   ])
 
   return contextMenu
