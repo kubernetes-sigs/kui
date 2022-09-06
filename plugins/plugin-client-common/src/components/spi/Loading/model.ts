@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react'
-
 export default interface Props {
   className?: string
   description?: string

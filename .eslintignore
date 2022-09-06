@@ -2,6 +2,7 @@ build/
 packages/builder
 clients/**/*/dist/
 plugins/**/*/dist/
+plugins/**/*/mdist/
 plugins/*/lib/**/*.js
 plugins/*/i18n/**/*.js
 plugins/*/*.js
@@ -18,10 +19,14 @@ packages/core/test/
 packages/core/util/
 packages/core/webapp/
 packages/proxy/kui
+packages/react/dist/
 packages/test/dist/
+packages/*/mdist/
+plugins/*/mdist/
 plugins/*/dist/
 **/*/node_modules/
 **/*.d.ts
 plugins/plugin-apache-composer/tests/data/composer/composer-source-expect-errors/if-bad.js
 kui-stage
 *flycheck*.js
+/dist

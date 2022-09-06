@@ -60,7 +60,10 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   private children() {
     if (React.isValidElement(this.props.children)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(this.props.children, { willUpdateToolbar: this._willUpdateToolbar })
+      return React.cloneElement(
+        this.props.children as React.ReactElement<{ willUpdateToolbar: ToolbarContainer['onToolbarUpdate'] }>,
+        { willUpdateToolbar: this._willUpdateToolbar }
+      )
     } else {
       return this.props.children
     }

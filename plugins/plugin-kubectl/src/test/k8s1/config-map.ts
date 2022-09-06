@@ -18,7 +18,6 @@ import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-sh
 import {
   waitForGreen,
   openSidecarByList,
-  defaultModeForGet,
   createNS,
   allocateNS,
   deleteNS,

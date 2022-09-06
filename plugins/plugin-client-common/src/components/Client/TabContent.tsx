@@ -371,11 +371,14 @@ export default class TabContent extends React.PureComponent<Props, State> {
   private graft(node: React.ReactNode | {}, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(node, {
-        key,
-        uuid: this.props.uuid,
-        active: this.state.active
-      })
+      return React.cloneElement(
+        node as React.ReactElement<{ key?: number; uuid: Props['uuid']; active: State['active'] }>,
+        {
+          key,
+          uuid: this.props.uuid,
+          active: this.state.active
+        }
+      )
     } else {
       return node
     }

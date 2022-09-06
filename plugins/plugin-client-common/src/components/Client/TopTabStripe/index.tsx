@@ -165,11 +165,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   private headerName() {
     return (
       <KuiContext.Consumer>
-        {config => (
-          <div prefix="" className="kui--header--name">
-            {config.productName || 'Kui'}
-          </div>
-        )}
+        {config => <div className="kui--header--name">{config.productName || 'Kui'}</div>}
       </KuiContext.Consumer>
     )
   }

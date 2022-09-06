@@ -35,7 +35,7 @@ export default class MeterWidgets extends React.PureComponent<Props> {
   private graft(node: React.ReactNode | {}, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(node, {
+      return React.cloneElement(node as React.ReactElement<{ key?: number; position: Props['position'] }>, {
         key,
         position: 'top-end' // meter widgets should default to top-end positioning of Popovers
       })
