@@ -54,7 +54,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   private onCommandStart: (evt: Event) => void
   private onCommandComplete: (evt: Event) => void
-  private onThemeChange: ({ themeModel: Theme }) => void
+  private onThemeChange: (evt: { themeModel: Themes.Theme }) => void
 
   public constructor(props: Props) {
     super(props)

@@ -226,7 +226,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   private graft(node: React.ReactNode | {}, uuid: string, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(node, {
+      return React.cloneElement(node as React.ReactElement<{ key?: number; uuid: string }>, {
         key,
         uuid
       })

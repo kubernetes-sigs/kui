@@ -34,19 +34,20 @@ export interface Options {
 }
 
 /** Component-specific Options */
-export interface Props extends Options {
-  text: string
-  viewLevel: ViewLevel
+export type Props = Options &
+  React.PropsWithChildren<{
+    text: string
+    viewLevel: ViewLevel
 
-  title?: string
-  iconIsNarrow?: boolean
-  iconOnclick?: string | (() => void)
-  textOnclick?: string | (() => void)
-  id?: string
+    title?: string
+    iconIsNarrow?: boolean
+    iconOnclick?: string | (() => void)
+    textOnclick?: string | (() => void)
+    id?: string
 
-  /** popover properties specified by client */
-  popover?: Pick<PopoverProps, 'bodyContent' | 'headerContent'> & Partial<PopoverProps>
-}
+    /** popover properties specified by client */
+    popover?: Pick<PopoverProps, 'bodyContent' | 'headerContent'> & Partial<PopoverProps>
+  }>
 
 export default class TextWithIconWidget extends React.PureComponent<Props> {
   /** Render the content (excluding any popover/tooltip wrappers) part */

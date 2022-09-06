@@ -28,7 +28,7 @@ import { isAbsolute } from '../../../../controller/snippets'
 const Tooltip = React.lazy(() => import('../../../spi/Tooltip'))
 
 export default function a(mdprops: Props, uuid: string, repl: REPL) {
-  return (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+  return function a(props: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
     const isKuiCommand = props.href.startsWith('#kuiexec?command=')
     const isLocal = !/^http/i.test(props.href)
     const isNotebook = /\.md$/.test(props.href)
