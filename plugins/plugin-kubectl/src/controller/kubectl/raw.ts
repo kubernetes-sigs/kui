@@ -69,7 +69,7 @@ const doNativeExecOnce = (args: Args): Promise<RawResponse> =>
     const executable = args.argv[0].replace(/^_/, '')
     const argv = args.argv.slice(1)
     const shell = !!args.argv.find(_ => /['$]/.test(_)) // single quotes or $var -> shell
-    const child = spawn(executable, argv, { env, shell })
+    const child = spawn(executable, argv, { env, shell, windowsHide: true })
 
     // this is needed e.g. to handle ENOENT; otherwise the kui process may die with an uncaught exception
     child.on('error', (err: Error) => {
