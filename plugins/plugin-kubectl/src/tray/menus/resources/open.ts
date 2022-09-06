@@ -17,5 +17,5 @@
 import { CreateWindowFunction } from '@kui-shell/core'
 
 export default function openWindowWith(argv: string[], createWindow: CreateWindowFunction) {
-  return () => createWindow(argv, { quietExecCommand: false, width: 1000, height: 800 })
+  return () => createWindow(argv, { quietExecCommand: false, width: 1200, height: 800 })
 }
