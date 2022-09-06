@@ -95,15 +95,16 @@ export abstract class TabCompletionState {
 
       // argvNoOptions is argv without the options; we can get
       // this directly from yargs-parser's '_'
-      const argvNoOptions = options._
-      delete options._ // so that parsedOptions doesn't have the '_' part
+      const argvNoOptions = options._.map(_ => _.toString())
+      const parsedOptions = Object.assign({}, options, { _: undefined })
+      delete parsedOptions._
 
       // a parsed out version of the command line
       const commandLine = {
         command: prompt.value,
         argv,
-        argvNoOptions: argvNoOptions,
-        parsedOptions: options
+        argvNoOptions,
+        parsedOptions
       }
 
       // a specification of what we want to be completed
