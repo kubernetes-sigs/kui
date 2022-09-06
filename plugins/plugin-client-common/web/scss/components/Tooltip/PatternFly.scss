@@ -25,7 +25,7 @@ $tooltip-bgcolor: var(--color-base0D);
   --tooltip-fgcolor: #{$tooltip-fgcolor};
   color: var(--tooltip-fgcolor);
   background-color: $tooltip-bgcolor;
-  filter: grayscale(0.5);
+  filter: grayscale(0.85);
 
   &[data-is-markdown] {
     @include EditorInMarkdown {
