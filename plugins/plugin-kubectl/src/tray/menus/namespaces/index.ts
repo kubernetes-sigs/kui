@@ -74,6 +74,7 @@ class NamespaceWatcher {
         'kubectl',
         ['get', 'ns', '--no-headers', '--output=custom-columns=NAME:.metadata.name,STATUS:.status.phase', '--watch'],
         {
+          windowsHide: true,
           stdio: ['inherit', 'pipe', 'pipe']
         }
       )

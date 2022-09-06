@@ -20,14 +20,19 @@ import { tellRendererToExecute } from '@kui-shell/core'
 export async function get() {
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', ['config', 'view', '--minify', '--output=jsonpath={..namespace}'], (err, stdout, stderr) => {
-      if (err) {
-        console.error(stderr)
-        reject(err)
-      } else {
-        resolve(stdout.trim())
+    execFile(
+      'kubectl',
+      ['config', 'view', '--minify', '--output=jsonpath={..namespace}'],
+      { windowsHide: true },
+      (err, stdout, stderr) => {
+        if (err) {
+          console.error(stderr)
+          reject(err)
+        } else {
+          resolve(stdout.trim())
+        }
       }
-    })
+    )
   })
 }
 
@@ -42,7 +47,7 @@ export async function set(ns: string, tellRenderer = true) {
 
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', args, (err, stdout, stderr) => {
+    execFile('kubectl', args, { windowsHide: true }, (err, stdout, stderr) => {
       if (err) {
         console.error(stderr)
         reject(err)

@@ -20,7 +20,7 @@ import { tellRendererToExecute } from '@kui-shell/core'
 export async function get() {
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', ['config', 'current-context'], (err, stdout, stderr) => {
+    execFile('kubectl', ['config', 'current-context'], { windowsHide: true }, (err, stdout, stderr) => {
       if (err) {
         console.error(stderr)
         reject(err)
@@ -42,7 +42,7 @@ export async function set(context: string, tellRenderer = true) {
 
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', args, (err, stdout, stderr) => {
+    execFile('kubectl', args, { windowsHide: true }, (err, stdout, stderr) => {
       if (err) {
         console.error(stderr)
         reject(err)

@@ -61,40 +61,45 @@ class ContextWatcher {
     const currentContextP = get().catch(() => '')
 
     const { execFile } = await import('child_process')
-    execFile('kubectl', ['config', 'get-contexts', '--output=name'], async (err, stdout, stderr) => {
-      if (err) {
-        if (!/ENOENT/.test(err.message)) {
-          // ENOENT if kubectl is not found
-          console.error('Error scanning Kubernetes contexts', err.message)
-          console.error(stderr)
-        }
-        this.contexts = [{ label: '<none>', enabled: false }]
-      } else {
-        const contexts: Record<string, string> = stdout
-          .split(/\n/)
-          .filter(Boolean)
-          .sort()
-          .reduce((M, context) => {
-            const label = context
-              .replace(/\/[^/]+$/, '')
-              .replace(/:[^:]+$/, '')
-              .replace(/^([^/]+)\/([^/]+)$/, '$2')
-            if (!M[label]) {
-              M[label] = context
-            }
-            return M
-          }, {})
+    execFile(
+      'kubectl',
+      ['config', 'get-contexts', '--output=name'],
+      { windowsHide: true },
+      async (err, stdout, stderr) => {
+        if (err) {
+          if (!/ENOENT/.test(err.message)) {
+            // ENOENT if kubectl is not found
+            console.error('Error scanning Kubernetes contexts', err.message)
+            console.error(stderr)
+          }
+          this.contexts = [{ label: '<none>', enabled: false }]
+        } else {
+          const contexts: Record<string, string> = stdout
+            .split(/\n/)
+            .filter(Boolean)
+            .sort()
+            .reduce((M, context) => {
+              const label = context
+                .replace(/\/[^/]+$/, '')
+                .replace(/:[^:]+$/, '')
+                .replace(/^([^/]+)\/([^/]+)$/, '$2')
+              if (!M[label]) {
+                M[label] = context
+              }
+              return M
+            }, {})
 
-        const currentContext = await currentContextP
-        this.contexts = Object.entries(contexts).map(([label, context]) => ({
-          type: 'radio',
-          id: context,
-          label,
-          click: () => this.setAndScan(context),
-          checked: currentContext === context
-        }))
+          const currentContext = await currentContextP
+          this.contexts = Object.entries(contexts).map(([label, context]) => ({
+            type: 'radio',
+            id: context,
+            label,
+            click: () => this.setAndScan(context),
+            checked: currentContext === context
+          }))
+        }
       }
-    })
+    )
   }
 
   public get contexts() {

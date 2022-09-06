@@ -130,7 +130,7 @@ async function startProxy(command: SupportedCommand, context: string): Promise<S
           args.push('--context')
           args.push(context)
         }
-        const process = spawn(command, args)
+        const process = spawn(command, args, { windowsHide: true })
         let myState: State
 
         // to make sure we don't smash the global variable on exit
