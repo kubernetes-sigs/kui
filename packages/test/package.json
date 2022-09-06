@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/test",
-  "version": "11.4.0",
+  "version": "12.0.0",
   "description": "",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -15,8 +15,8 @@
     "kui-test": "./bin/runMochaLayers.sh"
   },
   "dependencies": {
-    "spectron": "starpit/spectron#741bb9512e13e3d696bbbce471c4c7d8d8a22590",
-    "@wdio/mocha-framework": "7.24.0"
+    "@wdio/mocha-framework": "7.24.0",
+    "spectron": "starpit/spectron#741bb9512e13e3d696bbbce471c4c7d8d8a22590"
   },
   "kui": {
     "electron": false,
