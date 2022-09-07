@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.0.1](https://github.com/IBM/kui/compare/v12.0.0...v12.0.1) (2022-09-07)
+
+### Bug Fixes
+
+- Bound state for volumes should have a green traffic light color ([5a600cc](https://github.com/IBM/kui/commit/5a600cc))
+- plugin-kubectl-tray-menu had incorrect package name ([7bf12bf](https://github.com/IBM/kui/commit/7bf12bf))
+
+### Features
+
+- separate tray menu into new plugin-kubectl-tray-menu ([b04607e](https://github.com/IBM/kui/commit/b04607e))
+
 # [12.0.0](https://github.com/IBM/kui/compare/v4.5.0...v12.0.0) (2022-09-06)
 
 ### Bug Fixes
