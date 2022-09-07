@@ -29,6 +29,9 @@
       "path": "plugins/plugin-kubectl"
     },
     {
+      "path": "plugins/plugin-kubectl-tray-menu"
+    },
+    {
       "path": "plugins/plugin-proxy-support"
     },
     {

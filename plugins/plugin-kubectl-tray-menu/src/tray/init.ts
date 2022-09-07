@@ -25,5 +25,11 @@ export default async function initTray() {
       .catch(err => {
         console.error('Error initializing tray menu', err)
       })
+
+    // rebroadcast renderer-side config change events to the main process
+    const { onKubectlConfigChangeEvents } = await import('@kui-shell/plugin-kubectl')
+    onKubectlConfigChangeEvents(async () => {
+      import('./events').then(_ => _.emitRefreshFromRenderer())
+    })
   }
 }

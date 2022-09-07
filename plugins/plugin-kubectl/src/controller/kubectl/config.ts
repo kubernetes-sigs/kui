@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Capabilities, Events, Registrar } from '@kui-shell/core'
+import { Arguments, Events, Registrar } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithPty } from './exec'
@@ -41,10 +41,6 @@ const mutators = [
 export function emitKubectlConfigChangeEvent(type: ConfigChangeEventType, namespace?: string, context?: string) {
   try {
     Events.eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context)
-
-    if (Capabilities.inElectron()) {
-      import('../../tray/events').then(_ => _.emitRefreshFromRenderer())
-    }
   } catch (err) {
     console.error('Error in onKubectlConfigChangeEvent handler', err)
   }
