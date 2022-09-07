@@ -32,7 +32,7 @@ export async function emitRefreshFromRenderer() {
     ipcRenderer.send(
       '/exec/invoke',
       JSON.stringify({
-        module: 'plugin-kubectl',
+        module: 'plugin-kubectl-tray-menu',
         main: 'initTray',
         args: {
           command: '/tray/refresh'
