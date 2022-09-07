@@ -59,10 +59,7 @@ export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-err
 export { isMessageWithUsageModel, isMessageWithCode } from './core/usage-error'
 
 // ascii usage
-export { default as renderUsage } from './core/usage/render-usage'
 export { default as PrettyUsageModel } from './core/usage/types'
-import * as pc from './core/usage/pretty-code'
-export { pc }
 
 // eventChannelUnsafe
 export * from './api'
