@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { Arguments, PrettyUsageModel, Registrar, encodeComponent, renderUsage } from '@kui-shell/core'
-
-import * as Usage from './usage'
+import { Arguments, Registrar, encodeComponent } from '@kui-shell/core'
 
 const opts = { needsUI: true, width: 720, height: 900 }
 
-function doBrowse(this: string, usage: PrettyUsageModel, { REPL, parsedOptions }: Arguments) {
-  if (parsedOptions.h || parsedOptions.help) {
-    return renderUsage(usage)
-  }
-
+function doBrowse(this: string, { REPL }: Arguments) {
   return REPL.qexec(`ls ${encodeComponent(this)}`)
 }
 
 export default async function(registrar: Registrar) {
-  registrar.listen('/browse', renderUsage.bind(undefined, Usage.browse))
-  registrar.listen('/browse/s3', doBrowse.bind('/s3', Usage.s3), opts)
-  registrar.listen('/browse/cc', doBrowse.bind('/s3/aws/commoncrawl', Usage.cc('cc')), opts)
-  registrar.listen('/browse/commoncrawl', doBrowse.bind('/s3/aws/commoncrawl', Usage.cc('commoncrawl')), opts)
+  registrar.listen('/browse/s3', doBrowse.bind('/s3'), opts)
+  registrar.listen('/browse/cc', doBrowse.bind('/s3/aws/commoncrawl'), opts)
+  registrar.listen('/browse/commoncrawl', doBrowse.bind('/s3/aws/commoncrawl'), opts)
 }
