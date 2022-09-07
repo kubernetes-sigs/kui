@@ -32,6 +32,9 @@ export default {
   // kui manufactured; see formatTable.ts withNotFounds()
   Offline: TrafficLight.Red,
 
+  // volumes
+  Bound: TrafficLight.Green,
+
   // pod lifecycle
   'Init:0/1': TrafficLight.Yellow,
   PodScheduled: TrafficLight.Yellow,
