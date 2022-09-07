@@ -29,7 +29,7 @@
     "@patternfly/react-table": "4.104.7",
     "anser": "2.1.1",
     "html-entities": "2.3.3",
-    "madwizard": ">=0.21.7",
+    "madwizard": ">=0.22.0",
     "monaco-editor": "0.34.0",
     "monaco-editor-webpack-plugin": "7.0.1",
     "react-markdown": "8.0.3",
