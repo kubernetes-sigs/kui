@@ -16,37 +16,28 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`CommandFS: directory listing of commands ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+describe(`CommandFS: directory listing of commands ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   const initialPWD = process.cwd()
 
   it('should ls / and see /rmdir', () =>
-    CLI.command('ls -l /', this.app)
-      .then(ReplExpect.okWith('rmdir'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l /', this.app).then(ReplExpect.okWith('rmdir')).catch(Common.oops(this, true)))
 
   it('should ls /rmdir and see /rmdir', () =>
-    CLI.command('ls -l /rmdir', this.app)
-      .then(ReplExpect.okWith('rmdir'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l /rmdir', this.app).then(ReplExpect.okWith('rmdir')).catch(Common.oops(this, true)))
 
   it('should cd to /', () =>
-    CLI.command(`cd /`, this.app)
-      .then(ReplExpect.okWithString('/'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd /`, this.app).then(ReplExpect.okWithString('/')).catch(Common.oops(this, true)))
 
   it('should ls and see rmdir', () =>
-    CLI.command('ls -l', this.app)
-      .then(ReplExpect.okWith('rmdir'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l', this.app).then(ReplExpect.okWith('rmdir')).catch(Common.oops(this, true)))
 
   it('should ls rmdir and see rmdir', () =>
-    CLI.command('ls -l rmdir', this.app)
-      .then(ReplExpect.okWith('rmdir'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l rmdir', this.app).then(ReplExpect.okWith('rmdir')).catch(Common.oops(this, true)))
 
   it('should cd back to the initial working directory', () =>
     CLI.command(`cd "${initialPWD}"`, this.app)

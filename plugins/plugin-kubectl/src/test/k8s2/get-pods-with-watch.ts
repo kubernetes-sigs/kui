@@ -37,7 +37,7 @@ enum Status {
 }
 
 /** after a CLI.do (res), wait for a table row with the given status */
-const waitForStatus = async function(this: Common.ISuite, status: Status, res) {
+const waitForStatus = async function (this: Common.ISuite, status: Status, res) {
   const selector = await ReplExpect.okWithCustom<string>({
     selector: Selectors.BY_NAME(podName)
   })(res)
@@ -50,7 +50,7 @@ const waitForStatus = async function(this: Common.ISuite, status: Status, res) {
 }
 
 /** create, then delete; the create table status had better not change */
-const createAndDeletePod = function(this: Common.ISuite, kubectl: string, ns: string) {
+const createAndDeletePod = function (this: Common.ISuite, kubectl: string, ns: string) {
   it(`should create then delete sample pod from URL via ${kubectl}`, async () => {
     try {
       const waitForOnline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
@@ -82,7 +82,7 @@ const createAndDeletePod = function(this: Common.ISuite, kubectl: string, ns: st
 }
 
 /** k get pods -w */
-const watchPods = function(this: Common.ISuite, kubectl: string, ns: string) {
+const watchPods = function (this: Common.ISuite, kubectl: string, ns: string) {
   it(`should watch pods via ${kubectl} get pods -w`, async () => {
     try {
       const waitForOnline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(this, Status.Online)
@@ -119,7 +119,7 @@ const watchPods = function(this: Common.ISuite, kubectl: string, ns: string) {
   })
 }
 
-const checkWatchableJobs = function(
+const checkWatchableJobs = function (
   this: Common.ISuite,
   kubectl: string,
   ns: string,
@@ -152,7 +152,7 @@ const checkWatchableJobs = function(
 
 const synonyms = ['k']
 
-xdescribe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+xdescribe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

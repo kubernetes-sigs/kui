@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as Common from './common'
 import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
@@ -40,8 +41,9 @@ export class TestNavResponse {
 
   public run() {
     const { command, showing, modes, commandLinks, hrefLinks, breadcrumbs } = this.param
-    describe(`test NavResponse ${this.param.title || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`test NavResponse ${this.param.title || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -148,7 +150,8 @@ export const testAbout = (self: Common.ISuite) => {
               .querySelector('img')
               .getAttribute('src')
             const fs = require('fs')
-            return fs.statSync(`${__dirname}/${imageSrc}`)
+            const { join } = require('path')
+            return fs.statSync(join(__dirname, imageSrc))
           }, Selectors.SIDECAR(res.count))
         }
 

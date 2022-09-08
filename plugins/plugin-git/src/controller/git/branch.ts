@@ -110,7 +110,7 @@ function gitBranch(args: Arguments<GitBranchOptions>) {
   }
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen('/git/branch', gitBranch, {
     flags: {
       boolean: [

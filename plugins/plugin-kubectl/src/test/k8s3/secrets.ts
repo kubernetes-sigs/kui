@@ -27,7 +27,7 @@ const kubectl = 'kubectl'
 const name = 'foo-secret'
 const pipeSecret = 'pipe-secret'
 
-describe('kubectl secrets', function(this: Common.ISuite) {
+describe('kubectl secrets', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

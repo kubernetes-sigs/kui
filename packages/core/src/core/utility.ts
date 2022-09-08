@@ -53,13 +53,10 @@ export const optionsToString = (options: ParsedOptions) => {
  *
  */
 export const hasUnknownOptions = (options: ParsedOptions, expected: string[]) => {
-  const M = expected.reduce(
-    (M, key) => {
-      M[key] = true
-      return M
-    },
-    {} as Record<string, boolean>
-  )
+  const M = expected.reduce((M, key) => {
+    M[key] = true
+    return M
+  }, {} as Record<string, boolean>)
   for (const opt in options) {
     // underscore comes from minimist
     if (opt !== '_' && !M[opt]) {

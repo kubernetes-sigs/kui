@@ -56,6 +56,7 @@ export interface ObjectStream<T extends object> {
   on(evt: 'done', cb: () => void)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function openStream<T extends object>(
   args: ContextArgs,
   url: string,
@@ -228,10 +229,7 @@ async function fetchRemote(args: ContextArgs, url: string, opts?: FetchOptions<B
   }
 
   // fetch with three retries
-  return fetchOnce()
-    .catch(retry(500))
-    .catch(retry(1000))
-    .catch(retry(5000))
+  return fetchOnce().catch(retry(500)).catch(retry(1000)).catch(retry(5000))
 }
 
 export type ReturnedError = {
@@ -363,6 +361,7 @@ export async function fetchFilesVFS(
 
   const raw = await fetchFileString(args, paths.size === 0 ? filepaths.join(',') : Array.from(paths).join(','))
 
+  // eslint-disable-next-line array-callback-return
   return raw.map((data, idx) => {
     if (data) {
       return { filepath: paths.size === 0 ? filepaths[idx] : Array.from(paths)[idx], data }

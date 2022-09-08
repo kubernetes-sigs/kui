@@ -41,7 +41,7 @@ function unset(key: string) {
   store(map)
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen('/kuiconfig/set', args => {
     // Note how `kuiconfig set foo` defaults to setting the key "foo"
     // to value "true"

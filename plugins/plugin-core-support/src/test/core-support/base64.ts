@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('base64 command', function(this: Common.ISuite) {
+describe('base64 command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

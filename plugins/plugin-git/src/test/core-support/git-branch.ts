@@ -81,7 +81,7 @@ function makeBranch(branchName: string, tmpdir: string) {
 }
 
 const suiteName = `git branch as DropDown ${process.env.MOCHA_RUN_TARGET || ''}`
-describe(suiteName, function(this: Common.ISuite) {
+describe(suiteName, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -94,9 +94,7 @@ describe(suiteName, function(this: Common.ISuite) {
   // list branches and expect the given `branch` name to appear in the table
   const listAndExpect = (branch: string) => {
     pit(`should list branch ${branch} as a RadioTable`, () =>
-      CLI.command('git branch', this.app)
-        .then(ReplExpect.okWithDropDownList(branch))
-        .catch(Common.oops(this, true))
+      CLI.command('git branch', this.app).then(ReplExpect.okWithDropDownList(branch)).catch(Common.oops(this, true))
     )
   }
 

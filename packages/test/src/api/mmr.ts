@@ -33,6 +33,40 @@ interface TestParam {
   }
 }
 
+interface Label {
+  mode: string
+  label?: string
+}
+
+interface PlainTextContent {
+  content?: string
+  contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
+  editor?: false
+}
+
+interface ReactContent {
+  selector: string
+  innerText: string
+  contentType: 'react'
+}
+
+interface TableContent {
+  nRows: number
+  nCells: number
+  contentType: 'table'
+}
+
+interface YamlContentWithEditor {
+  content: object
+  contentType: 'yaml'
+  editor: true
+}
+
+interface ClickExpect {
+  command: string
+  expect?: string
+}
+
 export type MMRExpectMode = Label & (PlainTextContent | YamlContentWithEditor | TableContent | ReactContent)
 
 export class TestMMR {
@@ -48,7 +82,7 @@ export class TestMMR {
   private testClickResult = (cmdIdx: number, command: string, expect: string) => async (app: Application) => {
     await CLI.expectPriorInput(Selectors.PROMPT_N(cmdIdx), command)(app)
     if (typeof expect === 'string') {
-      await ReplExpect.okWithString(expect, true)({ app: app, count: cmdIdx })
+      await ReplExpect.okWithString(expect, true)({ app, count: cmdIdx })
     }
   }
 
@@ -67,8 +101,9 @@ export class TestMMR {
     const { command, testName, metadata } = this.param
     const testClickResult = this.testClickResult
 
-    describe(`mmr name ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr name ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -127,8 +162,9 @@ export class TestMMR {
     const { command, testName, metadata } = this.param
     const testClickResult = this.testClickResult
 
-    describe(`mmr namespace ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr namespace ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -167,8 +203,9 @@ export class TestMMR {
    */
   public kind(kind: string) {
     const { command, testName } = this.param
-    describe(`mmr kind ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr kind ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -190,7 +227,7 @@ export class TestMMR {
   public badges(badges: BadgeSpec[]) {
     const { command, testName } = this.param
 
-    describe(`mmr badges ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`mmr badges ${testName || ''} ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -213,8 +250,9 @@ export class TestMMR {
   public modes(expectModes: MMRExpectMode[], defaultMode: MMRExpectMode) {
     const { command, testName } = this.param
 
-    describe(`mmr modes ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr modes ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -376,7 +414,7 @@ export class TestMMR {
   public diffPlainText(mode: string, textB: string) {
     const { command, testName } = this.param
 
-    describe(`diff ${testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`diff ${testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -401,7 +439,7 @@ export class TestMMR {
     buttons: {
       mode: string
       label?: string
-      command: string | Function
+      command: string | (() => string)
       kind: 'drilldown' | 'view'
       confirm?: boolean
       expectError?: 127
@@ -409,8 +447,9 @@ export class TestMMR {
   ) {
     const { command, testName } = this.param
 
-    describe(`mmr toolbar buttons ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr toolbar buttons ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -495,8 +534,9 @@ export class TestMMR {
   public toolbarText(toolbarText: { type: string; text: string; exact?: boolean }) {
     const { command, testName } = this.param
 
-    describe(`mmr toolbar text ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr toolbar text ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -511,8 +551,9 @@ export class TestMMR {
 
   public toolbarNotExist() {
     const { command, testName } = this.param
-    describe(`mmr toolbar ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`mmr toolbar ${testName || command || ''} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -528,38 +569,4 @@ export class TestMMR {
           .catch(Common.oops(this, true)))
     })
   }
-}
-
-interface Label {
-  mode: string
-  label?: string
-}
-
-interface PlainTextContent {
-  content?: string
-  contentType: 'text/plain' | 'text/markdown' | 'text/html' | 'yaml'
-  editor?: false
-}
-
-interface ReactContent {
-  selector: string
-  innerText: string
-  contentType: 'react'
-}
-
-interface TableContent {
-  nRows: number
-  nCells: number
-  contentType: 'table'
-}
-
-interface YamlContentWithEditor {
-  content: object
-  contentType: 'yaml'
-  editor: true
-}
-
-interface ClickExpect {
-  command: string
-  expect?: string
 }

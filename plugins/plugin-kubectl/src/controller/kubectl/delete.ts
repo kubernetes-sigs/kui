@@ -38,30 +38,32 @@ function prepareArgsForDelete(args: Arguments<KubeOptions>) {
   }
 }
 
-export const doDelete = (command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
-  if (isUsage(args)) {
-    return doHelp(command, args, prepareArgsForDelete)
-  } else {
-    if (reallyNeedsPty(args)) {
-      return doExecWithPty(args, prepareArgsForDelete)
+export const doDelete =
+  (command = 'kubectl') =>
+  async (args: Arguments<KubeOptions>) => {
+    if (isUsage(args)) {
+      return doHelp(command, args, prepareArgsForDelete)
     } else {
-      try {
-        const directResponse = await deleteDirect(args)
-        if (directResponse) {
-          return directResponse
-        }
-      } catch (err) {
-        if (err.code === 404) {
-          throw err
-        } else {
-          console.error('Error in direct delete. Falling back to CLI delete.', err.code, err)
+      if (reallyNeedsPty(args)) {
+        return doExecWithPty(args, prepareArgsForDelete)
+      } else {
+        try {
+          const directResponse = await deleteDirect(args)
+          if (directResponse) {
+            return directResponse
+          }
+        } catch (err) {
+          if (err.code === 404) {
+            throw err
+          } else {
+            console.error('Error in direct delete. Falling back to CLI delete.', err.code, err)
+          }
         }
       }
-    }
 
-    return doExecWithStatus('delete', FinalState.OfflineLike, command, prepareArgsForDelete)(args)
+      return doExecWithStatus('delete', FinalState.OfflineLike, command, prepareArgsForDelete)(args)
+    }
   }
-}
 
 export default (registrar: Registrar) => {
   registrar.listen('/kubectl/delete', doDelete(), defaultFlags)

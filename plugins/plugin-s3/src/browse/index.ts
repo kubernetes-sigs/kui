@@ -22,7 +22,7 @@ function doBrowse(this: string, { REPL }: Arguments) {
   return REPL.qexec(`ls ${encodeComponent(this)}`)
 }
 
-export default async function(registrar: Registrar) {
+export default async function (registrar: Registrar) {
   registrar.listen('/browse/s3', doBrowse.bind('/s3'), opts)
   registrar.listen('/browse/cc', doBrowse.bind('/s3/aws/commoncrawl'), opts)
   registrar.listen('/browse/commoncrawl', doBrowse.bind('/s3/aws/commoncrawl'), opts)

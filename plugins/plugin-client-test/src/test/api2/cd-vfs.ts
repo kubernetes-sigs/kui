@@ -24,57 +24,37 @@ import { Common, CLI, ReplExpect } from '@kui-shell/test'
  * that Kui correctly combines local and mount VFS.
  *
  */
-describe('cd root VFS', function(this: Common.ISuite) {
+describe('cd root VFS', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should cd into /tmpo', () =>
-    CLI.command(`cd /tmpo`, this.app)
-      .then(ReplExpect.okWithString('/tmpo'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd /tmpo`, this.app).then(ReplExpect.okWithString('/tmpo')).catch(Common.oops(this, true)))
 
   it('should ls in /tmpo', () =>
-    CLI.command(`ls /tmpo`, this.app)
-      .then(ReplExpect.okWithString('D1/'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`ls /tmpo`, this.app).then(ReplExpect.okWithString('D1/')).catch(Common.oops(this, true)))
 
   it('should cd into D1/', () =>
-    CLI.command(`cd D1`, this.app)
-      .then(ReplExpect.okWithString('/tmpo/D1'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd D1`, this.app).then(ReplExpect.okWithString('/tmpo/D1')).catch(Common.oops(this, true)))
 
   it('should cd .. back to /tmpo', () =>
-    CLI.command(`cd ..`, this.app)
-      .then(ReplExpect.okWithString('/tmpo'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd ..`, this.app).then(ReplExpect.okWithString('/tmpo')).catch(Common.oops(this, true)))
 
   it('should pwd in /tmpo', () =>
-    CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString('/tmpo'))
-      .catch(Common.oops(this, true)))
+    CLI.command('pwd', this.app).then(ReplExpect.okWithString('/tmpo')).catch(Common.oops(this, true)))
 
   it('should cd .. back to /', () =>
-    CLI.command(`cd ..`, this.app)
-      .then(ReplExpect.okWithString('/'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd ..`, this.app).then(ReplExpect.okWithString('/')).catch(Common.oops(this, true)))
 
   it('should pwd in /', () =>
-    CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString('/'))
-      .catch(Common.oops(this, true)))
+    CLI.command('pwd', this.app).then(ReplExpect.okWithString('/')).catch(Common.oops(this, true)))
 
   it('should cd into /tmpo/D2', () =>
-    CLI.command(`cd /tmpo/D2`, this.app)
-      .then(ReplExpect.okWithString('/tmpo/D2'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd /tmpo/D2`, this.app).then(ReplExpect.okWithString('/tmpo/D2')).catch(Common.oops(this, true)))
 
   it('should cd ../.. back to /', () =>
-    CLI.command(`cd ..`, this.app)
-      .then(ReplExpect.okWithString('/'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd ..`, this.app).then(ReplExpect.okWithString('/')).catch(Common.oops(this, true)))
 
   it('should cd - back into /tmpo/D2', () =>
-    CLI.command(`cd -`, this.app)
-      .then(ReplExpect.okWithString('/tmpo/D2'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd -`, this.app).then(ReplExpect.okWithString('/tmpo/D2')).catch(Common.oops(this, true)))
 })

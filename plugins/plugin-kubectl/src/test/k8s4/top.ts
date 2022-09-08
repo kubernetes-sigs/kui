@@ -26,7 +26,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -50,16 +50,12 @@ describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
     const top1 = `${kubectl} top pod ${inNamespace}`
     xit(`should show that pod in a list via ${top1}`, () => {
-      return CLI.command(top1, this.app)
-        .then(ReplExpect.okWith('nginx'))
-        .catch(Common.oops(this, true))
+      return CLI.command(top1, this.app).then(ReplExpect.okWith('nginx')).catch(Common.oops(this, true))
     })
 
     const top2 = `${kubectl} top ${inNamespace} pod`
     xit(`should show that pod in a list via ${top2}`, () => {
-      return CLI.command(top1, this.app)
-        .then(ReplExpect.okWith('nginx'))
-        .catch(Common.oops(this, true))
+      return CLI.command(top1, this.app).then(ReplExpect.okWith('nginx')).catch(Common.oops(this, true))
     })
 
     xit(`should click on top row and show pod in sidecar using ${top1}`, async () => {

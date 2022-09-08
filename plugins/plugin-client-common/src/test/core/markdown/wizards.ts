@@ -154,8 +154,9 @@ const IN6: Input = {
       return
     }
 
-    describe(`wizards in markdown command="${command}" input="${basename(markdown.input)}" ${process.env
-      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`wizards in markdown command="${command}" input="${basename(markdown.input)}" ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
@@ -273,8 +274,9 @@ const IN6: Input = {
       })
     })
 
-    describe(`sequential execution of code blocks in wizards in markdown ${basename(markdown.input)} ${process.env
-      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`sequential execution of code blocks in wizards in markdown ${basename(markdown.input)} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

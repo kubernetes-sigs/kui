@@ -27,16 +27,13 @@ function expectTip(ctx: Common.ISuite, title: string, expanded: boolean) {
 }
 
 const nSpaces = 5
-const indent = (N = nSpaces) =>
-  Array(N)
-    .fill(' ')
-    .join('')
+const indent = (N = nSpaces) => Array(N).fill(' ').join('')
 
 function tip(title: string, expanded: boolean, content = 'content') {
   return `???${expanded ? '+' : ''} tip "${title}"\n\n${indent()}${content}`
 }
 
-describe('commentary using remark-tip', function(this: Common.ISuite) {
+describe('commentary using remark-tip', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

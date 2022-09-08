@@ -25,7 +25,7 @@ const rows = (N: number) => Selectors.xtermRows(N)
 const firstRow = (N: number) => `${rows(N)} > div:first-child`
 const lastRow = (N: number) => `${rows(N)} > div:last-child`
 
-describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

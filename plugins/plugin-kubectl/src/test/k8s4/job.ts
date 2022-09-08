@@ -25,7 +25,7 @@ const jobName = 'pi'
 const synonyms = ['kubectl']
 
 synonyms.forEach(kubectl => {
-  describe(`${kubectl} jobs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${kubectl} jobs ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

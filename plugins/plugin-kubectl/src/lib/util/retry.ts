@@ -19,33 +19,37 @@ const debug = Debug('k8s/util/retry')
 
 import { CodedError } from '@kui-shell/core'
 
-export const withRetryOnCode = (code: number) => <T>(fn: () => Promise<T>, cmd: string): Promise<T> =>
-  new Promise((resolve, reject) => {
-    const iter = async () => {
-      try {
-        resolve(await fn())
-      } catch (err) {
-        if (err.code === code) {
-          debug('retrying', cmd)
-          setTimeout(iter, 5000)
-        } else {
-          debug('rejecting', err.code, err)
-          reject(err)
+export const withRetryOnCode =
+  (code: number) =>
+  <T>(fn: () => Promise<T>, cmd: string): Promise<T> =>
+    new Promise((resolve, reject) => {
+      const iter = async () => {
+        try {
+          resolve(await fn())
+        } catch (err) {
+          if (err.code === code) {
+            debug('retrying', cmd)
+            setTimeout(iter, 5000)
+          } else {
+            debug('rejecting', err.code, err)
+            reject(err)
+          }
         }
       }
-    }
 
-    iter()
-  })
+      iter()
+    })
 
-export const withOkOnCode = (code: number) => <T>(fn: () => Promise<T>, cmd: string): Promise<void | T> =>
-  fn().catch((err: CodedError) => {
-    if (err.code === code) {
-      debug('404 ok', cmd)
-    } else {
-      throw err
-    }
-  })
+export const withOkOnCode =
+  (code: number) =>
+  <T>(fn: () => Promise<T>, cmd: string): Promise<void | T> =>
+    fn().catch((err: CodedError) => {
+      if (err.code === code) {
+        debug('404 ok', cmd)
+      } else {
+        throw err
+      }
+    })
 
 export const withOkOn404 = withOkOnCode(404)
 export const withRetryOn404 = withRetryOnCode(404)

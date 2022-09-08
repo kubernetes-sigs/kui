@@ -15,7 +15,7 @@
  */
 import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
-Common.localDescribe('input queueing', function(this: Common.ISuite) {
+Common.localDescribe('input queueing', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -102,8 +102,9 @@ async function verifySplit(this: Common.ISuite, { position, content, contentBloc
 
 ;[IN4, IN3, IN1, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
-    describe(`open splits from markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
-      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`open splits from markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

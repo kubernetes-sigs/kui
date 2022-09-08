@@ -18,7 +18,7 @@ import { Common, CLI, Selectors, Util } from '@kui-shell/test'
 
 const TIMEOUT = 1000
 
-Common.localDescribe('notebooks read only mode', function(this: Common.ISuite) {
+Common.localDescribe('notebooks read only mode', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)

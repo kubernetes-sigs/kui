@@ -42,7 +42,7 @@ const servers = []
 export type ExitHandler = (exitCode: number) => void
 
 /** to avoid dynamic import of @kui-shell/core, due to electron-packager limitations */
-const expandHomeDir = function(path: string): string {
+const expandHomeDir = function (path: string): string {
   const homedir = home()
 
   if (!path) {
@@ -77,7 +77,7 @@ const verifySession = (expectedCookie: SessionCookie) => {
       try {
         const actualSession: Session = JSON.parse(Buffer.from(sessionToken, 'base64').toString('utf-8'))
         if (actualSession.token === expectedCookie.session.token) {
-          cb(true) // eslint-disable-line standard/no-callback-literal
+          cb(true) // eslint-disable-line n/no-callback-literal
           return
         } else {
           console.error('token found, but mismatched values', expectedCookie, actualSession)
@@ -89,7 +89,7 @@ const verifySession = (expectedCookie: SessionCookie) => {
 
     // intentional fall-through for invalid session
     console.error('invalid session for websocket upgrade', expectedCookie, cookies[expectedCookie.key], cookies)
-    cb(false, 401, 'Invalid authorization for websocket upgrade') // eslint-disable-line standard/no-callback-literal
+    cb(false, 401, 'Invalid authorization for websocket upgrade') // eslint-disable-line n/no-callback-literal
   }
 }
 
@@ -108,7 +108,7 @@ const getPort = (): Promise<number> =>
 
       const server = createServer()
       server.listen(port, () => {
-        server.once('close', function() {
+        server.once('close', function () {
           resolve(port)
         })
         server.close()
@@ -146,7 +146,7 @@ const enableBashSessions = async () => {
 export const disableBashSessions = async (): Promise<ExitHandler> => {
   if (process.platform === 'darwin') {
     if (cacheHasBashSessionsDisable === undefined) {
-      // eslint-disable-next-line node/no-deprecated-api
+      // eslint-disable-next-line n/no-deprecated-api
       cacheHasBashSessionsDisable = await promisify(fs.exists)(BSD())
     }
 

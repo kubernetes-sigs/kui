@@ -22,7 +22,7 @@ import * as assert from 'assert'
 const commonModes = ['Introduction', 'Options']
 const kubectlApiResourcesModes = commonModes.concat(['api-resources'])
 
-describe('kubectl api-resources', function(this: Common.ISuite) {
+describe('kubectl api-resources', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -20,7 +20,7 @@ import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json'))
 
-/* Common.dockerD */ xdescribe('xterm auto-table', function(this: Common.ISuite) {
+/* Common.dockerD */ xdescribe('xterm auto-table', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -38,12 +38,8 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-bash-like/package.json')
     CLI.command(`docker rmi ${alpine}`, this.app).catch(Common.oops(this)))
 
   it(`should pull alpine docker image ${alpine}`, () =>
-    CLI.command(`docker pull ${alpine}`, this.app)
-      .then(ReplExpect.okWithAny)
-      .catch(Common.oops(this)))
+    CLI.command(`docker pull ${alpine}`, this.app).then(ReplExpect.okWithAny).catch(Common.oops(this)))
 
   it('should list alpine image as a kui table', () =>
-    CLI.command(`docker images ${alpine}`, this.app)
-      .then(ReplExpect.okWith('alpine'))
-      .catch(Common.oops(this)))
+    CLI.command(`docker images ${alpine}`, this.app).then(ReplExpect.okWith('alpine')).catch(Common.oops(this)))
 })

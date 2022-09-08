@@ -37,17 +37,19 @@ async function prepareArgsForStatus(this: Promise<KubernetesVersion>, cmd: strin
   return [kind, name]
 }
 
-export const doRun = (command = 'kubectl') => (args: Arguments<KubeOptions>): Promise<KResponse> => {
-  if (isUsage(args)) {
-    return doHelp(command, args)
-  } else {
-    // this is intentionally async; we'll await it in prepareArgsForStatus
-    const serverVersion = getServerVersion(args)
-    const prepare = prepareArgsForStatus.bind(serverVersion)
+export const doRun =
+  (command = 'kubectl') =>
+  (args: Arguments<KubeOptions>): Promise<KResponse> => {
+    if (isUsage(args)) {
+      return doHelp(command, args)
+    } else {
+      // this is intentionally async; we'll await it in prepareArgsForStatus
+      const serverVersion = getServerVersion(args)
+      const prepare = prepareArgsForStatus.bind(serverVersion)
 
-    return doExecWithStatus('run', FinalState.OnlineLike, command, undefined, prepare)(args)
+      return doExecWithStatus('run', FinalState.OnlineLike, command, undefined, prepare)(args)
+    }
   }
-}
 
 export default (registrar: Registrar) => {
   const handler = doRun()

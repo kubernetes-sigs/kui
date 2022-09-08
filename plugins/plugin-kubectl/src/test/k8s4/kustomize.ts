@@ -31,7 +31,7 @@ const commands = ['kubectl']
 const dashKs = ['-k', '--kustomize']
 
 commands.forEach(command => {
-  describe(`${command} apply kustomize ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} apply kustomize ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -56,9 +56,7 @@ commands.forEach(command => {
       const doExpecting = (verb: 'apply' | 'delete', status: 'green' | 'red', expecting: string) => {
         it(`should create deployment from local kustomize directory via ${command} ${verb} ${dashK} expecting ${expecting}`, () => {
           return CLI.command(`${command} ${verb} ${dashK} "${BASE}" ${inNamespace}`, this.app)
-            .then(
-              ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(expecting) })
-            )
+            .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(expecting) }))
             .then(selector => (status === 'green' ? waitForGreen(this.app, selector) : waitForRed(this.app, selector)))
             .catch(Common.oops(this))
         })

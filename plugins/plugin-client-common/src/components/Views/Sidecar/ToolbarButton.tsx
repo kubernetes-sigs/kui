@@ -29,9 +29,9 @@ type Props = LocationProps & {
   }
 }
 
-export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWithMetadata> extends React.PureComponent<
-  Props
-> {
+export default class ToolbarButton<
+  T extends ResourceWithMetadata = ResourceWithMetadata // eslint-disable-line @typescript-eslint/no-unused-vars
+> extends React.PureComponent<Props> {
   private getCommand() {
     const { tab, response, button, args } = this.props
     if (isViewButton(button)) {

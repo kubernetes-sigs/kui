@@ -102,82 +102,88 @@ const sameStruct = (struct1: Record<string, any>, struct2: Record<string, any>, 
   return true
 }
 
-export const expectSubset = (struct1: object, failFast = true) => (str: string) => {
-  try {
-    const ok = sameStruct(struct1, JSON.parse(str), true)
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return true
-  } catch (err) {
-    console.error('Error comparing subset for actual value=' + str)
-    throw err
-  }
-}
-
-/** is the given struct2 the same as the given struct2 (given as a string) */
-export const expectStruct = (struct1: object, noParse = false, failFast = true) => (str: string) => {
-  try {
-    const ok = sameStruct(struct1, noParse ? str : JSON.parse(str))
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return ok
-  } catch (err) {
-    console.error('Error comparing structs for actual value=' + str)
-    throw err
-  }
-}
-
-export const expectYAML = (struct1: object, subset = false, failFast = true) => (str: string) => {
-  try {
-    const struct2 = load(str)
-    const ok = sameStruct(
-      struct1,
-      typeof struct2 === 'object' ? struct2 : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2),
-      subset
-    )
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return ok
-  } catch (err) {
-    if (failFast) {
-      return false
-    } else {
+export const expectSubset =
+  (struct1: object, failFast = true) =>
+  (str: string) => {
+    try {
+      const ok = sameStruct(struct1, JSON.parse(str), true)
+      if (failFast) {
+        assert.ok(ok)
+      }
+      return true
+    } catch (err) {
       console.error('Error comparing subset for actual value=' + str)
       throw err
     }
   }
-}
+
+/** is the given struct2 the same as the given struct2 (given as a string) */
+export const expectStruct =
+  (struct1: object, noParse = false, failFast = true) =>
+  (str: string) => {
+    try {
+      const ok = sameStruct(struct1, noParse ? str : JSON.parse(str))
+      if (failFast) {
+        assert.ok(ok)
+      }
+      return ok
+    } catch (err) {
+      console.error('Error comparing structs for actual value=' + str)
+      throw err
+    }
+  }
+
+export const expectYAML =
+  (struct1: object, subset = false, failFast = true) =>
+  (str: string) => {
+    try {
+      const struct2 = load(str)
+      const ok = sameStruct(
+        struct1,
+        typeof struct2 === 'object' ? struct2 : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2),
+        subset
+      )
+      if (failFast) {
+        assert.ok(ok)
+      }
+      return ok
+    } catch (err) {
+      if (failFast) {
+        return false
+      } else {
+        console.error('Error comparing subset for actual value=' + str)
+        throw err
+      }
+    }
+  }
 
 export const expectYAMLSubset = (struct1: object, failFast = true) => expectYAML(struct1, true, failFast)
 
 /** is the given actual array the same as the given expected array? */
-export const expectArray = (expected: Array<string>, failFast = true, subset = false) => (
-  actual: string | Array<string>
-) => {
-  if (!Array.isArray(actual)) {
-    // webdriver.io's getText will return a singleton if there is only one match
-    actual = [actual]
-  }
+export const expectArray =
+  (expected: Array<string>, failFast = true, subset = false) =>
+  (actual: string | Array<string>) => {
+    if (!Array.isArray(actual)) {
+      // webdriver.io's getText will return a singleton if there is only one match
+      actual = [actual]
+    }
 
-  const matchFn = function(u: string, i: number) {
-    return u === expected[i]
-  }
+    const matchFn = function (u: string, i: number) {
+      return u === expected[i]
+    }
 
-  const ok = !subset ? actual.length === expected.length && actual.every(matchFn) : actual.some(matchFn)
+    const ok = !subset ? actual.length === expected.length && actual.every(matchFn) : actual.some(matchFn)
 
-  if (!ok) {
-    console.error(`array mismatch; expected=${expected} actual=${actual}`)
-  }
+    if (!ok) {
+      console.error(`array mismatch; expected=${expected} actual=${actual}`)
+    }
 
-  if (failFast) {
-    assert.ok(ok)
-  } else {
-    return ok
+    if (failFast) {
+      assert.ok(ok)
+    } else {
+      return ok
+    }
   }
-}
 
 /** Expand the fold on the given line of a monaco editor */
 export async function clickToExpandMonacoFold(res: AppAndCount, lineIdx: number) {
@@ -237,7 +243,7 @@ export const getValueFromMonaco = async (res: AppAndCount, container?: string) =
 
   return res.app.client.execute(selector => {
     try {
-      return ((document.querySelector(selector) as any) as { getValueForTests: () => string }).getValueForTests()
+      return (document.querySelector(selector) as any as { getValueForTests: () => string }).getValueForTests()
     } catch (err) {
       console.error('error in getValueFromMonaco1', err)
       // intentionally returning undefined
@@ -250,31 +256,31 @@ export const waitForXtermInput = (app: Application, N: number) => {
   return app.client.$(selector).then(_ => _.waitForExist())
 }
 
-export const expectText = (app: Application, expectedText: string, exact = true, timeout = CLI.waitTimeout) => async (
-  selector: string
-) => {
-  let idx = 0
-  await app.client.waitUntil(
-    async () => {
-      const actualText = await app.client.$(selector).then(_ => _.getText())
-      if (++idx > 5) {
-        console.error(
-          `still waiting for text; actualText=${actualText} expectedText=${expectedText} selector=${selector}`
-        )
-      }
-      if (exact) {
-        return actualText === expectedText
-      } else {
-        if (actualText.indexOf(expectedText) < 0) {
-          console.error(`Expected string not found: expected=${expectedText} actual=${actualText}`)
+export const expectText =
+  (app: Application, expectedText: string, exact = true, timeout = CLI.waitTimeout) =>
+  async (selector: string) => {
+    let idx = 0
+    await app.client.waitUntil(
+      async () => {
+        const actualText = await app.client.$(selector).then(_ => _.getText())
+        if (++idx > 5) {
+          console.error(
+            `still waiting for text; actualText=${actualText} expectedText=${expectedText} selector=${selector}`
+          )
         }
-        return actualText.indexOf(expectedText) >= 0
-      }
-    },
-    { timeout }
-  )
-  return app
-}
+        if (exact) {
+          return actualText === expectedText
+        } else {
+          if (actualText.indexOf(expectedText) < 0) {
+            console.error(`Expected string not found: expected=${expectedText} actual=${actualText}`)
+          }
+          return actualText.indexOf(expectedText) >= 0
+        }
+      },
+      { timeout }
+    )
+    return app
+  }
 
 /** @return the current number of tabs */
 export async function tabCount(app: Application): Promise<number> {
@@ -458,7 +464,7 @@ export function doCancel(this: Common.ISuite, cmd = '') {
       this.app.client
         .keys(cmd)
         .then(() => this.app.client.keys(keys.ctrlC))
-        .then(() => ({ app: this.app, count: count }))
+        .then(() => ({ app: this.app, count }))
         .then(ReplExpect.blank)
         .then(() => this.app.client.$(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
         .then(_ => _.getText())

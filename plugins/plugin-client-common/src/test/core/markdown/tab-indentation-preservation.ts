@@ -56,8 +56,9 @@ const IN3: Input = {
   blockquotes: [bq1, bq2]
 }
 ;[IN1, IN2, IN3].forEach(markdown => {
-  describe(`tab indentation preservation in markdown text check ${basename(markdown.input)} ${process.env
-    .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`tab indentation preservation in markdown text check ${basename(markdown.input)} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -68,8 +69,9 @@ const IN3: Input = {
   })
 
   markdown.blockquotes.forEach(bq => {
-    describe(`tab indentation preservation in markdown blockquote check ${basename(markdown.input)} ${process.env
-      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`tab indentation preservation in markdown blockquote check ${basename(markdown.input)} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

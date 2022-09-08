@@ -27,12 +27,9 @@ function expectTab(ctx: Common.ISuite, tabName: string) {
 }
 
 const nSpaces = 5
-const indent = (N = nSpaces) =>
-  Array(N)
-    .fill(' ')
-    .join('')
+const indent = (N = nSpaces) => Array(N).fill(' ').join('')
 
-describe('commentary using remark-tabbed', function(this: Common.ISuite) {
+describe('commentary using remark-tabbed', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -15,25 +15,21 @@
  */
 
 import * as assert from 'assert'
-import { dirname } from 'path'
+import { dirname, join } from 'path'
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
-describe('card command', function(this: Common.ISuite) {
+describe('card command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should fail to exec the command without cardBody: card', () =>
-    CLI.command('card', this.app)
-      .then(ReplExpect.error(497))
-      .catch(Common.oops(this)))
+    CLI.command('card', this.app).then(ReplExpect.error(497)).catch(Common.oops(this)))
 
   it('should fail to exec the command with unsupported optional param: card foo --bar=baz', () =>
-    CLI.command('card foo --bar=baz', this.app)
-      .then(ReplExpect.error(499))
-      .catch(Common.oops(this)))
+    CLI.command('card foo --bar=baz', this.app).then(ReplExpect.error(499)).catch(Common.oops(this)))
 
   it('should execute the command and show card with foo bar: card foo --title=bar', () =>
     CLI.command('card foo --title=bar', this.app)
@@ -73,21 +69,15 @@ describe('card command', function(this: Common.ISuite) {
       .then(async () => {
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
           return this.app.client.execute(cardSelector => {
-            const imageSrc = document
-              .querySelector(cardSelector)
-              .querySelector('img')
-              .getAttribute('src')
+            const imageSrc = document.querySelector(cardSelector).querySelector('img').getAttribute('src')
             const fs = require('fs')
-            return fs.statSync(`${__dirname}/${imageSrc}`)
+            return fs.statSync(join(__dirname, imageSrc))
           }, `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
         }
 
         if (process.env.MOCHA_RUN_TARGET === 'webpack') {
           return this.app.client.execute(cardSelector => {
-            const imageSrc = document
-              .querySelector(cardSelector)
-              .querySelector('img')
-              .getAttribute('src')
+            const imageSrc = document.querySelector(cardSelector).querySelector('img').getAttribute('src')
             const image = new Image()
             image.src = `${window.location.origin}/${imageSrc}`
             if (image.height === 0) throw new Error(`image not found: ${window.location.origin}/${imageSrc}`)

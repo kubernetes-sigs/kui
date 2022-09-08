@@ -26,6 +26,7 @@ const debug = Debug('webapp/views/registrar/modes')
 
 export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type ModeDeclaration<Resource extends MetadataBearing> = SidecarMode
 //  | ((command: string, resource: { resource: Resource }) => SidecarMode)
 //  | Button
@@ -52,11 +53,11 @@ export function registerSidecarMode<Resource extends MetadataBearing>(registrati
 }
 export default registerSidecarMode
 
-export const registerModeWhen = <Resource extends MetadataBearing>(when: SidecarModeFilter<Resource>) => (
-  mode: ModeDeclaration<Resource>
-) => {
-  registerSidecarMode({ when, mode })
-}
+export const registerModeWhen =
+  <Resource extends MetadataBearing>(when: SidecarModeFilter<Resource>) =>
+  (mode: ModeDeclaration<Resource>) => {
+    registerSidecarMode({ when, mode })
+  }
 
 /**
  * Apply all registered modes that are relevant to the given resource

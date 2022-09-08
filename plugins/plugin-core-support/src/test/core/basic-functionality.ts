@@ -35,7 +35,7 @@ const selectors = {
 }
 selectors.PROMPT = `${selectors.PROMPT_BLOCK} input`
 
-Common.localDescribe('Basic Functionality', function(this: Common.ISuite) {
+Common.localDescribe('Basic Functionality', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -72,7 +72,7 @@ Common.localDescribe('Basic Functionality', function(this: Common.ISuite) {
   }) */
 })
 
-describe('bodyCss', function(this: Common.ISuite) {
+describe('bodyCss', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

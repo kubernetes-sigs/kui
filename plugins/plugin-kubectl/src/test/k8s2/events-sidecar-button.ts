@@ -32,7 +32,7 @@ const file = remotePodYaml
 const name = 'nginx'
 
 commands.forEach(command => {
-  describe(`kubectl Events Sidecar button ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`kubectl Events Sidecar button ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

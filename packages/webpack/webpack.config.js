@@ -38,7 +38,6 @@ const { IgnorePlugin, ProvidePlugin } = require('webpack')
 const terserOptions = process.env.KEEP_CLASSNAMES
   ? {
       terserOptions: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         keep_classnames: true
       }
     }
@@ -96,8 +95,9 @@ const defaultConnectCSP = `http://localhost:8081 http://localhost:9953 ws://loca
 
 const contentSecurityPolicyForDevServer =
   process.env.WEBPACK_DEV_SERVER &&
-  `default-src 'none'; frame-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data: http: https:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${process
-    .env.CSP_ALLOWED_HOSTS || defaultConnectCSP}`
+  `default-src 'none'; frame-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' file: 'nonce-kuiDefaultNonce' data: http: https:; script-src 'self' 'nonce-kuiDefaultNonce' 'strict-dynamic' 'unsafe-eval'; font-src 'self' file:; connect-src 'self' ${
+    process.env.CSP_ALLOWED_HOSTS || defaultConnectCSP
+  }`
 if (contentSecurityPolicyForDevServer) {
   console.log('ContentSecurityPolicy: dev-server', contentSecurityPolicyForDevServer)
 } else {
@@ -388,7 +388,7 @@ const fallback = !inBrowser
   ? {}
   : {
       fs: false,
-      child_process: false, // eslint-disable-line @typescript-eslint/camelcase
+      child_process: false,
       'docker-modem': false,
       'fs-extra': false,
       assert: require.resolve('assert'),

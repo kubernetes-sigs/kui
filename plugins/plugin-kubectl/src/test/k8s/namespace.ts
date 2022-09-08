@@ -31,7 +31,7 @@ const ns5 = Math.floor(Math.random() * 100) + (1).toString()
 
 const synonyms = ['kubectl']
 
-describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -61,9 +61,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     const createIt = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create namespace ${name}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -197,9 +195,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })

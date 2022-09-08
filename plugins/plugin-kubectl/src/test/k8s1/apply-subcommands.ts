@@ -36,7 +36,7 @@ const sourceFile = remotePodYaml
 
 commands.forEach(command => {
   // FIXME: Mengting: apply in place can't give us the success toolbar message
-  xdescribe(`${command} apply subcommands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  xdescribe(`${command} apply subcommands ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -72,8 +72,9 @@ commands.forEach(command => {
             const labelsLineIdx = actualText.split(/\n/).indexOf('  labels:')
 
             // +2 here because nth-child is indexed from 1, and we want the line after that
-            const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
-              2}) .mtk5:last-child`
+            const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${
+              labelsLineIdx + 2
+            }) .mtk5:last-child`
             await this.app.client.$(lineSelector).then(_ => _.click())
 
             await new Promise(resolve => setTimeout(resolve, 2000))

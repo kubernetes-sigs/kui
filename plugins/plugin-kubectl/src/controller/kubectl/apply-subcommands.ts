@@ -44,42 +44,47 @@ import {
 const strings = i18n('plugin-kubectl')
 
 /** View Transformer for view-last-applied and edit-last-applied */
-export const viewLastApplied = (subcommand: 'view-last-applied' | 'edit-last-applied') => async (
-  args: Arguments<KubeOptions>,
-  response: KubeResource
-) => {
-  if (isKubeResource(response)) {
-    if (hasLastApplied(response)) {
-      const baseView = await getTransformer(args, response)
+export const viewLastApplied =
+  (subcommand: 'view-last-applied' | 'edit-last-applied') =>
+  async (args: Arguments<KubeOptions>, response: KubeResource) => {
+    if (isKubeResource(response)) {
+      if (hasLastApplied(response)) {
+        const baseView = await getTransformer(args, response)
 
-      if (subcommand === 'view-last-applied') {
-        return Object.assign(baseView, { defaultMode: lastAppliedMode })
-      } else {
-        const { content, contentType } = await renderLastApplied(args.tab, response)
-        const spec = editSpec(getCommandFromArgs(args), response.metadata.namespace, args, response, 'set-last-applied')
+        if (subcommand === 'view-last-applied') {
+          return Object.assign(baseView, { defaultMode: lastAppliedMode })
+        } else {
+          const { content, contentType } = await renderLastApplied(args.tab, response)
+          const spec = editSpec(
+            getCommandFromArgs(args),
+            response.metadata.namespace,
+            args,
+            response,
+            'set-last-applied'
+          )
 
-        const editMode = {
-          mode: lastAppliedMode,
-          label: lastAppliedModeLabel,
-          order: lastAppliedOrder - 1, // overwrite the pre-registered last-applied mode
-          content,
-          contentType,
-          spec
+          const editMode = {
+            mode: lastAppliedMode,
+            label: lastAppliedModeLabel,
+            order: lastAppliedOrder - 1, // overwrite the pre-registered last-applied mode
+            content,
+            contentType,
+            spec
+          }
+
+          return Object.assign(baseView, {
+            modes: [editMode],
+            defaultMode: lastAppliedMode,
+            toolbarText: formatToolbarText(args, response)
+          })
         }
-
-        return Object.assign(baseView, {
-          modes: [editMode],
-          defaultMode: lastAppliedMode,
-          toolbarText: formatToolbarText(args, response)
-        })
+      } else {
+        const error: CodedError = new Error(strings('This resource has no last applied configuration'))
+        error.code = 404
+        throw error
       }
-    } else {
-      const error: CodedError = new Error(strings('This resource has no last applied configuration'))
-      error.code = 404
-      throw error
     }
   }
-}
 
 function get(subcommand: string, args: Arguments<KubeOptions>) {
   const command = getCommandFromArgs(args)

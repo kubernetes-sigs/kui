@@ -103,7 +103,7 @@ class TableWatcher implements Abortable, Watcher {
   }
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen<KResponse, Options>(
     '/watch',
     async args => {

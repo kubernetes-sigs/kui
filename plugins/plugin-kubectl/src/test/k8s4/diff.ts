@@ -22,7 +22,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 
 const synonyms = ['kubectl']
 
-describe(`kubectl diff ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl diff ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -32,9 +32,7 @@ describe(`kubectl diff ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
 
     it(`should create sample pod via ${kubectl}`, () => {
       return CLI.command(`${kubectl} create -f ${ROOT}/data/k8s/crashy.yaml -n ${ns}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('kui-crashy') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('kui-crashy') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

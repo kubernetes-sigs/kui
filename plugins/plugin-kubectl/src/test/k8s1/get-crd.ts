@@ -26,7 +26,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  describe(`${command} get crd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} get crd ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -52,36 +52,28 @@ commands.forEach(command => {
 
     it(`should create sample pod from local file via ${command}`, () => {
       return CLI.command(`${command} create -f "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
     })
 
     it(`should create custom resource definition ${crdName} from file via "${command} apply -f"`, async () => {
       return CLI.command(`${command} apply -f ${ROOT}/data/k8s/crd2.yaml ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
     })
 
     it(`should get pod and return table via ${command}`, () => {
       return CLI.command(`${command} get pod ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
     })
 
     it(`should get pod with apiVersion and return table via ${command}`, () => {
       return CLI.command(`${command} get pod.v1 ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
     })

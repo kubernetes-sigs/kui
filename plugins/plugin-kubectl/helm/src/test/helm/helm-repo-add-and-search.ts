@@ -19,7 +19,7 @@ import { Common, CLI, ReplExpect } from '@kui-shell/test'
 const synonyms = ['helm']
 
 // TODO: enable this once proxy can find $HOME on travis
-describe(`helm repo add and search ${process.env.MOCHA_RUN_TARGET}`, function(this: Common.ISuite) {
+describe(`helm repo add and search ${process.env.MOCHA_RUN_TARGET}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -50,9 +50,7 @@ describe(`helm repo add and search ${process.env.MOCHA_RUN_TARGET}`, function(th
 
     const deleteRepo = () => {
       it('should remove a helm repo', () => {
-        return CLI.command(`${helm} repo remove bitnami`, this.app)
-          .then(ReplExpect.okWithAny)
-          .catch(Common.oops(this))
+        return CLI.command(`${helm} repo remove bitnami`, this.app).then(ReplExpect.okWithAny).catch(Common.oops(this))
       })
     }
 

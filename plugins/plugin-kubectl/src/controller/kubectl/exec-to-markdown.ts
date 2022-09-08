@@ -21,7 +21,7 @@ import { doExecWithStdout } from './exec'
 
 const strings = i18n('plugin-kubectl')
 
-export default async function(args: Arguments<KubeOptions>, exec?: string): Promise<NavResponse> {
+export default async function (args: Arguments<KubeOptions>, exec?: string): Promise<NavResponse> {
   const cmd = args.argv[0]
   const raw = await doExecWithStdout(args, undefined, exec)
 

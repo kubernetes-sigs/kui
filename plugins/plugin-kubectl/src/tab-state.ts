@@ -108,6 +108,6 @@ const switchTo = async (currentTabState: TabState, nextTabState: TabState) => {
   }
 }
 
-export default function() {
+export default function () {
   return registerTabState({ name, apiVersion, capture, restore, switchTo })
 }

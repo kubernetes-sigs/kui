@@ -20,7 +20,7 @@
  */
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`Version command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`Version command ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

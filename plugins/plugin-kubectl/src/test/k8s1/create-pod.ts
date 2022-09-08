@@ -35,7 +35,7 @@ if (process.env.NEEDS_OC) {
 const dashFs = ['-f', '--filename']
 
 commands.forEach(command => {
-  describe(`${command} create pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} create pod ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -66,18 +66,14 @@ commands.forEach(command => {
 
       it(`should delete the sample pod from URL via ${command}`, () => {
         return CLI.command(`${command} delete ${dashF} ${remotePodYaml} ${inNamespace}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
           .catch(Common.oops(this))
       })
 
       it(`should create sample pod from local file via ${command}`, () => {
         return CLI.command(`${command} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this))
       })

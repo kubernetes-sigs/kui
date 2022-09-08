@@ -209,31 +209,27 @@ export default class S3Mounts extends React.PureComponent<Props, State> {
       >
         <Tbody>
           {Object.keys(this.state.mountsByProvider).map(provider => {
-            const {
-              erroredMounts,
-              otherwiseNotMounted,
-              successfullyMounted,
-              publicMounts
-            } = this.state.mountsByProvider[provider].reduce(
-              (M, _) => {
-                if (_.error && !/ECONNREFUSED/.test(_.error.message)) {
-                  M.erroredMounts.push(_)
-                } else if (!_.isMounted) {
-                  M.otherwiseNotMounted.push(_)
-                } else if (_.publicOnly) {
-                  M.publicMounts.push(_)
-                } else {
-                  M.successfullyMounted.push(_)
+            const { erroredMounts, otherwiseNotMounted, successfullyMounted, publicMounts } =
+              this.state.mountsByProvider[provider].reduce(
+                (M, _) => {
+                  if (_.error && !/ECONNREFUSED/.test(_.error.message)) {
+                    M.erroredMounts.push(_)
+                  } else if (!_.isMounted) {
+                    M.otherwiseNotMounted.push(_)
+                  } else if (_.publicOnly) {
+                    M.publicMounts.push(_)
+                  } else {
+                    M.successfullyMounted.push(_)
+                  }
+                  return M
+                },
+                {
+                  erroredMounts: [] as Mount[],
+                  otherwiseNotMounted: [] as Mount[],
+                  successfullyMounted: [] as Mount[],
+                  publicMounts: [] as Mount[]
                 }
-                return M
-              },
-              {
-                erroredMounts: [] as Mount[],
-                otherwiseNotMounted: [] as Mount[],
-                successfullyMounted: [] as Mount[],
-                publicMounts: [] as Mount[]
-              }
-            )
+              )
 
             return (
               <React.Fragment key={provider}>

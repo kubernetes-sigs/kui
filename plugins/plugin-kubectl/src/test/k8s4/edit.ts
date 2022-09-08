@@ -30,7 +30,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 const commands = ['kubectl']
 
 commands.forEach(command => {
-  describe(`${command} edit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} edit ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -106,8 +106,9 @@ commands.forEach(command => {
           const labelsLineIdx = actualText.split(/\n/).indexOf('  labels:')
 
           // +1 here because nth-child is indexed from 1
-          const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
-            1}) .mtk22`
+          const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${
+            labelsLineIdx + 1
+          }) .mtk22`
           await this.app.client.$(lineSelector).then(_ => _.click())
 
           // we'll inject some garbage that we expect to fail validation
@@ -173,8 +174,9 @@ commands.forEach(command => {
           }
 
           // +2 here because nth-child is indexed from 1, and we want the line after that
-          const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
-            2}) .mtk5:last-child`
+          const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${
+            labelsLineIdx + 2
+          }) .mtk5:last-child`
           await this.app.client.$(lineSelector).then(_ => _.click())
 
           await new Promise(resolve => setTimeout(resolve, 2000))
@@ -284,8 +286,9 @@ commands.forEach(command => {
           const labelsLineIdx = actualText.split(/\n/).indexOf('Name:')
 
           // +2 here because nth-child is indexed from 1, and we want the line after that
-          const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
-            2}) .mtk5:last-child`
+          const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${
+            labelsLineIdx + 2
+          }) .mtk5:last-child`
           await this.app.client.$(lineSelector).then(_ => _.click())
 
           await new Promise(resolve => setTimeout(resolve, 2000))

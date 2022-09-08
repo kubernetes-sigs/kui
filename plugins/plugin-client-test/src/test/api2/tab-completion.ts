@@ -26,7 +26,7 @@ import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/li
  * that Kui correctly combines local and mount VFS.
  *
  */
-describe('Tab completion root VFS', function(this: Common.ISuite) {
+describe('Tab completion root VFS', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

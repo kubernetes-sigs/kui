@@ -21,7 +21,7 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect } from '@kui-shell/test'
 
-describe('Comments and blank line handling', function(this: Common.ISuite) {
+describe('Comments and blank line handling', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

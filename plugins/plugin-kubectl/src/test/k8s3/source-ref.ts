@@ -50,7 +50,7 @@ async function clickToToggle(this: Common.ISuite, res: ReplExpect.AppAndCount, i
   return !isExpanded
 }
 
-describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -24,9 +24,7 @@ exports.header2 = (folder1, folder2) => `${exports.header(folder1)}
 ${folder2}`
 
 /** helper method, used in the tests below: ask for help */
-exports.doHelp = function(cmd, { code = 500, expect = undefined } = {}) {
+exports.doHelp = function (cmd, { code = 500, expect = undefined } = {}) {
   return xit(`should show help via ${cmd}`, () =>
-    CLI.command(cmd, this.app)
-      .then(ReplExpect.error(code, expect))
-      .catch(Common.oops(this)))
+    CLI.command(cmd, this.app).then(ReplExpect.error(code, expect)).catch(Common.oops(this)))
 }

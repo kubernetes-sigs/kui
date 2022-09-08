@@ -338,7 +338,7 @@ class Resizer {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows + 1, uuid: this.uuid }))
         setTimeout(() => {
-          this.ws.send(JSON.stringify({ type: 'resize', cols, rows: rows, uuid: this.uuid }))
+          this.ws.send(JSON.stringify({ type: 'resize', cols, rows, uuid: this.uuid }))
           this.tab.addClass('xterm-alt-buffer-mode')
         }, 1)
       }
@@ -360,7 +360,7 @@ class Resizer {
  *
  */
 async function initOnMessage(
-  terminal: KuiTerminal,
+  terminal: KuiTerminal, // eslint-disable-line no-use-before-define
   xtermContainer: HTMLElement,
   ourUUID: string,
   resizer: Resizer,
@@ -378,6 +378,7 @@ async function initOnMessage(
   let pendingWrites = 0
   let disposeOnRender: IDisposable
 
+  // eslint-disable-next-line no-use-before-define
   const focus = (terminal: KuiTerminal) => {
     if (!terminal._kuiAlreadyFocused) {
       setTimeout(() => {
@@ -806,7 +807,7 @@ const getOrCreateChannel = async (
     // when the websocket has closed, notify the user
 
     if (Capabilities.inBrowser()) {
-      const onClose = function(evt) {
+      const onClose = function (evt) {
         debug('channel has closed', evt.target, uuid)
         ws.removeEventListener('close', onClose)
         if (!tab.state.closed) {

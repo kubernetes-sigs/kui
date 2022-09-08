@@ -959,12 +959,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         if (isProcessing(inProcess) || isBeingRerun(inProcess)) {
           const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
           try {
-            const blocks = (replace
-              ? [finishedBlock]
-              : curState.blocks
-                  .slice(0, inProcessIdx) // everything before
-                  .concat([finishedBlock]) // mark as finished
-                  .concat(curState.blocks.slice(inProcessIdx + 1))
+            const blocks = (
+              replace
+                ? [finishedBlock]
+                : curState.blocks
+                    .slice(0, inProcessIdx) // everything before
+                    .concat([finishedBlock]) // mark as finished
+                    .concat(curState.blocks.slice(inProcessIdx + 1))
             ) // everything after
               .concat(!isBeingRerun(inProcess) && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
@@ -1194,10 +1195,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           request.spec.options && request.spec.options.index !== undefined ? request.spec.options.index : splits.length
         const newFocusedIdx = insertIdx
 
-        const newSplits = splits
-          .slice(0, insertIdx)
-          .concat(newScrollback)
-          .concat(splits.slice(insertIdx))
+        const newSplits = splits.slice(0, insertIdx).concat(newScrollback).concat(splits.slice(insertIdx))
 
         const opts = {
           isSidecarNowHidden: false,
@@ -1473,7 +1471,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
 
       if (scrollback.maximized && Capabilities.inBrowser() && isAnnouncement(_) && idx === 0) {
-        return
+        return null
       }
 
       /** To find the focused block, we check:

@@ -18,7 +18,7 @@ import { Common, CLI, Selectors, ReplExpect } from '@kui-shell/test'
 
 const tabButtonSelector = '#new-tab-button'
 
-describe('core new tab switch tabs', function(this: Common.ISuite) {
+describe('core new tab switch tabs', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -51,7 +51,7 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 })
 
-describe('core new tab from pty active tab via button click', function(this: Common.ISuite) {
+describe('core new tab from pty active tab via button click', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

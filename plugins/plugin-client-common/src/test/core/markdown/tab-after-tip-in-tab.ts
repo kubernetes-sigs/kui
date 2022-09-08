@@ -35,8 +35,9 @@ const IN2 = {
   textNotToBeFound: IN1.textNotToBeFound
 }
 ;[IN1, IN2].forEach(markdown => {
-  describe(`markdown tab after tip in tab ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`markdown tab after tip in tab ${basename(markdown.input)} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

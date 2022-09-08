@@ -82,8 +82,9 @@ DDD`,
   tips: []
 }
 ;[IN1, IN1viaUrl, IN2, IN3, IN4, IN5].forEach(markdown => {
-  describe(`markdown snippets hash include ${markdown.input} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`markdown snippets hash include ${markdown.input} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

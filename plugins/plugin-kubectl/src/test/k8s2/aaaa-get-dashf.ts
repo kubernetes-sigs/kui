@@ -26,7 +26,7 @@ commands.forEach(command => {
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
 
-  describe(`${command} get dashF ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} get dashF ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -35,27 +35,21 @@ commands.forEach(command => {
     const file = `${ROOT}/data/k8s/headless/pod.yaml`
     it('should get an offline table when getting offline file', () => {
       return CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should create sample pod from local file via ${command}`, () => {
       return CLI.command(`${command} create --filename ${file} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should get sample pod from local file via ${command}`, () => {
       return CLI.command(`${command} get --filename ${file} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -67,9 +61,7 @@ commands.forEach(command => {
           await waitForGreen(this.app, watchSelector)
 
           await CLI.command(`${command} delete -f ${file} ${inNamespace}`, this.app)
-            .then(
-              ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-            )
+            .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
             .then(selector => waitForRed(this.app, selector))
 
           await waitForRed(this.app, watchSelector)
@@ -81,27 +73,21 @@ commands.forEach(command => {
     const firstResource = 'nginx'
     it('should get an offline table when getting offline directory', () => {
       return CLI.command(`${command} get --filename ${dir} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(firstResource) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(firstResource) }))
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should create sample application from local directory via ${command}`, () => {
       return CLI.command(`${command} apply -f ${dir} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(firstResource) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(firstResource) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should get sample application from local directory via ${command}`, () => {
       return CLI.command(`${command} get -f ${dir} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(firstResource) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(firstResource) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -123,9 +109,7 @@ commands.forEach(command => {
 
     it(`should should delete ${duplicatedName} ${duplicatedResource2} via ${command}`, () => {
       return CLI.command(`${command} delete ${duplicatedResource2} ${duplicatedName} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) }))
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -136,9 +120,7 @@ commands.forEach(command => {
 
     it(`should should delete ${duplicatedName} ${duplicatedResource1} via ${command}`, () => {
       return CLI.command(`${command} delete ${duplicatedResource1} ${duplicatedName} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) }))
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })

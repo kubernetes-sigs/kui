@@ -31,8 +31,9 @@ export class TestStringResponse {
   public string() {
     const { command, expect, exact, streaming } = this.param
 
-    describe(`string response for command=${command} ${process.env.MOCHA_RUN_TARGET ||
-      ''}`, function(this: Common.ISuite) {
+    describe(`string response for command=${command} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

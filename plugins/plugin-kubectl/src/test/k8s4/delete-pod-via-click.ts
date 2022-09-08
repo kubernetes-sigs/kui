@@ -26,7 +26,7 @@ import {
 
 const kubectl = 'k'
 
-describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: Common.ISuite) {
+describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -36,9 +36,7 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
 
   it(`should create sample pod from URL via ${kubectl}`, () => {
     return CLI.command(`${kubectl} create -f ${remotePodYaml} ${inNamespace}`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this))
   })
@@ -61,12 +59,12 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
     }
   })
 
-  it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
+  /* it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
     try {
     } catch (err) {
       return Common.oops(this)(err)
     }
-  })
+  }) */
 
   deleteNS(this, ns)
 })
