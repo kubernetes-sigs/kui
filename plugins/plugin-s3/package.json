@@ -30,8 +30,8 @@
   "types": "mdist/index.d.ts",
   "dependencies": {
     "common-path-prefix": "3.0.0",
-    "ini": "2.0.0",
-    "minimatch": "3.0.4",
+    "ini": "3.0.1",
+    "minimatch": "5.1.0",
     "minio": "github:starpit/minio-js#list-buckets-extended"
   },
   "krew": {
