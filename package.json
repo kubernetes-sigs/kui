@@ -4,6 +4,7 @@
   "description": "This is the monorepo for Kui, the hybrid command-line/GUI electron-based Kubernetes tool",
   "main": "dist/headless/kui.min.js",
   "scripts": {
+    "prepare": "cross-env husky install",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "format": "prettier --write '**/*.{scss,css,html,js,json,md,ts,tsx}'",
     "test:electron": "npm run watch:electron && npm run test; EC=$?; npm run kill; exit $EC",
@@ -102,6 +103,7 @@
     "@typescript-eslint/parser": "2.25.0",
     "colors": "1.4.0",
     "concurrently": "7.3.0",
+    "cross-env": "7.0.3",
     "debug": "4.3.4",
     "electron": "20.1.1",
     "eslint": "6.8.0",
@@ -114,8 +116,8 @@
     "eslint-plugin-standard": "4.1.0",
     "expand-home-dir": "0.0.3",
     "fs-extra": "10.1.0",
-    "husky": "3.1.0",
-    "lint-staged": "12.4.1",
+    "husky": "8.0.1",
+    "lint-staged": "13.0.3",
     "mocha": "10.0.0",
     "nan": "github:jkleinsc/nan#remove_accessor_signature",
     "prettier": "1.19.1",
@@ -125,11 +127,6 @@
     "typedoc-plugin-markdown": "3.13.6",
     "typescript": "4.8.2",
     "uuid": "9.0.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "**/*.{scss,css,html,js,json,md,ts,tsx}": [
