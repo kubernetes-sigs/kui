@@ -52,9 +52,7 @@ export default function folders(this: Common.ISuite) {
   const objectPathInSubFolder1 = join(folderName1, subfolderName1, objectName1)
 
   it('should ls /s3/minio', () =>
-    CLI.command('ls -l /s3/minio', this.app)
-      .then(ReplExpect.okWithAny)
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l /s3/minio', this.app).then(ReplExpect.okWithAny).catch(Common.oops(this, true)))
 
   it('should sleep', () => new Promise(resolve => setTimeout(resolve, 2000)))
   mkdir(bucketName1)

@@ -81,7 +81,7 @@ function changeDir(this: Common.ISuite, dir: string, splitIndex: number) {
       .catch(Common.oops(this, true)))
 }
 
-describe(`split terminals spliceIndex variant 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`split terminals spliceIndex variant 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -96,7 +96,7 @@ describe(`split terminals spliceIndex variant 1 ${process.env.MOCHA_RUN_TARGET |
   count(3)
 })
 
-describe(`split terminals spliceIndex variant 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`split terminals spliceIndex variant 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -108,7 +108,7 @@ describe(`split terminals spliceIndex variant 2 ${process.env.MOCHA_RUN_TARGET |
   count(2)
 })
 
-describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -139,7 +139,7 @@ describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, func
   showVersion(1)
 })
 
-describe(`split terminals output ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`split terminals output ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -174,7 +174,7 @@ describe(`split terminals output ${process.env.MOCHA_RUN_TARGET || ''}`, functio
   })
 })
 
-describe(`split terminals general ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`split terminals general ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -260,7 +260,7 @@ describe(`split terminals general ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   } */
 })
 
-describe('split an active split', function(this: Common.ISuite) {
+describe('split an active split', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -281,9 +281,7 @@ describe('split an active split', function(this: Common.ISuite) {
       await ReplExpect.splitCount(3)(this.app)
 
       console.error('C')
-      await expectBlockCount()
-        .inSplit(1)
-        .is(3)
+      await expectBlockCount().inSplit(1).is(3)
       await ReplExpect.splitCount(3)(this.app)
     } catch (err) {
       await Common.oops(this, true)(err)
@@ -291,7 +289,7 @@ describe('split an active split', function(this: Common.ISuite) {
   })
 })
 
-describe('split close and reopen', function(this: Common.ISuite) {
+describe('split close and reopen', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -321,15 +319,11 @@ describe('split close and reopen', function(this: Common.ISuite) {
 
     it('should add a command and have only one more block', async () => {
       try {
-        await expectBlockCount()
-          .inSplit(3)
-          .is(1)
+        await expectBlockCount().inSplit(3).is(1)
 
         await CLI.commandInSplit('# hello', this.app, 3).then(ReplExpect.okWithString('hello'))
 
-        await expectBlockCount()
-          .inSplit(3)
-          .is(2)
+        await expectBlockCount().inSplit(3).is(2)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -343,7 +337,7 @@ describe('split close and reopen', function(this: Common.ISuite) {
   })
 })
 
-describe('click and show in splits', function(this: Common.ISuite) {
+describe('click and show in splits', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()

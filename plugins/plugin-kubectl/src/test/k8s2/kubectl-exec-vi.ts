@@ -31,7 +31,7 @@ function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
-describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -48,9 +48,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   if (!process.env.USE_WATCH_PANE) {
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

@@ -59,7 +59,7 @@ export default (
 
     const _strings = i18n(locale)
 
-    return function(key: string, ...parameters: (string | number)[]): string {
+    return function (key: string, ...parameters: (string | number)[]): string {
       const str: string = _strings[key] || defaultStrings[key] || key
 
       if (!parameters) return str

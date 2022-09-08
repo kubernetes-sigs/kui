@@ -21,12 +21,10 @@ import { Common, CLI, ReplExpect } from '@kui-shell/test'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 const input = join(ROOT, 'data/k8s/empty-status-cell.txt')
 
-Common.localDescribe('k8s table with empty status cell', function(this: Common.ISuite) {
+Common.localDescribe('k8s table with empty status cell', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   xit('should format a table with an empty status cell', () =>
-    CLI.command(`kdebug "${input}"`, this.app)
-      .then(ReplExpect.okWith('reviews-v3-rollout'))
-      .catch(Common.oops(this)))
+    CLI.command(`kdebug "${input}"`, this.app).then(ReplExpect.okWith('reviews-v3-rollout')).catch(Common.oops(this)))
 })

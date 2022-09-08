@@ -66,8 +66,9 @@ ${IN4.text}`,
   icons: IN4.icons.concat(IN4.icons)
 }
 ;[IN1, IN2, IN3, IN4, IN5, IN6].forEach(markdown => {
-  describe(`icons in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`icons in markdown ${basename(markdown.input)} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

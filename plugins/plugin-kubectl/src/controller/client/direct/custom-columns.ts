@@ -82,7 +82,7 @@ export function evaluate(
   custo: CustomColumns
 ): Row {
   const attributes = custo.map(({ key, query }) => {
-    const value = jsonpath.value(resource, (query as any) as string) // bad typing in @types/jsonpath
+    const value = jsonpath.value(resource, query as any as string) // bad typing in @types/jsonpath
 
     return {
       key,

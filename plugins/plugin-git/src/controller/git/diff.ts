@@ -94,6 +94,6 @@ async function gitDiff(args: Arguments): Promise<KResponse> {
   }
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen('/git/diff', gitDiff)
 }

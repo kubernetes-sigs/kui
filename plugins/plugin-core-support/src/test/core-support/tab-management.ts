@@ -18,7 +18,7 @@ import { Common, CLI, ReplExpect, Selectors, Keys, Util } from '@kui-shell/test'
 
 import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
-describe('core new tab switch tabs', function(this: Common.ISuite) {
+describe('core new tab switch tabs', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -52,7 +52,7 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 })
 
-describe('core new tab conditional', function(this: Common.ISuite) {
+describe('core new tab conditional', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -82,9 +82,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   Util.closeAllExceptFirstTab.bind(this)()
 
   it('should set condition', () =>
-    CLI.command('kuiconfig set _for_testing_ 333', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig set _for_testing_ 333', this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
   it('should validate set condition', () =>
     CLI.command('kuiconfig get _for_testing_', this.app)
       .then(ReplExpect.okWithString('333'))
@@ -122,7 +120,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   })
 })
 
-describe('core new tab onClose', function(this: Common.ISuite) {
+describe('core new tab onClose', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -196,7 +194,7 @@ describe('core new tab onClose', function(this: Common.ISuite) {
   })
 })
 
-describe('core new tab with custom title', function(this: Common.ISuite) {
+describe('core new tab with custom title', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -235,7 +233,7 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
   //                                                       ^ unicode!
 })
 
-describe('core new tab with status stripe decoration', function(this: Common.ISuite) {
+describe('core new tab with status stripe decoration', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -290,7 +288,7 @@ describe('core new tab with status stripe decoration', function(this: Common.ISu
   })
 })
 
-Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function(this: Common.ISuite) {
+Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -343,7 +341,7 @@ Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function
 })
 
 // test that new tab does not copy any output over from the cloned tab
-Common.pDescribe('core new tab from pty active tab via click', function(this: Common.ISuite) {
+Common.pDescribe('core new tab from pty active tab via click', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -382,7 +380,7 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
       .catch(Common.oops(this, true)))
 })
 
-describe('core new tab from quiescent tab via command', function(this: Common.ISuite) {
+describe('core new tab from quiescent tab via command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -391,9 +389,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
   const CWD2 = '/tmp'
 
   it(`cd to ${CWD1} in tab1`, () =>
-    CLI.command(`cd ${CWD1}`, this.app)
-      .then(ReplExpect.okWithString(CWD1))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd ${CWD1}`, this.app).then(ReplExpect.okWithString(CWD1)).catch(Common.oops(this, true)))
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
@@ -410,19 +406,13 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} in tab2`, () =>
-    CLI.command(`pwd`, this.app)
-      .then(ReplExpect.okWithPtyOutput(CWD1))
-      .catch(Common.oops(this, true)))
+    CLI.command(`pwd`, this.app).then(ReplExpect.okWithPtyOutput(CWD1)).catch(Common.oops(this, true)))
 
   it(`cd to ${CWD2} in tab2`, () =>
-    CLI.command(`cd ${CWD2}`, this.app)
-      .then(ReplExpect.okWithString(CWD2))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd ${CWD2}`, this.app).then(ReplExpect.okWithString(CWD2)).catch(Common.oops(this, true)))
 
   it(`pwd should show CWD2 ${CWD2} in tab2`, () =>
-    CLI.command(`pwd`, this.app)
-      .then(ReplExpect.okWithPtyOutput(CWD2))
-      .catch(Common.oops(this, true)))
+    CLI.command(`pwd`, this.app).then(ReplExpect.okWithPtyOutput(CWD2)).catch(Common.oops(this, true)))
 
   it('should close tab via "exit" command', () =>
     CLI.command('exit', this.app)
@@ -434,9 +424,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
-    CLI.command(`pwd`, this.app)
-      .then(ReplExpect.okWithPtyOutput(CWD1))
-      .catch(Common.oops(this, true)))
+    CLI.command(`pwd`, this.app).then(ReplExpect.okWithPtyOutput(CWD1)).catch(Common.oops(this, true)))
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
@@ -446,9 +434,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
       .catch(Common.oops(this, true)))
 
   it(`cd to ${CWD2} in tab2`, () =>
-    CLI.command(`cd ${CWD2}`, this.app)
-      .then(ReplExpect.okWithString(CWD2))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd ${CWD2}`, this.app).then(ReplExpect.okWithString(CWD2)).catch(Common.oops(this, true)))
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
@@ -457,9 +443,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
-    CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString(CWD1))
-      .catch(Common.oops(this, true)))
+    CLI.command('pwd', this.app).then(ReplExpect.okWithString(CWD1)).catch(Common.oops(this, true)))
 
   it(`switch back to second tab via command`, () =>
     CLI.command('tab switch 2', this.app)
@@ -468,9 +452,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
-    CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString(CWD2))
-      .catch(Common.oops(this, true)))
+    CLI.command('pwd', this.app).then(ReplExpect.okWithString(CWD2)).catch(Common.oops(this, true)))
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
@@ -479,12 +461,10 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
-    CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithString(CWD1))
-      .catch(Common.oops(this, true)))
+    CLI.command('pwd', this.app).then(ReplExpect.okWithString(CWD1)).catch(Common.oops(this, true)))
 })
 
-describe('core new tab from quiescent tab via button click', function(this: Common.ISuite) {
+describe('core new tab from quiescent tab via button click', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -522,7 +502,7 @@ describe('core new tab from quiescent tab via button click', function(this: Comm
       .catch(Common.oops(this, true)))
 })
 
-describe('core new tab from active tab via button click', function(this: Common.ISuite) {
+describe('core new tab from active tab via button click', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -544,7 +524,7 @@ describe('core new tab from active tab via button click', function(this: Common.
       .catch(Common.oops(this, true)))
 })
 
-describe('core new tab from pty active tab via button click', function(this: Common.ISuite) {
+describe('core new tab from pty active tab via button click', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -568,7 +548,7 @@ describe('core new tab from pty active tab via button click', function(this: Com
       .catch(Common.oops(this, true)))
 })
 
-describe('core new tab from active tab that is emitting output via button click', function(this: Common.ISuite) {
+describe('core new tab from active tab that is emitting output via button click', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()

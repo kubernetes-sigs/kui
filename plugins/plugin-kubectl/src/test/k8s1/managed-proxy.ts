@@ -25,7 +25,7 @@ function getProxyPids(): number[] {
     .map(_ => parseInt(_, 10))
 }
 
-describe(`kubectl managed proxy ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl managed proxy ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -26,7 +26,7 @@ import { dirSync as tmpDirSync } from 'tmp'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
-describe('Tab completion core', function(this: Common.ISuite) {
+describe('Tab completion core', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

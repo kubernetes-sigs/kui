@@ -42,7 +42,7 @@ function sleep(N: number) {
 
 const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl logs dashC follow via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+wdescribe(`kubectl logs dashC follow via table ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -62,9 +62,7 @@ wdescribe(`kubectl logs dashC follow via table ${process.env.MOCHA_RUN_TARGET ||
 
   it(`should wait for the pod to come up`, () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) }))
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })

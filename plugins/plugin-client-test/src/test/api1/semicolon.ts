@@ -16,14 +16,12 @@
 
 import { CLI, Common, ReplExpect } from '@kui-shell/test'
 
-describe(`no semicolon expansion ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`no semicolon expansion ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should correctly detect no semicolon on command line', () =>
-    CLI.command('nosemi test', this.app)
-      .then(ReplExpect.okWithString('no'))
-      .catch(Common.oops(this, true)))
+    CLI.command('nosemi test', this.app).then(ReplExpect.okWithString('no')).catch(Common.oops(this, true)))
 
   it('should correctly detect semicolon on command line', () =>
     CLI.command('nosemi test1;test2', this.app)

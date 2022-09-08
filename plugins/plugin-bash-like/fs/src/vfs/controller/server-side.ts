@@ -49,7 +49,7 @@ export async function fstatImpl(args: Arguments) {
   }
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen('/vfs/_ls', lsImpl, {
     requiresLocal: true,
     flags: {

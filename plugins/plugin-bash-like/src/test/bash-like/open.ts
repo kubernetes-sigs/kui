@@ -21,7 +21,7 @@ import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = (dir: string) => join(ROOT, dir)
 
-describe(`bash-like open ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`bash-like open ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

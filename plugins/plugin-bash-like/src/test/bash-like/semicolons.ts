@@ -16,14 +16,12 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`Command line parsing semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`Command line parsing semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should echo with semicolon in quotes', () =>
-    CLI.command(`echo "hi;" ho`, this.app)
-      .then(ReplExpect.okWithPtyOutput('hi; ho'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`echo "hi;" ho`, this.app).then(ReplExpect.okWithPtyOutput('hi; ho')).catch(Common.oops(this, true)))
 
   it('should echo with semicolon not in quotes and expect error', () =>
     CLI.command(`echo hi; ho`, this.app)

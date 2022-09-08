@@ -28,8 +28,9 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 
 const synonyms = ['kubectl']
 
-describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+describe(`kubectl create hpa HorizontalPodAutoscaler ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

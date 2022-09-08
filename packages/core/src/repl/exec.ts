@@ -105,17 +105,13 @@ async function lookupCommandEvaluator<T extends KResponse, O extends ParsedOptio
   // first try treating options as binary
   const tryCatchalls = false
   const argvNoOptions = argv.filter((_, idx, A) => _.charAt(0) !== '-' && (idx === 0 || A[idx - 1].charAt(0) !== '-'))
-  const evaluator = await getModel()
-    .read<T, O>(argvNoOptions, execOptions, tryCatchalls)
-    .catch(okIf404)
+  const evaluator = await getModel().read<T, O>(argvNoOptions, execOptions, tryCatchalls).catch(okIf404)
 
   if (!isSuccessfulCommandResolution(evaluator)) {
     // then try treating options as unary
     const tryCatchalls2 = false
     const argvNoOptions2 = argv.filter(_ => _.charAt(0) !== '-')
-    const evaluator2 = await getModel()
-      .read<T, O>(argvNoOptions2, execOptions, tryCatchalls2)
-      .catch(okIf404)
+    const evaluator2 = await getModel().read<T, O>(argvNoOptions2, execOptions, tryCatchalls2).catch(okIf404)
     if (isSuccessfulCommandResolution(evaluator2)) {
       return evaluator2
     } else {
@@ -191,6 +187,7 @@ class InProcessExecutor implements Executor {
   }
 
   /** Notify the world that a command execution has finished */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private emitCompletionEvent<T extends KResponse, O extends ParsedOptions>(
     presponse: T | Promise<T>,
     endEvent: Omit<CommandCompleteEvent, 'response' | 'responseType' | 'historyIdx'>,
@@ -303,7 +300,7 @@ class InProcessExecutor implements Executor {
       )
     }
 
-    const parsedOptions = (minimist(argv, allFlags) as any) as O
+    const parsedOptions = minimist(argv, allFlags) as any as O
     const argvNoOptions: string[] = parsedOptions._
 
     return { argvNoOptions, parsedOptions }
@@ -377,7 +374,7 @@ class InProcessExecutor implements Executor {
           return createWindow(argv, evaluator.options.fullscreen, options, true)
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (true as any) as T
+        return true as any as T
       }
 
       const execUUID = execOptions.execUUID || uuid()
@@ -565,6 +562,7 @@ class InProcessExecutor implements Executor {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async exec<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions = emptyExecOptions()

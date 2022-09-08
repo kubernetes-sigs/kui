@@ -208,13 +208,15 @@ export async function topNode(
   // hide-with-sidecar the memory and cpu columns
   const cpuIdx = nodeTable.header.attributes.findIndex(_ => _.key === 'CPU(cores)')
   if (cpuIdx >= 0) {
-    nodeTable.header.attributes[cpuIdx].outerCSS = `${nodeTable.header.attributes[cpuIdx].outerCSS ||
-      ''} hide-with-sidecar`
+    nodeTable.header.attributes[cpuIdx].outerCSS = `${
+      nodeTable.header.attributes[cpuIdx].outerCSS || ''
+    } hide-with-sidecar`
   }
   const memIdx = nodeTable.header.attributes.findIndex(_ => _.key === 'MEMORY(bytes)')
   if (memIdx >= 0) {
-    nodeTable.header.attributes[memIdx].outerCSS = `${nodeTable.header.attributes[memIdx].outerCSS ||
-      ''} hide-with-sidecar`
+    nodeTable.header.attributes[memIdx].outerCSS = `${
+      nodeTable.header.attributes[memIdx].outerCSS || ''
+    } hide-with-sidecar`
   }
 
   // don't hide-with-sidecar the mem% column

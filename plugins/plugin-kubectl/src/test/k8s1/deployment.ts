@@ -33,7 +33,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 const ns: string = createNS()
 const inNamespace = `-n ${ns}`
 
-describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

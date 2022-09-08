@@ -31,9 +31,7 @@ export default function cd(this: Common.ISuite) {
   const bucketName = `kuitest-${v4()}`
 
   it('should ls /s3/minio', () =>
-    CLI.command('ls -l /s3/minio', this.app)
-      .then(ReplExpect.okWithAny)
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l /s3/minio', this.app).then(ReplExpect.okWithAny).catch(Common.oops(this, true)))
 
   it('should sleep', () => new Promise(resolve => setTimeout(resolve, 2000)))
 

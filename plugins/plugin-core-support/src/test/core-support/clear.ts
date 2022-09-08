@@ -16,7 +16,7 @@
 
 import { Common, CLI, Keys, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
-describe(`clear the console from scratch ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`clear the console from scratch ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -24,12 +24,10 @@ describe(`clear the console from scratch ${process.env.MOCHA_RUN_TARGET || ''}`,
 
   it('should clear the console from scratch', () => clear())
   it('should use echo via kuiecho', () =>
-    CLI.command('kuiecho hello', this.app)
-      .then(ReplExpect.okWithString('hello'))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiecho hello', this.app).then(ReplExpect.okWithString('hello')).catch(Common.oops(this, true)))
 })
 
-describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -116,9 +114,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
   // hit enter, and expect that JUNK to fail
   it(`should fail with command not found`, () => {
-    return CLI.command('nope', this.app)
-      .then(ReplExpect.error(127))
-      .catch(Common.oops(this, true))
+    return CLI.command('nope', this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true))
   })
 
   // get something on the screen

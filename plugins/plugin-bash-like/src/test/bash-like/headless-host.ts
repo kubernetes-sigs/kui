@@ -19,7 +19,7 @@ import { cli as headlessCLI } from '@kui-shell/core/tests/lib/headless'
 
 const isHeadless = process.env.MOCHA_RUN_TARGET === 'headless'
 
-describe('bash-like host catchall', function(this: Common.ISuite) {
+describe('bash-like host catchall', function (this: Common.ISuite) {
   before(Common.before(this, { noApp: isHeadless }))
   if (!isHeadless) {
     after(Common.after(this))
@@ -27,10 +27,7 @@ describe('bash-like host catchall', function(this: Common.ISuite) {
 
   if (isHeadless) {
     it('should show some output for host google.com in headless mode', () =>
-      headlessCLI
-        .command('host google.com')
-        .then(headlessCLI.expectOK('has address'))
-        .catch(Common.oops(this)))
+      headlessCLI.command('host google.com').then(headlessCLI.expectOK('has address')).catch(Common.oops(this)))
   } else {
     it('should show some output for host google.com in non-headless mode', () =>
       headfullCLI

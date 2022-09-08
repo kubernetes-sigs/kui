@@ -38,7 +38,6 @@ const codeCoverageTempDirectory = () =>
     ? join(process.env.TRAVIS_BUILD_DIR, 'packages/test/.nyc_output')
     : join(process.env.TEST_ROOT, '.nyc_output')
 
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface ISuite extends Suite {
   app: Application
   _kuiDestroyAfter?: boolean
@@ -64,7 +63,7 @@ async function writeCodeCoverage(app: Application) {
   if (codeCoverageDesired() && app && app.client) {
     console.log('Writing code coverage data')
     await app.client.executeAsync(
-      function() {
+      function () {
         const tempDirectory: string = arguments[0] // eslint-disable-line prefer-rest-params
         const nycModule: string = arguments[1] // eslint-disable-line prefer-rest-params
         const root: string = arguments[2] // eslint-disable-line prefer-rest-params
@@ -89,7 +88,7 @@ async function writeCodeCoverage(app: Application) {
         // nyc.writeCoverageFile()
 
         // see https://github.com/IBM/kui/issues/3217 for some discussion
-        Object.keys(__coverage__).forEach(function(absFile) {
+        Object.keys(__coverage__).forEach(function (absFile) {
           const map = JSON.parse(require('fs').readFileSync(`${absFile}.map`))
           nyc.sourceMaps._sourceMapCache.registerMap(absFile, map)
         }, nyc)
@@ -293,7 +292,7 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
     ctx.retries(1) // don't retry the mocha.it in local testing
   }
 
-  return async function() {
+  return async function () {
     // by default, we expect not to have to destroy the app when this
     // describe is done
     ctx['_kuiDestroyAfter'] = false
@@ -381,151 +380,155 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
  * This is the method that will be called when a test completes
  *
  */
-export const after = (ctx: ISuite, f?: () => void): HookFunction => async () => {
-  if (f) await f()
+export const after =
+  (ctx: ISuite, f?: () => void): HookFunction =>
+  async () => {
+    if (f) await f()
 
-  await writeCodeCoverage(ctx.app)
+    await writeCodeCoverage(ctx.app)
 
-  // when we're done with a test suite, look for any important
-  // SEVERE errors in the chrome console logs. try to ignore
-  // intentional failures as much as possible!
-  const anyFailed = ctx.tests && ctx.tests.some(test => test.state === 'failed')
+    // when we're done with a test suite, look for any important
+    // SEVERE errors in the chrome console logs. try to ignore
+    // intentional failures as much as possible!
+    const anyFailed = ctx.tests && ctx.tests.some(test => test.state === 'failed')
 
-  // print out log messages from the electron app, if any of the tests
-  // failed
-  if (anyFailed && ctx.app && ctx.app.client) {
-    ctx.app.client.getRenderProcessLogs().then(logs =>
-      logs
-        .map(log => log as { level: string; message: string })
-        .filter(log => !/SFMono/.test(log.message))
-        .filter(log => !/fonts.gstatic/.test(log.message))
-        .filter(log => !/webpack-dev-server/.test(log.message))
-        .forEach(log => {
-          if (
-            log.level === 'SEVERE' && // only console.error messages
-            log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
-            log.message.indexOf('Error compiling app source') < 0 &&
-            log.message.indexOf('ReferenceError') < 0 &&
-            log.message.indexOf('SyntaxError') < 0 &&
-            log.message.indexOf('ENOENT') < 0 && // we probably caused file not found errors
-            log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
-            log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
-            log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
-          ) {
-            const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-            console.log(`${log.level}`.red.bold, logMessage)
-          }
-        })
-    )
-  }
-
-  if (ctx.app && ctx.app.isRunning() && ctx['_kuiDestroyAfter']) {
-    return ctx.app.stop()
-  }
-}
-
-export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
-  try {
-    if (process.env.MOCHA_RUN_TARGET) {
-      console.log(`Error: mochaTarget=${process.env.MOCHA_RUN_TARGET} testTitle=${ctx.title}`)
-    }
-    console.log(err)
-
-    const promises = []
-
-    if (ctx.app) {
-      try {
-        promises.push(
-          await ctx.app.client
-            .$(Selectors.OUTPUT_LAST)
-            .then(_ => _.getHTML())
-            .then(html => {
-              console.log('here is the output of the prior output:')
-              console.log(html.replace(/<style>.*<\/style>/, ''))
-            })
-            .catch(err => {
-              console.error('error trying to get the output of the previous block', err)
-            })
-        )
-        promises.push(
-          await ctx.app.client
-            .$(Selectors.PROMPT_BLOCK_FINAL)
-            .then(_ => _.getHTML())
-            .then(html => {
-              console.log('here is the content of the last block:')
-              console.log(html.replace(/<style>.*<\/style>/, ''))
-            })
-            .catch(err => {
-              console.error('error trying to get the output of the final block', err)
-            })
-        )
-      } catch (err) {
-        console.error('error trying to get output html', err)
-      }
-
-      promises.push(
-        ctx.app.client.getMainProcessLogs().then(logs =>
-          logs.forEach(log => {
-            if (log.indexOf('INFO:CONSOLE') < 0 && log.indexOf('FontService') < 0) {
-              // don't log console messages, as these will show up in getRenderProcessLogs
-              console.log('MAIN'.cyan.bold, log)
+    // print out log messages from the electron app, if any of the tests
+    // failed
+    if (anyFailed && ctx.app && ctx.app.client) {
+      ctx.app.client.getRenderProcessLogs().then(logs =>
+        logs
+          .map(log => log as { level: string; message: string })
+          .filter(log => !/SFMono/.test(log.message))
+          .filter(log => !/fonts.gstatic/.test(log.message))
+          .filter(log => !/webpack-dev-server/.test(log.message))
+          .forEach(log => {
+            if (
+              log.level === 'SEVERE' && // only console.error messages
+              log.message.indexOf('The requested resource was not found') < 0 && // composer file not found
+              log.message.indexOf('Error compiling app source') < 0 &&
+              log.message.indexOf('ReferenceError') < 0 &&
+              log.message.indexOf('SyntaxError') < 0 &&
+              log.message.indexOf('ENOENT') < 0 && // we probably caused file not found errors
+              log.message.indexOf('UsageError') < 0 && // we probably caused repl usage errors
+              log.message.indexOf('Usage:') < 0 && // we probably caused repl usage errors
+              log.message.indexOf('Unexpected option') < 0 // we probably caused command misuse
+            ) {
+              const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
+              console.log(`${log.level}`.red.bold, logMessage)
             }
           })
-        )
       )
-      promises.push(
-        // filter out the "Not allowed to load local resource" font loading errors
-        ctx.app.client
-          .getRenderProcessLogs()
-          .then(logs => logs as { message: string }[])
-          .then(logs =>
-            logs
-              .filter(log => !/SFMono/.test(log.message))
-              .filter(log => !/fonts.gstatic/.test(log.message))
-              .filter(log => !/webpack-dev-server/.test(log.message))
-              .forEach(log => {
-                if (log.message.indexOf('%c') === -1) {
-                  console.log('RENDER'.yellow.bold, log.message.red)
-                } else {
-                  // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
-                  const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-                  console.log('RENDER'.yellow.bold, logMessage)
-                }
+    }
+
+    if (ctx.app && ctx.app.isRunning() && ctx['_kuiDestroyAfter']) {
+      return ctx.app.stop()
+    }
+  }
+
+export const oops =
+  (ctx: ISuite, wait = false) =>
+  async (err: Error) => {
+    try {
+      if (process.env.MOCHA_RUN_TARGET) {
+        console.log(`Error: mochaTarget=${process.env.MOCHA_RUN_TARGET} testTitle=${ctx.title}`)
+      }
+      console.log(err)
+
+      const promises = []
+
+      if (ctx.app) {
+        try {
+          promises.push(
+            await ctx.app.client
+              .$(Selectors.OUTPUT_LAST)
+              .then(_ => _.getHTML())
+              .then(html => {
+                console.log('here is the output of the prior output:')
+                console.log(html.replace(/<style>.*<\/style>/, ''))
+              })
+              .catch(err => {
+                console.error('error trying to get the output of the previous block', err)
               })
           )
-      )
+          promises.push(
+            await ctx.app.client
+              .$(Selectors.PROMPT_BLOCK_FINAL)
+              .then(_ => _.getHTML())
+              .then(html => {
+                console.log('here is the content of the last block:')
+                console.log(html.replace(/<style>.*<\/style>/, ''))
+              })
+              .catch(err => {
+                console.error('error trying to get the output of the final block', err)
+              })
+          )
+        } catch (err) {
+          console.error('error trying to get output html', err)
+        }
 
-      promises.push(
-        await ctx.app.client
-          .$$(Selectors.OOPS)
-          .then(elts => Promise.all(elts.map(_ => _.getText())))
-          .then(anyErrors => {
-            if (anyErrors) {
-              console.log('Error from the UI'.magenta.bold, anyErrors)
-            }
-          })
-          .catch(() => {
-            // it's ok if there are no such error elements on the page
-          })
-      )
+        promises.push(
+          ctx.app.client.getMainProcessLogs().then(logs =>
+            logs.forEach(log => {
+              if (log.indexOf('INFO:CONSOLE') < 0 && log.indexOf('FontService') < 0) {
+                // don't log console messages, as these will show up in getRenderProcessLogs
+                console.log('MAIN'.cyan.bold, log)
+              }
+            })
+          )
+        )
+        promises.push(
+          // filter out the "Not allowed to load local resource" font loading errors
+          ctx.app.client
+            .getRenderProcessLogs()
+            .then(logs => logs as { message: string }[])
+            .then(logs =>
+              logs
+                .filter(log => !/SFMono/.test(log.message))
+                .filter(log => !/fonts.gstatic/.test(log.message))
+                .filter(log => !/webpack-dev-server/.test(log.message))
+                .forEach(log => {
+                  if (log.message.indexOf('%c') === -1) {
+                    console.log('RENDER'.yellow.bold, log.message.red)
+                  } else {
+                    // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
+                    const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
+                    console.log('RENDER'.yellow.bold, logMessage)
+                  }
+                })
+            )
+        )
+
+        promises.push(
+          await ctx.app.client
+            .$$(Selectors.OOPS)
+            .then(elts => Promise.all(elts.map(_ => _.getText())))
+            .then(anyErrors => {
+              if (anyErrors) {
+                console.log('Error from the UI'.magenta.bold, anyErrors)
+              }
+            })
+            .catch(() => {
+              // it's ok if there are no such error elements on the page
+            })
+        )
+      }
+
+      if (wait) {
+        await Promise.all(promises)
+      }
+    } catch (err2) {
+      // log our common.oops error
+      console.error('error in common.oops', err2)
     }
 
-    if (wait) {
-      await Promise.all(promises)
-    }
-  } catch (err2) {
-    // log our common.oops error
-    console.error('error in common.oops', err2)
+    // swap these two if you want to debug failures locally
+    return new Promise((resolve, reject) =>
+      setTimeout(() => {
+        reject(err)
+      }, 100000)
+    )
+    // throw err
   }
-
-  // swap these two if you want to debug failures locally
-  return new Promise((resolve, reject) =>
-    setTimeout(() => {
-      reject(err)
-    }, 100000)
-  )
-  // throw err
-}
 
 /** only execute the test in local */
 export const localIt = (msg: string, func: Func) => {
@@ -578,6 +581,7 @@ export const expectedVersion = version
  * on env vars to transit "in debug mode". E.g. see ExecIntoPod
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare let __KUI_RUNNING_KUI_TEST: boolean
 export function setDebugMode(this: ISuite) {
   it('should inject RUNNING_KUI_TEST', () => {

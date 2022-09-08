@@ -18,7 +18,7 @@ import { Common } from '@kui-shell/test'
 
 import { tabby } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 
-describe('Tab completion test client', function(this: Common.ISuite) {
+describe('Tab completion test client', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

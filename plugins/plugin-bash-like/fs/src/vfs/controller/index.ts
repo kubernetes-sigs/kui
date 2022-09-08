@@ -18,6 +18,6 @@ import { Registrar } from '@kui-shell/core'
 import clientSide from './client-side'
 import serverSide from './server-side'
 
-export default async function(registrar: Registrar) {
+export default async function (registrar: Registrar) {
   await Promise.all([clientSide(registrar), serverSide(registrar)])
 }

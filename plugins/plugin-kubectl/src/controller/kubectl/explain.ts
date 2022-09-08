@@ -60,11 +60,12 @@ ${formatDocumentation(_[4])}
 
 /** alternate patterns to match against */
 const kvd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)(\n\nRESOURCE:\s+(\S+).*)?\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
-const kvdf = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)(\n\nRESOURCE:\s+(\S+).*)?\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
+const kvdf =
+  /^KIND:\s+(\S+)\nVERSION:\s+(\S+)(\n\nRESOURCE:\s+(\S+).*)?\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)\n\nFIELDS:\n([\s\S]+)/
 const kvfd = /^KIND:\s+(\S+)\nVERSION:\s+(\S+)\n\nFIELD:\s+(\S+)\s+(.*)\n\nDESCRIPTION:\n(\s*DEPRECATED - )?([\s\S]+)/
 
 export const doExplain = (command = 'kubectl') =>
-  async function(args: Arguments<KubeOptions>) {
+  async function (args: Arguments<KubeOptions>) {
     if (isUsage(args)) {
       // special case: get --help/-h
       return doHelp(command, args)

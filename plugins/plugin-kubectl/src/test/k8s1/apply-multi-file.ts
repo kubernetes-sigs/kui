@@ -31,7 +31,7 @@ const synonyms = ['kubectl']
 const dashFs = ['-f']
 const resources = [remotePodName, remotePodName2]
 
-describe(`kubectl apply multi-file ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl apply multi-file ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

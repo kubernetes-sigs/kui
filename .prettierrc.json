@@ -2,6 +2,8 @@
   "semi": false,
   "printWidth": 120,
   "singleQuote": true,
+  "arrowParens": "avoid",
+  "trailingComma": "none",
   "overrides": [
     {
       "files": "*.html",

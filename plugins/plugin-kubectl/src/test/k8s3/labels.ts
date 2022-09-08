@@ -25,7 +25,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -60,9 +60,7 @@ describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, functio
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
       return CLI.command(`${kubectl} create -f ${remotePodYaml} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
     })

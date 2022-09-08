@@ -49,7 +49,7 @@ export abstract class DirectWatcher implements Watcher, Abortable, Suspendable {
   /** The current stream jobs. These will be aborted/flow-controlled as directed by the associated view. */
   protected jobs: (Abortable & Suspendable)[] = []
 
-  abstract init(pusher: WatchPusher): void
+  public abstract init(pusher: WatchPusher): void
 
   /** This will be called by the view when it wants the underlying streamer to resume flowing updates */
   public xon() {
@@ -169,6 +169,8 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
         const kind = kindAndName.split('/')[0]
         const name = kindAndName.split('/')[1]
         return isObjectInGroup(this.group, kind, name)
+      } else {
+        return false
       }
     })
 
@@ -317,7 +319,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
 
     const table = custo
       ? (await import('./custom-columns')).toKuiTableForUpdateFromCustomColumns(
-          (update.object as any) as KubeResource,
+          update.object as any as KubeResource,
           this.args,
           this.drilldownCommand,
           this.kind,

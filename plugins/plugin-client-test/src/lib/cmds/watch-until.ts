@@ -22,7 +22,7 @@ interface Options extends ParsedOptions {
   redirect: boolean
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen<boolean, Options>('/kuiCheckFileExist', async args => {
     const filename = args.argvNoOptions[1]
     if (filename === 'error') {

@@ -257,28 +257,30 @@ export async function doExecWithTable<O extends KubeOptions>(
  * poll until the given FinalState is reached.
  *
  */
-export const doExecWithStatus = <O extends KubeOptions>(
-  verb: string,
-  finalState: FinalState,
-  command = 'kubectl',
-  prepareForExec: Prepare<O> = NoPrepare,
-  prepareForStatus: PrepareForStatus<O> = DefaultPrepareForStatus
-) => async (args: Arguments<O>): Promise<KubeTableResponse> => {
-  const response = await exec<O>(args, prepareForExec, command)
+export const doExecWithStatus =
+  <O extends KubeOptions>(
+    verb: string,
+    finalState: FinalState,
+    command = 'kubectl',
+    prepareForExec: Prepare<O> = NoPrepare,
+    prepareForStatus: PrepareForStatus<O> = DefaultPrepareForStatus
+  ) =>
+  async (args: Arguments<O>): Promise<KubeTableResponse> => {
+    const response = await exec<O>(args, prepareForExec, command)
 
-  if (response.content.code !== 0) {
-    const err: CodedError = new Error(response.content.stderr)
-    err.code = response.content.code
-    throw err
-  } else if (Capabilities.isHeadless()) {
-    return response.content.stdout
-  } else {
-    const statusArgs = await prepareForStatus(verb, args)
-    const initialResponse = response ? response.content.stdout : ''
+    if (response.content.code !== 0) {
+      const err: CodedError = new Error(response.content.stderr)
+      err.code = response.content.code
+      throw err
+    } else if (Capabilities.isHeadless()) {
+      return response.content.stdout
+    } else {
+      const statusArgs = await prepareForStatus(verb, args)
+      const initialResponse = response ? response.content.stdout : ''
 
-    return doStatus(args, verb, command, initialResponse, finalState, statusArgs)
+      return doStatus(args, verb, command, initialResponse, finalState, statusArgs)
+    }
   }
-}
 
 export async function doExecWithRadioTable<Resource extends KubeResource>(
   resources: Resource[],

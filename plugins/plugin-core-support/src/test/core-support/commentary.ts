@@ -24,7 +24,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.jso
 
 /* xit has been added to most tests because of recent changes to notebooks opening in read only mode.
   These changes make commentaries incapable of being edited for now until more changes are made */
-describe('commentary and replay', function(this: Common.ISuite) {
+describe('commentary and replay', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -62,14 +62,12 @@ describe('commentary and replay', function(this: Common.ISuite) {
   addComment()
 })
 
-describe('commentary replace current content', function(this: Common.ISuite) {
+describe('commentary replace current content', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should add something to the terminal', () =>
-    CLI.command('kuiecho hi', this.app)
-      .then(ReplExpect.okWithString('hi'))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiecho hi', this.app).then(ReplExpect.okWithString('hi')).catch(Common.oops(this, true)))
 
   splitViaButton.bind(this)(2)
 
@@ -78,14 +76,10 @@ describe('commentary replace current content', function(this: Common.ISuite) {
 
   it('should show only one split', () => ReplExpect.splitCount(1))
 
-  it('should show only one finished block', () =>
-    ReplExpect.blockCount
-      .bind(this)()
-      .inSplit(1)
-      .is(1))
+  it('should show only one finished block', () => ReplExpect.blockCount.bind(this)().inSplit(1).is(1))
 })
 
-describe('edit commentary', function(this: Common.ISuite) {
+describe('edit commentary', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()

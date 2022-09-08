@@ -18,7 +18,7 @@ import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Keys } from '@kui-sh
 
 const echoString = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
-describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -28,19 +28,13 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .catch(Common.oops(this, true)))
 
   it('should touch a test file in ~', () =>
-    CLI.command(`touch ~/testls`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true)))
+    CLI.command(`touch ~/testls`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true)))
 
   it('should ls -l ~ and see ~/testls', () =>
-    CLI.command('ls -l ~', this.app)
-      .then(ReplExpect.okWith('testls'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l ~', this.app).then(ReplExpect.okWith('testls')).catch(Common.oops(this, true)))
 
   it('should remove a test file in ~', () =>
-    CLI.command(`rm -f ~/testls`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true)))
+    CLI.command(`rm -f ~/testls`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true)))
 
   it('should fail with 404 to ls a non-existing file', () =>
     CLI.command('ls fjdsioafjdsaioffsdaiofjdsaiofjdsaiofjdsaiofjdsaifjdsaiofsa', this.app)
@@ -48,20 +42,14 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .catch(Common.oops(this, true)))
 
   it('should use ls ../../', () =>
-    CLI.command(`ls ../../`, this.app)
-      .then(ReplExpect.okWithString('package.json'))
-      .catch(Common.oops(this)))
+    CLI.command(`ls ../../`, this.app).then(ReplExpect.okWithString('package.json')).catch(Common.oops(this)))
 
   it('should use ls -l ../../', () =>
-    CLI.command(`ls -l ../../`, this.app)
-      .then(ReplExpect.okWith('package.json'))
-      .catch(Common.oops(this)))
+    CLI.command(`ls -l ../../`, this.app).then(ReplExpect.okWith('package.json')).catch(Common.oops(this)))
 
   // pipe to wc
   it('should use ls ../../package.json | wc -l', () =>
-    CLI.command(`ls ../../package.json | wc -l`, this.app)
-      .then(ReplExpect.okWithString('1'))
-      .catch(Common.oops(this)))
+    CLI.command(`ls ../../package.json | wc -l`, this.app).then(ReplExpect.okWithString('1')).catch(Common.oops(this)))
 
   // pipe to grep to wc
   it('should use ls ../../ | grep package.json | wc -l', () =>
@@ -75,17 +63,13 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .then(ReplExpect.okWithString('package.json'))
       .catch(Common.oops(this)))
   it('should use ls ../../ | grep p*', () =>
-    CLI.command(`ls ../../ | grep p*`, this.app)
-      .then(ReplExpect.okWithString('package.json'))
-      .catch(Common.oops(this)))
+    CLI.command(`ls ../../ | grep p*`, this.app).then(ReplExpect.okWithString('package.json')).catch(Common.oops(this)))
   it('should use ls -l ../../ | grep package.json', () =>
     CLI.command(`ls -l ../../ | grep package.json`, this.app)
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
   it('should use ls -l ../../ | grep p*son', () =>
-    CLI.command(`ls -l ../../ | grep p*son`, this.app)
-      .then(ReplExpect.okWith('package.json'))
-      .catch(Common.oops(this)))
+    CLI.command(`ls -l ../../ | grep p*son`, this.app).then(ReplExpect.okWith('package.json')).catch(Common.oops(this)))
 
   const doListAndMetaClick = async () => {
     const holdDown = Keys.holdDownKey.bind(this)
@@ -135,16 +119,12 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .catch(Common.oops(this)))
 
   it('should use ls -l ../../README.md', () =>
-    CLI.command(`ls -l ../../README.md`, this.app)
-      .then(ReplExpect.okWith('README.md'))
-      .catch(Common.oops(this)))
+    CLI.command(`ls -l ../../README.md`, this.app).then(ReplExpect.okWith('README.md')).catch(Common.oops(this)))
 
   const Cs = ['CONTRIBUTING.md']
   Cs.forEach(expect => {
     it(`should use ls -l ../../C* and expect ${expect}`, () =>
-      CLI.command(`ls -l ../../C*`, this.app)
-        .then(ReplExpect.okWith(expect))
-        .catch(Common.oops(this)))
+      CLI.command(`ls -l ../../C*`, this.app).then(ReplExpect.okWith(expect)).catch(Common.oops(this)))
   })
 
   const CsandP = Cs.concat(['package.json'])
@@ -158,8 +138,6 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   const CsandT = Cs.concat(['tools'])
   CsandT.forEach(expect => {
     it('should use ls -d -l ../../C* ../tool*', () =>
-      CLI.command(`ls -d -l ../../C* ../../tool*`, this.app)
-        .then(ReplExpect.okWith(expect))
-        .catch(Common.oops(this)))
+      CLI.command(`ls -d -l ../../C* ../../tool*`, this.app).then(ReplExpect.okWith(expect)).catch(Common.oops(this)))
   })
 })

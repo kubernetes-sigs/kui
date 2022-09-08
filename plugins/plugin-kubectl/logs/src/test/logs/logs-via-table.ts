@@ -31,7 +31,7 @@ const inputEncoded = inputBuffer.toString('base64')
 
 const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -57,26 +57,20 @@ wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, 
 
   const createPodExpectingString = (podName: string, cmdline: string) => {
     it(`should create ${podName} pod expect string`, () => {
-      return CLI.command(cmdline, this.app)
-        .then(ReplExpect.okWithPtyOutput(podName))
-        .catch(Common.oops(this, true))
+      return CLI.command(cmdline, this.app).then(ReplExpect.okWithPtyOutput(podName)).catch(Common.oops(this, true))
     })
   }
 
   const createPodExpectingTable = (podName: string, cmdline: string) => {
     it(`should create ${podName} pod expect table`, () => {
-      return CLI.command(cmdline, this.app)
-        .then(ReplExpect.okWith(podName))
-        .catch(Common.oops(this, true))
+      return CLI.command(cmdline, this.app).then(ReplExpect.okWith(podName)).catch(Common.oops(this, true))
     })
   }
 
   const waitForPod = (podName: string) => {
     it(`should wait for the pod ${podName} to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

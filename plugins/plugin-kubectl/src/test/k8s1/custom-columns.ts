@@ -32,7 +32,7 @@ const dashF = '-f'
 const ns: string = createNS()
 const inNamespace = `-n ${ns}`
 
-describe(`${kubectl} get custom-columns ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`${kubectl} get custom-columns ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -85,9 +85,7 @@ describe(`${kubectl} get custom-columns ${process.env.MOCHA_RUN_TARGET || ''}`, 
     it('should recreate with watch', async () => {
       try {
         await CLI.command(`kubectl delete pod nginx ${inNamespace}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
 
         const res = await CLI.command(

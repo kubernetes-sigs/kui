@@ -28,7 +28,7 @@ import { exec } from './exec'
 const strings = i18n('plugin-kubectl')
 
 const doDiff = (command: string) =>
-  async function(args: Arguments<KubeOptions>): Promise<KResponse> {
+  async function (args: Arguments<KubeOptions>): Promise<KResponse> {
     if (isUsage(args)) {
       return doHelp(command, args)
     } else {

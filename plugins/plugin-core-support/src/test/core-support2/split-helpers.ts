@@ -126,9 +126,7 @@ export function clearViaButton(this: Common.ISuite, inSplit: number) {
       .$(Selectors.SPLIT_N_CLEAR(inSplit))
       .then(_ => _.click())
       .then(async () => {
-        await expectBlockCount()
-          .inSplit(inSplit)
-          .is(1)
+        await expectBlockCount().inSplit(inSplit).is(1)
       })
       .catch(Common.oops(this, true)))
 }

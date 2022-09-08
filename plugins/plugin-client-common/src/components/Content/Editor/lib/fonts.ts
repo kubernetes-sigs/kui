@@ -16,9 +16,7 @@
 
 export default function getKuiFontSize(): number {
   const kuiSize = parseInt(
-    getComputedStyle(document.querySelector('body'))
-      .getPropertyValue('font-size')
-      .replace(/px$/, ''),
+    getComputedStyle(document.querySelector('body')).getPropertyValue('font-size').replace(/px$/, ''),
     10
   )
 

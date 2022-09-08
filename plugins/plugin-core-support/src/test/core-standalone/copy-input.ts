@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
-describe(`copy command input ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`copy command input ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

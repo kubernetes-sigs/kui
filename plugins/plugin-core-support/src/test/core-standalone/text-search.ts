@@ -24,23 +24,17 @@ const previousButton = `${buttonsSelector} button[aria-label="Previous"]`
 const nextButton = `${buttonsSelector} button[aria-label="Next"]`
 const closeButtonSelector = `${buttonsSelector} button[aria-label="Reset"]`
 
-Common.localDescribe('Text search', function(this: Common.ISuite) {
+Common.localDescribe('Text search', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   // 2 matches test
   it('should add grumble to the repl', () =>
-    CLI.command('grumble', this.app)
-      .then(ReplExpect.error(127))
-      .catch(Common.oops(this, true)))
+    CLI.command('grumble', this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true)))
   it('should add another grumble to the repl', () =>
-    CLI.command('grumble', this.app)
-      .then(ReplExpect.error(127))
-      .catch(Common.oops(this, true)))
+    CLI.command('grumble', this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true)))
   it('should add bojangles to the repl', () =>
-    CLI.command('bojangles', this.app)
-      .then(ReplExpect.error(127))
-      .catch(Common.oops(this, true)))
+    CLI.command('bojangles', this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true)))
 
   /*
   ####################################################################################
@@ -200,9 +194,7 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
 
   it('should add text to CLI, then focus on search bar and add text to input field', async () => {
     // adding text to CLI for later search
-    await CLI.command('searching', this.app)
-      .then(ReplExpect.error(127))
-      .catch(Common.oops(this, true))
+    await CLI.command('searching', this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true))
     // clicking on search bar to focus it
     await this.app.client.$(searchBarSelector).then(_ => _.click())
     await this.app.client.waitUntil(

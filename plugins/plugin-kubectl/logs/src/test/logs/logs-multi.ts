@@ -48,8 +48,9 @@ interface PodDesc {
 }
 
 commands.forEach(command => {
-  describe(`${command} Logs multiple pods via selector ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`${command} Logs multiple pods via selector ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

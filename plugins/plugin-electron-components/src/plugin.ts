@@ -16,7 +16,7 @@
 
 import { KResponse, Registrar } from '@kui-shell/core'
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen<KResponse, { title: string }>(
     '/replay-electron',
     async args => {

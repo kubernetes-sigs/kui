@@ -32,7 +32,7 @@ function prepareArgsForDescribe(args: Arguments<KubeOptions>) {
 }
 
 const doDescribe = (command: string) =>
-  async function(args: Arguments<KubeOptions>): Promise<KResponse> {
+  async function (args: Arguments<KubeOptions>): Promise<KResponse> {
     if (isUsage(args)) {
       return doHelp(command, args)
     } else if (commandWithoutResource(args)) {

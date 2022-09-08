@@ -114,9 +114,9 @@ const treeMatch = <T extends KResponse, O extends ParsedOptions>(
         }
         cur = parent.children[path[idx]] = {
           $: undefined,
-          parent: parent,
+          parent,
           key: path[idx],
-          options: { hide: hide },
+          options: { hide },
           route: `${parent.route === '/' ? '' : parent.route}/${path[idx]}`
         }
       }
@@ -186,7 +186,7 @@ const _listen = <T extends KResponse, O extends ParsedOptions>(
       leaf.options.override = leaf.$
     }
 
-    leaf.$ = (handler as any) as CommandHandler<T, O>
+    leaf.$ = handler as any as CommandHandler<T, O>
     leaf.route = route
 
     // populate the typeahead trie
@@ -343,10 +343,7 @@ const suggestPartialMatches = (
   // to allow for programmatic use of the partial matches, e.g. for tab completion
   if (anyPartials) {
     error.partialMatches = availablePartials.map(_ => ({
-      command: _.route
-        .split('/')
-        .slice(1)
-        .join(' '),
+      command: _.route.split('/').slice(1).join(' '),
       usage: _.usage
     }))
   } else {

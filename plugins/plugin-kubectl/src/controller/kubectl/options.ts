@@ -25,6 +25,53 @@ type TableFormat = 'wide' | string // want: 'custom-columns-file=' | 'custom-col
 type CustomFormat = string // want: 'go-template' | 'go-template-file' | 'jsonpath' | 'jsonpath-file'
 type OutputFormat = EntityFormat | TableFormat | CustomFormat
 
+/** An incomplete set of kubectl options */
+export interface KubeOptions extends ParsedOptions {
+  A?: boolean
+  'all-namespaces'?: boolean
+
+  cluster?: string
+  context?: string
+  kubeconfig?: string
+
+  'dry-run'?: boolean | string
+
+  n?: string | string[]
+  namespace?: string | string[]
+
+  c?: string
+  container?: string
+
+  o?: OutputFormat
+  output?: OutputFormat
+
+  w?: boolean
+  watch?: boolean
+  'watch-only'?: boolean
+
+  wait?: boolean
+
+  p?: boolean
+  previous?: boolean
+
+  l?: string
+  label?: string
+  selector?: string | string[]
+
+  f?: string | string[]
+  filename?: string | string[]
+
+  k?: string
+  kustomize?: string
+
+  h?: boolean
+  help?: boolean
+
+  limit?: number
+
+  'sort-by'?: string
+}
+
 /** @return the -f or --filename option */
 export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string | string[] {
   const filename = args.parsedOptions.f || args.parsedOptions.filename
@@ -32,9 +79,10 @@ export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): str
 }
 
 /** @return same as fileOf, but also specify whether this came from a -f or --filename option */
-export function fileOfWithDetail(
-  args: Pick<Arguments<KubeOptions>, 'parsedOptions'>
-): { filepath: string | string[]; isFor: 'f' | 'filename' } {
+export function fileOfWithDetail(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): {
+  filepath: string | string[]
+  isFor: 'f' | 'filename'
+} {
   return {
     filepath: fileOf(args),
     isFor: args.parsedOptions.f ? 'f' : 'filename'
@@ -276,53 +324,6 @@ export type FilepathOption =
   | 'client-certificate'
   | 'certificate-authority'
   | 'cache-dir'
-
-/** An incomplete set of kubectl options */
-export interface KubeOptions extends ParsedOptions {
-  A?: boolean
-  'all-namespaces'?: boolean
-
-  cluster?: string
-  context?: string
-  kubeconfig?: string
-
-  'dry-run'?: boolean | string
-
-  n?: string | string[]
-  namespace?: string | string[]
-
-  c?: string
-  container?: string
-
-  o?: OutputFormat
-  output?: OutputFormat
-
-  w?: boolean
-  watch?: boolean
-  'watch-only'?: boolean
-
-  wait?: boolean
-
-  p?: boolean
-  previous?: boolean
-
-  l?: string
-  label?: string
-  selector?: string | string[]
-
-  f?: string | string[]
-  filename?: string | string[]
-
-  k?: string
-  kustomize?: string
-
-  h?: boolean
-  help?: boolean
-
-  limit?: number
-
-  'sort-by'?: string
-}
 
 export function isForAllNamespaces(parsedOptions: KubeOptions) {
   return parsedOptions.A || parsedOptions['all-namespaces']

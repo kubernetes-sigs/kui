@@ -117,9 +117,7 @@ export default class Sidebar extends React.PureComponent<Props, State> {
         >
           {_.submenu.map(renderItem)}
         </NavExpandable>
-      ) : (
-        undefined
-      )
+      ) : undefined
     }
 
     return (

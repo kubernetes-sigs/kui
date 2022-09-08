@@ -83,7 +83,7 @@ function makeBranch(branchName: string, tmpdir: string) {
 }
 
 const suiteName = `Tab completion for git branches ${process.env.MOCHA_RUN_TARGET || ''}`
-describe(suiteName, function(this: Common.ISuite) {
+describe(suiteName, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -150,9 +150,7 @@ describe(suiteName, function(this: Common.ISuite) {
   /** make sure we don't tab complete a file name with the common prefix */
   const tempFile = `${prefix}temporaryfile`
   pit(`should touch temporary file ${tempFile}`, () => {
-    return CLI.command(`touch ${tempFile}`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    return CLI.command(`touch ${tempFile}`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   })
   testTabCompletion() // <-- we still had better complete only the branch names
 

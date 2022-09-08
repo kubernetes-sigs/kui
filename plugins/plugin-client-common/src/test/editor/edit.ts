@@ -32,21 +32,21 @@ const save = async (res: ReplExpect.AppAndCount) => {
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
-const verifyTextExist = (selector: string, expectedText: string) => async (
-  res: ReplExpect.AppAndCount
-): Promise<ReplExpect.AppAndCount> => {
-  await res.app.client.waitUntil(
-    async () => {
-      const actualText = await res.app.client.$(selector).then(_ => _.getText())
-      return actualText.replace(/\s+$/, '') === expectedText
-    },
-    { timeout: 20000 }
-  )
+const verifyTextExist =
+  (selector: string, expectedText: string) =>
+  async (res: ReplExpect.AppAndCount): Promise<ReplExpect.AppAndCount> => {
+    await res.app.client.waitUntil(
+      async () => {
+        const actualText = await res.app.client.$(selector).then(_ => _.getText())
+        return actualText.replace(/\s+$/, '') === expectedText
+      },
+      { timeout: 20000 }
+    )
 
-  return res
-}
+    return res
+  }
 
-Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -63,12 +63,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
       .then(SidecarExpect.showingNotClickable(nonExistFileName))
       .catch(Common.oops(this, true)))
 
-  it(`should open ${nonExistFilePath}`, () =>
-    CLI.command(`open ${nonExistFilePath}`, this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showingNotClickable(nonExistFileName))
-      .catch(Common.oops(this, true)))
+  it(`should open ${nonExistFilePath}`, () => CLI.command(`open ${nonExistFilePath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open).then(SidecarExpect.showingNotClickable(nonExistFileName)).catch(Common.oops(this, true)))
 
   it(`should rm ${nonExistFilePath}`, () =>
     CLI.command(`rm -f ${nonExistFilePath}`, this.app) // note the -f here; it's ok if the file doesn't exist
@@ -129,9 +124,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
 
   it('should edit but not save the content of an existing file', async () => {
     try {
-      const res = await CLI.command(`edit ${tmpFilepath}`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(`edit ${tmpFilepath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, initialContent)(res)
 
@@ -143,9 +136,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
 
   it('should re-open the file and see the unchanged content', async () => {
     try {
-      const res = await CLI.command(`open ${tmpFilepath}`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(`open ${tmpFilepath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, initialContent)(res)
     } catch (err) {
@@ -156,9 +147,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
   // editor save not yet supported in proxy mode
   Common.localIt('should edit and save the content', async () => {
     try {
-      const res = await CLI.command('edit /tmp/edit-file.txt', this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command('edit /tmp/edit-file.txt', this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, initialContent)(res)
       await setValue(res, updatedText)
@@ -169,9 +158,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
   })
   Common.localIt('should re-open the initial file and see the unchanged content', async () => {
     try {
-      const res = await CLI.command(`open ${initialFilepath}`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(`open ${initialFilepath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, initialContent)(res)
     } catch (err) {
@@ -180,9 +167,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
   })
   Common.localIt('should re-open the edited file and see the updated content', async () => {
     try {
-      const res = await CLI.command(`open ${tmpFilepath}`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(`open ${tmpFilepath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, updatedText)(res)
     } catch (err) {
@@ -201,9 +186,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
   reload()
   Common.localIt('should edit, then paste, and still have focus', async () => {
     try {
-      const res = await CLI.command(`edit ${tmpFilepath}`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(`edit ${tmpFilepath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, updatedText)(res)
       await setValue(res, '')
@@ -222,9 +205,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
   reload()
   Common.localIt('should have that pasted text after refresh', async () => {
     try {
-      const res = await CLI.command(`edit ${tmpFilepath}`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(`edit ${tmpFilepath}`, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
       await verifyTextExist(`${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`, finalTextAfterPasteTest)(res)
     } catch (err) {
       await Common.oops(this, true)(err)

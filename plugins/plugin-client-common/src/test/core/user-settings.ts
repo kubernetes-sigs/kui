@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`user settings ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`user settings ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -24,46 +24,30 @@ describe(`user settings ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   const reload = () => it('should reload the app', () => Common.refresh(this))
 
   it('should reset user settings', () =>
-    CLI.command('kuiconfig reset', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig reset', this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it('should expect 404 from the prompt user setting', () =>
-    CLI.command('kuiconfig get prompt', this.app)
-      .then(ReplExpect.error(404))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig get prompt', this.app).then(ReplExpect.error(404)).catch(Common.oops(this, true)))
 
   it('should set prompt to CWD', () =>
-    CLI.command('kuiconfig set prompt CWD', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig set prompt CWD', this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it('should expect CWD from the prompt user setting', () =>
-    CLI.command('kuiconfig get prompt', this.app)
-      .then(ReplExpect.okWithString('CWD'))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig get prompt', this.app).then(ReplExpect.okWithString('CWD')).catch(Common.oops(this, true)))
 
   reload()
 
   it('should still expect, after reload, CWD from the prompt user setting', () =>
-    CLI.command('kuiconfig get prompt', this.app)
-      .then(ReplExpect.okWithString('CWD'))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig get prompt', this.app).then(ReplExpect.okWithString('CWD')).catch(Common.oops(this, true)))
 
   it('should unset prompt user setting', () =>
-    CLI.command('kuiconfig unset prompt', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig unset prompt', this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it('should expect 404 from the prompt user setting', () =>
-    CLI.command('kuiconfig get prompt', this.app)
-      .then(ReplExpect.error(404))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig get prompt', this.app).then(ReplExpect.error(404)).catch(Common.oops(this, true)))
 
   reload()
 
   it('should still expect, after reload, 404 from the prompt user setting', () =>
-    CLI.command('kuiconfig get prompt', this.app)
-      .then(ReplExpect.error(404))
-      .catch(Common.oops(this, true)))
+    CLI.command('kuiconfig get prompt', this.app).then(ReplExpect.error(404)).catch(Common.oops(this, true)))
 })

@@ -57,14 +57,12 @@ const jsonContent = JSON.stringify({ x: 3 })
 const jsonFile = tmpFile({ postfix: '.json' })
 writeFileSync(jsonFile.fd, jsonContent)
 
-describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   Common.pit('should give 127 for unknown outer command', () =>
-    CLI.command(`ibmcloudo target`, this.app)
-      .then(ReplExpect.error(127))
-      .catch(Common.oops(this, true))
+    CLI.command(`ibmcloudo target`, this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true))
   )
 
   it('should cat a json file', () =>
@@ -83,9 +81,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   // these two are useful as a pair; git usage responds with exit code
   // 1, whereas ibmcloud responds with exit code 0
   Common.pit('should give usage for git', () =>
-    CLI.command(`git`, this.app)
-      .then(ReplExpect.error(1))
-      .catch(Common.oops(this, true))
+    CLI.command(`git`, this.app).then(ReplExpect.error(1)).catch(Common.oops(this, true))
   )
 
   Common.pit('should answer which ls with /bin/ls', () =>
@@ -95,23 +91,17 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   )
 
   Common.pit('should echo hi', () =>
-    CLI.command(`echo hi`, this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this, true))
+    CLI.command(`echo hi`, this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this, true))
   )
 
   // re: localIt, ~/bin may not exist in browser mode, and we start in
   // with PWD=~ there
   Common.localIt('should change working directory', () =>
-    CLI.command(`cd bin`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`cd bin`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
 
   Common.localIt('should list core/', () =>
-    CLI.command(`ls -l`, this.app)
-      .then(ReplExpect.okWith('runTest.sh'))
-      .catch(Common.oops(this, true))
+    CLI.command(`ls -l`, this.app).then(ReplExpect.okWith('runTest.sh')).catch(Common.oops(this, true))
   )
 
   /* it('should list directory properly that contains prefix matches', () => CLI.command(`ls -l @demos`, this.app)
@@ -125,21 +115,15 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     .catch(Common.oops(this, true))) */
 
   Common.pit('should cd to /tmp', () =>
-    CLI.command('cd /tmp', this.app)
-      .then(ReplExpect.okWithString('/tmp'))
-      .catch(Common.oops(this, true))
+    CLI.command('cd /tmp', this.app).then(ReplExpect.okWithString('/tmp')).catch(Common.oops(this, true))
   )
 
   const dirname = `kui__${uuid()} bar`
   Common.pit('should mkdir with spaces', () =>
-    CLI.command(`mkdir "${dirname}"`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`mkdir "${dirname}"`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
   Common.pit('should fail to mkdir again', () =>
-    CLI.command(`mkdir "${dirname}"`, this.app)
-      .then(ReplExpect.error(409))
-      .catch(Common.oops(this, true))
+    CLI.command(`mkdir "${dirname}"`, this.app).then(ReplExpect.error(409)).catch(Common.oops(this, true))
   )
 
   Common.pit('should echo ho to a file', async () => {
@@ -160,15 +144,11 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
   Common.pit('should rm that file', () =>
-    CLI.command(`rm "${dirname}"/testTmp`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`rm "${dirname}"/testTmp`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
 
   Common.pit('should kuiecho ho and redirect the output to a file', () =>
-    CLI.command(`kuiecho ho > "${dirname}"/testTmp2`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`kuiecho ho > "${dirname}"/testTmp2`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
   Common.pit('should cat that file', () =>
     CLI.command(`cat "${dirname}"/testTmp2`, this.app)
@@ -176,9 +156,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
   Common.pit('should kuiecho yo and append the output to that file', () =>
-    CLI.command(`kuiecho yo >> "${dirname}"/testTmp2`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`kuiecho yo >> "${dirname}"/testTmp2`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
   Common.pit('should cat that file and expect appended output', () =>
     CLI.command(`cat "${dirname}"/testTmp2`, this.app)
@@ -186,15 +164,11 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
   Common.pit('should rm that file', () =>
-    CLI.command(`rm "${dirname}"/testTmp2`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`rm "${dirname}"/testTmp2`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
 
   Common.pit('should mkdir a subdir with spaces', () =>
-    CLI.command(`mkdir "${dirname}"/"foo2 bar2"`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`mkdir "${dirname}"/"foo2 bar2"`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
   Common.pit('should list the new directory with spaces', () =>
     CLI.command(`ls -l "${dirname}"`, this.app)
@@ -202,13 +176,9 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
   Common.pit('should rmdir a subdir with spaces', () =>
-    CLI.command(`rmdir "${dirname}"/"foo2 bar2"`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`rmdir "${dirname}"/"foo2 bar2"`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
   Common.pit('should rmdir a dir with spaces', () =>
-    CLI.command(`rmdir "${dirname}"`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
+    CLI.command(`rmdir "${dirname}"`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true))
   )
 })

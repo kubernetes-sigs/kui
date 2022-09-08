@@ -1,6 +1,5 @@
 build/
 clients/**/*/dist/
-packages/core/dist/
 node_modules/
 *.d.ts
 *.min.css
@@ -13,3 +12,18 @@ plugins/*/notebooks/**/*.json
 # don't pretty-print test markdown, since spacing is important, e.g. for tabs and tips
 plugins/*/tests/**/*.md
 plugins/*/tests/**/*.json
+
+plugins/**/*/dist
+plugins/**/*/mdist
+packages/core/dist/
+packages/core/mdist/
+packages/builder/mdist/
+packages/test/dist/
+packages/test/mdist/
+packages/react/dist/
+packages/react/mdist/
+
+# prebuilt modules/binaries
+/dist
+
+CHANGELOG.md

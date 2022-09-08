@@ -32,7 +32,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  describe(`${command} get summary tab describe ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} get summary tab describe ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -100,9 +100,7 @@ commands.forEach(command => {
 
     it(`should create sample pod from URL via ${command}`, () => {
       return CLI.command(`${command} create -f ${remotePodYaml} -n ${ns}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

@@ -21,7 +21,7 @@ import {
   isReadOnlyClient,
   KResponse,
   ParsedOptions,
-  Registrar,
+  Registrar
 } from '@kui-shell/core'
 
 interface EditOptions extends ParsedOptions {

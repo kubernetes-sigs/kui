@@ -34,7 +34,7 @@ const _value4 = 'hi ho'
 const value5 = '"`echo yo` $(echo yoyo)"'
 const _value5 = 'yo yoyo'
 
-describe('export command', function(this: Common.ISuite) {
+describe('export command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -54,9 +54,7 @@ describe('export command', function(this: Common.ISuite) {
   })
 
   Common.pit(`should fail with export without args`, () =>
-    CLI.command(`export`, this.app)
-      .then(ReplExpect.error(497))
-      .catch(Common.oops(this, true))
+    CLI.command(`export`, this.app).then(ReplExpect.error(497)).catch(Common.oops(this, true))
   )
 
   Common.pit(`should export foo=${value1}`, () =>
@@ -80,45 +78,31 @@ describe('export command', function(this: Common.ISuite) {
   )
 
   Common.pit('should show no value for foo in the new tab', () =>
-    CLI.command('printenv foo', this.app)
-      .then(ReplExpect.blank)
-      .catch(Common.oops(this))
+    CLI.command('printenv foo', this.app).then(ReplExpect.blank).catch(Common.oops(this))
   )
 
   Common.pit(`should export foo ${value3}`, () =>
-    CLI.command(`export foo=${value3}`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this))
+    CLI.command(`export foo=${value3}`, this.app).then(ReplExpect.justOK).catch(Common.oops(this))
   )
 
   Common.pit('should printenv the new value for foo in the second tab', () =>
-    CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithPtyOutput(value3))
-      .catch(Common.oops(this))
+    CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(value3)).catch(Common.oops(this))
   )
 
   Common.pit(`should export foo ${value4}`, () =>
-    CLI.command(`export foo=${value4}`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this))
+    CLI.command(`export foo=${value4}`, this.app).then(ReplExpect.justOK).catch(Common.oops(this))
   )
 
   Common.pit('should printenv the new value for foo in the second tab', () =>
-    CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithPtyOutput(_value4))
-      .catch(Common.oops(this))
+    CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(_value4)).catch(Common.oops(this))
   )
 
   Common.pit(`should export foo ${value5}`, () =>
-    CLI.command(`export foo=${value5}`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this))
+    CLI.command(`export foo=${value5}`, this.app).then(ReplExpect.justOK).catch(Common.oops(this))
   )
 
   Common.pit('should printenv the new value for foo in the second tab', () =>
-    CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithPtyOutput(_value5))
-      .catch(Common.oops(this))
+    CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(_value5)).catch(Common.oops(this))
   )
 
   Common.pit('should switch back to the first tab', () =>
@@ -129,9 +113,7 @@ describe('export command', function(this: Common.ISuite) {
   )
 
   Common.pit('should show the first-tab value for foo in the first tab', () =>
-    CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithPtyOutput(value2))
-      .catch(Common.oops(this))
+    CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(value2)).catch(Common.oops(this))
   )
 
   Common.pit('should switch back to the second tab', () =>
@@ -142,8 +124,6 @@ describe('export command', function(this: Common.ISuite) {
   )
 
   Common.pit('should show the second-tab value for foo in the second tab', () =>
-    CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithPtyOutput(_value5))
-      .catch(Common.oops(this))
+    CLI.command('printenv foo', this.app).then(ReplExpect.okWithPtyOutput(_value5)).catch(Common.oops(this))
   )
 })

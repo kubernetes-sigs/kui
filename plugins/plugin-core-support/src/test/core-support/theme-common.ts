@@ -20,9 +20,7 @@ export const defaultTheme = 'PatternFly4 Light'
 
 export const resetTheme = (ctx: Common.ISuite) => {
   it('should reset theme preference', () =>
-    CLI.command('theme reset', ctx.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(ctx, true)))
+    CLI.command('theme reset', ctx.app).then(ReplExpect.justOK).catch(Common.oops(ctx, true)))
 
   it(`should show that we are using the default theme: ${defaultTheme}`, () =>
     CLI.command('theme current', ctx.app)

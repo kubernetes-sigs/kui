@@ -276,109 +276,103 @@ export const formatTable = async <O extends KubeOptions>(
   // manifested in the name cell, e.g. "_pod_/mypod"
   let entityTypeFromRows: string
 
-  const rows = preTable.map(
-    (rows, idx): Row => {
-      const name = nameColumnIdx >= 0 ? rows[nameColumnIdx].value : ''
-      const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
-      const nameForDrilldown = nameSplit[1] || name
-      const css = ''
-      const firstColumnCSS = idx === 0 || rows[0].key !== 'CURRENT' ? css : 'selected-entity'
+  const rows = preTable.map((rows, idx): Row => {
+    const name = nameColumnIdx >= 0 ? rows[nameColumnIdx].value : ''
+    const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
+    const nameForDrilldown = nameSplit[1] || name
+    const css = ''
+    const firstColumnCSS = idx === 0 || rows[0].key !== 'CURRENT' ? css : 'selected-entity'
 
-      const rowIsSelectable = rows[0].key === 'CURRENT'
-      const rowIsSelected = rowIsSelectable && rows[0].value === '*'
-      const rowCSS = [rowIsSelected ? 'selected-row' : ''].filter(_ => _)
+    const rowIsSelectable = rows[0].key === 'CURRENT'
+    const rowIsSelected = rowIsSelectable && rows[0].value === '*'
+    const rowCSS = [rowIsSelected ? 'selected-row' : ''].filter(_ => _)
 
-      const nameForDisplay =
-        idx > 0 && rowIsSelected ? '*' : idx > 0 && rowIsSelectable ? '' : nameSplit[1] || rows[0].value
+    const nameForDisplay =
+      idx > 0 && rowIsSelected ? '*' : idx > 0 && rowIsSelectable ? '' : nameSplit[1] || rows[0].value
 
-      // if we have a "name split", e.g. "pod/myPod", then keep track of the "pod" part
-      if (!rowIsSelectable && nameSplit[1]) {
-        if (!entityTypeFromRows) {
-          entityTypeFromRows = nameSplit[0]
-        } else if (entityTypeFromRows !== nameSplit[0]) {
-          entityTypeFromRows = undefined
-        }
-      }
-
-      // if there isn't a global namespace specifier, maybe there is a row namespace specifier
-      // we use the row specifier in preference to a global specifier -- is that right?
-      const ns =
-        (namespaceColumnIdx >= 0 && command !== 'helm' && `-n ${encodeComponent(rows[namespaceColumnIdx].value)}`) ||
-        drilldownNamespace ||
-        ''
-
-      // idx === 0: don't click on header row
-      const onclick0 =
-        idx === 0
-          ? false
-          : drilldownVerb
-          ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${encodeComponent(
-              nameForDrilldown
-            )} ${drilldownFormat} ${ns}`
-          : false
-      const onclick = args && typeof onclick0 === 'string' ? withKubeconfigFrom(args, onclick0) : onclick0
-      const header = idx === 0 ? 'header-cell' : ''
-
-      // for `k get events`, show REASON and MESSAGE columns when sidecar open
-      const columnVisibleWithSidecar = new RegExp(/STATUS|REASON|MESSAGE/i)
-
-      // show TrafficLight.Red if it's a failure reason in `k  get events`
-      const maybeRed = (reason: string) => {
-        return /failed/i.test(reason) ? TrafficLight.Red : ''
-      }
-
-      /**
-       * rowKey is the unique string that distinguishes each row
-       * option 1. name
-       * option 2. `first column`-`name`, e.g. --all-namespaces
-       * option 3. `first column`-`idx` when there's no name column, e.g. k get events
-       *
-       */
-      const rowKey = name
-        ? isForAllNamespaces(options)
-          ? `${rows[0].value}-${name}`
-          : name
-        : `${rows[0].value}-${idx}`
-
-      return {
-        key: rows[0].key,
-        name: nameForDisplay,
-        rowKey,
-        fontawesome: rowIsSelected ? 'fas fa-check' : undefined,
-        onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
-        onclickIdempotent: true,
-        css: firstColumnCSS + (rows[0].key === nameColumn ? ' kui--table-cell-is-name' : ''),
-        rowCSS,
-        outerCSS: `${header} ${outerCSSForKey[rows[0].key] || ''}`,
-        attributes: rows
-          .slice(1)
-          .map(
-            ({ key, value: column }, colIdx): Cell => ({
-              key,
-              tag: idx > 0 && tagForKey[key],
-              onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
-              outerCSS: (
-                header +
-                ' ' +
-                (outerCSSForKey[key] || '') +
-                (colIdx <= 1 || colIdx === nameColumnIdx - 1 || columnVisibleWithSidecar.test(key)
-                  ? ''
-                  : ' hide-with-sidecar')
-              ).trim(), // nameColumnIndex - 1 beacuse of rows.slice(1)
-              css: (
-                css +
-                ' ' +
-                ((idx > 0 && cssForKey[key]) || '') +
-                ' ' +
-                (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column))
-              ).trim(),
-              value: key === 'STATUS' && idx > 0 ? column || strings('Unknown') : column
-            })
-          )
-          .concat(fillTo(rows.length, maxColumns))
+    // if we have a "name split", e.g. "pod/myPod", then keep track of the "pod" part
+    if (!rowIsSelectable && nameSplit[1]) {
+      if (!entityTypeFromRows) {
+        entityTypeFromRows = nameSplit[0]
+      } else if (entityTypeFromRows !== nameSplit[0]) {
+        entityTypeFromRows = undefined
       }
     }
-  )
+
+    // if there isn't a global namespace specifier, maybe there is a row namespace specifier
+    // we use the row specifier in preference to a global specifier -- is that right?
+    const ns =
+      (namespaceColumnIdx >= 0 && command !== 'helm' && `-n ${encodeComponent(rows[namespaceColumnIdx].value)}`) ||
+      drilldownNamespace ||
+      ''
+
+    // idx === 0: don't click on header row
+    const onclick0 =
+      idx === 0
+        ? false
+        : drilldownVerb
+        ? `${drilldownCommand} ${drilldownVerb}${drilldownKind(nameSplit, rows)} ${encodeComponent(
+            nameForDrilldown
+          )} ${drilldownFormat} ${ns}`
+        : false
+    const onclick = args && typeof onclick0 === 'string' ? withKubeconfigFrom(args, onclick0) : onclick0
+    const header = idx === 0 ? 'header-cell' : ''
+
+    // for `k get events`, show REASON and MESSAGE columns when sidecar open
+    const columnVisibleWithSidecar = /STATUS|REASON|MESSAGE/i
+
+    // show TrafficLight.Red if it's a failure reason in `k  get events`
+    const maybeRed = (reason: string) => {
+      return /failed/i.test(reason) ? TrafficLight.Red : ''
+    }
+
+    /**
+     * rowKey is the unique string that distinguishes each row
+     * option 1. name
+     * option 2. `first column`-`name`, e.g. --all-namespaces
+     * option 3. `first column`-`idx` when there's no name column, e.g. k get events
+     *
+     */
+    const rowKey = name ? (isForAllNamespaces(options) ? `${rows[0].value}-${name}` : name) : `${rows[0].value}-${idx}`
+
+    return {
+      key: rows[0].key,
+      name: nameForDisplay,
+      rowKey,
+      fontawesome: rowIsSelected ? 'fas fa-check' : undefined,
+      onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
+      onclickIdempotent: true,
+      css: firstColumnCSS + (rows[0].key === nameColumn ? ' kui--table-cell-is-name' : ''),
+      rowCSS,
+      outerCSS: `${header} ${outerCSSForKey[rows[0].key] || ''}`,
+      attributes: rows
+        .slice(1)
+        .map(
+          ({ key, value: column }, colIdx): Cell => ({
+            key,
+            tag: idx > 0 && tagForKey[key],
+            onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
+            outerCSS: (
+              header +
+              ' ' +
+              (outerCSSForKey[key] || '') +
+              (colIdx <= 1 || colIdx === nameColumnIdx - 1 || columnVisibleWithSidecar.test(key)
+                ? ''
+                : ' hide-with-sidecar')
+            ).trim(), // nameColumnIndex - 1 beacuse of rows.slice(1)
+            css: (
+              css +
+              ' ' +
+              ((idx > 0 && cssForKey[key]) || '') +
+              ' ' +
+              (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column))
+            ).trim(),
+            value: key === 'STATUS' && idx > 0 ? column || strings('Unknown') : column
+          })
+        )
+        .concat(fillTo(rows.length, maxColumns))
+    }
+  })
 
   const breadcrumbs = await getNamespaceBreadcrumbs(entityTypeFromCommandLine, args)
 
@@ -800,7 +794,7 @@ export function toKuiTable(
     // and ugh, static imports seem to cause problems with headless https://github.com/kubernetes-sigs/kui/issues/7874
     const jsonpath = require('@kui-shell/jsonpath')
     const qquery = jsonpath.parse('$' + sortBy.replace(/^{?(.+)}$/, '$1').replace(/\.\w+-\w+/g, _ => `["${_}"]`))
-    const query = (qquery as any) as string // bad typing in @types/jsonpath
+    const query = qquery as any as string // bad typing in @types/jsonpath
 
     body.sort((a, b) => {
       const vvA = jsonpath.value(a.object, query)

@@ -27,7 +27,7 @@ function colorOf(N: number) {
 /** id for our test widget */
 const id = 'test-client-counter-fragment-0'
 
-describe('test client status stripe', function(this: Common.ISuite) {
+describe('test client status stripe', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -20,7 +20,7 @@ import { doHelp, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubect
 const lists = ['list', 'ls']
 
 // TODO: enable this once proxy can find $HOME on travis
-describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -41,30 +41,22 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   help('helm get -h', ['helm', 'get'], ['Introduction', 'Flags', 'Global Flags', 'Available'])
 
   it('should show 500 error for helm create', () => {
-    return CLI.command('helm create', this.app)
-      .then(ReplExpect.error(500, 'Error:'))
-      .catch(Common.oops(this, true))
+    return CLI.command('helm create', this.app).then(ReplExpect.error(500, 'Error:')).catch(Common.oops(this, true))
   })
 
   it('should show 500 error for helm install', () => {
-    return CLI.command('helm install', this.app)
-      .then(ReplExpect.error(500, 'Error:'))
-      .catch(Common.oops(this, true))
+    return CLI.command('helm install', this.app).then(ReplExpect.error(500, 'Error:')).catch(Common.oops(this, true))
   })
 
   it('should show 500 error for helm delete', () => {
-    return CLI.command('helm delete', this.app)
-      .then(ReplExpect.error(500, 'Error:'))
-      .catch(Common.oops(this, true))
+    return CLI.command('helm delete', this.app).then(ReplExpect.error(500, 'Error:')).catch(Common.oops(this, true))
   })
 
   allocateNS(this, ns)
 
   lists.forEach(list => {
     it(`should list empty releases via helm ${list}`, () => {
-      return CLI.command(`helm ${list} -n ${ns}`, this.app)
-        .then(ReplExpect.blank)
-        .catch(Common.oops(this, true))
+      return CLI.command(`helm ${list} -n ${ns}`, this.app).then(ReplExpect.blank).catch(Common.oops(this, true))
     })
   })
 
@@ -90,9 +82,7 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
   it(`should show history`, () => {
     return CLI.command(`helm history ${name} -n ${ns}`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.TABLE_CELL('1', 'REVISION') })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.TABLE_CELL('1', 'REVISION') }))
       .then(Util.expectText(this.app, '1'))
       .catch(Common.oops(this, true))
   })
@@ -107,9 +97,7 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   // also confirm that there is a REVISION column in that row
   it(`should list that new release via helm list`, () => {
     return CLI.command(`helm list --filter ${name} -n ${ns}`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.TABLE_CELL(name, 'REVISION') })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.TABLE_CELL(name, 'REVISION') }))
       .then(Util.expectText(this.app, '1'))
       .catch(Common.oops(this, true))
   })

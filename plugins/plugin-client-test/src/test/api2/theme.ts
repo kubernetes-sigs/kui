@@ -16,14 +16,12 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe('theme switching', function(this: Common.ISuite) {
+describe('theme switching', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should list plugin-provided Light theme', () =>
-    CLI.command('theme list', this.app)
-      .then(ReplExpect.okWithDropDownList('Light'))
-      .catch(Common.oops(this, true)))
+    CLI.command('theme list', this.app).then(ReplExpect.okWithDropDownList('Light')).catch(Common.oops(this, true)))
 
   it('should list client-provided Test Theme', () =>
     CLI.command('theme list', this.app)

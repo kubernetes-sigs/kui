@@ -61,7 +61,7 @@ export class TestTable {
   /** new TestTable().run() will start a mocha test suite */
   public run() {
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
-    describe(`${this.testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`${this.testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

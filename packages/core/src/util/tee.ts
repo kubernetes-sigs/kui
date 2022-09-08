@@ -18,7 +18,7 @@ import Debug from 'debug'
 import { Entity } from '../models/entity'
 const debug = Debug('util/tee')
 
-export default async function(response: Entity) {
+export default async function (response: Entity) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     // eslint-disable-next-line @typescript-eslint/no-var-requires

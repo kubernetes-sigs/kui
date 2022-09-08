@@ -29,7 +29,7 @@ const dashFs = ['-f']
 
 const echoString = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
-xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -52,36 +52,28 @@ xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
       it(`should get with semicolon 1`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns}; echo ${echoString}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
 
       it(`should get with semicolon 2`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns} ; echo ${echoString}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
 
       it(`should get with semicolon 3`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns} ;echo ${echoString};`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
 
       it(`should get with semicolon 4`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns} ;echo ${echoString}; ; ; ;;;`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })

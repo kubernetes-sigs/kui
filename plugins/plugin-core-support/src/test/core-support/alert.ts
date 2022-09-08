@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
-describe('alert command', function(this: Common.ISuite) {
+describe('alert command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

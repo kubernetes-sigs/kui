@@ -31,40 +31,42 @@ const debug = Debug('plugin-kubectl/controller/kubectl/create')
 /** The create-like verbs we will handle */
 const verbs = ['create' as const, 'apply' as const]
 
-export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
-  if (isUsage(args)) {
-    return doHelp(command, args)
-  } else {
-    if (isDryRun(args)) {
-      const raw = await exec(args, undefined, command)
-      if (isEntityFormat(formatOf(args)) && !reallyNeedsPty(args)) {
-        const entity = await doGetAsEntity(args, raw)
-        return entity
-      } else {
-        return raw.content.stdout
-      }
+export const doCreate =
+  (verb: 'create' | 'apply', command = 'kubectl') =>
+  async (args: Arguments<KubeOptions>) => {
+    if (isUsage(args)) {
+      return doHelp(command, args)
     } else {
-      try {
-        const response = await createDirect(args, verb)
-        if (response) {
-          return response
+      if (isDryRun(args)) {
+        const raw = await exec(args, undefined, command)
+        if (isEntityFormat(formatOf(args)) && !reallyNeedsPty(args)) {
+          const entity = await doGetAsEntity(args, raw)
+          return entity
         } else {
-          debug('createDirect falling through to CLI impl')
+          return raw.content.stdout
         }
-      } catch (err) {
-        if (is404or409(err)) {
-          throw err
-        } else {
-          console.error('Error in direct create. Falling back to CLI create.', err.code, err)
+      } else {
+        try {
+          const response = await createDirect(args, verb)
+          if (response) {
+            return response
+          } else {
+            debug('createDirect falling through to CLI impl')
+          }
+        } catch (err) {
+          if (is404or409(err)) {
+            throw err
+          } else {
+            console.error('Error in direct create. Falling back to CLI create.', err.code, err)
+          }
         }
-      }
 
-      // Note: the kuiSourceRef info will be added by `doStatus` in
-      // ./status.ts, which is called by `doExecWithStatus`
-      return doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
+        // Note: the kuiSourceRef info will be added by `doStatus` in
+        // ./status.ts, which is called by `doExecWithStatus`
+        return doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
+      }
     }
   }
-}
 
 export const applyFlag = Object.assign({}, defaultFlags, { viewTransformer })
 

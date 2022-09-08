@@ -18,7 +18,7 @@ import { Registrar } from '@kui-shell/core'
 
 import { responderFor, vfsFor } from '../responders'
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/cp',
     args => {

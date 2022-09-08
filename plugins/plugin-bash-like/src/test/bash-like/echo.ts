@@ -16,38 +16,28 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   Common.pit('should echo nothing variant 1', () =>
-    CLI.command('echo', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this))
+    CLI.command('echo', this.app).then(ReplExpect.justOK).catch(Common.oops(this))
   )
 
   Common.pit('should echo nothing variant 2', () =>
-    CLI.command('echo ', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this))
+    CLI.command('echo ', this.app).then(ReplExpect.justOK).catch(Common.oops(this))
   )
 
   Common.pit('should echo nothing variant 3', () =>
-    CLI.command('echo                  ', this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this))
+    CLI.command('echo                  ', this.app).then(ReplExpect.justOK).catch(Common.oops(this))
   )
 
   Common.pit('should echo hi', () =>
-    CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this))
+    CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this))
   )
 
   Common.pit('should echo hi with surrounding whitespace', () =>
-    CLI.command('echo   hi               ', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this))
+    CLI.command('echo   hi               ', this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this))
   )
 
   Common.pit('should echo hi hi with surrounding whitespace', () =>
@@ -63,9 +53,7 @@ describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
   )
 
   Common.pit('should echo "hi  hi"', () =>
-    CLI.command('echo "hi  hi"', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi  hi'))
-      .catch(Common.oops(this))
+    CLI.command('echo "hi  hi"', this.app).then(ReplExpect.okWithPtyOutput('hi  hi')).catch(Common.oops(this))
   )
 
   Common.pit('should echo "hi  hi" with surrounding whitespace', () =>

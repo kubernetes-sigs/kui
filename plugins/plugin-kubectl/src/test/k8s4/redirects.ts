@@ -33,8 +33,9 @@ const synonyms = ['kubectl']
  * deployments.
  *
  */
-xdescribe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+xdescribe(`kubectl apply deployment against redirecting URL ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

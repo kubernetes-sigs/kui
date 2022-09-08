@@ -27,7 +27,7 @@ import {
 const synonyms = ['kubectl']
 const dashFs = ['-f']
 
-describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -93,9 +93,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
         return CLI.command(`${kubectl} delete ${dashF} ${remotePodYaml} ${inNamespace}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForRed(this.app, selector))
           .catch(Common.oops(this, true))
       })

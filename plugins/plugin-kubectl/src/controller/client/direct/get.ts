@@ -202,9 +202,11 @@ export async function get(
       throw error
     } else if (format === 'name') {
       try {
-        const stdout = ((Buffer.isBuffer(response) || typeof response === 'string'
-          ? JSON.parse(response.toString())
-          : response) as KubeItems).items
+        const stdout = (
+          (Buffer.isBuffer(response) || typeof response === 'string'
+            ? JSON.parse(response.toString())
+            : response) as KubeItems
+        ).items
           .map(_ => _.metadata.name)
           .join('\n')
 

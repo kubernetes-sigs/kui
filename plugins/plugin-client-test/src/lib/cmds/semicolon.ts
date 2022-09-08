@@ -16,7 +16,7 @@
 
 import { Registrar } from '@kui-shell/core'
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   registrar.listen('/nosemi', ({ command }) => (/;/.test(command) ? 'yes ' + command.slice('nosemi '.length) : 'no'), {
     semiExpand: false
   })
