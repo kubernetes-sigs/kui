@@ -140,7 +140,9 @@ export const expectYAML =
       const struct2 = load(str)
       const ok = sameStruct(
         struct1,
-        typeof struct2 === 'object' ? struct2 : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2),
+        typeof struct2 !== 'string' || typeof struct2 !== 'boolean' || typeof struct2 !== 'number'
+          ? struct2
+          : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2),
         subset
       )
       if (failFast) {

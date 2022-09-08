@@ -84,7 +84,7 @@ export const doKustomize =
     } else {
       const [yaml, { loadAll }] = await Promise.all([doExecWithStdout(args, prepare, command), import('js-yaml')])
       try {
-        const resources = loadAll(yaml)
+        const resources = loadAll(yaml) as KubeResource[]
         const inputFile = resolve(args.argvNoOptions[args.argvNoOptions.indexOf('kustomize') + 1])
 
         return {
