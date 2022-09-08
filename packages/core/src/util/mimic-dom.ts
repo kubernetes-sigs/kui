@@ -31,11 +31,11 @@ export default function () {
   global.window = {
     navigator: {
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0'
-    }
-  }
+    } as any as Window['navigator']
+  } as any as Window & typeof globalThis
   try {
-    global.localStorage = Store()
-    global.sessionStorage = Store()
+    global.localStorage = Store() as any as Storage
+    global.sessionStorage = Store() as any as Storage
     debug('successfully initialized persistent localStorage')
   } catch (err) {
     debug('error initializing persistent localStorage', err)
@@ -48,14 +48,14 @@ export default function () {
         return v
       },
       getItem: (k: string) => _localStorage[k] || null
-    }
+    } as any as Storage
     global.sessionStorage = {
       setItem: (k: string, v: string) => {
         _sessionStorage[k] = v
         return v
       },
       getItem: (k: string) => _sessionStorage[k] || null
-    }
+    } as any as Storage
   } finally {
     global.window.localStorage = localStorage
     global.window.sessionStorage = sessionStorage
@@ -63,33 +63,33 @@ export default function () {
 
   window.addEventListener = () => true
 
-  const dom0 = (): ElementMimic => {
-    return new ElementMimic()
+  const dom0 = (): ElementMimic & HTMLElement => {
+    return new ElementMimic() as ElementMimic & HTMLElement
   }
 
   global.document = {
     body: dom0(),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getElementById: (id: string) => dom0(),
-    createElement: (tag: string) => {
+    createElement: <T>(tag: string) => {
       const element = dom0()
-      element.nodeType = tag
+      ;(element as any as { nodeType: string }).nodeType = tag
       if (tag === 'table') {
-        element.rows = []
+        ;(element as any as { rows: any[] }).rows = []
       }
-      return element
+      return element as any as T
     },
     addEventListener: () => true,
     createTextNode: (text: string) => {
       const element = dom0()
       element.innerText = text
-      return element
+      return element as any as Text
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     querySelector: (selector: string) => {
       return dom0()
     }
-  }
+  } as any as Document
 
   debug('mimicDom done')
 }
