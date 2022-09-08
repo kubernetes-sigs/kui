@@ -38,7 +38,7 @@ export const keys = {
   ctrlP: ['\uE009', 'p', 'NULL'],
   ctrlC: ['\uE009', 'c', 'NULL'],
 
-  holdDownKey: function(this: ISuite, character: string) {
+  holdDownKey: function (this: ISuite, character: string) {
     return this.app.client.performActions([
       {
         type: 'key',
@@ -48,7 +48,7 @@ export const keys = {
     ])
   },
 
-  releaseKey: function(this: ISuite, character: string) {
+  releaseKey: function (this: ISuite, character: string) {
     return this.app.client.performActions([
       {
         type: 'key',

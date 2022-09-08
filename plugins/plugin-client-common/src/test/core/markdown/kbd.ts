@@ -35,8 +35,9 @@ const IN3 = {
   kbds: ['Ctrl', 'Alt', 'Delete']
 }
 ;[IN1, IN2, IN3].forEach(markdown => {
-  describe(`kbd tags in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`kbd tags in markdown ${basename(markdown.input)} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

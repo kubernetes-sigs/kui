@@ -23,7 +23,7 @@ import { Common } from '@kui-shell/test'
 
 import { doHelp, header } from '@kui-shell/plugin-core-support/tests/lib/core-support/help-util'
 
-describe('Help command', function(this: Common.ISuite) {
+describe('Help command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

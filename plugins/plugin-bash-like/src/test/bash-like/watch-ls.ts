@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
-describe(`watch directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`watch directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -60,8 +60,6 @@ describe(`watch directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, functi
 
   names.forEach(_ => {
     it('should remove the created file', () =>
-      CLI.command(`rm ${_}`, this.app)
-        .then(ReplExpect.ok)
-        .catch(Common.oops(this)))
+      CLI.command(`rm ${_}`, this.app).then(ReplExpect.ok).catch(Common.oops(this)))
   })
 })

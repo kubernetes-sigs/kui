@@ -20,7 +20,7 @@ import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
-describe(`kubectl get with limit ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl get with limit ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -31,18 +31,14 @@ describe(`kubectl get with limit ${process.env.MOCHA_RUN_TARGET || ''}`, functio
 
   it(`should create sample pod from local file`, () => {
     return CLI.command(`kubectl create -f "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })
 
   it(`should create sample pod 2 from local file`, () => {
     return CLI.command(`kubectl create -f "${ROOT}/data/k8s/headless/pod2.yaml" ${inNamespace}`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx2') })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx2') }))
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })

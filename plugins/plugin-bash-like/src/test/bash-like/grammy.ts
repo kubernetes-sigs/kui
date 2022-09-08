@@ -20,7 +20,7 @@ import { Common, CLI, Selectors } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-bash-like/tests/data/grammy1.txt')), '..')
 
-describe(`grammy table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`grammy table ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

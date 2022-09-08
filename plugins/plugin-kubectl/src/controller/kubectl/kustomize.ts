@@ -76,27 +76,29 @@ function groupByKind(resources: KubeResource[], rawFull: string): Menu[] {
   return Object.values(groups).concat([rawMenu])
 }
 
-export const doKustomize = (command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
-  if (isUsage(args)) {
-    return doHelp(command, args)
-  } else {
-    const [yaml, { loadAll }] = await Promise.all([doExecWithStdout(args, prepare, command), import('js-yaml')])
-    try {
-      const resources = loadAll(yaml)
-      const inputFile = resolve(args.argvNoOptions[args.argvNoOptions.indexOf('kustomize') + 1])
+export const doKustomize =
+  (command = 'kubectl') =>
+  async (args: Arguments<KubeOptions>) => {
+    if (isUsage(args)) {
+      return doHelp(command, args)
+    } else {
+      const [yaml, { loadAll }] = await Promise.all([doExecWithStdout(args, prepare, command), import('js-yaml')])
+      try {
+        const resources = loadAll(yaml)
+        const inputFile = resolve(args.argvNoOptions[args.argvNoOptions.indexOf('kustomize') + 1])
 
-      return {
-        apiVersion: 'kui-shell/v1',
-        kind: 'NavResponse',
-        breadcrumbs: [{ label: 'kustomize' }, { label: basename(inputFile), command: `open ${inputFile}` }],
-        menus: groupByKind(resources, yaml)
+        return {
+          apiVersion: 'kui-shell/v1',
+          kind: 'NavResponse',
+          breadcrumbs: [{ label: 'kustomize' }, { label: basename(inputFile), command: `open ${inputFile}` }],
+          menus: groupByKind(resources, yaml)
+        }
+      } catch (err) {
+        console.error('error preparing kustomize response', err)
+        return yaml
       }
-    } catch (err) {
-      console.error('error preparing kustomize response', err)
-      return yaml
     }
   }
-}
 
 export default (registrar: Registrar) => {
   registrar.listen('/kubectl/kustomize', doKustomize(), flags)

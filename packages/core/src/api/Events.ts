@@ -16,14 +16,14 @@
 
 // eventChannelUnsafe
 export {
-    default as eventChannelUnsafe,
-    wireToTabEvents,
-    wireToStandardEvents,
-    unwireToTabEvents,
-    unwireToStandardEvents,
-    eventBus,
-    NewTabRequestEvent,
-    SnapshotRequestEvent,
-    StatusStripeChangeEvent,
-    TabLayoutChangeEvent
+  default as eventChannelUnsafe,
+  wireToTabEvents,
+  wireToStandardEvents,
+  unwireToTabEvents,
+  unwireToStandardEvents,
+  eventBus,
+  NewTabRequestEvent,
+  SnapshotRequestEvent,
+  StatusStripeChangeEvent,
+  TabLayoutChangeEvent
 } from '../core/events'

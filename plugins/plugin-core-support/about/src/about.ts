@@ -107,23 +107,21 @@ const getAbout = (): Promise<NavResponse> => {
 
 // translate the labels of modes
 const translateModesLabel = (modesFromAbout: Mode[]) => {
-  return modesFromAbout.map(
-    (modeFromAbout): Mode => {
-      // translate the label
-      const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
+  return modesFromAbout.map((modeFromAbout): Mode => {
+    // translate the label
+    const label = clientStrings(modeFromAbout.label || modeFromAbout.mode)
 
-      if (isStringWithOptionalContentType(modeFromAbout)) {
-        return Object.assign({}, modeFromAbout, {
-          label,
-          content: clientStrings(modeFromAbout.content) // translate content string
-        })
-      } else {
-        return Object.assign({}, modeFromAbout, {
-          label
-        })
-      }
+    if (isStringWithOptionalContentType(modeFromAbout)) {
+      return Object.assign({}, modeFromAbout, {
+        label,
+        content: clientStrings(modeFromAbout.content) // translate content string
+      })
+    } else {
+      return Object.assign({}, modeFromAbout, {
+        label
+      })
     }
-  )
+  })
 }
 
 const aboutWindow = async (): Promise<NavResponse> => {

@@ -91,7 +91,7 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Hist
 
   // re: as any: yay tsc, there are several open issue for this;
   // it's related to isButton using generics
-  const buttonsFromRegistrar: Button[] = (allModes.filter(isButton) as any) as Button[]
+  const buttonsFromRegistrar: Button[] = allModes.filter(isButton) as any as Button[]
   const buttonsFromResponse = response.buttons || []
   const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
 

@@ -41,37 +41,39 @@ function navResponseWithBreadcrumbs(): NavResponse {
   })
 }
 
-const doNav = () => (args: Arguments<Options>): NavResponse => {
-  if (args.parsedOptions.breadcrumb) {
-    return navResponseWithBreadcrumbs()
-  }
-
-  if (args.parsedOptions.noLinks) {
-    return navResponseWithoutLinks()
-  }
-
-  if (args.parsedOptions.switch) {
-    return {
-      apiVersion: 'kui-shell/v1',
-      kind: 'NavResponse',
-      menus: [{ label: 'Test Nav 2', items: tableMode }],
-      links: [
-        { label: 'Home Page', href: 'http://kui.tools' },
-        { label: 'switch', command: 'test nav' }
-      ]
+const doNav =
+  () =>
+  (args: Arguments<Options>): NavResponse => {
+    if (args.parsedOptions.breadcrumb) {
+      return navResponseWithBreadcrumbs()
     }
-  } else {
-    return {
-      apiVersion: 'kui-shell/v1',
-      kind: 'NavResponse',
-      menus: [{ label: 'Test Nav', items: tableMode }],
-      links: [
-        { label: 'Home Page', href: 'http://kui.tools' },
-        { label: 'switch', command: 'test nav --switch' }
-      ]
+
+    if (args.parsedOptions.noLinks) {
+      return navResponseWithoutLinks()
+    }
+
+    if (args.parsedOptions.switch) {
+      return {
+        apiVersion: 'kui-shell/v1',
+        kind: 'NavResponse',
+        menus: [{ label: 'Test Nav 2', items: tableMode }],
+        links: [
+          { label: 'Home Page', href: 'http://kui.tools' },
+          { label: 'switch', command: 'test nav' }
+        ]
+      }
+    } else {
+      return {
+        apiVersion: 'kui-shell/v1',
+        kind: 'NavResponse',
+        menus: [{ label: 'Test Nav', items: tableMode }],
+        links: [
+          { label: 'Home Page', href: 'http://kui.tools' },
+          { label: 'switch', command: 'test nav --switch' }
+        ]
+      }
     }
   }
-}
 
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/nav', doNav(), {

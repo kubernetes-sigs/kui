@@ -23,17 +23,13 @@ import { Common, CLI, ReplExpect } from '@kui-shell/test'
 const input1 = 'hi ho\\\\.mo\\.zo \\ff'
 const output1 = 'hi ho\\.mo.zo ff'
 
-describe(`Command line parsing ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`Command line parsing ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('should properly handle backslash escapes with pty commands', () =>
-    CLI.command(`echo ${input1}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(output1))
-      .catch(Common.oops(this, true)))
+    CLI.command(`echo ${input1}`, this.app).then(ReplExpect.okWithPtyOutput(output1)).catch(Common.oops(this, true)))
 
   it('should properly handle backslash escapes with kui commands', () =>
-    CLI.command(`kuiecho ${input1}`, this.app)
-      .then(ReplExpect.okWithString(output1))
-      .catch(Common.oops(this, true)))
+    CLI.command(`kuiecho ${input1}`, this.app).then(ReplExpect.okWithString(output1)).catch(Common.oops(this, true)))
 })

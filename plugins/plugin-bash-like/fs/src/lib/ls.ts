@@ -93,19 +93,25 @@ interface TheLsOptions {
 type LsOptions = TheLsOptions & ParsedOptions
 
 /** sort by size */
-const bySize = (rev: -1 | 1) => (a: GlobStats, b: GlobStats): number => {
-  return rev * (b.stats.size - a.stats.size)
-}
+const bySize =
+  (rev: -1 | 1) =>
+  (a: GlobStats, b: GlobStats): number => {
+    return rev * (b.stats.size - a.stats.size)
+  }
 
 /** sort by last modification time */
-const byTime = (rev: -1 | 1) => (a: GlobStats, b: GlobStats): number => {
-  return rev * (b.stats.mtimeMs - a.stats.mtimeMs)
-}
+const byTime =
+  (rev: -1 | 1) =>
+  (a: GlobStats, b: GlobStats): number => {
+    return rev * (b.stats.mtimeMs - a.stats.mtimeMs)
+  }
 
 /** sort lexicographically by name */
-const byLex = (rev: -1 | 1) => (a: GlobStats, b: GlobStats): number => {
-  return rev * a.nameForDisplay.localeCompare(b.nameForDisplay)
-}
+const byLex =
+  (rev: -1 | 1) =>
+  (a: GlobStats, b: GlobStats): number => {
+    return rev * a.nameForDisplay.localeCompare(b.nameForDisplay)
+  }
 
 /**
  * Decorate an entry according to its nature
@@ -196,11 +202,7 @@ function attrs(
         ]
       : []
 
-  return perms
-    .concat(uid)
-    .concat(gid)
-    .concat(size)
-    .concat(lastMod)
+  return perms.concat(uid).concat(gid).concat(size).concat(lastMod)
 }
 
 /**
@@ -241,11 +243,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
 
   const header = {
     name: 'Name',
-    attributes: perms
-      .concat(uid)
-      .concat(gid)
-      .concat(size)
-      .concat(lastMod)
+    attributes: perms.concat(uid).concat(gid).concat(size).concat(lastMod)
   }
 
   const defaultPresentation = wide ? ('table' as const) : ('grid' as const)
@@ -270,78 +268,80 @@ function opt(o: keyof TheLsOptions, opts: Arguments<LsOptions>) {
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<number | MixedResponse | Table> => {
-  const pipeToGrep = opts.command.match(/\|\s*grep\s+([^|]+)$/)
-  const pipeToWordcount = /\|\s*wc\s+[^|]*$/.test(opts.command)
-  const pipeToGrepToWordcount = opts.command.match(/\|\s*grep\s+([\w*.]+)\s*\|\s*wc\s+[^|]*$/)
-  const pipeTo = !!pipeToGrepToWordcount || !!pipeToWordcount || !!pipeToGrep
-  let command = opts.command
-  if (pipeTo) {
-    command = command.slice(0, command.indexOf('|'))
-  } else if (/\|/.test(opts.command)) {
-    // conservatively send possibly piped output to the PTY
-    return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
-  }
-
-  //
-  // NOTE 1: please be careful to use the original command line, rather
-  // than Kui's parsing of it. Windows is weird about backslashes, in
-  // a way that is not compatible with Kui's defaultparsing. For the
-  // curious, this parsing is in `packages/core/src/repl/split.ts`.
-  // This is why we use opts.command rather than opts.argvNoOptions.
-  //
-  // NOTE 2: The 2nd regexp assumes that `ls` takes only boolean options.
-  //
-  const srcs = command.replace(/^\s*ls/, '').replace(/\s--?\S+/g, '')
-
-  const cmdline = 'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + opt('d', opts) + srcs
-
-  if (cmd === 'lls') {
-    opts.parsedOptions.l = true
-  }
-
-  const allEntries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
-  const entries = opts.parsedOptions.a
-    ? allEntries
-    : opts.parsedOptions.A
-    ? allEntries.filter(_ => _.name !== '.' && _.name !== '..')
-    : allEntries.filter(_ => _.name.charAt(0) !== '.')
-
-  if (entries.length === 0) {
-    const isDirs = entries.map(_ => _.dirent.isDirectory)
-    if (isDirs.some(_ => !_)) {
-      // ls on at least one non-directory yielded no entries (converseley: it is not an error if an ls on only-directories yielded no entries)
-      const error: CodedError = new Error(
-        srcs
-          .split(/\s/)
-          .map((_, idx) => (isDirs[idx] ? undefined : `ls: ${_}: No such file or directory`))
-          .filter(_ => _)
-          .join('\n')
-      )
-      error.code = 404
-      throw error
+const doLs =
+  (cmd: string) =>
+  async (opts: Arguments<LsOptions>): Promise<number | MixedResponse | Table> => {
+    const pipeToGrep = opts.command.match(/\|\s*grep\s+([^|]+)$/)
+    const pipeToWordcount = /\|\s*wc\s+[^|]*$/.test(opts.command)
+    const pipeToGrepToWordcount = opts.command.match(/\|\s*grep\s+([\w*.]+)\s*\|\s*wc\s+[^|]*$/)
+    const pipeTo = !!pipeToGrepToWordcount || !!pipeToWordcount || !!pipeToGrep
+    let command = opts.command
+    if (pipeTo) {
+      command = command.slice(0, command.indexOf('|'))
+    } else if (/\|/.test(opts.command)) {
+      // conservatively send possibly piped output to the PTY
+      return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
     }
-  }
 
-  if (pipeToGrep || pipeToGrepToWordcount) {
-    const rest = pipeToGrepToWordcount ? pipeToGrepToWordcount[1] : pipeToGrep[1]
-    const grepFor = split(rest)
-      .filter(_ => !/^-/.test(_))[0]
-      .replace(/\./g, '\\.')
-      .replace(/\*/g, '.*')
-    const pattern = new RegExp(/\*/.test(grepFor) ? `^${grepFor}$` : grepFor)
-    const filteredEntries = entries.filter(_ => pattern.test(_.name))
-    if (pipeToGrep) {
-      return toTable(filteredEntries, opts)
+    //
+    // NOTE 1: please be careful to use the original command line, rather
+    // than Kui's parsing of it. Windows is weird about backslashes, in
+    // a way that is not compatible with Kui's defaultparsing. For the
+    // curious, this parsing is in `packages/core/src/repl/split.ts`.
+    // This is why we use opts.command rather than opts.argvNoOptions.
+    //
+    // NOTE 2: The 2nd regexp assumes that `ls` takes only boolean options.
+    //
+    const srcs = command.replace(/^\s*ls/, '').replace(/\s--?\S+/g, '')
+
+    const cmdline = 'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + opt('d', opts) + srcs
+
+    if (cmd === 'lls') {
+      opts.parsedOptions.l = true
+    }
+
+    const allEntries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
+    const entries = opts.parsedOptions.a
+      ? allEntries
+      : opts.parsedOptions.A
+      ? allEntries.filter(_ => _.name !== '.' && _.name !== '..')
+      : allEntries.filter(_ => _.name.charAt(0) !== '.')
+
+    if (entries.length === 0) {
+      const isDirs = entries.map(_ => _.dirent.isDirectory)
+      if (isDirs.some(_ => !_)) {
+        // ls on at least one non-directory yielded no entries (converseley: it is not an error if an ls on only-directories yielded no entries)
+        const error: CodedError = new Error(
+          srcs
+            .split(/\s/)
+            .map((_, idx) => (isDirs[idx] ? undefined : `ls: ${_}: No such file or directory`))
+            .filter(_ => _)
+            .join('\n')
+        )
+        error.code = 404
+        throw error
+      }
+    }
+
+    if (pipeToGrep || pipeToGrepToWordcount) {
+      const rest = pipeToGrepToWordcount ? pipeToGrepToWordcount[1] : pipeToGrep[1]
+      const grepFor = split(rest)
+        .filter(_ => !/^-/.test(_))[0]
+        .replace(/\./g, '\\.')
+        .replace(/\*/g, '.*')
+      const pattern = new RegExp(/\*/.test(grepFor) ? `^${grepFor}$` : grepFor)
+      const filteredEntries = entries.filter(_ => pattern.test(_.name))
+      if (pipeToGrep) {
+        return toTable(filteredEntries, opts)
+      } else {
+        return filteredEntries.length
+      }
+    } else if (pipeToWordcount) {
+      return entries.length
     } else {
-      return filteredEntries.length
+      return toTable(entries, opts)
     }
-  } else if (pipeToWordcount) {
-    return entries.length
-  } else {
-    return toTable(entries, opts)
   }
-}
 
 const usage = (command: string) => ({
   command,

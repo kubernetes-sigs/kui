@@ -40,7 +40,7 @@ function withBooleanFlags<Handler extends CommandHandler<KResponse, ParsedOption
   })
 }
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   const on = withBooleanFlags.bind(registrar)
 
   on(

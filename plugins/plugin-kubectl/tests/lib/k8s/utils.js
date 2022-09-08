@@ -155,70 +155,74 @@ exports.deletePodByName = (ctx, pod, ns, command = 'kubectl', theCli = CLI) => {
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, theCli = makeCLI('kubectl'), name = '', okToSurvive, inNamespace = '') => app =>
-  new Promise(resolve => {
-    // fetch the entities
-    const fetch = async () => {
-      const response = await theCli.command(
-        `get "${kind}" ${typeof name === 'string' ? name : name.join(' ')} ${inNamespace}`,
-        app,
-        {
-          errOk: 1
-        }
-      )
-      return response
-    }
+exports.waitTillNone =
+  (kind, theCli = makeCLI('kubectl'), name = '', okToSurvive, inNamespace = '') =>
+  app =>
+    new Promise(resolve => {
+      // fetch the entities
+      const fetch = async () => {
+        const response = await theCli.command(
+          `get "${kind}" ${typeof name === 'string' ? name : name.join(' ')} ${inNamespace}`,
+          app,
+          {
+            errOk: 1
+          }
+        )
+        return response
+      }
 
-    // verify the entities
-    const verify = okToSurvive
-      ? theCli === ReplExpect
-        ? theCli.expectOKWith(okToSurvive)
-        : theCli.expectOK(okToSurvive)
-      : theCli.expectError(1, 'not found')
+      // verify the entities
+      const verify = okToSurvive
+        ? theCli === ReplExpect
+          ? theCli.expectOKWith(okToSurvive)
+          : theCli.expectOK(okToSurvive)
+        : theCli.expectError(1, 'not found')
 
-    const iter = () => {
-      return fetch()
-        .then(verify)
-        .then(resolve)
-        .catch(() => setTimeout(iter, 3000))
-    }
+      const iter = () => {
+        return fetch()
+          .then(verify)
+          .then(resolve)
+          .catch(() => setTimeout(iter, 3000))
+      }
 
-    iter()
-  })
+      iter()
+    })
 
 /**
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillTerminating = (kind, theCli = CLI, name, inNamespace) => app =>
-  new Promise(resolve => {
-    // fetch the entities
-    const fetch = () =>
-      theCli
-        .do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
-          errOk: theCli.exitCode(404)
-        })
-        .then(res => {
-          return /Terminating/.test(res.output)
-        })
+exports.waitTillTerminating =
+  (kind, theCli = CLI, name, inNamespace) =>
+  app =>
+    new Promise(resolve => {
+      // fetch the entities
+      const fetch = () =>
+        theCli
+          .do(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
+            errOk: theCli.exitCode(404)
+          })
+          .then(res => {
+            return /Terminating/.test(res.output)
+          })
 
-    const iter = async () => {
-      const isTerminating = await fetch()
-      if (isTerminating) {
-        resolve()
-      } else {
-        setTimeout(iter, 3000)
+      const iter = async () => {
+        const isTerminating = await fetch()
+        if (isTerminating) {
+          resolve()
+        } else {
+          setTimeout(iter, 3000)
+        }
       }
-    }
 
-    iter()
-  })
+      iter()
+    })
 
 /**
  * Confirm that the table title matches
  *
  */
-exports.assertTableTitleMatches = async function(self, tableSelector, expectedTitle) {
+exports.assertTableTitleMatches = async function (self, tableSelector, expectedTitle) {
   // getHTML rather than getText, in case the title is not visible in this client
   const tableTitle = (await self.app.client.$(`${tableSelector} .result-table-title`).then(_ => _.getHTML())).replace(
     /<div.*>(.*)<\/div>/,
@@ -253,9 +257,7 @@ exports.kubectl = makeCLI('kubectl kui', bindir)
 exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
   it(`should give help for known outer command=${cmd} breadcrumbs=${breadcrumbs}`, async () => {
     try {
-      const res = await CLI.command(cmd, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
+      const res = await CLI.command(cmd, this.app).then(ReplExpect.ok).then(SidecarExpect.open)
 
       await this.app.client.$(Selectors.SIDECAR_BREADCRUMBS(res.count)).then(_ => _.waitForDisplayed())
       await this.app.client.$(Selectors.SIDECAR_BREADCRUMBS(res.count)).then(_ => _.getText())
@@ -285,13 +287,13 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
 const terminalRows = (N, splitIndex) => `${Selectors.SIDECAR_TAB_CONTENT(N, splitIndex)} .xterm-rows`
 
 /** Get text from a Terminal-oriented tab */
-exports.getTerminalText = async function(res) {
+exports.getTerminalText = async function (res) {
   await this.app.client.$(terminalRows(res.count, res.splitIndex)).then(_ => _.waitForExist())
   return this.app.client.$(terminalRows(res.count, res.splitIndex)).then(_ => _.getText())
 }
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */
-exports.waitForTerminalText = async function(res, checker) {
+exports.waitForTerminalText = async function (res, checker) {
   let idx = 0
   const get = exports.getTerminalText.bind(this, res)
   return this.app.client.waitUntil(async () => {

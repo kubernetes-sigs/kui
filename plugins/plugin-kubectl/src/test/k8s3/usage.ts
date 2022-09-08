@@ -21,7 +21,7 @@ const commonModes = ['Introduction']
 const kubectlModes = commonModes.concat(['Basic  (Beginner)'])
 const kubectlGetModes = commonModes.concat(['get pods'])
 
-describe('kubectl dash h', function(this: Common.ISuite) {
+describe('kubectl dash h', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

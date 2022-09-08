@@ -34,7 +34,7 @@ enum Status {
 }
 
 /** after a CLI.command (res), wait for a table row with the given status */
-const waitForStatus = async function(
+const waitForStatus = async function (
   this: Common.ISuite,
   status: Status,
   nsName: string,
@@ -51,7 +51,7 @@ const waitForStatus = async function(
 }
 
 /** create namespace, and expect status eventually to be green */
-const createNS = async function(this: Common.ISuite, kubectl: string) {
+const createNS = async function (this: Common.ISuite, kubectl: string) {
   it(`should create namespace from URL via ${kubectl}`, async () => {
     const waitForOnline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(
       this,
@@ -68,7 +68,7 @@ const createNS = async function(this: Common.ISuite, kubectl: string) {
 }
 
 /** delete namespace, and expect status eventually to be red; */
-const deleteNS = function(this: Common.ISuite, kubectl: string) {
+const deleteNS = function (this: Common.ISuite, kubectl: string) {
   it(`should delete the namespace ${nsName} from URL via ${kubectl}`, async () => {
     try {
       const waitForOffline: (res: ReplExpect.AppAndCount) => Promise<string> = waitForStatus.bind(
@@ -87,7 +87,7 @@ const deleteNS = function(this: Common.ISuite, kubectl: string) {
 }
 
 /** k get ns -w */
-const watchNS = function(this: Common.ISuite, kubectl: string) {
+const watchNS = function (this: Common.ISuite, kubectl: string) {
   const watchCmds = [
     //    `${kubectl} get ns -w`, <-- not guaranteed to work locally, due to table pagination
     `${kubectl} get ns ${nsName} -w`,
@@ -171,7 +171,7 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
 
 const synonyms = ['kubectl']
 
-wdescribe(`kubectl watch namespace via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+wdescribe(`kubectl watch namespace via table ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

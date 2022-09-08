@@ -22,7 +22,7 @@ const inputs = outputs.map(_ => Buffer.from(_).toString('base64'))
 import { doSplitViaButton } from '../core-support2/split-helpers'
 import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
-describe('block copy paste command', function(this: Common.ISuite) {
+describe('block copy paste command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -91,9 +91,7 @@ describe('block copy paste command', function(this: Common.ISuite) {
         .is(N + 1)
 
       await cut(N)
-      await expectBlockCount()
-        .inSplit(1)
-        .is(N)
+      await expectBlockCount().inSplit(1).is(N)
 
       await cut(N - 1)
       await expectBlockCount()

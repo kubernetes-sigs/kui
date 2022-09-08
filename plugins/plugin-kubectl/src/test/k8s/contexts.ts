@@ -26,9 +26,7 @@ import { remotePodYaml, waitForGreen, createNS, defaultModeForGet } from '@kui-s
 
 const synonyms = ['kubectl']
 
-const initialContext = execSync('kubectl config current-context')
-  .toString()
-  .trim()
+const initialContext = execSync('kubectl config current-context').toString().trim()
 
 enum Status {
   Offline = 'red-background',
@@ -36,7 +34,7 @@ enum Status {
 }
 
 // TODO: enable this once proxy can find $HOME on travis
-Common.localDescribe('kubectl context switching', function(this: Common.ISuite) {
+Common.localDescribe('kubectl context switching', function (this: Common.ISuite) {
   before(Common.before(this))
   after(
     Common.after(this, () => {
@@ -60,9 +58,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     const createIt = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create namespace ${name}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -72,9 +68,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -137,9 +131,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it('should list contexts and show the default context', async () => {
         try {
           const currentContext = await CLI.command(`context`, this.app)
-            .then(
-              ReplExpect.okWithCustom<string>({ selector: ' ' })
-            )
+            .then(ReplExpect.okWithCustom<string>({ selector: ' ' }))
             .then(selector => this.app.client.$(selector))
             .then(_ => _.getText())
 
@@ -187,20 +179,20 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
 
     /** list pods and expect one entry */
     const listPodsAndExpectOne = (name: string, ns?: string, kubeconfig = '') => {
-      it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'} and kubeconfig ${kubeconfig ||
-        'nope'}`, () => {
+      it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'} and kubeconfig ${
+        kubeconfig || 'nope'
+      }`, () => {
         return CLI.command(`${kubectl} get pods ${ns ? '-n ' + ns : ''} ${kubeconfig}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
     }
 
     const getPodInSidecar = (name: string, ns?: string, kubeconfig = '') => {
-      it(`should open pod ${name} in sidecar, and maybe in namespace ${ns || 'nope'} and kubeconfig ${kubeconfig ||
-        'nope'}`, () => {
+      it(`should open pod ${name} in sidecar, and maybe in namespace ${ns || 'nope'} and kubeconfig ${
+        kubeconfig || 'nope'
+      }`, () => {
         return CLI.command(`${kubectl} get pod ${name} ${ns ? '-n ' + ns : ''} ${kubeconfig} -o yaml`, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
@@ -324,9 +316,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     let ns2WatcherBadgeInTab1: string
     it(`should watch namespace in tab 1 and expect ${ns2} online`, () =>
       CLI.command(`${kubectl} get ns -w`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns2) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns2) }))
         .then(selector => waitForGreen(this.app, selector))
         .then(selector => {
           ns2WatcherBadgeInTab1 = selector
@@ -340,9 +330,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     let nsWatcherBadgeInTab2: string
     it(`should watch namespace in tab 2 and expect ${ns} online`, () =>
       CLI.command(`${kubectl} get ns -w`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns) }))
         .then(selector => waitForGreen(this.app, selector))
         .then(selector => {
           nsWatcherBadgeInTab2 = selector

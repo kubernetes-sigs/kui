@@ -42,9 +42,7 @@ export function wait(this: Common.ISuite, ns: string, command: string, podName: 
   } else {
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

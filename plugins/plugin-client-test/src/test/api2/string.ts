@@ -168,7 +168,7 @@ new TestStringResponse({
   exact: false
 }).string()
 
-describe(`experimental command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`experimental command ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

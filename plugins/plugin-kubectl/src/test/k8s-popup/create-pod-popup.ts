@@ -41,7 +41,7 @@ function resFor(app: ReplExpect.AppAndCount['app']): ReplExpect.AppAndCount {
 }
 
 /** wait for a deletion to complete */
-const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) {
+const waitForDelete = function (this: Common.ISuite, { name }: { name: string }) {
   it(`should wait for deletion of resource named ${name}`, async () => {
     try {
       await waitForRed(this.app, Selectors.BY_NAME(name))
@@ -52,7 +52,7 @@ const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) 
 }
 
 /** verify that the monaco editor component contains the given substring */
-const verifyTextExists = async function(this: Common.ISuite, expectedSubstring: string) {
+const verifyTextExists = async function (this: Common.ISuite, expectedSubstring: string) {
   await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(resFor(this.app))
 }
 
@@ -64,7 +64,7 @@ interface CreateSpec {
   status: string
 }
 
-const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
+const waitForCreate = function (this: Common.ISuite, spec: CreateSpec) {
   const { name, kind, ns } = spec
 
   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
@@ -107,7 +107,7 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
 /** resource names */
 const pod = 'nginx'
 
-wdescribe(`popup should error out for non-existant command`, function(this: Common.ISuite) {
+wdescribe(`popup should error out for non-existant command`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: ['yoyo'] }))
   after(Common.after(this))
 
@@ -116,14 +116,14 @@ wdescribe(`popup should error out for non-existant command`, function(this: Comm
   })
 })
 
-wdescribe(`popup create pod creating namespace ${ns1}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod creating namespace ${ns1}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
   after(Common.after(this))
 
   waitForCreate.bind(this)({ name: ns1, kind: 'Namespace', status: 'Active' })
 })
 
-wdescribe(`popup create pod creating pod in ${ns1}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod creating pod in ${ns1}`, function (this: Common.ISuite) {
   before(
     Common.before(this, {
       popup: [kubectl, 'create', '-f', remotePodYaml, '-n', ns1]
@@ -134,21 +134,21 @@ wdescribe(`popup create pod creating pod in ${ns1}`, function(this: Common.ISuit
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
 })
 
-wdescribe(`popup watch pods in ${ns1}`, function(this: Common.ISuite) {
+wdescribe(`popup watch pods in ${ns1}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'get', 'pods', '-w', '-n', ns1] }))
   after(Common.after(this))
 
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
 })
 
-wdescribe(`popup create pod creating namespace ${ns2}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod creating namespace ${ns2}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns2] }))
   after(Common.after(this))
 
   waitForCreate.bind(this)({ name: ns2, kind: 'Namespace', status: 'Active' })
 })
 
-wdescribe(`popup create pod creating pod in ${ns2}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod creating pod in ${ns2}`, function (this: Common.ISuite) {
   before(
     Common.before(this, {
       popup: [kubectl, 'create', '-f', remotePodYaml, '-n', ns2]
@@ -159,28 +159,28 @@ wdescribe(`popup create pod creating pod in ${ns2}`, function(this: Common.ISuit
   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2, status: 'Running' })
 })
 
-wdescribe(`popup create pod deleting pod in ${ns1}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod deleting pod in ${ns1}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] }))
   after(Common.after(this))
 
   waitForDelete.bind(this)({ name: pod })
 })
 
-wdescribe(`popup create pod deleting pod in ${ns2}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod deleting pod in ${ns2}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] }))
   after(Common.after(this))
 
   waitForDelete.bind(this)({ name: pod })
 })
 
-wdescribe(`popup create pod deleting namespace ${ns1}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod deleting namespace ${ns1}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'delete', 'ns', ns1] }))
   after(Common.after(this))
 
   waitForDelete.bind(this)({ name: ns1 })
 })
 
-wdescribe(`popup create pod deleting namespace ${ns2}`, function(this: Common.ISuite) {
+wdescribe(`popup create pod deleting namespace ${ns2}`, function (this: Common.ISuite) {
   before(Common.before(this, { popup: [kubectl, 'delete', 'ns', ns2] }))
   after(Common.after(this))
 

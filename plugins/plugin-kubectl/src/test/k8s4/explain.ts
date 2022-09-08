@@ -17,7 +17,7 @@
 import { Common } from '@kui-shell/test'
 import { doHelp } from '../../../tests/lib/k8s/utils'
 
-describe('kubectl explain', function(this: Common.ISuite) {
+describe('kubectl explain', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

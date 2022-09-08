@@ -17,7 +17,7 @@
 import { Registrar } from '@kui-shell/core'
 import isEnabled from './isEnabled'
 
-export default async function(registrar: Registrar) {
+export default async function (registrar: Registrar) {
   if (isEnabled()) {
     const [browse, forwarder] = await Promise.all([import('./browse'), import('./vfs/browser/forwarder')])
     await Promise.all([forwarder.default(registrar), browse.default(registrar)])

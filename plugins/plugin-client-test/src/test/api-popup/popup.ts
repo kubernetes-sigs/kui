@@ -24,7 +24,7 @@
 
 import { CLI, Common, ReplExpect, SidecarExpect } from '@kui-shell/test'
 
-Common.localDescribe('popup say hello', function(this: Common.ISuite) {
+Common.localDescribe('popup say hello', function (this: Common.ISuite) {
   before(Common.before(this, { popup: ['test', 'string'] }))
   after(Common.after(this))
 
@@ -39,7 +39,7 @@ Common.localDescribe('popup say hello', function(this: Common.ISuite) {
   })
 })
 
-Common.localDescribe('popup mmr', function(this: Common.ISuite) {
+Common.localDescribe('popup mmr', function (this: Common.ISuite) {
   before(Common.before(this, { popup: ['test', 'mmr', 'mode'] }))
   after(Common.after(this))
 

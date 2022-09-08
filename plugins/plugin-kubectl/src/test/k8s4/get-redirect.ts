@@ -22,7 +22,7 @@ if (process.env.NEEDS_OC) {
   commands.push('oc')
 }
 
-describe('kubectl get redirect', function(this: Common.ISuite) {
+describe('kubectl get redirect', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -55,9 +55,7 @@ describe('kubectl get redirect', function(this: Common.ISuite) {
     grepInTestFile(this, 'AGE')
 
     it('should remove the test file', () =>
-      CLI.command(`rm -f ${testFile}`, this.app)
-        .then(ReplExpect.ok)
-        .catch(Common.oops(this, true)))
+      CLI.command(`rm -f ${testFile}`, this.app).then(ReplExpect.ok).catch(Common.oops(this, true)))
   })
 
   deleteNS(this, ns)

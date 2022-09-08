@@ -75,8 +75,9 @@ const IN3b: Input = {
 }
 ;[IN3a, IN3b, IN1a, IN1b, IN1c, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
-    describe(`execute code blocks in markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
-      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`execute code blocks in markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

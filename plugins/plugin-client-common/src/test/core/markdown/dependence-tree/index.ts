@@ -23,8 +23,9 @@ import { Tree } from './Input'
 
 inputs.forEach(markdown => {
   ;['guide'].forEach(command => {
-    describe(`markdown code block dependence tree using command="${command}" ${basename(markdown.input)} ${process.env
-      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`markdown code block dependence tree using command="${command}" ${basename(markdown.input)} ${
+      process.env.MOCHA_RUN_TARGET || ''
+    }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 

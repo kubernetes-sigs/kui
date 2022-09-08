@@ -158,9 +158,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
       >
         {needsOverlay ? <div className="kui--bar-overlay">&nbsp;</div> : <React.Fragment>&nbsp;</React.Fragment>}
       </div>
-    ) : (
-      undefined
-    )
+    ) : undefined
   }
 
   private buckets() {

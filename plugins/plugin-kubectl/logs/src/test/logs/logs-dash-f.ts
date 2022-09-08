@@ -42,7 +42,7 @@ function sleep(N: number) {
 
 const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
 
-wdescribe(`kubectl logs follow via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+wdescribe(`kubectl logs follow via watch pane ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

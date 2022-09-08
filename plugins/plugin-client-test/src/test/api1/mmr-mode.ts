@@ -21,10 +21,8 @@
  * See the command implementation in: plugin-test/src/lib/cmds/mmr-mode.ts
  *
  */
-import { Tab } from '@kui-shell/core'
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
-import { MyResource } from '../../lib/models'
 import { metadata as _meta } from '../../lib/cmds/mmr-mode'
 
 const { metadata } = _meta
@@ -131,17 +129,17 @@ const buttons = [
   { mode: 'b1', command: 'test string', kind: 'drilldown' as const },
   { mode: 'b2', command: () => 'test string', kind: 'drilldown' as const },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  { mode: 'b3', command: (tab: Tab) => 'test string', kind: 'drilldown' as const },
+  { mode: 'b3', command: () => 'test string', kind: 'drilldown' as const },
   {
     mode: 'b4',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    command: (tab: Tab, resource: MyResource) => `test string --grumble {resource.grumble}`,
+    command: () => `test string --grumble {resource.grumble}`,
     kind: 'drilldown' as const
   },
   {
     mode: 'b5',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    command: (tab: Tab, resource: MyResource) => `some non-existant command`,
+    command: () => `some non-existant command`,
     kind: 'drilldown' as const,
     expectError: 127 as const
   },

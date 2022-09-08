@@ -83,84 +83,82 @@ async function expectOK<T extends number | string | boolean | ElementArray | App
   assert.ok(okReg.test(html)) // make sure it says "ok" !
 
   return Promise.resolve()
-    .then(
-      async (): Promise<T> => {
-        // validate any expected list entry
-        if (opt && opt.expectString) {
-          // expect exactly one entry
-          await app.client
-            .$(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex)} .entity-name`)
-            .then(_ => _.getText())
-            .then(name => assert.strictEqual(name, opt.expectString))
-        } else if (opt && opt.expectArray) {
-          // expect several entries, of which opt is one // NOTE: what does it mean by opt is one???
-          await app.client
-            .$$(Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex))
-            .then(names => Promise.all(names.map(_ => _.getText())))
-            .then(names =>
-              assert.notStrictEqual(
-                names.findIndex(_ => _.indexOf(opt.expectArray[0]) >= 0),
-                -1,
-                `name="${opt.expectArray[0]}" not found in list=${names}`
-              )
+    .then(async (): Promise<T> => {
+      // validate any expected list entry
+      if (opt && opt.expectString) {
+        // expect exactly one entry
+        await app.client
+          .$(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex)} .entity-name`)
+          .then(_ => _.getText())
+          .then(name => assert.strictEqual(name, opt.expectString))
+      } else if (opt && opt.expectArray) {
+        // expect several entries, of which opt is one // NOTE: what does it mean by opt is one???
+        await app.client
+          .$$(Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex))
+          .then(names => Promise.all(names.map(_ => _.getText())))
+          .then(names =>
+            assert.notStrictEqual(
+              names.findIndex(_ => _.indexOf(opt.expectArray[0]) >= 0),
+              -1,
+              `name="${opt.expectArray[0]}" not found in list=${names}`
             )
-        } else if (opt && (opt.selector || opt.expect)) {
-          // more custom, look for expect text under given selector
-          const selector = `${
-            opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1, splitIndex) : Selectors.OUTPUT_N(N - 1, splitIndex)
-          }${opt.selfSelector || ''} ${opt.selector || ''}`
-          if (opt.elements) {
-            return (app.client.$$(selector) as any) as Promise<T>
-          } else {
-            let idx = 0
-            return app.client
-              .waitUntil(
-                async () => {
-                  const txt = await app.client.$(selector).then(async _ => {
-                    await _.waitForExist({ timeout: waitTimeout })
-                    return _.getText()
-                  })
-
-                  if (++idx > 5) {
-                    console.error(`still waiting for expected text actualText=${txt} expectedText=${opt.expect}`)
-                  }
-
-                  if (opt.exact) return txt === opt.expect
-                  else if (opt.expect) {
-                    if (txt.indexOf(opt.expect) < 0) {
-                      console.error(
-                        `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
-                      )
-                      return txt.indexOf(opt.expect) >= 0
-                    }
-                  }
-
-                  return true
-                },
-                { timeout: waitTimeout }
-              )
-              .then(() => {
-                return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
-              })
-              .then(res => res as T)
-          }
-        } else if (opt && opt.expectJustOK === true) {
-          // ensure that there is nothing other than "ok"
-          await app.client.waitUntil(
-            async () => {
-              const txt = await app.client.$(Selectors.OUTPUT_N(N - 1, splitIndex)).then(_ => _.getText())
-              const justOK = process.env.OK || 'ok'
-              return txt.length === 0 || txt === justOK
-            },
-            { timeout: waitTimeout }
           )
+      } else if (opt && (opt.selector || opt.expect)) {
+        // more custom, look for expect text under given selector
+        const selector = `${
+          opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1, splitIndex) : Selectors.OUTPUT_N(N - 1, splitIndex)
+        }${opt.selfSelector || ''} ${opt.selector || ''}`
+        if (opt.elements) {
+          return app.client.$$(selector) as any as Promise<T>
         } else {
-          // nothing to validate with the "console" results of the command
-          // return the index of the last executed command
-          return ((N - 1) as any) as Promise<T>
+          let idx = 0
+          return app.client
+            .waitUntil(
+              async () => {
+                const txt = await app.client.$(selector).then(async _ => {
+                  await _.waitForExist({ timeout: waitTimeout })
+                  return _.getText()
+                })
+
+                if (++idx > 5) {
+                  console.error(`still waiting for expected text actualText=${txt} expectedText=${opt.expect}`)
+                }
+
+                if (opt.exact) return txt === opt.expect
+                else if (opt.expect) {
+                  if (txt.indexOf(opt.expect) < 0) {
+                    console.error(
+                      `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
+                    )
+                    return txt.indexOf(opt.expect) >= 0
+                  }
+                }
+
+                return true
+              },
+              { timeout: waitTimeout }
+            )
+            .then(() => {
+              return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
+            })
+            .then(res => res as T)
         }
+      } else if (opt && opt.expectJustOK === true) {
+        // ensure that there is nothing other than "ok"
+        await app.client.waitUntil(
+          async () => {
+            const txt = await app.client.$(Selectors.OUTPUT_N(N - 1, splitIndex)).then(_ => _.getText())
+            const justOK = process.env.OK || 'ok'
+            return txt.length === 0 || txt === justOK
+          },
+          { timeout: waitTimeout }
+        )
+      } else {
+        // nothing to validate with the "console" results of the command
+        // return the index of the last executed command
+        return (N - 1) as any as Promise<T>
       }
-    )
+    })
     .then(res => (opt && (opt.selector || opt.passthrough) ? res : app)) // return res rather than app, if requested
     .then(res => res as T)
 }
@@ -195,8 +193,10 @@ export const error = (statusCode: number | string, expect?: string) => async (re
   return res.app
 }
 
-export const blankWithOpts = (opts = {}) => async (res: AppAndCount) =>
-  expectOK(res, Object.assign({ selector: '', expectError: true }, opts))
+export const blankWithOpts =
+  (opts = {}) =>
+  async (res: AppAndCount) =>
+    expectOK(res, Object.assign({ selector: '', expectError: true }, opts))
 
 export const blank = (res: AppAndCount) => blankWithOpts()(res)
 
@@ -218,103 +218,111 @@ export const consoleToBeClear = (app: Application, residualBlockCount = 1, split
 }
 
 /** as long as its ok, accept anything */
-export const okWithCustom = <T extends string | boolean>(custom: CustomSpec) => async (res: AppAndCount) =>
-  expectOK<T>(res, custom)
+export const okWithCustom =
+  <T extends string | boolean>(custom: CustomSpec) =>
+  async (res: AppAndCount) =>
+    expectOK<T>(res, custom)
 
-export const okWithTextContent = (expect: string, exact = false, failFast = true, sel = ' ') => async (
-  res: AppAndCount
-) => {
-  // Notes: webdriverio's getText seems to use .innerText to extract
-  // the text from a given selector; this is quite unreliable in
-  // terms of whitespace preservation; e.g. <div><span>
-  // </span><span> </span></div> will preserve whitespace, but if
-  // the inner spans have are inline-block, then innerText will not
-  // preserve whitespace; textContent *will* preserve whitespace
-  const selector = await okWithCustom<string>({ selector: sel })(res)
-  const txt = await getTextContent(res.app, selector)
+export const okWithTextContent =
+  (expect: string, exact = false, failFast = true, sel = ' ') =>
+  async (res: AppAndCount) => {
+    // Notes: webdriverio's getText seems to use .innerText to extract
+    // the text from a given selector; this is quite unreliable in
+    // terms of whitespace preservation; e.g. <div><span>
+    // </span><span> </span></div> will preserve whitespace, but if
+    // the inner spans have are inline-block, then innerText will not
+    // preserve whitespace; textContent *will* preserve whitespace
+    const selector = await okWithCustom<string>({ selector: sel })(res)
+    const txt = await getTextContent(res.app, selector)
 
-  if (exact) {
-    assert.strictEqual(txt, expect)
-    return true
-  } else {
-    if (txt.indexOf(expect) < 0) {
-      console.error(`Expected string not found expected=${expect} idx=${txt.indexOf(expect)} actual=${txt}`)
-      if (failFast) {
-        assert.ok(txt.indexOf(expect) >= 0)
-        return true
-      } else {
-        return false
+    if (exact) {
+      assert.strictEqual(txt, expect)
+      return true
+    } else {
+      if (txt.indexOf(expect) < 0) {
+        console.error(`Expected string not found expected=${expect} idx=${txt.indexOf(expect)} actual=${txt}`)
+        if (failFast) {
+          assert.ok(txt.indexOf(expect) >= 0)
+          return true
+        } else {
+          return false
+        }
       }
     }
   }
-}
 
-export const okWithString = (expect: string, exact = false, streaming = false) => async (res: AppAndCount) => {
-  // first try innerText
-  return okWithCustom<boolean>({ expect, exact, streaming })(res).catch(async err1 => {
-    // use .textContent as a backup plan
-    return okWithTextContent(
-      expect,
-      exact
-    )(res).catch(() => {
-      throw err1
+export const okWithString =
+  (expect: string, exact = false, streaming = false) =>
+  async (res: AppAndCount) => {
+    // first try innerText
+    return okWithCustom<boolean>({ expect, exact, streaming })(res).catch(async err1 => {
+      // use .textContent as a backup plan
+      return okWithTextContent(
+        expect,
+        exact
+      )(res).catch(() => {
+        throw err1
+      })
     })
-  })
-}
+  }
 
 export const okWithStreamingOutput = (expect: string, exact = false) => okWithString(expect, exact, true)
 export const okWithPtyOutput = (expect: string, exact = false) => okWithString(expect, exact)
 
-export const okWithStringEventually = (expect: string, exact = false) => (res: AppAndCount) => {
-  return res.app.client.waitUntil(
-    () => {
-      try {
-        return okWithString(expect, exact)(res)
-      } catch (err) {
-        // swallow
-      }
-    },
-    { timeout: waitTimeout }
-  )
-}
+export const okWithStringEventually =
+  (expect: string, exact = false) =>
+  (res: AppAndCount) => {
+    return res.app.client.waitUntil(
+      () => {
+        try {
+          return okWithString(expect, exact)(res)
+        } catch (err) {
+          // swallow
+        }
+      },
+      { timeout: waitTimeout }
+    )
+  }
 
-export const okWithPtyOutputEventually = (expect: string, exact = false) => (res: AppAndCount) => {
-  return res.app.client.waitUntil(
-    () => {
-      try {
-        return okWithPtyOutput(expect, exact)(res)
-      } catch (err) {
-        // swallow
-      }
-    },
-    { timeout: waitTimeout }
-  )
-}
+export const okWithPtyOutputEventually =
+  (expect: string, exact = false) =>
+  (res: AppAndCount) => {
+    return res.app.client.waitUntil(
+      () => {
+        try {
+          return okWithPtyOutput(expect, exact)(res)
+        } catch (err) {
+          // swallow
+        }
+      },
+      { timeout: waitTimeout }
+    )
+  }
 
-export const okWithDropDownList = (openAndExpectLabel: string, click = false, closeAfterOpen = true) => async (
-  res: AppAndCount
-) => {
-  const toggler = await okWithCustom<string>({
-    selector: Selectors.DROPDOWN
-  })(res)
+export const okWithDropDownList =
+  (openAndExpectLabel: string, click = false, closeAfterOpen = true) =>
+  async (res: AppAndCount) => {
+    const toggler = await okWithCustom<string>({
+      selector: Selectors.DROPDOWN
+    })(res)
 
-  return res.app.client
-    .$(toggler)
-    .then(_ => _.click())
-    .then(() => res.app.client.$(Selectors.DROPDOWN_N_MENU_ITEM(res.count, openAndExpectLabel, res.splitIndex)))
-    .then(async _ => {
-      if (click) {
-        await _.waitForDisplayed()
-        await _.click()
-      }
+    return res.app.client
+      .$(toggler)
+      .then(_ => _.click())
+      .then(() => res.app.client.$(Selectors.DROPDOWN_N_MENU_ITEM(res.count, openAndExpectLabel, res.splitIndex)))
+      .then(async _ => {
+        if (click) {
+          await _.waitForDisplayed()
+          await _.click()
+        }
 
-      if (closeAfterOpen) {
-        await res.app.client.$(toggler).then(_ => _.click())
-      }
+        if (closeAfterOpen) {
+          await res.app.client.$(toggler).then(_ => _.click())
+        }
 
-      return res
-    })
-}
+        return res
+      })
+  }
 
 const currentEventCount = async (app: Application, outputCount: number): Promise<number> => {
   const events = await app.client.$$(Selectors.TABLE_FOOTER(outputCount))

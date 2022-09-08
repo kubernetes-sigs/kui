@@ -21,21 +21,17 @@ function doEcho(this: Common.ISuite, msg: string, splitIndex = 1) {
   const cmd = `echo ${msg}`
 
   it(`should ${cmd}`, () =>
-    CLI.commandInSplit(cmd, this.app, splitIndex)
-      .then(ReplExpect.okWithPtyOutput(msg))
-      .catch(Common.oops(this, true)))
+    CLI.commandInSplit(cmd, this.app, splitIndex).then(ReplExpect.okWithPtyOutput(msg)).catch(Common.oops(this, true)))
 
   return cmd
 }
 
 function doValidate(this: Common.ISuite, num: number, msg: string, splitIndex = 1) {
   it(`should list history ${num} expecting ${msg}`, () =>
-    CLI.commandInSplit(`history ${num}`, this.app, splitIndex)
-      .then(ReplExpect.okWith(msg))
-      .catch(Common.oops(this)))
+    CLI.commandInSplit(`history ${num}`, this.app, splitIndex).then(ReplExpect.okWith(msg)).catch(Common.oops(this)))
 }
 
-describe('command history with splits', function(this: Common.ISuite) {
+describe('command history with splits', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -200,10 +200,7 @@ class CLI {
 
           // skip a number of initial lines?
           if (skipLines > 0) {
-            checkAgainst = checkAgainst
-              .split(/\n/)
-              .slice(1)
-              .join('\n')
+            checkAgainst = checkAgainst.split(/\n/).slice(1).join('\n')
           }
 
           // squish whitespace?
@@ -267,6 +264,6 @@ exports.cli = new CLI()
  * @return a CLI impl for the given executable `exe`, located in the given `bindir`.
  *
  */
-exports.makeCLI = function(exe, bindir) {
+exports.makeCLI = function (exe, bindir) {
   return new CLI(exe, bindir)
 }

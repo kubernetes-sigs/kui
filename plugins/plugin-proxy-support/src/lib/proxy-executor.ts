@@ -324,7 +324,7 @@ class ProxyEvaluator implements ReplEval {
             debug('catch a fakedom, try to unwind')
             if (response.body.innerText) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              return (response.body.innerText as any) as T
+              return response.body.innerText as any as T
             } else {
               const err = new Error('Internal Error: Fakedom objects are not accepted by proxy executor')
               err['code'] = 500

@@ -98,10 +98,7 @@ function typeaheadMatch(prefix: string): string[] {
  *
  */
 export default function typeahead(prefix: string): string[] {
-  const desired = `${prefix.charAt(0) === '/' ? '' : '/'}${prefix
-    .replace(/^\s+/, '')
-    .split(/\s+/)
-    .join('/')}`
+  const desired = `${prefix.charAt(0) === '/' ? '' : '/'}${prefix.replace(/^\s+/, '').split(/\s+/).join('/')}`
 
   const match = findMinimalCommonPrefix(typeaheadMatch(desired))
   const maybe = extend(desired.split(/\//), match)

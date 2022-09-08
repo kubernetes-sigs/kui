@@ -34,7 +34,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  describe(`${command} Logs previous tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} Logs previous tab ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

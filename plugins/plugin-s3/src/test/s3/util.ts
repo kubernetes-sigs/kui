@@ -45,9 +45,7 @@ export default function S3Utils(this: Common.ISuite) {
     mkdir: (bucketName: string) => {
       const filepath = `/s3/${PROVIDER}/${bucketName}`
       it(`should mkdir ${filepath}`, () =>
-        CLI.command(`mkdir ${filepath}`, this.app)
-          .then(ReplExpect.justOK)
-          .catch(Common.oops(this, true)))
+        CLI.command(`mkdir ${filepath}`, this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
     },
 
     ls: (expectedName: string, specifiedBucketName?: string, specifiedObjectName?: string) => {
@@ -58,9 +56,7 @@ export default function S3Utils(this: Common.ISuite) {
       it(`should ls -l ${filepath} and show ${expectedName} ${
         specifiedBucketName ? 'using specified bucket name ' + specifiedBucketName : ''
       }`, () =>
-        CLI.command(`ls -l ${filepath}`, this.app)
-          .then(ReplExpect.okWith(expectedName))
-          .catch(Common.oops(this, true)))
+        CLI.command(`ls -l ${filepath}`, this.app).then(ReplExpect.okWith(expectedName)).catch(Common.oops(this, true)))
     },
 
     lsExpectingCount: (filepathWithinS3: string, expectedCount: number, extraFlags = '') => {
@@ -73,9 +69,7 @@ export default function S3Utils(this: Common.ISuite) {
 
     lsCurrentDir: (expectedName: string) => {
       it(`should ls the current directory and show ${expectedName}`, () =>
-        CLI.command('ls -l', this.app)
-          .then(ReplExpect.okWith(expectedName))
-          .catch(Common.oops(this, true)))
+        CLI.command('ls -l', this.app).then(ReplExpect.okWith(expectedName)).catch(Common.oops(this, true)))
     },
 
     copyToS3: (bucketName: string, specifiedDest?: string) => {

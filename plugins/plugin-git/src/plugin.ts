@@ -18,7 +18,7 @@ import { Registrar } from '@kui-shell/core'
 import gitBranch from './controller/git/branch'
 import gitDiff from './controller/git/diff'
 
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   gitBranch(registrar)
   gitDiff(registrar)
 }

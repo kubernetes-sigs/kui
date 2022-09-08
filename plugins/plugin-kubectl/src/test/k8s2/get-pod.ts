@@ -35,7 +35,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  describe(`${command} get pod no watch ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} get pod no watch ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -74,9 +74,7 @@ commands.forEach(command => {
     })
 
     it('should command not found when kubectl is not specified', () => {
-      return CLI.command('get pods', this.app)
-        .then(ReplExpect.error(127))
-        .catch(Common.oops(this, true))
+      return CLI.command('get pods', this.app).then(ReplExpect.error(127)).catch(Common.oops(this, true))
     })
 
     it('should error out when getting non-existent pod', () => {
@@ -219,27 +217,21 @@ commands.forEach(command => {
 
     it(`should delete the sample pod from URL via ${command}`, () => {
       return CLI.command(`${command} delete -f ${remotePodYaml} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should create sample pod from URL via ${command}`, () => {
       return CLI.command(`${command} create -f ${remotePodYaml} ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should create another sample pod from URL via ${command}`, () => {
       return CLI.command(`${command} create -f ${ROOT}/data/k8s/headless/pod2.yaml ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx2') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx2') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -248,18 +240,14 @@ commands.forEach(command => {
     // 'pod nginx' part works properly
     it(`should get the pod with ${command} ${inNamespace} pod`, () => {
       return CLI.command(`${command} get ${inNamespace} pod nginx`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
 
     it(`should get the pod with ${command} get all ${inNamespace}`, () => {
       return CLI.command(`${command} get all ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

@@ -25,7 +25,7 @@ const pit = runTheTests ? it : xit
 // the sidecar mode presented by the open command
 const openMode = 'view'
 
-describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -89,7 +89,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   })
 })
 
-describe(`rerun command by clicking the input ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`rerun command by clicking the input ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

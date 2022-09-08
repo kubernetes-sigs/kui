@@ -22,36 +22,38 @@ import { KubeOptions } from './options'
 import { stringToTable } from '../../lib/view/formatTable'
 import { isUsage, doHelp } from '../../lib/util/help'
 
-export const doGet = (command: string) => async (args: Arguments<KubeOptions>): Promise<KResponse> => {
-  if (isUsage(args)) {
-    return doHelp(command, args)
-  } else {
-    // first, we do the raw exec of the given command
-    const response = await exec(args, undefined, command)
+export const doGet =
+  (command: string) =>
+  async (args: Arguments<KubeOptions>): Promise<KResponse> => {
+    if (isUsage(args)) {
+      return doHelp(command, args)
+    } else {
+      // first, we do the raw exec of the given command
+      const response = await exec(args, undefined, command)
 
-    const {
-      content: { stderr, stdout }
-    } = response
+      const {
+        content: { stderr, stdout }
+      } = response
 
-    if (isXtermResponse(stdout)) {
-      // see https://github.com/IBM/kui/issues/6838
-      return stdout
+      if (isXtermResponse(stdout)) {
+        // see https://github.com/IBM/kui/issues/6838
+        return stdout
+      }
+
+      const table = await stringToTable(stdout, stderr, args, command, 'explain', 'api-resources')
+
+      if (isTable(table)) {
+        table.body.forEach(_ => {
+          const name = (_.attributes[3] && _.attributes[3].value) || _.name
+          _.onclick = `${command} explain ${name}`
+        })
+
+        table.body.sort((a, b) => a.name.localeCompare(b.name))
+      }
+
+      return table
     }
-
-    const table = await stringToTable(stdout, stderr, args, command, 'explain', 'api-resources')
-
-    if (isTable(table)) {
-      table.body.forEach(_ => {
-        const name = (_.attributes[3] && _.attributes[3].value) || _.name
-        _.onclick = `${command} explain ${name}`
-      })
-
-      table.body.sort((a, b) => a.name.localeCompare(b.name))
-    }
-
-    return table
   }
-}
 
 export default (registrar: Registrar) => {
   registrar.listen('/kubectl/api-resources', doGet('kubectl'), flags)

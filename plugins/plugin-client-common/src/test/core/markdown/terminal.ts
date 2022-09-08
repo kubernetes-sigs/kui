@@ -45,8 +45,9 @@ const IN3: Input = {
   splits: [IN2.splits[0], { text: IN2.splits[1].text, isTerminal: true, inverseColors: true }]
 }
 ;[IN1, IN2, IN3].forEach(markdown => {
-  describe(`terminals in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`terminals in markdown ${basename(markdown.input)} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

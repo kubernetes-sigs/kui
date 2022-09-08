@@ -48,7 +48,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  wdescribe(`${command} Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  wdescribe(`${command} Logs tab ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

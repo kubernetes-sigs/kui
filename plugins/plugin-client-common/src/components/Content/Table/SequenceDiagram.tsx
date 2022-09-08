@@ -334,9 +334,11 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return 2 // this.props.response.statusColumnIdx >= 0 ? 4 : 3
   }
 
-  private overheads(
-    interval: DenseInterval
-  ): { coldStartFraction: number; queueingDelaysFraction: number; gapFraction: number } {
+  private overheads(interval: DenseInterval): {
+    coldStartFraction: number
+    queueingDelaysFraction: number
+    gapFraction: number
+  } {
     const idx1 = this.props.response.startColumnIdx
     const idx2 = this.props.response.completeColumnIdx
     const idx3 = this.props.response.coldStartColumnIdx

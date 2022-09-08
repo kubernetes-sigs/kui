@@ -43,7 +43,7 @@ function doEchoThenRemove(this: Common.ISuite, idx: number) {
   })
 }
 
-describe(`remove command block ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`remove command block ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -51,9 +51,7 @@ describe(`remove command block ${process.env.MOCHA_RUN_TARGET || ''}`, function(
 
   // here come the tests
   it('should echo hi', () =>
-    CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this)))
+    CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this)))
 
   echo(1)
   echo(2)

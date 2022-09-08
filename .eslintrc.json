@@ -1,12 +1,5 @@
 {
-  "extends": [
-    "standard",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "prettier",
-    "prettier/standard",
-    "prettier/@typescript-eslint"
-  ],
+  "extends": ["standard", "plugin:@typescript-eslint/recommended", "plugin:react/recommended", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2018,
@@ -17,20 +10,6 @@
     "dot-notation": "off",
     "no-undef": "off",
     "import/first": "off",
-    "@typescript-eslint/camelcase": [
-      "error",
-      {
-        "allow": [
-          "wrap_line_length",
-          "indent_size",
-          "api_key",
-          "ignore_certs",
-          "__cloudshell_decorations",
-          "follow_max",
-          "open_timeout"
-        ]
-      }
-    ],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-member-accessibility": "error",

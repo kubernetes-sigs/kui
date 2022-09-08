@@ -45,7 +45,7 @@ const fuzzies: Record<string, () => Promise<void>> = {
     const rf = fs.readFile
     const rfs = fs.readFileSync
 
-    fs.readFile = function(
+    fs.readFile = function (
       filepath: string,
       options: ReadFileOptions,
       cb: (err: NodeJS.ErrnoException | null, data: string | Buffer) => void
@@ -62,7 +62,7 @@ const fuzzies: Record<string, () => Promise<void>> = {
       }
     }
 
-    fs.readFileSync = function(filepath: string, options?: ReadFileSyncOptions) {
+    fs.readFileSync = function (filepath: string, options?: ReadFileSyncOptions) {
       if (nope(filepath)) {
         console.error(`fs.readFileSync blocked ${filepath}`)
         return rfs('fjdioafjadisofjadsoifasfsdfjadisfjadisofjasifas')

@@ -23,7 +23,7 @@ function xtermInput(N: number) {
   return `${Selectors.OUTPUT_N_STREAMING(N)} .xterm-helper-textarea`
 }
 
-describe('xterm focus', function(this: Common.ISuite) {
+describe('xterm focus', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -44,9 +44,7 @@ describe('xterm focus', function(this: Common.ISuite) {
   }
 
   it(`should touch ${tmpFile}`, () =>
-    CLI.command(`touch ${tmpFile}`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command(`touch ${tmpFile}`, this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it(`should rm -i ${tmpFile}`, async () => {
     try {
@@ -66,7 +64,5 @@ describe('xterm focus', function(this: Common.ISuite) {
   })
 
   it('should now give an 404 error on the removed file', () =>
-    CLI.command(`cat ${tmpFile}`, this.app)
-      .then(ReplExpect.error(404))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cat ${tmpFile}`, this.app).then(ReplExpect.error(404)).catch(Common.oops(this, true)))
 })

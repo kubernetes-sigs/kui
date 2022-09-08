@@ -25,7 +25,7 @@ import S3Utils, { PROVIDER } from './util'
 import wildcardRimraf from './wildcard-rimraf'
 
 if (process.env.NEEDS_MINIO) {
-  describe('s3 vfs sanity check', function(this: Common.ISuite) {
+  describe('s3 vfs sanity check', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -33,12 +33,10 @@ if (process.env.NEEDS_MINIO) {
 
     init()
     it('should show minio in /s3', () =>
-      CLI.command('ls -l /s3', this.app)
-        .then(ReplExpect.okWith(PROVIDER))
-        .catch(Common.oops(this, true)))
+      CLI.command('ls -l /s3', this.app).then(ReplExpect.okWith(PROVIDER)).catch(Common.oops(this, true)))
   })
 
-  xdescribe('s3 vfs pseudo mounts', function(this: Common.ISuite) {
+  xdescribe('s3 vfs pseudo mounts', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -48,7 +46,7 @@ if (process.env.NEEDS_MINIO) {
     pseudo.bind(this)()
   })
 
-  describe('s3 vfs folders', function(this: Common.ISuite) {
+  describe('s3 vfs folders', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -58,7 +56,7 @@ if (process.env.NEEDS_MINIO) {
     folders.bind(this)()
   })
 
-  describe('s3 vfs basics', function(this: Common.ISuite) {
+  describe('s3 vfs basics', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -68,7 +66,7 @@ if (process.env.NEEDS_MINIO) {
     basics.bind(this)()
   })
 
-  describe('s3 vfs cd', function(this: Common.ISuite) {
+  describe('s3 vfs cd', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -78,7 +76,7 @@ if (process.env.NEEDS_MINIO) {
     cd.bind(this)()
   })
 
-  describe('s3 vfs rimraf', function(this: Common.ISuite) {
+  describe('s3 vfs rimraf', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -88,7 +86,7 @@ if (process.env.NEEDS_MINIO) {
     rimraf.bind(this)()
   })
 
-  describe('s3 vfs wildcard rimraf', function(this: Common.ISuite) {
+  describe('s3 vfs wildcard rimraf', function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

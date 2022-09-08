@@ -25,7 +25,7 @@ import ElementMimic from './element-mimic'
  * Create structures to mimic having a head
  *
  */
-export default function() {
+export default function () {
   debug('mimicDom')
 
   global.window = {

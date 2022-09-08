@@ -18,7 +18,7 @@ import { ok } from 'assert'
 import { Common, CLI, Keys, Selectors, Util } from '@kui-shell/test'
 import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
-describe('tab navigation', function(this: Common.ISuite) {
+describe('tab navigation', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()

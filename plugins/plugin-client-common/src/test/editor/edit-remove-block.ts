@@ -35,8 +35,9 @@ function expectText(res: ReplExpect.AppAndCount, expectedText: string) {
   )
 }
 
-describe(`remove command output verify editor content is preserved ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+describe(`remove command output verify editor content is preserved ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

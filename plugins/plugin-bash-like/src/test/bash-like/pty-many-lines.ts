@@ -21,12 +21,10 @@ import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
-const readmeLines = readFileSync(join(process.env.TEST_ROOT, '../../README.md'))
-  .toString()
-  .split(/\n/)
+const readmeLines = readFileSync(join(process.env.TEST_ROOT, '../../README.md')).toString().split(/\n/)
 
 /** this test is HORRIBLY UNSTABLE */
-describe('pty output with many lines', function(this: Common.ISuite) {
+describe('pty output with many lines', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -58,14 +56,12 @@ describe('pty output with many lines', function(this: Common.ISuite) {
   )
 
   Common.pit('should still have a prompt that works', () =>
-    CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this))
+    CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this))
   )
 })
 
 /** this test is HORRIBLY UNSTABLE */
-xdescribe('pty input with many lines', function(this: Common.ISuite) {
+xdescribe('pty input with many lines', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

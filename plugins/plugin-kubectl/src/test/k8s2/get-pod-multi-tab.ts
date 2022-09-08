@@ -35,7 +35,7 @@ const yaml = remotePodYaml
 const podName = 'nginx'
 
 commands.forEach(command => {
-  describe(`${command} get pod multi-tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} get pod multi-tab ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
     Util.closeAllExceptFirstTab.bind(this)()
@@ -44,9 +44,7 @@ commands.forEach(command => {
     const createPod = (ns: string) => {
       it(`should create sample pod from URL via ${command} in namespace ${ns}`, () => {
         return CLI.command(`${command} create -f ${yaml} -n ${ns}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })

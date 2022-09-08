@@ -16,7 +16,7 @@
 
 import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
-describe('command history plain', function(this: Common.ISuite) {
+describe('command history plain', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -28,9 +28,7 @@ describe('command history plain', function(this: Common.ISuite) {
 
   const listCommand = 'lls ../..'
   it('should list local files', () =>
-    CLI.command(listCommand, this.app)
-      .then(ReplExpect.okWith('README.md'))
-      .catch(Common.oops(this, true)))
+    CLI.command(listCommand, this.app).then(ReplExpect.okWith('README.md')).catch(Common.oops(this, true)))
 
   it('should hit the up arrow and see previous command', async () => {
     try {
@@ -74,25 +72,19 @@ describe('command history plain', function(this: Common.ISuite) {
 
   // 1 says it better be the last command we executed
   it(`should list history with filter 1`, () =>
-    CLI.command(`history 1 lls`, this.app)
-      .then(ReplExpect.okWithOnly(listCommand))
-      .catch(Common.oops(this, true)))
+    CLI.command(`history 1 lls`, this.app).then(ReplExpect.okWithOnly(listCommand)).catch(Common.oops(this, true)))
 
   it(`should list history 2 and show the list command`, () =>
-    CLI.command(`history 2`, this.app)
-      .then(ReplExpect.okWith(listCommand))
-      .catch(Common.oops(this, true)))
+    CLI.command(`history 2`, this.app).then(ReplExpect.okWith(listCommand)).catch(Common.oops(this, true)))
 
   // get something on the screen
   it(`should list local files again`, () =>
-    CLI.command(listCommand, this.app)
-      .then(ReplExpect.okWith('README.md'))
-      .catch(Common.oops(this, true)))
+    CLI.command(listCommand, this.app).then(ReplExpect.okWith('README.md')).catch(Common.oops(this, true)))
 
   it('should re-execte from history via mouse click', async () => {
     try {
       const res = await CLI.command('history 5 lls', this.app)
-      const N = ((await ReplExpect.okWithCustom({ passthrough: true })(res)) as any) as number
+      const N = (await ReplExpect.okWithCustom({ passthrough: true })(res)) as any as number
       const selector = `${Selectors.LIST_RESULTS_N(N)}:last-child .entity-name .clickable`
       await this.app.client.$(selector).then(_ => _.waitForDisplayed())
       await this.app.client.$(selector).then(_ => _.click())
@@ -111,9 +103,7 @@ describe('command history plain', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 
   it(`should delete command history`, () =>
-    CLI.command(`history -c`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command(`history -c`, this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it(`should list history with no args after delete and expect nothing`, () =>
     CLI.command(`history`, this.app)
@@ -121,14 +111,10 @@ describe('command history plain', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 
   it(`should list history with idx arg after delete and expect only the previous`, () =>
-    CLI.command(`history 10`, this.app)
-      .then(ReplExpect.okWithOnly('history'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`history 10`, this.app).then(ReplExpect.okWithOnly('history')).catch(Common.oops(this, true)))
 
   it(`should delete command history again`, () =>
-    CLI.command(`history -c`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+    CLI.command(`history -c`, this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it(`should list history with idx and filter args after delete and expect nothing`, () =>
     CLI.command(`history 10 lls`, this.app)

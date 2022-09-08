@@ -170,7 +170,7 @@ export async function kuiglob(
   const globbedEntries =
     toGlob.length === 0 && inputs.length > 0
       ? []
-      : (((await globby(toGlob.length === 0 ? ['*'] : toGlob, {
+      : ((await globby(toGlob.length === 0 ? ['*'] : toGlob, {
           onlyFiles: false,
           suppressErrors: true,
           expandDirectories: false, // see https://github.com/sindresorhus/globby/issues/166
@@ -179,7 +179,7 @@ export async function kuiglob(
           stats: needStats,
           objectMode: !needStats,
           cwd: Capabilities.isHeadless() ? process.cwd() : tab.state.getState('plugins/plugin-bash-like', 'v1', 'cwd')
-        })) as any) as RawGlobStats[])
+        })) as any as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
 
   // handle -d; fast-glob doesn't seem to handle this very well on its

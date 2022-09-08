@@ -55,7 +55,7 @@ class ReactTest extends React.PureComponent<Props, State> {
   }
 }
 
-export default function() {
+export default function () {
   return function ReactContent(props: ToolbarProps) {
     return <ReactTest {...props} />
   }

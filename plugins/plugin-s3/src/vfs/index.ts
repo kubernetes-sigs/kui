@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable array-callback-return */
+
 import Debug from 'debug'
 import minimatch from 'minimatch'
 import { createGunzip } from 'zlib'
@@ -209,7 +211,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   private async listBuckets(): Promise<DirEntry[]> {
     this.failIfPublicOnly()
 
-    const allBuckets = ((await this.listBucketsClient['listBuckets2']({ query: 'extended' })) as any) as {
+    const allBuckets = (await this.listBucketsClient['listBuckets2']({ query: 'extended' })) as any as {
       name: string
       locationConstraint: string
     }[]
@@ -560,9 +562,8 @@ class S3VFSResponder extends S3VFS implements VFS {
     // note how we use the bucketName.endpoint style of urls
     // see https://github.com/kubernetes-sigs/kui/issues/8046
     const proto = this.options.endPoint.match(/(^https?:\/\/)/)
-    const endPoint = (proto
-      ? `${proto[1]}${bucketName}.${this.options.endPoint}`
-      : `https://${bucketName}.${this.options.endPoint}`
+    const endPoint = (
+      proto ? `${proto[1]}${bucketName}.${this.options.endPoint}` : `https://${bucketName}.${this.options.endPoint}`
     ).replace(/\.$/, '')
     const folder = dstIsFolder ? fileName : dirname(fileName)
     const dstDir = folder || ''
@@ -645,7 +646,9 @@ class S3VFSResponder extends S3VFS implements VFS {
     }
 
     const fetched = await Promise.all(
-      (await sources).content
+      (
+        await sources
+      ).content
         .map(_ => _.path)
         .map(async srcFilepath => {
           const { bucketName, fileName } = this.split(srcFilepath)
@@ -679,7 +682,9 @@ class S3VFSResponder extends S3VFS implements VFS {
     const sources = args.REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
 
     const etags = await Promise.all(
-      (await sources).content
+      (
+        await sources
+      ).content
         .map(_ => _.path)
         .map(async srcFilepath => {
           const { bucketName: srcBucket, fileName: srcFile } = this.split(srcFilepath)
@@ -724,7 +729,9 @@ class S3VFSResponder extends S3VFS implements VFS {
     debug('inter-copy-object sources', (await sources).content)
     const etags = (
       await Promise.all(
-        (await sources).content.map(async src => {
+        (
+          await sources
+        ).content.map(async src => {
           if (src.dirent.isDirectory) {
             ;(await args.createErrorStream())(`cp: ${src.path} is a directory (not copied)`)
             return
@@ -946,10 +953,7 @@ class S3VFSResponder extends S3VFS implements VFS {
               .on('error', reject)
               .on('end', resolve)
           } else {
-            stream
-              .pipe(destStream)
-              .on('error', reject)
-              .on('end', resolve)
+            stream.pipe(destStream).on('error', reject).on('end', resolve)
           }
         } catch (err) {
           reject(err)

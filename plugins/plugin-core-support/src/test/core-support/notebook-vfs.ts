@@ -16,19 +16,15 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-describe(`notebook vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`notebook vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('ls -l / should show /kui', () =>
-    CLI.command('ls -l /', this.app)
-      .then(ReplExpect.okWith('kui'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls -l /', this.app).then(ReplExpect.okWith('kui')).catch(Common.oops(this, true)))
 
   it('should open /kui', () =>
-    CLI.command('open /kui', this.app)
-      .then(ReplExpect.okWithString('welcome.md'))
-      .catch(Common.oops(this, true)))
+    CLI.command('open /kui', this.app).then(ReplExpect.okWithString('welcome.md')).catch(Common.oops(this, true)))
 
   it('should open /kui/kubernetes', () =>
     CLI.command('open /kui/kubernetes', this.app)

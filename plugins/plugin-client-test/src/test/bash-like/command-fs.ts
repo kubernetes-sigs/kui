@@ -20,19 +20,13 @@ function doCdTests(this: Common.ISuite) {
   const initialPWD = process.cwd()
 
   it('should cd to /test', () =>
-    CLI.command(`cd /test`, this.app)
-      .then(ReplExpect.okWithString('/test'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`cd /test`, this.app).then(ReplExpect.okWithString('/test')).catch(Common.oops(this, true)))
 
   it('execute a pty/shell command while in a virtual directory', () =>
-    CLI.command(`echo hi`, this.app)
-      .then(ReplExpect.okWithString('hi'))
-      .catch(Common.oops(this, true)))
+    CLI.command(`echo hi`, this.app).then(ReplExpect.okWithString('hi')).catch(Common.oops(this, true)))
 
   it('execute "test string" command via ./string', () =>
-    CLI.command('./string', this.app)
-      .then(ReplExpect.okWithString('hello world'))
-      .catch(Common.oops(this, true)))
+    CLI.command('./string', this.app).then(ReplExpect.okWithString('hello world')).catch(Common.oops(this, true)))
 
   it('should cd back to the initial working directory', () =>
     CLI.command(`cd "${initialPWD}"`, this.app)
@@ -40,25 +34,19 @@ function doCdTests(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 }
 
-describe(`CommandFS: ls command subdirectories ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`CommandFS: ls command subdirectories ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('ls /test and see string* command', () =>
-    CLI.command('ls /test', this.app)
-      .then(ReplExpect.okWithString('string*'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls /test', this.app).then(ReplExpect.okWithString('string*')).catch(Common.oops(this, true)))
 
   it('ls /test and see bin/ directory', () =>
-    CLI.command('ls /test', this.app)
-      .then(ReplExpect.okWithString('bin/'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls /test', this.app).then(ReplExpect.okWithString('bin/')).catch(Common.oops(this, true)))
 
   // test path normalization
   it('ls /test/bin/.. and see bin/ directory', () =>
-    CLI.command('ls /test/bin/..', this.app)
-      .then(ReplExpect.okWithString('bin/'))
-      .catch(Common.oops(this, true)))
+    CLI.command('ls /test/bin/..', this.app).then(ReplExpect.okWithString('bin/')).catch(Common.oops(this, true)))
 
   it('ls /test/bin and see testing-subdirectory* command', () =>
     CLI.command('ls /test/bin', this.app)
@@ -66,15 +54,14 @@ describe(`CommandFS: ls command subdirectories ${process.env.MOCHA_RUN_TARGET ||
       .catch(Common.oops(this, true)))
 })
 
-describe(`CommandFS: execute commands via slashes ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+describe(`CommandFS: execute commands via slashes ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   it('execute "test string" command via /test/string', () =>
-    CLI.command('/test/string', this.app)
-      .then(ReplExpect.okWithString('hello world'))
-      .catch(Common.oops(this, true)))
+    CLI.command('/test/string', this.app).then(ReplExpect.okWithString('hello world')).catch(Common.oops(this, true)))
 
   doCdTests.bind(this)()
 })
@@ -84,8 +71,9 @@ describe(`CommandFS: execute commands via slashes ${process.env.MOCHA_RUN_TARGET
  * that we don't need to execute a command in a plugin before its
  * command tree is instantiated.
  */
-describe(`CommandFS: cd to kui command directory before executing any commands ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+describe(`CommandFS: cd to kui command directory before executing any commands ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

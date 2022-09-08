@@ -38,7 +38,7 @@ const ECHO_TEXT = `hello ${uuid()}`
 const ECHO_FILE_1 = '/tmp/kui-terminal-tab-test-1'
 const ECHO_FILE_2 = '/tmp/kui-terminal-tab-test-2'
 
-describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -163,9 +163,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
 
   it(`should create sample pod from URL via ${command}`, () => {
     return CLI.command(`${command} create -f ${remotePodYaml} -n ${ns}`, this.app)
-      .then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-      )
+      .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })

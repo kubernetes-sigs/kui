@@ -19,7 +19,7 @@ import { Common, CLI, Selectors, Util } from '@kui-shell/test'
 const timeout = { timeout: CLI.waitTimeout }
 const guidebookTitle = 'Welcome to Kui'
 
-describe(`sidebar ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`sidebar ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

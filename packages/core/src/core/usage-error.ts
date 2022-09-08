@@ -130,27 +130,6 @@ function isBreadcrumbWithClickCommand(crumb: BreadcrumbLabel): crumb is Breadcru
   return !!(breadcrumb.label && breadcrumb.command)
 }
 
-export function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
-  const message = msg as MessageWithUsageModel
-  return !!message.usage
-}
-
-/**
- * Invoke a given command, and extract the breadcrumb title from the resulting usage model
- *
- */
-const breadcrumbFromCommand = async (command: string): Promise<string> => {
-  const { qexec } = await import('../repl/exec')
-  const usageError: UsageError = await qexec(command, undefined, undefined, { failWithUsage: true })
-
-  if (isMessageWithUsageModel(usageError.raw)) {
-    const usage = usageError.raw.usage
-    return usage.breadcrumb || usage.title
-  } else {
-    return usageError.message
-  }
-}
-
 /** make a single breadcrumb for the UI; defaultCommand means use the string as a command */
 interface CrumbOptions {
   breadcrumb: BreadcrumbLabel
@@ -192,13 +171,241 @@ const makeBreadcrumb = (options: CrumbOptions): Promise<Element> => {
   })
 }
 
+interface DetailedExample {
+  command: string
+  docs: string
+}
+
+export interface UsageRow {
+  commandPrefix?: string
+  commandSuffix?: string
+  command?: string
+  name?: string
+  label?: string
+  noclick?: boolean
+  synonyms?: string[]
+  alias?: string
+
+  // yargs-parser-style narg; how many positional parameters are consumed?
+  narg?: number
+
+  // implicit entity ok for this attribute?
+  implicitOK?: string[]
+
+  // this attribute is not required if we match an implicit entity
+  notNeededIfImplicit?: boolean
+
+  // optional arg that consumes one of the required positional slots?
+  consumesPositional?: boolean
+
+  // positional optional?
+  positional?: boolean
+
+  // boolean form of string allowed?
+  booleanOK?: boolean
+
+  // assert true | false
+  boolean?: boolean
+
+  // assert numeric
+  numeric?: boolean
+
+  // assert argument names a local file
+  file?: boolean
+
+  aliases?: string[]
+  hidden?: boolean
+  advanced?: boolean
+  example?: string
+  dir?: boolean
+  title?: string
+  header?: string
+  docs?: string
+  partial?: boolean
+  defaultValue?: boolean | string | number
+  available?: UsageRow[]
+
+  // allow users to provide a prefix substring of an `allowed` value
+  allowedIsPrefixMatch?: boolean
+
+  // enumeration of allowed values
+  allowed?: (number | string | boolean)[]
+}
+
 interface Generator {
   command: string
   fn: (command: string) => UsageRow
 }
 
+type UsageRowOrGenerator = UsageRow | Generator
+
 function isGenerator(row: UsageRowOrGenerator): row is Generator {
   return !!(row as Generator).fn
+}
+
+interface UsageSection {
+  title: string
+  rows: UsageRow[]
+  nRowsInViewport?: number
+}
+
+interface TitledContent {
+  title: string
+  content: string
+}
+
+type YargsParserConfigurationValue = boolean
+export interface YargsParserConfiguration {
+  'camel-case-expansion'?: YargsParserConfigurationValue
+  'short-option-groups'?: YargsParserConfigurationValue
+  'duplicate-arguments-array'?: YargsParserConfigurationValue
+}
+
+export interface UsageModel extends CapabilityRequirements {
+  // usage generator
+  fn?: (command: string) => UsageModel
+
+  // don't offer --help
+  noHelp?: boolean
+
+  // don't offer -h help alias
+  noHelpAlias?: boolean
+
+  // only enforce the given options
+  onlyEnforceOptions?: boolean | string[]
+
+  // yargs-parser configuration to override the default settings
+  configuration?: YargsParserConfiguration
+
+  hide?: boolean
+  children?: Record<string, { route: string; usage?: UsageModel }>
+  synonymFor?: string
+  synonyms?: string[]
+
+  breadcrumb?: string
+  title?: string
+  command?: string
+  strict?: string
+  docs?: string
+  header?: string
+  example?: string
+  detailedExample?: DetailedExample | DetailedExample[]
+  sampleInputs?: UsageRow[]
+  intro?: TitledContent
+  sections?: UsageSection[]
+  commandPrefix?: string
+  commandPrefixNotNeeded?: boolean
+  commandSuffix?: string
+  preserveCase?: boolean // in breadcrumbs
+  parents?: BreadcrumbLabel[]
+  related?: string[]
+  available?: UsageRow[]
+  required?: UsageRow[]
+  optional?: UsageRow[]
+  oneof?: UsageRow[]
+  nRowsInViewport?: number | boolean
+}
+
+interface MessageWithCode {
+  message?: string
+
+  // support a couple of variants of "code"
+  code?: number
+  exitCode?: number
+  statusCode?: number
+}
+
+type MessageLike = string | HTMLElement
+
+export interface MessageWithUsageModel extends MessageWithCode {
+  messageDom?: MessageLike
+
+  usage?: UsageModel
+
+  // allow for arbitrary attachments to help with error reporting
+  extra?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
+
+export interface UsageErrorLike {
+  code?: number
+  statusCode?: number
+  message?: string
+  formattedMessage?: Promise<HTMLElement>
+  stack?: string
+  raw?: UsageLike
+}
+
+export function isMessageWithUsageModel(msg: UsageLike): msg is MessageWithUsageModel {
+  const message = msg as MessageWithUsageModel
+  return !!message.usage
+}
+
+export function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
+  const message = msg as MessageWithCode
+  return !!(message.message && (message.code || message.statusCode || message.exitCode))
+}
+
+export class UsageError extends Error implements CodedError, UsageErrorLike {
+  public formattedMessage: Promise<HTMLElement>
+
+  raw: UsageLike
+
+  code: number
+
+  constructor(message: UsageLike, extra?: UsageOptions) {
+    super()
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor)
+    }
+    this.raw = message
+    this.code = isMessageWithCode(message) ? message.statusCode || message.code || message.exitCode : 500
+
+    if (typeof message === 'string') {
+      this.message = message
+    } else {
+      this.formattedMessage = format(message, extra)
+    }
+  }
+
+  getUsageModel(): UsageModel {
+    return (this.raw as MessageWithUsageModel).usage
+  }
+
+  static getFormattedMessage(err: UsageErrorLike): Promise<HTMLElement> {
+    if (err.formattedMessage && !err.formattedMessage.then && Object.keys(err.formattedMessage).length === 0) {
+      err.formattedMessage = format(err.raw)
+    }
+
+    return err.formattedMessage ? err.formattedMessage : Promise.resolve(span(err.message))
+  }
+
+  static isUsageError(error: Entity | UsageErrorLike): error is UsageErrorLike {
+    const err = error as UsageError
+    return !!(err.formattedMessage && err.code)
+  }
+}
+
+export function isUsageError(error: Entity | UsageErrorLike): error is UsageErrorLike {
+  return UsageError.isUsageError(error)
+}
+
+/**
+ * Invoke a given command, and extract the breadcrumb title from the resulting usage model
+ *
+ */
+const breadcrumbFromCommand = async (command: string): Promise<string> => {
+  const { qexec } = await import('../repl/exec')
+  const usageError: UsageError = await qexec(command, undefined, undefined, { failWithUsage: true })
+
+  if (isMessageWithUsageModel(usageError.raw)) {
+    const usage = usageError.raw.usage
+    return usage.breadcrumb || usage.title
+  } else {
+    return usageError.message
+  }
 }
 
 /**
@@ -382,16 +589,18 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
     const scrollRegions: HTMLElement[] = []
 
     // any minimally formatted sections? e.g. `intro` and `section` fields
-    const makeSection = (parent = right, noMargin = false) => ({ title, content }: TitledContent) => {
-      const wrapper = bodyPart(noMargin)
-      const prePart = prefix(title)
-      const contentPart = document.createElement('pre')
-      contentPart.classList.add('pre-wrap')
-      contentPart.innerText = content
-      wrapper.appendChild(prePart)
-      wrapper.appendChild(contentPart)
-      parent.appendChild(wrapper)
-    }
+    const makeSection =
+      (parent = right, noMargin = false) =>
+      ({ title, content }: TitledContent) => {
+        const wrapper = bodyPart(noMargin)
+        const prePart = prefix(title)
+        const contentPart = document.createElement('pre')
+        contentPart.classList.add('pre-wrap')
+        contentPart.innerText = content
+        wrapper.appendChild(prePart)
+        wrapper.appendChild(contentPart)
+        parent.appendChild(wrapper)
+      }
 
     // top-most intro section?
     if (intro) {
@@ -728,212 +937,6 @@ const format = async (message: UsageLike, options: UsageOptions = new DefaultUsa
 
     return resultWrapper
   }
-}
-
-interface DetailedExample {
-  command: string
-  docs: string
-}
-
-export interface UsageRow {
-  commandPrefix?: string
-  commandSuffix?: string
-  command?: string
-  name?: string
-  label?: string
-  noclick?: boolean
-  synonyms?: string[]
-  alias?: string
-
-  // yargs-parser-style narg; how many positional parameters are consumed?
-  narg?: number
-
-  // implicit entity ok for this attribute?
-  implicitOK?: string[]
-
-  // this attribute is not required if we match an implicit entity
-  notNeededIfImplicit?: boolean
-
-  // optional arg that consumes one of the required positional slots?
-  consumesPositional?: boolean
-
-  // positional optional?
-  positional?: boolean
-
-  // boolean form of string allowed?
-  booleanOK?: boolean
-
-  // assert true | false
-  boolean?: boolean
-
-  // assert numeric
-  numeric?: boolean
-
-  // assert argument names a local file
-  file?: boolean
-
-  aliases?: string[]
-  hidden?: boolean
-  advanced?: boolean
-  example?: string
-  dir?: boolean
-  title?: string
-  header?: string
-  docs?: string
-  partial?: boolean
-  defaultValue?: boolean | string | number
-  available?: UsageRow[]
-
-  // allow users to provide a prefix substring of an `allowed` value
-  allowedIsPrefixMatch?: boolean
-
-  // enumeration of allowed values
-  allowed?: (number | string | boolean)[]
-}
-
-type UsageRowOrGenerator = UsageRow | Generator
-
-interface UsageSection {
-  title: string
-  rows: UsageRow[]
-  nRowsInViewport?: number
-}
-
-interface TitledContent {
-  title: string
-  content: string
-}
-
-type YargsParserConfigurationValue = boolean
-export interface YargsParserConfiguration {
-  'camel-case-expansion'?: YargsParserConfigurationValue
-  'short-option-groups'?: YargsParserConfigurationValue
-  'duplicate-arguments-array'?: YargsParserConfigurationValue
-}
-
-export interface UsageModel extends CapabilityRequirements {
-  // usage generator
-  fn?: (command: string) => UsageModel
-
-  // don't offer --help
-  noHelp?: boolean
-
-  // don't offer -h help alias
-  noHelpAlias?: boolean
-
-  // only enforce the given options
-  onlyEnforceOptions?: boolean | string[]
-
-  // yargs-parser configuration to override the default settings
-  configuration?: YargsParserConfiguration
-
-  hide?: boolean
-  children?: Record<string, { route: string; usage?: UsageModel }>
-  synonymFor?: string
-  synonyms?: string[]
-
-  breadcrumb?: string
-  title?: string
-  command?: string
-  strict?: string
-  docs?: string
-  header?: string
-  example?: string
-  detailedExample?: DetailedExample | DetailedExample[]
-  sampleInputs?: UsageRow[]
-  intro?: TitledContent
-  sections?: UsageSection[]
-  commandPrefix?: string
-  commandPrefixNotNeeded?: boolean
-  commandSuffix?: string
-  preserveCase?: boolean // in breadcrumbs
-  parents?: BreadcrumbLabel[]
-  related?: string[]
-  available?: UsageRow[]
-  required?: UsageRow[]
-  optional?: UsageRow[]
-  oneof?: UsageRow[]
-  nRowsInViewport?: number | boolean
-}
-
-interface MessageWithCode {
-  message?: string
-
-  // support a couple of variants of "code"
-  code?: number
-  exitCode?: number
-  statusCode?: number
-}
-
-export interface MessageWithUsageModel extends MessageWithCode {
-  messageDom?: MessageLike
-
-  usage?: UsageModel
-
-  // allow for arbitrary attachments to help with error reporting
-  extra?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-export function isMessageWithCode(msg: UsageLike): msg is MessageWithCode {
-  const message = msg as MessageWithCode
-  return !!(message.message && (message.code || message.statusCode || message.exitCode))
-}
-
-type MessageLike = string | HTMLElement
-type UsageLike = MessageLike | MessageWithUsageModel //  | IUsageRowGenerator
-
-export interface UsageErrorLike {
-  code?: number
-  statusCode?: number
-  message?: string
-  formattedMessage?: Promise<HTMLElement>
-  stack?: string
-  raw?: UsageLike
-}
-
-export class UsageError extends Error implements CodedError, UsageErrorLike {
-  public formattedMessage: Promise<HTMLElement>
-
-  raw: UsageLike
-
-  code: number
-
-  constructor(message: UsageLike, extra?: UsageOptions) {
-    super()
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor)
-    }
-    this.raw = message
-    this.code = isMessageWithCode(message) ? message.statusCode || message.code || message.exitCode : 500
-
-    if (typeof message === 'string') {
-      this.message = message
-    } else {
-      this.formattedMessage = format(message, extra)
-    }
-  }
-
-  getUsageModel(): UsageModel {
-    return (this.raw as MessageWithUsageModel).usage
-  }
-
-  static getFormattedMessage(err: UsageErrorLike): Promise<HTMLElement> {
-    if (err.formattedMessage && !err.formattedMessage.then && Object.keys(err.formattedMessage).length === 0) {
-      err.formattedMessage = format(err.raw)
-    }
-
-    return err.formattedMessage ? err.formattedMessage : Promise.resolve(span(err.message))
-  }
-
-  static isUsageError(error: Entity | UsageErrorLike): error is UsageErrorLike {
-    const err = error as UsageError
-    return !!(err.formattedMessage && err.code)
-  }
-}
-
-export function isUsageError(error: Entity | UsageErrorLike): error is UsageErrorLike {
-  return UsageError.isUsageError(error)
 }
 
 export default UsageError

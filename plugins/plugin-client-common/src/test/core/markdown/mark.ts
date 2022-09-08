@@ -48,8 +48,9 @@ const IN4: Input = {
   tabs: IN3.tabs
 }
 ;[IN1, IN2, IN3, IN4].forEach(markdown => {
-  describe(`mark tags in markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
+  describe(`mark tags in markdown ${basename(markdown.input)} ${
+    process.env.MOCHA_RUN_TARGET || ''
+  }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 

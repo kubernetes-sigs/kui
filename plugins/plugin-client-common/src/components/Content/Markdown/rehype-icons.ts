@@ -34,7 +34,7 @@ export default function plugin() {
     // match[3]: icon name
     const RE_ICON = /:(badge|material|fontawesome)(-solid|-ok|-warning|-error)?-([^:]+):/g
 
-    visit(ast, 'text', function() {
+    visit(ast, 'text', function () {
       // ugh, typescript bug
       // https://github.com/microsoft/TypeScript/issues/46900 and we
       // have to disable the eslint check here, because rest ...args

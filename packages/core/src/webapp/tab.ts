@@ -129,11 +129,13 @@ export function splitFor(topLevelTab: Tab) {
     // "good to go"! we were given a Split that has a REPL controller
     return topLevelTab
   } else {
-    return (((topLevelTab || document).querySelector(
-      (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback[data-position="default"]'
-    ) as any) as {
-      facade: Tab
-    }).facade
+    return (
+      (topLevelTab || document).querySelector(
+        (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback[data-position="default"]'
+      ) as any as {
+        facade: Tab
+      }
+    ).facade
   }
 }
 

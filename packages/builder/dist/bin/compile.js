@@ -49,7 +49,7 @@ function codecov() {
   // nyc.writeCoverageFile()
 
   // see https://github.com/IBM/kui/issues/3217 for some discussion
-  Object.keys(__coverage__).forEach(function(absFile) {
+  Object.keys(__coverage__).forEach(function (absFile) {
     const map = JSON.parse(require('fs').readFileSync(`${absFile}.map`))
     nyc.sourceMaps._sourceMapCache.registerMap(absFile, map)
   }, nyc)

@@ -26,7 +26,7 @@ import {
 
 const synonyms = ['kubectl']
 
-describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -93,9 +93,7 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     const createIt = (name: string, literals = '') => {
       it(`should create a configmap ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
-          )
+          .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })

@@ -27,7 +27,7 @@ import {
 const synonyms = ['kubectl']
 const dashFs = ['-f']
 
-describe(`kubectl get dash o name ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl get dash o name ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

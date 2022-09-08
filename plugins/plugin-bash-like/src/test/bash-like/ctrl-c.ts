@@ -22,8 +22,9 @@ function doClear(this: Common.ISuite) {
 }
 
 /** This test covers https://github.com/IBM/kui/issues/6979 */
-describe(`Cancel via Ctrl+C then clear then execute ${process.env.MOCHA_RUN_TARGET ||
-  ''}`, function(this: Common.ISuite) {
+describe(`Cancel via Ctrl+C then clear then execute ${
+  process.env.MOCHA_RUN_TARGET || ''
+}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -34,12 +35,10 @@ describe(`Cancel via Ctrl+C then clear then execute ${process.env.MOCHA_RUN_TARG
   clear()
 
   it('should execute a different command, and not see the first output', () =>
-    CLI.command('echo hello', this.app)
-      .then(ReplExpect.okWithString('hello'))
-      .catch(Common.oops(this, true)))
+    CLI.command('echo hello', this.app).then(ReplExpect.okWithString('hello')).catch(Common.oops(this, true)))
 })
 
-describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

@@ -32,7 +32,7 @@ if (process.env.NEEDS_OC) {
 }
 
 commands.forEach(command => {
-  describe(`${command} apply crd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`${command} apply crd ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -117,9 +117,7 @@ commands.forEach(command => {
 
     it(`should delete the custom resource definition from URL via ${command}`, () => {
       return CLI.command(`${command} delete -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) }))
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })

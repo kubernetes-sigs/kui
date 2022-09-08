@@ -35,9 +35,7 @@ const go = (theme: Theme) => (ctx: Common.ISuite) => {
       .catch(Common.oops(ctx, true)))
 
   it(`should show that we are using the ${theme.name} theme`, () =>
-    CLI.command('theme current', ctx.app)
-      .then(ReplExpect.okWithString(theme.name))
-      .catch(Common.oops(ctx, true)))
+    CLI.command('theme current', ctx.app).then(ReplExpect.okWithString(theme.name)).catch(Common.oops(ctx, true)))
 }
 
 /**
@@ -124,7 +122,7 @@ const reloadAndThenDefault = reloadAndThen(Default)
 // const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
 // const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
-describe('theme switching via command', function(this: Common.ISuite) {
+describe('theme switching via command', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -135,14 +133,10 @@ describe('theme switching via command', function(this: Common.ISuite) {
   // clickOnThemeButtonThenClickOnDark(this, 4) // click on Dark 4 times in a row
 
   it('should list built-in Light theme', () =>
-    CLI.command('theme list', this.app)
-      .then(ReplExpect.okWithDropDownList(Light.name))
-      .catch(Common.oops(this)))
+    CLI.command('theme list', this.app).then(ReplExpect.okWithDropDownList(Light.name)).catch(Common.oops(this)))
 
   it('should list built-in Dark theme', () =>
-    CLI.command('theme list', this.app)
-      .then(ReplExpect.okWithDropDownList(Dark.name))
-      .catch(Common.oops(this)))
+    CLI.command('theme list', this.app).then(ReplExpect.okWithDropDownList(Dark.name)).catch(Common.oops(this)))
 
   resetTheme(this)
   reloadAndThenDefault(this)

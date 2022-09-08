@@ -28,7 +28,7 @@ import {
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 const synonyms = ['kubectl']
 
-describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -63,9 +63,7 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
       return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
-        .then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
-        )
+        .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })

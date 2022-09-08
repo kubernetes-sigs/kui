@@ -30,7 +30,7 @@ interface Options extends ParsedOptions {
 }
 
 const doModes = () =>
-  function(args: Arguments<Options>): MultiModalResponse {
+  function (args: Arguments<Options>): MultiModalResponse {
     if (args.parsedOptions.pretty) {
       return Object.assign(metadataWithNameOnly, {
         modes: plainTextMode,

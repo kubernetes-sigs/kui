@@ -26,14 +26,12 @@ const pit = runTheTests ? it : xit
 /** the proxy should come back online within 10 seconds; add some slop */
 const timeItTakesForProxyToComeBack = 30000
 
-describe('pty session status offline after start', function(this: Common.ISuite) {
+describe('pty session status offline after start', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   pit('should echo hi', () =>
-    CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this, true))
+    CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this, true))
   )
 
   pit('should not be showing an offline indicator', () => {
@@ -61,7 +59,7 @@ describe('pty session status offline after start', function(this: Common.ISuite)
   })
 })
 
-describe('pty session status offline at start', function(this: Common.ISuite) {
+describe('pty session status offline at start', function (this: Common.ISuite) {
   before(
     Common.before(this, {
       noProxySessionWait: true, // because we expect it to be offline at startup
@@ -114,14 +112,10 @@ describe('pty session status offline at start', function(this: Common.ISuite) {
   )
 
   pit('should ls now that the proxy is online', () =>
-    CLI.command('ls -l ../..', this.app)
-      .then(ReplExpect.okWith('package.json'))
-      .catch(Common.oops(this, true))
+    CLI.command('ls -l ../..', this.app).then(ReplExpect.okWith('package.json')).catch(Common.oops(this, true))
   )
 
   pit('should echo hi now that the proxy is online', () =>
-    CLI.command('echo hi', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this, true))
+    CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi')).catch(Common.oops(this, true))
   )
 })

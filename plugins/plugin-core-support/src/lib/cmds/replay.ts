@@ -52,7 +52,7 @@ function formatMessage(title?: string) {
 }
 
 /** Command registration */
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   // Register the `replay-content` command; this deals with replaying
   // a command using fixed prefetched content. The assumption is that
   // `execOptions.data` has a view model (not a controller data model)
@@ -105,9 +105,9 @@ export default function(registrar: Registrar) {
             const bg = parsedOptions.r ? '--bg' : ''
 
             await REPL.qexec(
-              `tab new ${bg} --cmdline '${cmdline(filepath)}' ${titleProps} --status-stripe-type ${parsedOptions[
-                'status-stripe'
-              ] || 'blue'}`,
+              `tab new ${bg} --cmdline '${cmdline(filepath)}' ${titleProps} --status-stripe-type ${
+                parsedOptions['status-stripe'] || 'blue'
+              }`,
               undefined,
               undefined,
               { data: { 'status-stripe-message': message } }
