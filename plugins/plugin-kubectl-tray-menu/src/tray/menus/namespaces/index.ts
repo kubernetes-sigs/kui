@@ -25,48 +25,66 @@ import { onRefresh } from '../../events'
 import UpdateFunction from '../../update'
 
 class NamespaceWatcher {
+  private readonly debug = Debug('plugin-kubectl-tray-menu/namespace-watcher')
+
   public constructor(
     private readonly updateFn: UpdateFunction,
     private _namespaces: MenuItemConstructorOptions[] = [Loading]
   ) {
+    this.debug('constructor')
     setTimeout(() => this.scan())
     onRefresh(this.refresh)
   }
 
   /** Refresh content, e.g. because the model changed in the renderer */
-  private readonly refresh = () => this.findAndSetCurrentNamespace(this.namespaces)
+  private readonly refresh = () => {
+    this.debug('refresh')
+    setTimeout(() => this.findAndSetCurrentNamespace(this.namespaces))
+  }
 
   /** Re-generate menu model from current data */
   private async findAndSetCurrentNamespace(
     namespaces: MenuItemConstructorOptions[],
     currentNamespaceP = get().catch(() => '')
   ) {
-    const currentNamespace = await currentNamespaceP
+    try {
+      this.debug('findAndSetCurrentNamespace', namespaces.length)
+      const currentNamespace = await currentNamespaceP
 
-    const oldCur = namespaces.find(_ => _.checked)
-    const newCur = namespaces.find(_ => _.label === currentNamespace)
-    if (oldCur) {
-      oldCur.checked = false
-    }
-    if (newCur) {
-      newCur.checked = true
-    }
+      const oldCur = namespaces.find(_ => _.checked)
+      const newCur = namespaces.find(_ => _.label === currentNamespace)
+      if (oldCur) {
+        oldCur.checked = false
+      }
+      if (newCur) {
+        newCur.checked = true
+      }
 
-    this.namespaces = namespaces
+      this.namespaces = namespaces
+    } catch (err) {
+      this.debug('findAndSetCurrentNamespace failure', err.message)
+    }
+  }
+
+  private none(): MenuItemConstructorOptions[] {
+    return [{ label: '<none>', enabled: false }]
   }
 
   private async setAndScan(ns: string) {
+    this.debug('setAndScan')
     await set(ns)
     this._namespaces = []
     this.scan()
   }
 
   private unauthorized() {
+    this.debug('unauthorized')
     this.namespaces = [{ label: 'Your token has probably expired', enabled: false, icon: errorIcon }]
   }
 
   private async scan() {
     try {
+      this.debug('scan')
       const currentNamespaceP = get().catch(() => '')
 
       const { spawn } = await import('child_process')
@@ -80,6 +98,7 @@ class NamespaceWatcher {
       )
 
       child.on('exit', async code => {
+        this.debug('exit', code)
         if (
           code === 1 &&
           (this.namespaces.length === 0 || (this.namespaces.length === 1 && this.namespaces[0] === Loading))
@@ -97,13 +116,14 @@ class NamespaceWatcher {
           if (!/ENOENT/.test(err.message)) {
             // ENOENT if kubectl is not found
             console.error(err.message)
+          } else {
+            this.debug('error', err.message)
           }
-          this.namespaces = [{ label: '<none>', enabled: false }]
+          this.namespaces = this.none()
         }
       })
 
-      const debug = Debug('plugin-kubectl/tray/menus/namespaces')
-      child.stderr.on('data', data => debug(data.toString()))
+      child.stderr.on('data', data => this.debug(data.toString()))
 
       // partial line from last batch
       let leftover = ''
@@ -154,6 +174,7 @@ class NamespaceWatcher {
   }
 
   public invalidate() {
+    this.debug('invalidate')
     this._namespaces = []
     this.scan()
   }

@@ -20,19 +20,24 @@ import { tellRendererToExecute } from '@kui-shell/core'
 export async function get() {
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile(
-      'kubectl',
-      ['config', 'view', '--minify', '--output=jsonpath={..namespace}'],
-      { windowsHide: true },
-      (err, stdout, stderr) => {
-        if (err) {
-          console.error(stderr)
-          reject(err)
-        } else {
-          resolve(stdout.trim())
+    try {
+      execFile(
+        'kubectl',
+        ['config', 'view', '--minify', '--output=jsonpath={..namespace}'],
+        { windowsHide: true },
+        (err, stdout, stderr) => {
+          if (err) {
+            console.error(stderr)
+            reject(err)
+          } else {
+            resolve(stdout.trim())
+          }
         }
-      }
-    )
+      )
+    } catch (err) {
+      console.error('Error starting current context process', err)
+      reject(err)
+    }
   })
 }
 
@@ -42,18 +47,29 @@ export async function set(ns: string, tellRenderer = true) {
 
   if (tellRenderer) {
     // inform the renderer that we have a context-related change
-    tellRendererToExecute('kubectl ' + args.join(' '))
+    setTimeout(() => {
+      try {
+        tellRendererToExecute('kubectl ' + args.join(' '))
+      } catch (err) {
+        console.error('Error communicating namespace change to renderer', err)
+      }
+    }, 200)
   }
 
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', args, { windowsHide: true }, (err, stdout, stderr) => {
-      if (err) {
-        console.error(stderr)
-        reject(err)
-      } else {
-        resolve(stdout.trim())
-      }
-    })
+    try {
+      execFile('kubectl', args, { windowsHide: true }, (err, stdout, stderr) => {
+        if (err) {
+          console.error(stderr)
+          reject(err)
+        } else {
+          resolve(stdout.trim())
+        }
+      })
+    } catch (err) {
+      console.error('Error starting namespace set-current process', err)
+      reject(err)
+    }
   })
 }

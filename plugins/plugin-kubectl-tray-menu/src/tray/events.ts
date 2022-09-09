@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { EventEmitter } from 'events'
 
 const refreshEvents = new EventEmitter()
 
+/**
+ * [Main Process] Emit a kubernetes config change event. Called from
+ * electron-main, which is the touchpoint for calls from the renderer
+ * process (below).
+ */
 export function emitRefresh() {
+  Debug('plugin-kubectl-tray-menu/events')('emitRefreshFromMain')
   refreshEvents.emit('/refresh')
 }
 
+/**
+ * [Main Process] This is how tray menu watchers register for
+ * kubernetes config change event .
+ */
 export function onRefresh(cb: () => void) {
   refreshEvents.on('/refresh', cb)
 }
 
+/** [Renderer Process] */
 export async function emitRefreshFromRenderer() {
   try {
+    Debug('plugin-kubectl-tray-menu/events')('emitRefreshFromRenderer')
     const { ipcRenderer } = await import('electron')
     ipcRenderer.send(
       '/exec/invoke',

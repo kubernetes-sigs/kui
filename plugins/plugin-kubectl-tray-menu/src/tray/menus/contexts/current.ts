@@ -20,14 +20,19 @@ import { tellRendererToExecute } from '@kui-shell/core'
 export async function get() {
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', ['config', 'current-context'], { windowsHide: true }, (err, stdout, stderr) => {
-      if (err) {
-        console.error(stderr)
-        reject(err)
-      } else {
-        resolve(stdout.trim())
-      }
-    })
+    try {
+      execFile('kubectl', ['config', 'current-context'], { windowsHide: true }, (err, stdout, stderr) => {
+        if (err) {
+          console.error(stderr)
+          reject(err)
+        } else {
+          resolve(stdout.trim())
+        }
+      })
+    } catch (err) {
+      console.error('Error starting current namespace process', err)
+      reject(err)
+    }
   })
 }
 
@@ -37,18 +42,29 @@ export async function set(context: string, tellRenderer = true) {
 
   if (tellRenderer) {
     // inform the renderer that we have a context-related change
-    tellRendererToExecute('kubectl ' + args.join(' '))
+    setTimeout(() => {
+      try {
+        tellRendererToExecute('kubectl ' + args.join(' '))
+      } catch (err) {
+        console.error('Error communicating context change to renderer', err)
+      }
+    }, 200)
   }
 
   const { execFile } = await import('child_process')
   return new Promise<string>((resolve, reject) => {
-    execFile('kubectl', args, { windowsHide: true }, (err, stdout, stderr) => {
-      if (err) {
-        console.error(stderr)
-        reject(err)
-      } else {
-        resolve(stdout.trim())
-      }
-    })
+    try {
+      execFile('kubectl', args, { windowsHide: true }, (err, stdout, stderr) => {
+        if (err) {
+          console.error(stderr)
+          reject(err)
+        } else {
+          resolve(stdout.trim())
+        }
+      })
+    } catch (err) {
+      console.error('Error starting use-context process', err)
+      reject(err)
+    }
   })
 }
