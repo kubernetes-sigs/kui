@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+/**
+ * [Main Process] This is the logic that will be executed in the
+ * *electron-main* process for tray menu registration. This will be
+ * invoked by our `electron-main.ts`, via the `renderer` function
+ * below, which in turn is called from our `preload.ts`.
+ */
+
+import Debug from 'debug'
 import { CreateWindowFunction } from '@kui-shell/core'
 import { productName } from '@kui-shell/client/config.d/name.json'
 
@@ -25,6 +33,8 @@ import buildContextMenu from './menus'
 let tray: null | InstanceType<typeof import('electron').Tray> = null
 
 class LiveMenu {
+  private readonly debug = Debug('plugin-kubectl-tray-menu/main')
+
   // serialized form, to avoid unnecessary repaints
   private currentContextMenu = ''
 
@@ -33,7 +43,9 @@ class LiveMenu {
     private readonly tray: import('electron').Tray,
     private readonly createWindow: CreateWindowFunction,
     private readonly periodic = setInterval(() => this.render(), 10 * 1000)
-  ) {}
+  ) {
+    this.debug('constructor')
+  }
 
   /** Avoid a flurry of re-renders */
   private debounce: null | ReturnType<typeof setTimeout> = null
@@ -43,14 +55,13 @@ class LiveMenu {
       clearTimeout(this.debounce)
     }
     this.debounce = setTimeout(async () => {
+      this.debug('render')
       try {
         // avoid blinking on linux by constantly repainting: only update
         // the tray if the model has changed
         const newContextMenu = await buildContextMenu(this.createWindow, this.render.bind(this))
-        const newContextMenuSerialized = JSON.stringify(
-          newContextMenu,
-          (key, value) => (key === 'menu' || key === 'commandsMap' || key === 'commandId' ? undefined : value),
-          2
+        const newContextMenuSerialized = JSON.stringify(newContextMenu, (key, value) =>
+          key === 'menu' || key === 'commandsMap' || key === 'commandId' ? undefined : value
         )
         if (this.currentContextMenu !== newContextMenuSerialized) {
           this.currentContextMenu = newContextMenuSerialized
@@ -65,10 +76,10 @@ class LiveMenu {
 }
 
 /**
- * This is the logic that will be executed in the *electron-main*
- * process for tray menu registration. This will be invoked by our
- * `electron-main.ts`, via the `renderer` function below, which in
- * turn is called from our `preload.ts`.
+ * [Main Process] This is the logic that will be executed in the
+ * *electron-main* process for tray menu registration. This will be
+ * invoked by our `electron-main.ts`, via the `renderer` function
+ * below, which in turn is called from our `preload.ts`.
  */
 export default async function main(createWindow: CreateWindowFunction) {
   if (tray) {

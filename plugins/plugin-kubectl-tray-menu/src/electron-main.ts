@@ -17,9 +17,9 @@
 import { CreateWindowFunction } from '@kui-shell/core'
 
 /**
- * This logic will be executed in the electron-main process, and is
- * called by Kui core in response to the event issued by
- * `./tray/renderer`, whenever a new electron window opens.
+ * [Main Process]: This logic will be executed in the electron-main
+ * process, and is called by Kui core in response to the event issued
+ * by `./tray/renderer`, whenever a new electron window opens.
  */
 export async function initTray(args: { command: string }, _: unknown, createWindow: CreateWindowFunction) {
   if (args.command === '/tray/init') {
