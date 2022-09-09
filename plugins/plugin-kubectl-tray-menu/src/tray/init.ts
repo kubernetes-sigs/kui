@@ -16,7 +16,7 @@
 
 import { Capabilities } from '@kui-shell/core'
 
-/** Preloader to initialize tray menu */
+/** [Renderer Process] Preloader to initialize tray menu */
 export default async function initTray() {
   if (Capabilities.inElectron() && !process.env.KUI_NO_TRAY_MENU) {
     const { ipcRenderer } = await import('electron')

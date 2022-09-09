@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { MenuItemConstructorOptions } from 'electron'
 import { CreateWindowFunction } from '@kui-shell/core'
 
@@ -24,40 +25,61 @@ import UpdateFunction from '../../update'
 import { invalidate } from '../namespaces'
 
 class ContextWatcher {
+  private readonly debug = Debug('plugin-kubectl-tray-menu/context-watcher')
+
   public constructor(
     private readonly updateFn: UpdateFunction,
     private _contexts: MenuItemConstructorOptions[] = [Loading]
   ) {
+    this.debug('constructor')
     setTimeout(() => this.scan())
-    onRefresh(() => this.findAndSetCurrentContext(this.contexts))
+    onRefresh(this.refresh)
   }
 
+  /** Refresh content, e.g. because the model changed in the renderer */
+  private readonly refresh = () => {
+    this.debug('refresh')
+    setTimeout(() => this.findAndSetCurrentContext(this.contexts))
+  }
+
+  /** Re-generate menu model from current data */
   private async findAndSetCurrentContext(
     contexts: MenuItemConstructorOptions[],
     currentContextP = get().catch(() => '')
   ) {
-    const currentContext = await currentContextP
+    try {
+      this.debug('findAndSetCurrentContext', contexts.length)
+      const currentContext = await currentContextP
 
-    const oldCur = contexts.find(_ => _.checked)
-    const newCur = contexts.find(_ => _.id === currentContext)
-    if (oldCur) {
-      oldCur.checked = false
-    }
-    if (newCur) {
-      newCur.checked = true
-    }
+      const oldCur = contexts.find(_ => _.checked)
+      const newCur = contexts.find(_ => _.id === currentContext)
+      if (oldCur) {
+        oldCur.checked = false
+      }
+      if (newCur) {
+        newCur.checked = true
+      }
 
-    this.contexts = contexts
+      this.contexts = contexts
+    } catch (err) {
+      this.debug('findAndSetCurrentContext failure', err.message)
+    }
   }
 
-  private async setAndScan(cluster: string) {
-    await set(cluster)
+  private none(): MenuItemConstructorOptions[] {
+    return [{ label: '<none>', enabled: false }]
+  }
+
+  private async setAndScan(context: string) {
+    this.debug('setAndScan')
+    await set(context)
     this._contexts = []
     invalidate()
     this.scan()
   }
 
   private async scan() {
+    this.debug('scan')
     const currentContextP = get().catch(() => '')
 
     const { execFile } = await import('child_process')
@@ -66,13 +88,14 @@ class ContextWatcher {
       ['config', 'get-contexts', '--output=name'],
       { windowsHide: true },
       async (err, stdout, stderr) => {
+        this.debug('scan done', !!err)
         if (err) {
           if (!/ENOENT/.test(err.message)) {
             // ENOENT if kubectl is not found
             console.error('Error scanning Kubernetes contexts', err.message)
             console.error(stderr)
           }
-          this.contexts = [{ label: '<none>', enabled: false }]
+          this.contexts = this.none()
         } else {
           const contexts: Record<string, string> = stdout
             .split(/\n/)
