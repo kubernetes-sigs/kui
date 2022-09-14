@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.1.0](https://github.com/IBM/kui/compare/v4.5.0...v12.1.0) (2022-09-14)
+
+
+### Bug Fixes
+
+* **packages/core:** Events api created and typedoc documentation generated ([531461d](https://github.com/IBM/kui/commit/531461d))
+* Switching Carbon tabs can cause content to scroll off-viewport ([51a2aad](https://github.com/IBM/kui/commit/51a2aad)), closes [#6014](https://github.com/IBM/kui/issues/6014)
+
+
+### Features
+
+* allow table drilldown to a new window ([96d1d0e](https://github.com/IBM/kui/commit/96d1d0e))
+* background new tabs ([be9f986](https://github.com/IBM/kui/commit/be9f986)), closes [#5550](https://github.com/IBM/kui/issues/5550)
+* Feature: improve support for parallelization across VFS operations ([e05d7e0](https://github.com/IBM/kui/commit/e05d7e0)), closes [#5831](https://github.com/IBM/kui/issues/5831)
+* improved support for passing through window titles for new windows ([670d429](https://github.com/IBM/kui/commit/670d429))
+* Kui client should support self-bootstrapping of Kui ([3bbf8e8](https://github.com/IBM/kui/commit/3bbf8e8)), closes [#4277](https://github.com/IBM/kui/issues/4277)
+* react helpers ([f6bea1f](https://github.com/IBM/kui/commit/f6bea1f))
+* simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+
+
+### BREAKING CHANGES
+
+* this PR removes plugins/plugin-client-default
+
+
+
+
+
 # [12.0.0](https://github.com/IBM/kui/compare/v4.5.0...v12.0.0) (2022-09-06)
 
 ### Bug Fixes
