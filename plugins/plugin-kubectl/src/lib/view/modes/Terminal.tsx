@@ -17,6 +17,7 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 import { FitAddon } from 'xterm-addon-fit'
+import { WebglAddon } from 'xterm-addon-webgl'
 import { Terminal as XTerminal, ITheme } from 'xterm'
 
 import { Events, Job, Streamable, ToolbarText, i18n, isResizable } from '@kui-shell/core'
@@ -189,7 +190,7 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
       foreground: val('text-01'),
       background: val('sidecar-background-01'),
       cursor: val('support-01'),
-      selection: alpha(val('selection-background'), 0.3),
+      selectionBackground: alpha(val('selection-background'), 0.3),
 
       black: val('black'),
       red: val('red'),
@@ -211,17 +212,17 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
     }
 
     // debug('itheme for xterm', itheme)
-    xterm.setOption('theme', itheme)
-    xterm.setOption('fontFamily', val('monospace', 'font'))
+    xterm.options.theme = itheme
+    xterm.options.fontFamily = val('monospace', 'font')
 
     try {
       const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input input'))
-      xterm.setOption('fontSize', parseInt(fontTheme.fontSize.replace(/px$/, ''), 10))
-      // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
+      xterm.options.fontSize = parseInt(fontTheme.fontSize.replace(/px$/, ''), 10)
+      // terminal.options.lineHeight = parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10)
 
       // FIXME. not tied to theme
-      xterm.setOption('fontWeight', 400)
-      xterm.setOption('fontWeightBold', 600)
+      xterm.options.fontWeight = 400
+      xterm.options.fontWeightBold = 600
     } catch (err) {
       console.error('Error setting terminal font size', err)
     }
@@ -530,8 +531,8 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
       inDebugMode() || process.env.RUNNING_SHELL_TEST || process.env.RUNNING_KUI_TEST ? 'dom' : 'canvas'
 
     const xterm = new XTerminal({
-      scrollback: 1000,
-      rendererType
+      allowProposedApi: true,
+      scrollback: 1000
     })
     const perTerminalCleaners: Cleaner[] = []
 
@@ -547,6 +548,12 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
     xterm.loadAddon(fitAddon)
 
     xterm.open(dom)
+
+    if (rendererType !== 'dom') {
+      const webgl = new WebglAddon()
+      webgl.onContextLoss(() => webgl.dispose())
+      xterm.loadAddon(webgl)
+    }
 
     const doResize = () => {
       try {

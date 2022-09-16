@@ -683,14 +683,14 @@ function getFontProperties(flush: boolean) {
 const injectFont = (terminal: XTerminal, flush = false) => {
   try {
     const { fontFamily, fontSize } = getFontProperties(flush)
-    terminal.setOption('fontFamily', fontFamily)
-    terminal.setOption('fontSize', fontSize)
+    terminal.options.fontFamily = fontFamily
+    terminal.options.fontSize = fontSize
 
     debug('fontSize', fontSize)
 
     // FIXME. not tied to theme
-    terminal.setOption('fontWeight', 400)
-    terminal.setOption('fontWeightBold', 600)
+    terminal.options.fontWeight = 400
+    terminal.options.fontWeightBold = 600
   } catch (err) {
     console.error('Error setting terminal font size', err)
   }
@@ -877,7 +877,7 @@ export const doExec = (
           const { fontFamily, fontSize } = getFontProperties(false)
           // creating terminal
           terminal = new XTerminal({
-            rendererType: 'dom',
+            allowProposedApi: true,
             cols: (cachedSize && cachedSize.cols) || 80,
             rows: (cachedSize && cachedSize.rows) || 40,
             fontFamily,
