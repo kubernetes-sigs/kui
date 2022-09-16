@@ -39,7 +39,10 @@
     "pluralize": "8.0.0",
     "semver": "7.3.7",
     "tmp": "0.2.1",
-    "uuid": "9.0.0"
+    "uuid": "9.0.0",
+    "xterm": "^5.0.0",
+    "xterm-addon-fit": "^0.6.0",
+    "xterm-addon-webgl": "^0.13.0"
   },
   "krew": {
     "commandPrefix": "kubeui"

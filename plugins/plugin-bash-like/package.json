@@ -24,7 +24,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/xterm-helpers": "1.0.2",
+    "@kui-shell/xterm-helpers": "2.0.0",
     "cookie": "0.5.0",
     "debug": "4.3.4",
     "globby": "11.0.4",
@@ -35,8 +35,9 @@
     "tmp": "0.2.1",
     "uuid": "9.0.0",
     "ws": "7.5.9",
-    "xterm": "4.19.0",
-    "xterm-addon-fit": "0.5.0"
+    "xterm": "5.0.0",
+    "xterm-addon-fit": "0.6.0",
+    "xterm-addon-webgl": "^0.13.0"
   },
   "kui": {
     "exclude": {
