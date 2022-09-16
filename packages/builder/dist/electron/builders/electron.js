@@ -61,6 +61,7 @@ const nodePty = 'node-pty'
  */
 const ignore = [
   /~$/,
+  /\/.log$/, // not sure, but some giant logs from typescript? "Adding typings to cache..."
   /\.ts$/,
   /\.vscode/,
   /\.github/,
