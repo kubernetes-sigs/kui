@@ -42,7 +42,7 @@ const importgForBrowser: (name: string) => Tree = (name: string) => ({
   ]
 })
 
-export const importg: (name?: string) => Tree = (name = 'importg.md') =>
+export const importg: (name?: string) => Tree = (name = 'importg') =>
   (process.env.MOCHA_RUN_TARGET || 'electron') === 'electron' ? importgForElectron(name) : importgForBrowser(name)
 
 const tree: Input['tree'] = () => [

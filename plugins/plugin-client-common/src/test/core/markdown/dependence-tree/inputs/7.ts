@@ -23,7 +23,7 @@ const filename = 'guidebook-tree-model7.md'
 export const tree: Input['tree'] = () => [
   {
     name: filename,
-    children: [importg('importgg.md'), importd]
+    children: [importg('importgg'), importd]
   }
 ]
 
