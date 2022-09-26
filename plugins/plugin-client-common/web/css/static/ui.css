@@ -475,6 +475,7 @@ body {
     }
   }
   button {
+    background: none;
     font-family: var(--font-sans-serif);
     &:hover {
       cursor: pointer;
