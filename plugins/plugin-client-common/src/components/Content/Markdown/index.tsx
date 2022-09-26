@@ -63,7 +63,7 @@ const rehypePlugins = (uuid: string, choices: Choices.ChoiceState, filepath: str
   Parser.rehypeWizard,
   [Parser.rehypeTabbed, uuid, choices, { optimize: { aprioris: Capabilities.inElectron() } }],
   Parser.rehypeTip,
-  [Parser.rehypeCodeIndexer, uuid, filepath, undefined, true],
+  [Parser.rehypeCodeIndexer, uuid, filepath, {}, undefined, true],
   icons,
   rehypeRaw,
   rehypeSlug
