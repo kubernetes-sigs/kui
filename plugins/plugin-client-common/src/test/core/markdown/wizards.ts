@@ -80,7 +80,7 @@ const IN3: Input = {
   title: 'Getting Started with Knative',
   description: 'WizardDescriptionInTopmatter',
   expectedSplitCount: 1,
-  expectedCodeBlockTasks: 19,
+  expectedCodeBlockTasks: 20,
   steps: [
     { name: 'TestRewritingOfStepName', body: 'provides a quick and easy interface', description: '', codeBlocks: [] },
     {
