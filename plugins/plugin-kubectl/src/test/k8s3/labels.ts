@@ -78,8 +78,8 @@ describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, functio
             .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
-            .then(Util.switchToTab('raw'))
-            .then(SidecarExpect.yaml({ metadata: { labels: { [key]: value } } }))
+            .then(Util.switchToTab('labels'))
+            .then(SidecarExpect.yaml({ [key]: value }))
         } catch (err) {
           await Common.oops(this, true)(err)
         }

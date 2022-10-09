@@ -163,7 +163,7 @@ commands.forEach(command => {
     const parseError = modifyWithError.bind(undefined, 'parse error', Keys.End, 'could not find expected')
 
     /** modify pod {name} so as to add a label of key=value */
-    const modify = (name: string, key = 'foo', value = 'bar', needsUnfold = true) => {
+    const modify = (name: string, key = 'foo', value = 'bar', needsUnfold = false) => {
       it(`should modify the content by adding label ${key}=${value}`, async () => {
         try {
           const actualText = await Util.getValueFromMonaco(res)
