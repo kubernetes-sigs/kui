@@ -15,32 +15,38 @@
  */
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
+
 import { KubeResource, hasAnnotations } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
-/**
- * Note: Presenting as a DescriptionList may work, if one of the
- * annotation values is not a scalar
- *
- */
-function content(_, resource: KubeResource) {
-  return {
-    apiVersion: 'kui-shell/v1' as const,
-    kind: 'DescriptionList' as const,
-    spec: {
-      groups: Object.keys(resource.metadata.annotations)
-        .filter(
-          term =>
-            term !== 'kubectl.kubernetes.io/last-applied-configuration' &&
-            resource.metadata.annotations[term].length > 0
-        )
-        .sort((a, b) => a.length - b.length)
-        .map(term => ({
-          term,
-          description: resource.metadata.annotations[term]
-        }))
+const lastApplied = 'kubectl.kubernetes.io/last-applied-configuration'
+
+export function tryParse(value: any) {
+  if (typeof value === 'object' || typeof value === 'number' || typeof value === 'boolean') {
+    return value
+  } else {
+    try {
+      return JSON.parse(value)
+    } catch (err) {
+      return value
     }
+  }
+}
+
+async function content(_, resource: KubeResource) {
+  // this module is expensive to load, so we defer that expense
+  const { dump } = await import('js-yaml')
+
+  return {
+    contentType: 'yaml',
+    content: dump(
+      JSON.parse(
+        JSON.stringify(resource.metadata.annotations, (key, value) =>
+          key === lastApplied ? undefined : tryParse(value)
+        )
+      )
+    )
   }
 }
 

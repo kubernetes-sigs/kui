@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-@import 'Base';
-@import 'Tree';
-@import 'Nested';
-@import 'BottomToolbar';
+@import 'mixins';
+
+@include Sidecar {
+  .pf-c-tree-view {
+    --pf-global--spacer--md: 0.75rem;
+
+    dl,
+    dd {
+      margin: 0;
+    }
+  }
+  .pf-c-tree-view__node-toggle {
+    --pf-c-tree-view__node-toggle--Color: var(--color-base04);
+    &:hover {
+      --pf-c-tree-view__node-toggle--Color: var(--color-base05);
+    }
+  }
+  .pf-c-tree-view__node {
+    margin: 0;
+    --pf-c-tree-view__node--Color: var(--color-text-01);
+    --pf-c-tree-view__node--focus--BackgroundColor: var(--color-base02);
+  }
+}

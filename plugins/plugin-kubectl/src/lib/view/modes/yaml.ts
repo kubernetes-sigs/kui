@@ -27,6 +27,25 @@ export const label = 'YAML'
 /** We want this to be placed as the last tab */
 export const order = 999
 
+async function content(_, resource: WithRawData) {
+  // this module is expensive to load, so we defer that expense
+  const { load, dump } = await import('js-yaml')
+
+  // why not also not-show labels? k8s4/edit.ts has some tests; we
+  // will need to update those tests if we want to remove labels from
+  // the yaml tab
+  return {
+    contentType: 'yaml',
+    content: dump(
+      JSON.parse(
+        JSON.stringify(load(resource.kuiRawData), (key, value) =>
+          key === 'managedFields' || key === 'annotations' /* || key === 'labels' */ ? undefined : value
+        )
+      )
+    )
+  }
+}
+
 /**
  * The YAML mode applies to all KubeResources, and simply extracts the
  * raw `data` field from the resource; note how we indicate that this
@@ -38,11 +57,7 @@ const yamlMode: ModeRegistration<WithRawData> = {
   mode: {
     mode,
     label,
-
-    content: (_, resource: WithRawData) => ({
-      content: resource.kuiRawData,
-      contentType: 'yaml'
-    }),
+    content,
 
     // traits:
     order
