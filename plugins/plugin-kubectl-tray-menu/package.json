@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-kubectl-tray-menu",
-  "version": "12.0.0",
+  "version": "12.2.0",
   "description": "Kubernetes Tray menu plugin for Kui",
   "license": "Apache-2.0",
   "keywords": [
