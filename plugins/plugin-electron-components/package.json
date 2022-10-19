@@ -21,7 +21,9 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@electron/remote": "2.0.8"
+    "@electron/remote": "2.0.8",
+    "@patternfly/react-core": "^4.250.1",
+    "@patternfly/react-table": "^4.111.4"
   },
   "publishConfig": {
     "access": "public"

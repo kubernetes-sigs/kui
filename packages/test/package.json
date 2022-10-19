@@ -15,7 +15,7 @@
     "kui-test": "./bin/runMochaLayers.sh"
   },
   "dependencies": {
-    "@wdio/mocha-framework": "7.24.0",
+    "@wdio/mocha-framework": "7.25.2",
     "spectron": "starpit/spectron#741bb9512e13e3d696bbbce471c4c7d8d8a22590"
   },
   "kui": {
