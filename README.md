@@ -26,7 +26,7 @@ commands **2-3 times faster** than `kubectl` itself.
 <img height="185" src="docs/readme/images/grid-watch.gif"><img height="185" src="docs/readme/images/sequence-diagram.png"><img height="185" src="docs/readme/images/pod.png">
 
 > Help us make Kubernetes tools better by filling out a [quick 2
-> minute survey](https://forms.gle/7UKYQZvPoo7ohLdo9) on your tool
+> minute survey](https://forms.gle/BMvpscU9Yi5Horp29) on your tool
 > preferences. Thanks!
 
 <a name="install">
