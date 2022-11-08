@@ -26,6 +26,7 @@ import {
   Capabilities,
   Tab,
   REPL,
+  Job,
   Abortable,
   FlowControllable,
   XtermResponse,
@@ -940,7 +941,7 @@ export const doExec = (
         // this function will be called just prior to executing the
         // command against the websocket/channel
         const init = async (ws: Channel) => {
-          const job = {
+          const job: Job = {
             write: (data: string) => ws.send(JSON.stringify({ type: 'data', data, uuid: ourUUID })),
             xon: () => {
               debug('xon requested')
@@ -953,9 +954,9 @@ export const doExec = (
             resize: (rows: number, cols: number) => {
               ws.send(JSON.stringify({ type: 'resize', rows, cols, uuid: ourUUID }))
             },
-            abort: () => {
+            abort: (signal?: string) => {
               debug('abort requested')
-              ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID }))
+              ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID, signal }))
             }
           }
 

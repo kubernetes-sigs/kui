@@ -15,7 +15,7 @@
  */
 
 export interface Abortable {
-  abort(): void
+  abort(signal?: string): void
 }
 
 export interface Resizable {
