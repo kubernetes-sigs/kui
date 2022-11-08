@@ -23,7 +23,7 @@ interface Props {
   className?: string
   children: string
   onRender?: () => void
-  noWrap?: boolean
+  noWrap?: boolean | 'normal'
 }
 
 /** Special overrides for CSS classes; otherwise, we will use the raw values from `anser`, e.g. "italic" and "underline" and "strikethrough" */
@@ -54,22 +54,34 @@ function content(source: string) {
       </React.Fragment>
     )
   } else {
+    // adds support for the anchor extension that some terminals support
+    // https://iterm2.com/documentation-escape-codes.html
+    // eslint-disable-next-line no-control-regex
+    const m = source.match(/\x1B\]8;;(.+)\u0007(.+)\x1B\]8;;\u0007/)
+    if (m) {
+      return (
+        <span>
+          {source.slice(0, m.index)}
+          <a href={m[1]}>{m[2]}</a>
+          {source.slice(m.index + m[0].length)}
+        </span>
+      )
+    }
     return source
   }
 }
 
 export default function Ansi(props: Props) {
-  // eslint-disable-next-line @typescript-eslint/camelcase
   const model = ansiToJson(props.children, { use_classes: true })
 
   if (props.onRender) {
     props.onRender()
   }
 
-  const style: Record<string, any> = { margin: 0 }
+  const style: Record<string, string | number> = { margin: 0 }
   if (!props.noWrap) {
     style.wordBreak = 'break-all'
-  } else {
+  } else if (props.noWrap !== 'normal') {
     style.whiteSpace = 'nowrap'
   }
 
