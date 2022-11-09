@@ -417,7 +417,6 @@ body[kui-theme-style='light'] {
   }
 
   @include MarkdownTabButton {
-    color: var(--color-text-02);
     font-size: $terminal-font-size;
     --pf-c-tabs__link--after--Bottom: 1px;
   }
