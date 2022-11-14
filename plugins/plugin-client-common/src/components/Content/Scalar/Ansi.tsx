@@ -93,7 +93,7 @@ function content(source: string) {
         A.push(source.slice(start))
       }
 
-      return <span>{A}</span>
+      return <span className="normal-wrap">{A}</span>
     }
     return source
   }
