@@ -37,6 +37,10 @@ class ReactUI implements Tree.UI<React.ReactNode> {
     return <Markdown nested source={body} />
   }
 
+  public ask() {
+    return Promise.resolve("")
+  }
+
   public span(content: string, ...decorations: Tree.Decoration[]) {
     if (decorations.length === 0) {
       return content
