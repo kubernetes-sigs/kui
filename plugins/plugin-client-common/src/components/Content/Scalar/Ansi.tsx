@@ -15,6 +15,8 @@
  */
 
 import React from 'react'
+import ansiRegex from 'ansi-regex'
+import stripAnsi from 'strip-ansi'
 import { ansiToJson, AnserJsonEntry } from 'anser'
 
 const Markdown = React.lazy(() => import('../Markdown'))
@@ -57,15 +59,41 @@ function content(source: string) {
     // adds support for the anchor extension that some terminals support
     // https://iterm2.com/documentation-escape-codes.html
     // eslint-disable-next-line no-control-regex
-    const m = source.match(/\x1B\]8;;(.+)\u0007(.+)\x1B\]8;;\u0007/)
-    if (m) {
-      return (
-        <span>
-          {source.slice(0, m.index)}
-          <a href={m[1]}>{m[2]}</a>
-          {source.slice(m.index + m[0].length)}
-        </span>
-      )
+    const m = source.match(ansiRegex())
+    if (m && m.length > 0) {
+      let start = 0
+      const A = []
+      for (let matchIdx = 0; matchIdx < m.length; matchIdx += 2) {
+        const link = m[matchIdx]
+        const tail = m[matchIdx + 1]
+
+        const idx1 = source.indexOf(link, start)
+        if (idx1 > start) {
+          // any text prior to the link part
+          A.push(source.slice(start, idx1))
+        }
+
+        if (tail) {
+          if (idx1 >= 0) {
+            const start2 = idx1 + link.length
+            const idx2 = source.indexOf(tail, start2)
+            if (idx2 >= 0) {
+              // the html anchor
+              const text = source.slice(start2, idx2)
+              A.push(<a href={stripAnsi(link)}>{text}</a>)
+
+              start = idx2 + tail.length
+            }
+          }
+        }
+      }
+
+      if (start < source.length) {
+        // any trailing text after the last link
+        A.push(source.slice(start))
+      }
+
+      return <span>{A}</span>
     }
     return source
   }
