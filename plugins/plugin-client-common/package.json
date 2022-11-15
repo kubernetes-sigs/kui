@@ -29,7 +29,6 @@
     "@patternfly/react-table": "4.111.4",
     "anser": "2.1.1",
     "ansi-regex": "6.0.1",
-    "strip-ansi": "6.0.1",
     "html-entities": "2.3.3",
     "madwizard": ">=1.6.4",
     "monaco-editor": "0.34.0",
