@@ -16,7 +16,6 @@
 
 import React from 'react'
 import ansiRegex from 'ansi-regex'
-import stripAnsi from 'strip-ansi'
 import { ansiToJson, AnserJsonEntry } from 'anser'
 
 const Markdown = React.lazy(() => import('../Markdown'))
@@ -43,6 +42,11 @@ function classOf(entry: AnserJsonEntry) {
   const deco = entry.decorations.map(_ => decos[_] || _)
 
   return `${fg} ${bg} ${deco.join(' ')}`
+}
+
+/** A stopPropagation onClick event handler */
+function stopProp(evt: React.MouseEvent) {
+  evt.stopPropagation()
 }
 
 function content(source: string) {
@@ -80,7 +84,12 @@ function content(source: string) {
             if (idx2 >= 0) {
               // the html anchor
               const text = source.slice(start2, idx2)
-              A.push(<a href={stripAnsi(link)}>{text}</a>)
+              const href = link.slice(5, link.length - 1) // `strip-ansi@6.0.1` doesn't seem to work here :(
+              A.push(
+                <a target="_blank" href={href} rel="noreferrer">
+                  {text}
+                </a>
+              )
 
               start = idx2 + tail.length
             }
@@ -93,7 +102,11 @@ function content(source: string) {
         A.push(source.slice(start))
       }
 
-      return <span className="normal-wrap">{A}</span>
+      return (
+        <span onClick={stopProp} className="normal-wrap">
+          {A}
+        </span>
+      )
     }
     return source
   }
