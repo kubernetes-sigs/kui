@@ -86,7 +86,7 @@ function content(source: string) {
               const text = source.slice(start2, idx2)
               const href = link.slice(5, link.length - 1) // `strip-ansi@6.0.1` doesn't seem to work here :(
               A.push(
-                <a target="_blank" href={href} rel="noreferrer">
+                <a key={`${href}-${A.length}`} target="_blank" href={href} rel="noreferrer">
                   {text}
                 </a>
               )
