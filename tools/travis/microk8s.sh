@@ -19,7 +19,7 @@
 set -e
 set -o pipefail
 
-sudo snap install microk8s --classic --channel=1.17/stable
+sudo snap install microk8s --classic --channel=1.23/stable
 
 # do this in advance, so that microk8s running as sudo doesn't create it
 mkdir -p ~/.kube
