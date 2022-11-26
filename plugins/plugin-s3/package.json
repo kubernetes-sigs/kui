@@ -29,7 +29,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@patternfly/react-table": "4.111.4",
+    "@patternfly/react-table": "^4.111.45",
     "common-path-prefix": "3.0.0",
     "ini": "3.0.1",
     "minimatch": "5.1.0",

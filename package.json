@@ -124,6 +124,8 @@
     "nan": "github:jkleinsc/nan#6a2f95a6a2209d8aa7542fb18099fd808a802059",
     "prettier": "2.7.1",
     "properties-parser": "0.3.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
     "tmp": "0.2.1",
     "typedoc": "0.23.20",
     "typedoc-plugin-markdown": "3.13.6",
