@@ -25,20 +25,6 @@
   "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
-  "dependencies": {
-    "@kui-shell/jsonpath": "1.1.1",
-    "bytes-iec": "3.1.1",
-    "command-exists": "1.2.9",
-    "debug": "4.3.4",
-    "fs-extra": "10.1.0",
-    "js-yaml": "4.1.0",
-    "needle": "3.1.0",
-    "parse-duration": "1.0.2",
-    "pluralize": "8.0.0",
-    "semver": "7.3.7",
-    "tmp": "0.2.1",
-    "uuid": "9.0.0"
-  },
   "publishConfig": {
     "access": "public"
   },
