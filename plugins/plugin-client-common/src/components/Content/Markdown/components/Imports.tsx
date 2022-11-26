@@ -37,6 +37,10 @@ class ReactUI implements Tree.UI<React.ReactNode> {
     return <Markdown nested source={body} />
   }
 
+  public ask() {
+    return Promise.resolve({})
+  }
+
   public span(content: string, ...decorations: Tree.Decoration[]) {
     if (decorations.length === 0) {
       return content
@@ -129,10 +133,10 @@ type Props = Choices.Choices &
     imports: CodeBlock.CodeBlockProps[]
   }
 
-type Progress = { nDone: number; nError: number; nTotal: number }
+// type Progress = { nDone: number; nError: number; nTotal: number }
 
 /** Map from treeModel node ID to the cumulative progress of that subtree */
-type ProgressMap = Record<string, Progress>
+// type ProgressMap = Record<string, Progress>
 
 type State = Choices.Choices &
   Pick<TreeViewProps, 'data'> & {
