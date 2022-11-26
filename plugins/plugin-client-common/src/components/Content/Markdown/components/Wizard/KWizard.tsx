@@ -144,7 +144,9 @@ export default class KWizard extends React.PureComponent<Props, State> {
 
     // hmm there doesn't seem to be a better way to get the last
     // step's Next button to be disabled; it isn't by default
-    steps[steps.length - 1].enableNext = false
+    if (steps[steps.length - 1]) {
+      steps[steps.length - 1].enableNext = false
+    }
 
     // re: key={startAtStep} see https://github.com/patternfly/patternfly-react/issues/7184
     return (
