@@ -51,9 +51,6 @@
     },
     {
       "path": "packages/react"
-    },
-    {
-      "path": "plugins/plugin-iter8"
     }
   ],
   "typedocOptions": {

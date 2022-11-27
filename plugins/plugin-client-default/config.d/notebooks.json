@@ -18,11 +18,6 @@
         { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.md" },
         { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.md" }
       ]
-    },
-    {
-      "label": "Iter8",
-      "expanded": false,
-      "submenu": [{ "notebook": "Load testing with SLO validation", "filepath": "/kui/iter8/tutorial1.md" }]
     }
   ]
 }
