@@ -80,9 +80,8 @@ const IN3: Input = {
   title: 'Getting Started with Knative',
   description: 'WizardDescriptionInTopmatter',
   expectedSplitCount: 1,
-  expectedCodeBlockTasks: 20,
+  expectedCodeBlockTasks: 12,
   steps: [
-    { name: 'TestRewritingOfStepName', body: 'provides a quick and easy interface', description: '', codeBlocks: [] },
     {
       name: 'Install the Knative quickstart plugin',
       body: 'To get started, install the Knative',
@@ -90,7 +89,7 @@ const IN3: Input = {
       codeBlocks: []
     },
     {
-      name: 'Run the Knative quickstart plugin',
+      name: 'TestRewritingOfStepName',
       body: 'plugin completes the following functions',
       description: 'This will quickly set up Knative against kind or minikube',
       codeBlocks: []
@@ -193,13 +192,31 @@ const IN6: Input = {
       })
 
       if (command !== 'guide') {
-        it(`should show "n of ${markdown.expectedCodeBlockTasks}" in progress bar`, () =>
-          this.app.client.waitUntil(async () => {
+        it(`should show "n of ${markdown.expectedCodeBlockTasks}" in progress bar`, () => {
+          let iter = 0
+          return this.app.client.waitUntil(async () => {
             const actualMeasureText = await this.app.client.$(Selectors.Wizard.progressMeasure).then(_ => _.getText())
             const match = actualMeasureText.match(/of (\d+)/)
 
-            return match && parseInt(match[1], 10) === markdown.expectedCodeBlockTasks
-          }))
+            const actualN = match && match[1] && parseInt(match[1], 10)
+            const expectedN = markdown.expectedCodeBlockTasks
+
+            if (++iter > 5) {
+              console.error(
+                'Still waiting for wizard task count',
+                iter,
+                actualN,
+                expectedN,
+                '||',
+                match,
+                '||',
+                actualMeasureText
+              )
+            }
+
+            return actualN === expectedN
+          })
+        })
 
         it(`should have ${markdown.expectedSplitCount} splits`, () =>
           ReplExpect.splitCount(markdown.expectedSplitCount))
