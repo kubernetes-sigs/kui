@@ -39,7 +39,12 @@ import product2x from '@kui-shell/client/icons/png/productIconTemplate@2x.png'
 
 /** @return absolute path to icons directory */
 export function iconHome() {
-  return join(app.getAppPath(), 'dist/headless')
+  const base = app.getAppPath()
+  if (/dist\/headless$/.test(base)) {
+    return base
+  } else {
+    return join(base, 'dist/headless')
+  }
 }
 
 /** Resize and templatize, so that the icon morphs with platform color themes */
