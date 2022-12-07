@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
-import { Common, CLI, Selectors } from '@kui-shell/test'
+import { Common, CLI, Selectors, Util as TestUtil } from '@kui-shell/test'
 
 import {
   Block,
@@ -80,6 +80,7 @@ const IN3b: Input = {
     }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
+      TestUtil.closeAllExceptFirstTab.bind(this)()
 
       it(`should load the markdown and execute them, showing the results`, async () => {
         try {

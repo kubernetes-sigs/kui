@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, Selectors } from '@kui-shell/test'
+import { Common, CLI, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/marktag1.md')), '..')
 
@@ -53,6 +53,7 @@ const IN4: Input = {
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     it(`should load markdown and show ${markdown.marks.length} mark tags`, async () => {
       try {

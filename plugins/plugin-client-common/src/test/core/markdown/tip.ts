@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, Selectors } from '@kui-shell/test'
+import { Common, CLI, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/tip.md')), '..')
 
@@ -57,6 +57,7 @@ const IN5 = {
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     markdown.tips.forEach(tip => {
       it(`should load the markdown and show tip with title=${tip.title}`, async () => {

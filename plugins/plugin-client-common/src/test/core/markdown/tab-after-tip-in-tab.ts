@@ -17,7 +17,7 @@
 import { ok } from 'assert'
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/tab-after-tip-in-tab1.md')), '..')
 
@@ -40,6 +40,7 @@ const IN2 = {
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     markdown.tips.forEach(tip => {
       it(`should load the markdown and show tab after tip in tab with title=${tip.title}`, async () => {

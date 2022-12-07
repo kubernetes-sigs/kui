@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Util } from '@kui-shell/test'
 
 const ROOT = join(
   dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/tab-indentation-preservation1.md')),
@@ -61,6 +61,7 @@ const IN3: Input = {
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     it(`should load markdown and show expected text content`, () =>
       CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
