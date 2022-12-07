@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { TableRowProps, TableCellProps } from 'react-markdown/lib/ast-to-react'
+import { TableRowProps, TableDataCellProps, TableHeaderCellProps } from 'react-markdown/lib/ast-to-react'
 import { TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
 
 export function table(props: React.TableHTMLAttributes<HTMLTableElement>) {
@@ -38,7 +38,7 @@ export function tr(props: TableRowProps) {
   return <Tr className={props.className}>{props.children}</Tr>
 }
 
-export function th(props: TableCellProps) {
+export function th(props: TableHeaderCellProps) {
   // hmm, without modifier=wrap, PatternFly (or is it electron
   // 13?)... if the td content is narrower than the th content, they
   // seem to favor favor ellipsis for that wider column header. This
@@ -50,6 +50,6 @@ export function th(props: TableCellProps) {
   )
 }
 
-export function td(props: TableCellProps) {
+export function td(props: TableDataCellProps) {
   return <Td className={props.className}>{props.children}</Td>
 }
