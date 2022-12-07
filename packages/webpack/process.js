@@ -25,7 +25,10 @@ let cwd = HOME
  */
 module.exports = Object.assign(proc, {
   env: {
-    HOME
+    HOME,
+
+    // allows selective disabling of kube features in tests
+    KUI_DISABLE_KUBECTL: process.env.KUI_DISABLE_KUBECTL || (!!process.env.RUNNING_KUI_TEST && !process.env.NEEDS_K8s)
   },
 
   cwd: () => cwd,

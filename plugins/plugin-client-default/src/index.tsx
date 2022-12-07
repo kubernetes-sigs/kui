@@ -72,6 +72,9 @@ export default function renderMain(props: KuiProps) {
   const doNotUsePopupClientVariant = isExecuting(props, ...avoidPopupCommands)
   const isPopup = !(!props.isPopup || doNotUsePopupClientVariant)
 
+  // some tests may run in VMs without any kubernetes capabilities
+  const noKubeWidgets = !!process.env.RUNNING_KUI_TEST && !process.env.NEEDS_K8s
+
   const quietExecCommand =
     props.quietExecCommand !== undefined
       ? props.quietExecCommand
@@ -115,8 +118,8 @@ export default function renderMain(props: KuiProps) {
       <ContextWidgets>
         {!isPopup && <CurrentWorkingDirectory className="kui--hide-in-guidebook" />}
         <CurrentGitBranch className="kui--hide-in-narrower-windows kui--hide-in-guidebook" />
-        <CurrentContext />
-        <CurrentNamespace />
+        {!noKubeWidgets && <CurrentContext />}
+        {!noKubeWidgets && <CurrentNamespace />}
       </ContextWidgets>
 
       {!isPopup && <SpaceFiller />}
