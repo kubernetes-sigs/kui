@@ -31,11 +31,6 @@
     }
   }
   .pf-c-popover__content {
-    max-height: 40rem; /* Neither PatternFly nor Carbon let us specify this via props */
     overflow-y: auto;
-  }
-
-  .pf-c-button[aria-label='Close'] {
-    padding: 0;
   }
 }
