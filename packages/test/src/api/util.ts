@@ -439,6 +439,11 @@ export async function listAndOpenSidecarNoWait(ctx: Common.ISuite, command: stri
 export async function clickSidecarModeButton(ctx: Common.ISuite, res: AppAndCount, mode: string) {
   return ctx.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode, res.splitIndex)).then(async _ => {
     await _.waitForDisplayed()
+
+    // work around tooltips getting in the way of the click
+    await ctx.app.client.$(Selectors.STATUS_STRIPE).then(_ => _.moveTo())
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     await _.click()
   })
 }
