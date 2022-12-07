@@ -15,8 +15,8 @@
  */
 
 import Debug from 'debug'
-import { Arguments, ExecOptions, Registrar, NavResponse, i18n } from '@kui-shell/core'
-import { doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { Arguments, DescriptionList, ExecOptions, Registrar, Menu, NavResponse, i18n } from '@kui-shell/core'
+import { doHelp, withKubeconfigFrom, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import isUsage from './usage'
 import doExecWithStdout from './exec'
@@ -34,7 +34,7 @@ export const format = async (
   args: Arguments<KubeOptions>,
   response: string,
   execOptions: ExecOptions
-) => {
+): Promise<NavResponse> => {
   const command = 'kubectl'
   const verb = 'get'
 
@@ -52,135 +52,62 @@ export const format = async (
   const revisionFromHelmStatusOutput = revisionMatch[1]
   debug('revision', revisionFromHelmStatusOutput)
 
-  // const namespaceFor = (entityType: string) => {
-  /* const namespaceFor = () => {
-    return namespaceFromHelmStatusOutput
-  } */
-
-  const resources = [] /* resourcesString
-    .split(/==>/)
-    .map(_ => _.split(/[\n\r]/))
-    .filter(A => A.length > 0 && A[0])
-    .map(A => {
-      const kind = A[0].trim()
-
-      // "v1/pod(related)" => "pod"
-      const entityType = kind.replace(/(v\w+\/)?([^()]*)(\s*\(.*\))?/, '$2')
-
-      if (!/\s*NAME(\s+|$)/.test(A[1])) {
-        // no header row? this seems to be a bug in helm
-        const match = A[1].match(/(.+\s+)(.+)/)
-        if (match && match[1]) {
-          const secondColIdx = match[1].length
-          const firstCol = 'NAME'
-          const secondCol = 'AGE'
-          const spaces = (nSpaces: number) => new Array(nSpaces).join(' ')
-          const header = `${firstCol}${spaces(secondColIdx - firstCol.length)}${secondCol}`
-          A.splice(1, 0, header)
-        }
-      }
-
-      return {
-        kind,
-        table: formatTable(
-          command,
-          verb,
-          entityType,
-          Object.assign({}, args, {
-            parsedOptions: Object.assign({}, args.parsedOptions, { namespace: namespaceFor() })
-          }),
-          preprocessTable([A.slice(1).join('\n')])[0]
-        )
-      }
-    }) */
-
-  debug('resources', resources)
-
-  if (execOptions.nested) {
-    debug('returning tables for nested call')
-    return Promise.all(
-      resources.map(async ({ kind, table }) => {
-        const T = await table
-        T.title = kind
-        return T
-      })
-    )
-  } else {
-    const notesMatch = response.match(/NOTES:\n([\s\S]+)?/)
-
-    const statusMatch = headerString.match(/LAST DEPLOYED: (.*)\nNAMESPACE: (.*)\nSTATUS: (.*)/)
-    const status = !statusMatch
-      ? headerString
-      : `### ${strings2('Last Deployed')}
-${statusMatch[1]}
-
-### ${strings2('Namespace')}
-${statusMatch[2]}
-
-### ${strings2('Revision')}
-${revisionFromHelmStatusOutput}
-
-### ${strings('status')}
-\`${statusMatch[3]}\`
-`
-
-    const summary = ''
-    const notes = notesMatch && notesMatch[1]
-
-    const overviewMenu = {
-      label: 'Overview',
-      items: [
-        {
-          mode: 'status',
-          label: strings('status'),
-          content: status,
-          contentType: 'text/markdown'
-        }
+  const statusMatch = headerString.match(/LAST DEPLOYED: (.*)\nNAMESPACE: (.*)\nSTATUS: (.*)/)
+  const status: DescriptionList = {
+    apiVersion: 'kui-shell/v1',
+    kind: 'DescriptionList',
+    spec: {
+      groups: [
+        { term: strings2('Last Deployed'), description: statusMatch[1] },
+        { term: strings2('Revision'), description: revisionFromHelmStatusOutput },
+        { term: strings('status'), description: statusMatch[3] }
       ]
-        .concat(
-          !summary
-            ? []
-            : [
-                {
-                  mode: 'summary',
-                  label: strings('summary'),
-                  content: summary,
-                  contentType: 'text/markdown'
-                }
-              ]
-        )
-        .concat(
-          !notes
-            ? []
-            : [
-                {
-                  mode: 'notes',
-                  label: strings2('Notes'),
-                  content: `\`\`\`${notes}\`\`\``,
-                  contentType: 'text/markdown'
-                }
-              ]
-        )
     }
+  }
 
-    const resourcesMenu = {
-      label: 'Resources',
-      items: await Promise.all(
-        resources.map(async _ => ({
-          mode: _.kind,
-          content: await _.table
-        }))
-      )
-    }
+  const summary = ''
 
-    const commandResponse: NavResponse = {
-      apiVersion: 'kui-shell/v1',
-      kind: 'NavResponse',
-      breadcrumbs: [{ label: 'helm' }, { label: 'release', command: `helm ls` }, { label: name }],
-      menus: [overviewMenu, resourcesMenu]
-    }
+  const notesMatch = response.match(/NOTES:\n([\s\S]+)?/)
+  const notes = notesMatch && notesMatch[1]
 
-    return commandResponse
+  const overviewMenu: Menu = {
+    label: 'Overview',
+    items: []
+  }
+
+  overviewMenu.items.push({
+    mode: 'status',
+    label: strings('status'),
+    content: status
+  })
+
+  if (summary) {
+    overviewMenu.items.push({
+      mode: 'summary',
+      label: strings('summary'),
+      content: summary,
+      contentType: 'text/markdown'
+    })
+  }
+
+  if (notes) {
+    overviewMenu.items.push({
+      mode: 'notes',
+      label: strings2('Notes'),
+      content: `\`\`\`${notes}\`\`\``,
+      contentType: 'text/markdown'
+    })
+  }
+
+  return {
+    apiVersion: 'kui-shell/v1',
+    kind: 'NavResponse',
+    breadcrumbs: [
+      { label: 'helm' },
+      { label: 'release', command: withKubeconfigFrom(args, `helm ls`) },
+      { label: name }
+    ],
+    menus: [overviewMenu]
   }
 }
 
