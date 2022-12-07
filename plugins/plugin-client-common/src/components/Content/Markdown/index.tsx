@@ -37,8 +37,6 @@ import hackKeys from './remark-keys.js'
 // does not create any DOM elements
 import remarkDirective from 'remark-directive'
 
-import inlineSnippets from '../../../controller/snippets'
-
 import emojis from 'remark-emoji'
 import frontmatter from 'remark-frontmatter'
 
@@ -211,7 +209,13 @@ export default class Markdown extends React.PureComponent<Props, State> {
       setTimeout(async () => {
         if (this.mounted) {
           const args = { REPL: this.repl }
-          const source = await inlineSnippets(args, this.snippetBasePath)(sourcePriorToInlining, this.props.filepath)
+          const { loadNotebook } = await import('@kui-shell/plugin-client-common/notebook')
+          const fetcher = (filepath: string) => loadNotebook(filepath, args).then(_ => _.toString())
+          const source = await Parser.inlineSnippets({
+            fetcher,
+            madwizardOptions: {},
+            snippetBasePath: this.snippetBasePath
+          })(sourcePriorToInlining, this.props.filepath)
           this.setState({ source: Markdown.hackSource(source), codeBlockResponses: [] })
         }
       })
