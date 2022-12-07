@@ -31,7 +31,7 @@ async function doList(args: Arguments<KubeOptions>) {
     // nothing to list
     return true
   } else {
-    return formatTable('helm', 'get', undefined, args, preTables[0])
+    return formatTable('helm', 'status', undefined, args, preTables[0])
   }
 }
 

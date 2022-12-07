@@ -232,16 +232,14 @@ export const formatTable = async <O extends KubeOptions>(
   // otherwise, stay with the command (kubectl or helm) that we
   // started with
   const isHelmStatus = command === 'helm' && verb === 'status'
-  const drilldownCommand = isHelmStatus ? 'kubectl' : command
+  const drilldownCommand = command
 
   const drilldownVerb =
     (verb === 'get' || verb === 'top'
       ? 'get'
       : command === 'helm' && (verb === 'list' || verb === 'ls')
       ? 'get'
-      : isHelmStatus
-      ? 'get'
-      : verb === 'krew'
+      : isHelmStatus || verb === 'krew'
       ? verb
       : undefined) || undefined
 
