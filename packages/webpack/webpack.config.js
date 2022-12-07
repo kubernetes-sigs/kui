@@ -431,11 +431,11 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
     fallback
   },
-  resolveLoader: {
+  /* resolveLoader: {
     alias: {
       'snippet-inliner': require.resolve('@kui-shell/plugin-client-common/dist/controller/snippets-inliner.js')
     }
-  },
+  }, */
   watchOptions: {
     ignored: [
       '**/dist/headless/**',
@@ -535,7 +535,7 @@ module.exports = {
 
       // was: file-loader; but that loader does not allow for dynamic
       // loading of markdown *content* in a browser-based client
-      { test: /\.md$/, use: 'snippet-inliner' },
+      { test: /\.md$/, use: 'raw-loader' }, // was: 'snippet-inliner'
       { test: /\.markdown$/, use: 'raw-loader' },
       { test: /CHANGELOG\.md$/, use: 'ignore-loader' }, // too big to pull in to the bundles
 

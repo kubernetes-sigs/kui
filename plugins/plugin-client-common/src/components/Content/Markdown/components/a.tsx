@@ -15,15 +15,20 @@
  */
 
 import React from 'react'
-import { dirname, join, relative } from 'path'
+import { isAbsolute as pathIsAbsolute, dirname, join, relative } from 'path'
 import { REPL, maybeKuiLink, pexecInCurrentTab } from '@kui-shell/core'
 
 import { Props } from '../../Markdown'
 import { anchorFrom } from './heading'
 import { activateTab } from './tabbed'
 
-// TODO find better home
-import { isAbsolute } from '../../../../controller/snippets'
+function isUrl(a: string) {
+  return /^https?:/.test(a)
+}
+
+function isAbsolute(uri: string): boolean {
+  return isUrl(uri) || pathIsAbsolute(uri)
+}
 
 const Tooltip = React.lazy(() => import('../../../spi/Tooltip'))
 
