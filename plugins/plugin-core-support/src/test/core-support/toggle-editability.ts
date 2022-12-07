@@ -18,7 +18,7 @@ import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const TIMEOUT = 10000
 
-/* Common.localD */ xdescribe('toggle edit mode', function (this: Common.ISuite) {
+Common.localDescribe('toggle edit mode', function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()

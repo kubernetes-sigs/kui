@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/notebooks/wizard.md')), '..')
 
@@ -159,6 +159,7 @@ const IN6: Input = {
     }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
+      Util.closeAllExceptFirstTab.bind(this)()
 
       it('should load markdown and show a wizard UI', async () => {
         try {
@@ -279,6 +280,7 @@ const IN6: Input = {
     }`, function (this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
+      Util.closeAllExceptFirstTab.bind(this)()
 
       it('should load markdown and show a wizard UI', async () => {
         try {

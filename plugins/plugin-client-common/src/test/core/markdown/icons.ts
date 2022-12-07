@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/icons1.md')), '..')
 
@@ -71,6 +71,7 @@ ${IN4.text}`,
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     it(`should load markdown and show expected text and icons`, async () => {
       try {

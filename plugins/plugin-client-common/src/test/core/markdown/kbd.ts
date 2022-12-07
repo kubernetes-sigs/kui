@@ -15,7 +15,7 @@
  */
 
 import { basename, dirname, join } from 'path'
-import { Common, CLI } from '@kui-shell/test'
+import { Common, CLI, Util } from '@kui-shell/test'
 import { encodeComponent } from '@kui-shell/core'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/kbdtag1.md')), '..')
@@ -40,6 +40,7 @@ const IN3 = {
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     it(`should load markdown and show ${markdown.kbds.length} kbd tags`, async () => {
       try {

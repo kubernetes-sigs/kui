@@ -16,7 +16,7 @@
 
 import { dirname, join } from 'path'
 import { encodeComponent } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/snippet1.md')), '..')
 
@@ -87,6 +87,7 @@ DDD`,
   }`, function (this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     it(`should replay ${markdown.input}`, () =>
       CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
