@@ -106,7 +106,7 @@
     "concurrently": "7.6.0",
     "cross-env": "7.0.3",
     "debug": "4.3.4",
-    "electron": "20.3.6",
+    "electron": "20.3.8",
     "eslint": "8.28.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-config-standard": "17.0.0",
