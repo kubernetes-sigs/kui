@@ -30,5 +30,9 @@ module.exports = Object.assign(proc, {
 
   cwd: () => cwd,
 
-  chdir: dir => (cwd = dir)
+  chdir: dir => (cwd = dir),
+
+  stdout: {
+    // yargs expects process.stdout to be defined
+  }
 })
