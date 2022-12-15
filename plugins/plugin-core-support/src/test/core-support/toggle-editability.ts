@@ -101,7 +101,7 @@ Common.localDescribe('toggle edit mode', function (this: Common.ISuite) {
     })
   }
 
-  const doubleClickNonNotebook = () => {
+  /* const doubleClickNonNotebook = () => {
     it('should verify that commentary blocks cannot enter edit mode when clicked', async () => {
       try {
         const notClickedInputSelector = Selectors._PROMPT_BLOCK_N(0) + ' .repl-input-element'
@@ -112,7 +112,7 @@ Common.localDescribe('toggle edit mode', function (this: Common.ISuite) {
         return Common.oops(this, true)(err)
       }
     })
-  }
+  } */
 
   const splitHeadersCheck = () => {
     it('should verify that split headers are showing', async () => {
@@ -155,7 +155,7 @@ Common.localDescribe('toggle edit mode', function (this: Common.ISuite) {
     })
   }
 
-  const doubleClick = () => {
+  /* const doubleClick = () => {
     it('should verify that commentary blocks can enter edit mode when double clicked', async () => {
       try {
         await this.app.client.$('.kui--commentary-card p').then(_ => _.doubleClick())
@@ -165,7 +165,7 @@ Common.localDescribe('toggle edit mode', function (this: Common.ISuite) {
         return Common.oops(this, true)(err)
       }
     })
-  }
+  } */
 
   // Tests begin here
   openNotebook()
@@ -180,11 +180,11 @@ Common.localDescribe('toggle edit mode', function (this: Common.ISuite) {
   // The following tests are for non-notebook tabs
   it('should switch to tab 1', () => Util.switchToTopLevelTabViaClick(this, 1))
   blockActionsNonNotebook()
-  doubleClickNonNotebook()
+  // doubleClickNonNotebook()
 
   // The following tests are for notebooks
   it('should switch to tab 2', () => Util.switchToTopLevelTabViaClick(this, 2))
   splitHeadersCheck()
   blockActionsAvailable()
-  doubleClick()
+  // doubleClick()
 })
