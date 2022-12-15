@@ -31,7 +31,7 @@ export async function loadNotebook(
 
     debug('attempting to load guidebook data', filepath)
     if (/^https:/.test(filepath)) {
-      return (await REPL.rexec<(string | object)[]>(`vfs _fetchfile ${encodeComponent(filepath)}`)).content[0]
+      return (await REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
     } else {
       //   --with-data says give us the file contents
       const fullpath = Util.absolute(Util.expandHomeDir(filepath))
