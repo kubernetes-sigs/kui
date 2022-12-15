@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-use-before-define */
+
 import { Arguments, KResponse, ResourceWithMetadata, MultiModalResponse } from '@kui-shell/core'
 
 import KubeOptions from '../../controller/kubectl/options'
@@ -62,6 +64,8 @@ export class DefaultKubeStatus implements KubeStatus {
   public message = undefined
 }
 
+export type KubeStatusAny = null | string | object | KubeStatus
+
 export interface WithOwnerReferences {
   ownerReferences: {
     apiVersion: string
@@ -75,7 +79,7 @@ interface WithResourceVersion {
   resourceVersion: string
 }
 
-export type KubeResourceWithResourceVersion = KubeResource<{}, KubeMetadata & Required<WithResourceVersion>>
+export type KubeResourceWithResourceVersion = KubeResource<null, KubeMetadata & Required<WithResourceVersion>>
 
 export function hasResourceVersion(resource: KubeResource): resource is KubeResourceWithResourceVersion {
   const withVersion = resource as KubeResourceWithResourceVersion
@@ -112,7 +116,7 @@ interface WithManagedFields<Fields extends ManagedFields<string> = ManagedFields
 }
 
 export type KubeResourceWithManagedFields<Fields extends ManagedFields<string> = ManagedFieldsV1> = KubeResource<
-  {},
+  null,
   KubeMetadata & Required<WithManagedFields<Fields>>
 >
 
@@ -142,7 +146,7 @@ export type KubeMetadata = Partial<WithOwnerReferences> &
     generateName?: string
   }
 
-export type KubeResourceWithOwnerReferences = KubeResource<{}, KubeMetadata & Required<WithOwnerReferences>>
+export type KubeResourceWithOwnerReferences = KubeResource<null, KubeMetadata & Required<WithOwnerReferences>>
 
 export function hasSingleOwnerReference(resource: KubeResource): resource is KubeResourceWithOwnerReferences {
   if (!resource.metadata) {
@@ -191,7 +195,10 @@ export function hasRawData(resource: ResourceWithMetadata) {
  * The basic Kubernetes resource
  *
  */
-export type KubeResource<Status = KubeStatus, Metadata = KubeMetadata> = ResourceWithMetadata &
+export type KubeResource<
+  Status extends KubeStatusAny = KubeStatus,
+  Metadata extends null | object = KubeMetadata
+> = ResourceWithMetadata &
   WithRawData & {
     apiVersion: string
     kind: string
@@ -235,7 +242,7 @@ export interface WithSummary {
  * automatically.
  *
  */
-export type KubeResourceWithSummary<Status = KubeStatus> = KubeResource<Status> & WithSummary
+export type KubeResourceWithSummary<Status extends KubeStatusAny = KubeStatus> = KubeResource<Status> & WithSummary
 
 export function isKubeResourceWithItsOwnSummary(resource: KubeResource): resource is KubeResourceWithSummary {
   return resource !== undefined && (resource as KubeResourceWithSummary).summary !== undefined
@@ -309,7 +316,7 @@ interface ContainerSpec {
  * Kubernetes Pod resource type
  *
  */
-interface PodStatus extends KubeStatus {
+export interface PodStatus extends KubeStatus {
   containerStatuses: KubeContainerStatus[]
   hostIP: string
   podIP: string
@@ -332,7 +339,7 @@ export interface Pod extends KubeResource<PodStatus> {
  * @return whether the given resource is an instance of a Pod
  *
  */
-export function isPod(resource: KubeResource): resource is Pod {
+export function isPod(resource: KubeResource<KubeStatusAny>): resource is Pod {
   return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'Pod'
 }
 
@@ -531,25 +538,31 @@ export function isCrudableKubeResource(entity: ResourceWithMetadata): entity is 
   return isKubeResource(entity) && !isEvent(entity) && !(entity as KubeResource).isSimulacrum
 }
 
+export type KubePartial<S extends KubeStatusAny, R extends KubeResource<S> = KubeResource<S>> = Omit<
+  R,
+  'apiVersion' | 'kind'
+>
+
 /**
  * e.g. `kubectl get pods -o json` will return a kind: items
  *
  */
-export interface KubeItems<Item extends KubeResource = KubeResource> extends KubeResource {
+export interface KubeItems<S extends KubeStatusAny = KubeStatusAny, Item extends KubeResource<S> = KubeResource<S>>
+  extends KubePartial<null> {
   apiVersion: 'v1'
   kind: 'List'
   items: Item[]
 }
 
-export type KubePartial<R extends KubeResource = KubeResource> = Omit<R, 'apiVersion' | 'kind'>
-
-export interface PodList extends KubeResource {
+export interface PodList extends KubePartial<null> {
   apiVersion: 'v1'
   kind: 'PodList'
-  items: KubePartial<Pod>[]
+  items: KubePartial<PodStatus, Pod>[]
 }
 
-export function isKubeItems(resource: KubeResource): resource is KubeItems {
+export function isKubeItems<S extends KubeStatusAny, Item extends KubeResource<S>, Items extends KubeItems<S, Item>>(
+  resource: KubeResource
+): resource is Items {
   return isKubeResource(resource) && resource.apiVersion === 'v1' && /List$/.test(resource.kind)
 }
 
@@ -557,10 +570,10 @@ export function isPodList(resource: KubeResource): resource is PodList {
   return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'PodList'
 }
 
-export function isKubeItemsOfKind<Item extends KubeResource = KubeResource>(
+export function isKubeItemsOfKind<S extends KubeStatusAny, Item extends KubeResource<S> = KubeResource<S>>(
   resource: KubeResource,
-  isOfKind: (item: KubeResource) => item is Item
-): resource is KubeItems<Item> {
+  isOfKind: (item: KubeResource<KubeStatusAny>) => item is Item
+): resource is KubeItems<S, Item> {
   return isKubeItems(resource) && resource.items.length > 0 && isOfKind(resource.items[0])
 }
 
@@ -731,12 +744,11 @@ export function isMetaTable(response: KubeResource): response is MetaTable {
 }
 
 /** When calling the API directly, it may respond with a Status, e.g. for 404s */
-export interface Status extends KubeResource {
+export interface Status extends KubeResource<'string'> {
   apiVersion: 'v1'
   kind: 'Status'
   code: number
   reason: string
-  status: string
   message: string
 }
 

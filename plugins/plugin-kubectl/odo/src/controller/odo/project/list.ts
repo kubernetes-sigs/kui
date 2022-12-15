@@ -25,7 +25,7 @@ import {
   doExecWithRadioTable
 } from '@kui-shell/plugin-kubectl'
 
-import Project from '../../../model/Project'
+import Project, { ProjectStatus } from '../../../model/Project'
 
 /** onSelect handler for the RadioTable view model */
 async function onSelectProject(this: REPL, name: string) {
@@ -46,7 +46,14 @@ export function projectListView(args: Arguments<KubeOptions>, response: KubeReso
       nameColumnTitle: 'PROJECT'
     }
 
-    return doExecWithRadioTable(projects, defaultSelectedIdx, onSelectProject.bind(args.REPL), opts) || response
+    return (
+      doExecWithRadioTable<ProjectStatus, Project>(
+        projects,
+        defaultSelectedIdx,
+        onSelectProject.bind(args.REPL),
+        opts
+      ) || response
+    )
   } else {
     // otherwise, the user did not request a RadioTable view
     return response
@@ -76,7 +83,7 @@ function getRawData(args: Arguments<KubeOptions>): Promise<string> {
 /** Fetch the KubeItems<Project> model */
 export async function projectList(args: Arguments<KubeOptions>) {
   const kuiRawData = await getRawData(args)
-  const list = JSON.parse(kuiRawData) as KubeItems<Project>
+  const list = JSON.parse(kuiRawData) as KubeItems<ProjectStatus, Project>
 
   return Object.assign(list, {
     metadata: {
