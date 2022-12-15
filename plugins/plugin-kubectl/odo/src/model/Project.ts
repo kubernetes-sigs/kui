@@ -16,7 +16,7 @@
 
 import { KubeResource } from '@kui-shell/plugin-kubectl'
 
-interface ProjectStatus {
+export interface ProjectStatus {
   active: boolean
 }
 

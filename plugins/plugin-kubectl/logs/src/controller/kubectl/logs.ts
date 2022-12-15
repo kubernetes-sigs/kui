@@ -35,6 +35,7 @@ import {
   KubeResource,
   withKubeconfigFrom,
   Pod,
+  PodStatus,
   isPod
 } from '@kui-shell/plugin-kubectl'
 
@@ -117,7 +118,7 @@ function getOrPty(verb: string) {
 async function transformSingle(
   defaultMode: string,
   args: Arguments<KubeOptions>,
-  response: KubePartial<Pod>
+  response: KubePartial<PodStatus, Pod>
 ): Promise<MultiModalResponse> {
   return Object.assign({}, await getTransformer(args, Object.assign({ apiVersion: 'v1', kind: 'Pod' }, response)), {
     defaultMode,
@@ -126,7 +127,7 @@ async function transformSingle(
 }
 
 /** Multiple-resource response. We've already assured that we have >= 1 item via isKubeItemsOfKind(). */
-async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>, items: KubePartial<Pod>[]) {
+async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>, items: KubePartial<PodStatus, Pod>[]) {
   const containers = Util.flatten(
     items.map(pod => {
       return pod.spec.containers.map(container =>
@@ -162,8 +163,10 @@ async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>,
 
 /** Pod -> MultiModalResponse view transformer */
 function viewTransformer(defaultMode: string) {
-  return async (args: Arguments<KubeOptions>, response: KubeResource | KubeItems<Pod>) => {
-    if (isKubeItemsOfKind(response, isPod) || isPodList(response)) {
+  return async (args: Arguments<KubeOptions>, response: KubeResource | KubeItems<PodStatus, Pod>) => {
+    if (isPodList(response)) {
+      return transformMulti(defaultMode, args, response.items)
+    } else if (isKubeItemsOfKind(response, isPod)) {
       return transformMulti(defaultMode, args, response.items)
     } else if (isKubeItems(response)) {
       // otherwise, we have an empty list of items

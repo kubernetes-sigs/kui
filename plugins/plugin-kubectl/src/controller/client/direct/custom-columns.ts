@@ -19,7 +19,7 @@ import { Arguments, Row, Table, encodeComponent } from '@kui-shell/core'
 
 import TrafficLight from '../../../lib/model/traffic-light'
 import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
-import { KubeItems, isKubeItems, KubeResource } from '../../../lib/model/resource'
+import { KubeStatusAny, KubeItems, isKubeItems, KubeResource } from '../../../lib/model/resource'
 import {
   computeDurations,
   cssForKey,
@@ -74,8 +74,8 @@ function parse(spec: string): CustomColumns {
  * the given CustomColumns.
  *
  */
-export function evaluate(
-  resource: KubeResource,
+export function evaluate<S extends KubeStatusAny, R extends KubeResource<S>>(
+  resource: R,
   args: Pick<Arguments<KubeOptions>, 'parsedOptions'>,
   drilldownCommand: string,
   kind: string,

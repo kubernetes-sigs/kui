@@ -29,7 +29,7 @@ import {
 
 import { doStatus } from './status'
 import RawResponse from './response'
-import KubeResource from '../../lib/model/resource'
+import KubeResource, { KubeStatusAny } from '../../lib/model/resource'
 import { KubeOptions } from './options'
 
 import { FinalState } from '../../lib/model/states'
@@ -282,7 +282,7 @@ export const doExecWithStatus =
     }
   }
 
-export async function doExecWithRadioTable<Resource extends KubeResource>(
+export async function doExecWithRadioTable<S extends KubeStatusAny, Resource extends KubeResource<S>>(
   resources: Resource[],
   defaultSelectedIdx: number,
   onSelect: (name: string, resource: Resource) => string,

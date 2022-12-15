@@ -27,6 +27,7 @@ export {
   KubeStatus,
   KubeStatusCondition,
   Pod,
+  PodStatus,
   PodLikeSpec,
   isPod,
   Deployment,
