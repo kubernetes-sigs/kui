@@ -409,7 +409,7 @@ const fallback = !inBrowser
 const alias = !inBrowser
   ? {}
   : {
-      url: 'portable-url'
+    url: require.resolve('./url')
     }
 
 module.exports = {
