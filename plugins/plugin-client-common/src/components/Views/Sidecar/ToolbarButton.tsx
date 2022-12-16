@@ -32,12 +32,12 @@ type Props = LocationProps & {
 export default class ToolbarButton<
   T extends ResourceWithMetadata = ResourceWithMetadata // eslint-disable-line @typescript-eslint/no-unused-vars
 > extends React.PureComponent<Props> {
-  private getCommand() {
+  private async getCommand() {
     const { tab, response, button, args } = this.props
     if (isViewButton(button)) {
       return button.command
     } else {
-      const cmd = typeof button.command === 'string' ? button.command : button.command(tab, response, args)
+      const cmd = await (typeof button.command === 'function' ? button.command(tab, response, args) : button.command)
       if (button.confirm) {
         return `confirm "${cmd}"`
       } else {

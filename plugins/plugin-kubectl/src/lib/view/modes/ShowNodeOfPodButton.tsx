@@ -17,7 +17,6 @@
 import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
 
 import { isPod, Pod } from '../../model/resource'
-import { getCommandFromArgs } from '../../../lib/util/util'
 
 const strings = i18n('plugin-kubectl')
 
@@ -25,7 +24,8 @@ const strings = i18n('plugin-kubectl')
  * Extract the events
  *
  */
-function command(tab: Tab, pod: Pod, args: { argvNoOptions: string[] }) {
+async function command(tab: Tab, pod: Pod, args: { argvNoOptions: string[] }) {
+  const { getCommandFromArgs } = await import('../../util/util')
   return `${getCommandFromArgs(args)} get node ${pod.spec.nodeName} -o yaml`
 }
 

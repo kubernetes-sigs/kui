@@ -16,7 +16,6 @@
 
 import Debug from 'debug'
 import { Events, REPL } from '@kui-shell/core'
-import { fetchFileString } from '@kui-shell/plugin-kubectl'
 
 import Provider, { ProviderInitializer } from './model'
 
@@ -65,6 +64,7 @@ async function init(repl: REPL, reinit: () => void) {
   if (provider.accessKey && provider.secretKey) {
     try {
       // try pining minio to see if it is reachable
+      const { fetchFileString } = await import('@kui-shell/plugin-kubectl')
       await fetchFileString(
         { REPL: repl },
         `${provider.useSSL ? 'https' : 'http'}://${provider.endPoint}:${provider.port}/minio/health/live`

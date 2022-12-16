@@ -17,19 +17,20 @@
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
 
 import toMap from './table-to-map'
-import { getCommandFromArgs } from '../../util/util'
 import { fqnOf } from '../../../controller/kubectl/fqn'
 import { KubeResource, ConfigMap, isConfigMap } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
-export function getDefaultSummaryMap(
+export async function getDefaultSummaryMap(
   tab: Tab,
   resource: KubeResource,
   args: {
     argvNoOptions: string[]
   }
 ) {
+  const { getCommandFromArgs } = await import('../../util/util')
+
   // a command that will fetch a single-row table
   const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
 

@@ -17,12 +17,13 @@
 import { Arguments, NavResponse, i18n } from '@kui-shell/core'
 
 import { KubeOptions } from './options'
-import { doExecWithStdout } from './exec'
 
 const strings = i18n('plugin-kubectl')
 
 export default async function (args: Arguments<KubeOptions>, exec?: string): Promise<NavResponse> {
   const cmd = args.argv[0]
+
+  const { doExecWithStdout } = await import('./exec')
   const raw = await doExecWithStdout(args, undefined, exec)
 
   const content = raw.replace(/^ (.*)/gm, '        $1') // code blocks: indentation >= 8

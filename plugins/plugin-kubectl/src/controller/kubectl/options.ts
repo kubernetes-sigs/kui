@@ -17,7 +17,6 @@
 import { Arguments, ExecOptions, ParsedOptions, Util } from '@kui-shell/core'
 
 import { FinalState } from '../../lib/model/states'
-import { getCurrentDefaultNamespace } from './contexts'
 import { getCommandFromArgs } from '../../lib/util/util'
 
 type EntityFormat = 'yaml' | 'json'
@@ -261,6 +260,7 @@ export function getNamespaceAsExpressed(args: Pick<Arguments<KubeOptions>, 'pars
 
 /** @return the namespace as expressed in the command line, or the default from context */
 export async function getNamespace(args: Arguments<KubeOptions>): Promise<string> {
+  const { getCurrentDefaultNamespace } = await import('./contexts')
   return getNamespaceAsExpressed(args) || (await getCurrentDefaultNamespace(args))
 }
 

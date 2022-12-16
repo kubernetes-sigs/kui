@@ -26,9 +26,6 @@ import {
 } from '@kui-shell/core'
 
 import flags from './flags'
-import { doExecWithStdout } from './exec'
-import { doGetAsMMR as getView } from './get'
-import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, getNamespace } from './options'
 import { KubeResource, isKubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
 import { label as yamlModeLabel, mode as yamlMode, order as yamlModeOrder } from '../../lib/view/modes/yaml'
@@ -139,6 +136,7 @@ export function editSpec(
 
         // execute the apply command, making sure to report any
         // validation or parse errors to the user
+        const { doExecWithStdout } = await import('./exec')
         await doExecWithStdout(applyArgs, undefined, cmd).catch(reportErrorToUser.bind(undefined, tmp, data))
 
         return {
@@ -177,8 +175,10 @@ function editMode(
 }
 
 export async function doEdit(cmd: string, args: Arguments<KubeOptions>) {
+  const { isUsage } = await import('../../lib/util/help')
   if (isUsage(args)) {
     // special case: get --help/-h
+    const { doHelp } = await import('../../lib/util/help')
     return doHelp(cmd, args)
   }
 
@@ -251,6 +251,7 @@ export async function editable(
 ): Promise<MultiModalResponse> {
   const spec = editSpec(cmd, response.metadata.namespace, args, response)
 
+  const { doGetAsMMR: getView } = await import('./get')
   const baseView = await getView(args, response)
 
   const view = Object.assign({}, baseView, {
