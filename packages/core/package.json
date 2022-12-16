@@ -31,7 +31,7 @@
     "kui": "bin/kui"
   },
   "dependencies": {
-    "@electron/remote": "2.0.8",
+    "@electron/remote": "2.0.9",
     "ansi-to-html": "0.7.2",
     "colors": "1.4.0",
     "columnify": "1.6.0",
