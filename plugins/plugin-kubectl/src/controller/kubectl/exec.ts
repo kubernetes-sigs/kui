@@ -27,7 +27,6 @@ import {
   KResponse
 } from '@kui-shell/core'
 
-import { doStatus } from './status'
 import RawResponse from './response'
 import KubeResource, { KubeStatusAny } from '../../lib/model/resource'
 import { KubeOptions } from './options'
@@ -278,6 +277,7 @@ export const doExecWithStatus =
       const statusArgs = await prepareForStatus(verb, args)
       const initialResponse = response ? response.content.stdout : ''
 
+      const { doStatus } = await import('./status')
       return doStatus(args, verb, command, initialResponse, finalState, statusArgs)
     }
   }

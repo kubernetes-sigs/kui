@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-use-before-define */
+
 import { ReactElement } from 'react'
 
 import { Tab } from '../../webapp/tab'
@@ -112,6 +114,7 @@ export type DrilldownButton<T = MetadataBearing> = Label &
   VisibilityTraits & {
     command:
       | string
+      | Promise<string>
       | ((
           tab: Tab,
           resource: T,

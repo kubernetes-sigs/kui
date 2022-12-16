@@ -18,7 +18,6 @@ import { i18n, encodeComponent, Tab, ModeRegistration } from '@kui-shell/core'
 
 import { fqn } from '../../../controller/kubectl/fqn'
 import { hasSingleOwnerReference, KubeResourceWithOwnerReferences } from '../../model/resource'
-import { getCommandFromArgs } from '../../../lib/util/util'
 
 const strings = i18n('plugin-kubectl')
 
@@ -26,7 +25,7 @@ const strings = i18n('plugin-kubectl')
  * Extract the events
  *
  */
-function command(
+async function command(
   tab: Tab,
   {
     metadata: {
@@ -36,6 +35,8 @@ function command(
   }: KubeResourceWithOwnerReferences,
   args: { argvNoOptions: string[] }
 ) {
+  const { getCommandFromArgs } = await import('../../util/util')
+
   return `${getCommandFromArgs(args)} get ${fqn(
     apiVersion,
     encodeComponent(kind),

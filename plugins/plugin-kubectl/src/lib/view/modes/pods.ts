@@ -17,15 +17,15 @@
 import { i18n, Arguments, ModeRegistration } from '@kui-shell/core'
 
 import kubectl from '../../../controller/cli'
-import { getCommandFromArgs } from '../../util/util'
 import { selectorToString } from '../../util/selectors'
 import { KubeOptions } from '../../../controller/kubectl/options'
 import { KubeResource, isJob, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
-export function getPodsCommand(resource: KubeResource, args?: Pick<Arguments, 'argvNoOptions'>) {
+export async function getPodsCommand(resource: KubeResource, args?: Pick<Arguments, 'argvNoOptions'>) {
   const { selector } = resource.spec
+  const { getCommandFromArgs } = await import('../../util/util')
 
   return selector
     ? `${!args ? kubectl : getCommandFromArgs(args)} get pods ${selectorToString(selector)} -n "${

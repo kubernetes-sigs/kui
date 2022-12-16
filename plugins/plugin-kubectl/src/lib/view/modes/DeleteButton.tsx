@@ -15,18 +15,24 @@
  */
 
 import React from 'react'
-import { i18n, Tab, ParsedOptions } from '@kui-shell/core'
+import { i18n, Tab, ParsedOptions, ModeRegistration } from '@kui-shell/core'
 import { Icons } from '@kui-shell/plugin-client-common'
 
 import { KubeResource, isCrudableKubeResource as when } from '../../model/resource'
-import { fqnOf } from '../../../controller/kubectl/fqn'
-import { getCommandFromArgs } from '../../../lib/util/util'
-import { withKubeconfigFrom } from '../../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl')
 
 /** Formulate the delete command line */
-function command(tab: Tab, resource: KubeResource, args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }) {
+async function command(
+  tab: Tab,
+  resource: KubeResource,
+  args: { argvNoOptions: string[]; parsedOptions: ParsedOptions }
+) {
+  const [{ fqnOf }, { getCommandFromArgs }, { withKubeconfigFrom }] = await Promise.all([
+    import('../../../controller/kubectl/fqn'),
+    import('../../util/util'),
+    import('../../../controller/kubectl/options')
+  ])
   return withKubeconfigFrom(args, `${getCommandFromArgs(args)} delete ${fqnOf(resource)}`)
 }
 
@@ -42,7 +48,9 @@ const mode = {
 }
 
 /** The DeleteButton mode registration: a `when` filter and a `mode` definition. */
-export default {
+const reg: ModeRegistration<KubeResource> = {
   when,
   mode
 }
+
+export default reg

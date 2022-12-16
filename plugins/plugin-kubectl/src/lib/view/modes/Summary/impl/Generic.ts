@@ -20,7 +20,6 @@ import { REPL, Table } from '@kui-shell/core'
 import toMap from '../../table-to-map'
 import toDescriptionList from './convert'
 import { KubeResource } from '../../../../model/resource'
-import { withKubeconfigFrom } from '../../../../../controller/kubectl/options'
 
 export function none() {
   return '<none>'
@@ -34,6 +33,7 @@ export function age({ metadata }: KubeResource, now: string | Date = new Date())
 
 export default async function GenericSummary(resource: KubeResource, repl: REPL) {
   // a command that will fetch a single-row table
+  const { withKubeconfigFrom } = await import('../../../../../controller/kubectl/options')
   const cmd = withKubeconfigFrom(
     resource.originatingCommand,
     `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`

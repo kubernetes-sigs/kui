@@ -18,8 +18,8 @@ import React from 'react'
 import { Icons } from '@kui-shell/plugin-client-common'
 import { ModeRegistration, i18n } from '@kui-shell/core'
 
+import { KubeResource, isCrudableKubeResource } from '../../model/resource'
 import { isEditable as isAlreadyEditable } from '../../../controller/kubectl/edit'
-import { KubeResource, isCrudableKubeResource, fqnOf, getCommandFromArgs } from '../../../'
 
 const strings = i18n('plugin-client-common', 'editor')
 
@@ -52,8 +52,14 @@ const yamlMode: ModeRegistration<KubeResource> = {
     inPlace: true,
 
     kind: 'drilldown' as const,
-    command: (_, resource: KubeResource, args: { argvNoOptions: string[] }) =>
-      `${getCommandFromArgs(args)} edit ${fqnOf(resource)}`
+    command: async (_, resource: KubeResource, args: { argvNoOptions: string[] }) => {
+      const [{ fqnOf }, { getCommandFromArgs }] = await Promise.all([
+        import('../../../controller/kubectl/fqn'),
+        import('../../util/util')
+      ])
+
+      return `${getCommandFromArgs(args)} edit ${fqnOf(resource)}`
+    }
   }
 }
 

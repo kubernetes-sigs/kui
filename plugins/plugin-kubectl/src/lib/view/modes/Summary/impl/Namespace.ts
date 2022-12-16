@@ -26,7 +26,6 @@ import { REPL, Table, isTable } from '@kui-shell/core'
 
 import { age } from './Generic'
 import { Namespace } from '../../../../model/resource'
-import { withKubeconfigFrom } from '../../../../../controller/kubectl/options'
 import toMap from '../../table-to-map'
 import toDescriptionList from './convert'
 
@@ -40,6 +39,7 @@ export default async function NamespaceSummary(ns: Namespace, repl: REPL) {
   }
 
   try {
+    const { withKubeconfigFrom } = await import('../../../../../controller/kubectl/options')
     const quota = await repl.qexec<Table>(
       withKubeconfigFrom(ns.originatingCommand, `kubectl get quota -n ${ns.metadata.name}`)
     )

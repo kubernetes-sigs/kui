@@ -16,8 +16,8 @@
 
 import { i18n, Tab, ModeRegistration, encodeComponent } from '@kui-shell/core'
 
+import { fqn } from '../../../controller/kubectl/fqn'
 import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
-import { fqn, getCommandFromArgs, getCurrentDefaultNamespace } from '../../..'
 
 const strings = i18n('plugin-kubectl')
 
@@ -26,6 +26,11 @@ const strings = i18n('plugin-kubectl')
  *
  */
 export async function command(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOptions: string[] }) {
+  const [{ getCommandFromArgs }, { getCurrentDefaultNamespace }] = await Promise.all([
+    import('../../util/util'),
+    import('../../../controller/kubectl/contexts')
+  ])
+
   return `${getCommandFromArgs(args)} get ${fqn(
     crd.apiVersion,
     encodeComponent(crd.kind),
