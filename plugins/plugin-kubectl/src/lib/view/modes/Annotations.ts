@@ -16,11 +16,9 @@
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
 
-import { KubeResource, hasAnnotations } from '../../model/resource'
+import { KubeResource, hasAnnotations, lastAppliedAnnotationKey } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
-
-const lastApplied = 'kubectl.kubernetes.io/last-applied-configuration'
 
 export function tryParse(value: any) {
   if (typeof value === 'object' || typeof value === 'number' || typeof value === 'boolean') {
@@ -43,7 +41,7 @@ async function content(_, resource: KubeResource) {
     content: dump(
       JSON.parse(
         JSON.stringify(resource.metadata.annotations, (key, value) =>
-          key === lastApplied ? undefined : tryParse(value)
+          key === lastAppliedAnnotationKey ? undefined : tryParse(value)
         )
       )
     )
