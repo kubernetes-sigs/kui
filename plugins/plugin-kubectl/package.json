@@ -32,7 +32,7 @@
     "bytes-iec": "3.1.1",
     "command-exists": "1.2.9",
     "debug": "4.3.4",
-    "fs-extra": "10.1.0",
+    "fs-extra": "11.1.0",
     "js-yaml": "4.1.0",
     "needle": "3.2.0",
     "parse-duration": "1.0.2",

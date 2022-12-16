@@ -116,7 +116,7 @@
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-standard": "4.1.0",
     "expand-home-dir": "0.0.3",
-    "fs-extra": "10.1.0",
+    "fs-extra": "11.1.0",
     "husky": "8.0.2",
     "lint-staged": "13.1.0",
     "mocha": "10.2.0",
