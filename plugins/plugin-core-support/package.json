@@ -24,7 +24,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@electron/remote": "2.0.8",
+    "@electron/remote": "2.0.9",
     "@supercharge/promise-pool": "2.3.2",
     "debug": "4.3.4",
     "tmp": "0.2.1"
