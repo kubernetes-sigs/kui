@@ -773,10 +773,15 @@ export function isSecret(resource: KubeResource): resource is Secret {
   return resource.apiVersion === 'v1' && resource.kind === 'Secret'
 }
 
+export const lastAppliedAnnotationKey = 'kubectl.kubernetes.io/last-applied-configuration'
+
 export function hasAnnotations(resource: KubeResource): resource is KubeResource {
-  return (
-    isKubeResource(resource) && resource.metadata.annotations && Object.keys(resource.metadata.annotations).length > 0
-  )
+  if (isKubeResource(resource) && resource.metadata.annotations) {
+    const keys = Object.keys(resource.metadata.annotations)
+    return keys.length > 1 || (keys.length === 1 && keys[0] !== lastAppliedAnnotationKey)
+  } else {
+    return false
+  }
 }
 
 export function hasLabels(resource: KubeResource): resource is KubeResource {
