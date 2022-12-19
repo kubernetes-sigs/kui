@@ -27,6 +27,10 @@
   "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "dependencies": {
     "@kui-shell/jsonpath": "1.1.1",
     "bytes-iec": "3.1.1",

@@ -11,6 +11,10 @@
   "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IBM/kui.git"

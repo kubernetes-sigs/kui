@@ -27,6 +27,10 @@
   "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "dependencies": {
     "@kui-shell/core": "8.0.6",
     "@IBM/kui": "*",

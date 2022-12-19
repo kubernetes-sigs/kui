@@ -27,6 +27,10 @@
   "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "bin": {
     "kui": "bin/kui"
   },
