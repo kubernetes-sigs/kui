@@ -295,13 +295,11 @@ export async function createWindow(
         const fixedWindows: Record<string, Win> = {}
         const openFixedWindow = (opts: {
           type: string
-          event: Event
           url: string
           size?: { width: number; height: number }
           position?: { x: number; y: number }
-          options?: any // eslint-disable-line @typescript-eslint/no-explicit-any
         }) => {
-          const { type, event, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
+          const { type, url, size = mainWindow.getBounds(), position = mainWindow.getBounds() } = opts
 
           const existing = fixedWindows[type] || ({} as Win)
           const { window: existingWindow, url: currentURL } = existing
@@ -323,8 +321,6 @@ export async function createWindow(
             }
             existingWindow.focus()
           }
-
-          event.preventDefault()
         }
 
         /** this event handler will be called when the window's content finishes loading */
@@ -353,25 +349,20 @@ export async function createWindow(
         })
 
         /** jump in and manage the way popups create new windows */
-        mainWindow.webContents.on(
-          'new-window',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          async (event: Event, url: string, frameName: string, disposition: string, options: any) => {
-            if (url.startsWith('https://youtu.be')) {
-              // special handling of youtube links
-              openFixedWindow({
-                type: 'videos',
-                event,
-                url,
-                options,
-                size: { width: 800, height: 600 }
-              })
-            } else {
-              event.preventDefault()
-              ;(await import('electron')).shell.openExternal(url)
-            }
+        mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+          if (url.startsWith('https://youtu.be')) {
+            // special handling of youtube links
+            openFixedWindow({
+              type: 'videos',
+              url,
+              size: { width: 800, height: 600 }
+            })
+            return { action: 'deny' }
+          } else {
+            import('electron').then(_ => _.shell).then(_ => _.openExternal(url))
+            return { action: 'deny' }
           }
-        )
+        })
 
         let commandContext =
           Array.isArray(executeThisArgvPlease) && executeThisArgvPlease.find(_ => /--command-context/.test(_))
