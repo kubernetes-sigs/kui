@@ -3,6 +3,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatText/RedHatText-Italic.woff2') format('woff2');
   font-style: italic;
   font-weight: 400;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -11,6 +12,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatText/RedHatText-Regular.woff2') format('woff2');
   font-style: normal;
   font-weight: 400;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -19,6 +21,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatText/RedHatText-Medium.woff2') format('woff2');
   font-style: normal;
   font-weight: 500;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -27,6 +30,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatText/RedHatText-Bold.woff2') format('woff2');
   font-style: normal;
   font-weight: 700;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -35,6 +39,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatDisplay/RedHatDisplay-Italic.woff2') format('woff2');
   font-style: italic;
   font-weight: 400;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -43,6 +48,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatDisplay/RedHatDisplay-Regular.woff2') format('woff2');
   font-style: normal;
   font-weight: 400;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -51,6 +57,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatDisplay/RedHatDisplay-Medium.woff2') format('woff2');
   font-style: normal;
   font-weight: 500;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
@@ -59,6 +66,7 @@
   src: url('@patternfly/react-core/dist/styles/assets/fonts/RedHatDisplay/RedHatDisplay-Bold.woff2') format('woff2');
   font-style: normal;
   font-weight: 700;
+  font-display: swap;
   text-rendering: optimizeLegibility;
 }
 
