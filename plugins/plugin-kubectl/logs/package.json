@@ -26,6 +26,10 @@
   "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "dependencies": {},
   "krew": {
     "commandPrefix": "kubeui"

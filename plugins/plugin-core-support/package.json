@@ -23,6 +23,10 @@
   "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "dependencies": {
     "@electron/remote": "2.0.9",
     "@supercharge/promise-pool": "2.3.2",

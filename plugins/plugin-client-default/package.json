@@ -6,6 +6,10 @@
   "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "license": "Apache-2.0",
   "author": "Mengting Yan",
   "homepage": "https://github.com/IBM/kui#readme",
