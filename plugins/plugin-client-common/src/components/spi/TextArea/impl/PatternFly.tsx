@@ -17,7 +17,7 @@
 import React from 'react'
 import Props from '../model'
 
-import { TextArea } from '@patternfly/react-core'
+import { TextArea } from '@patternfly/react-core/dist/esm/components/TextArea'
 
 import '../../../../../web/scss/components/TextArea/PatternFly.scss'
 

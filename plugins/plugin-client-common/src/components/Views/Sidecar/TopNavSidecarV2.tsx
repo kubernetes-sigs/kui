@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { Tabs, Tab, TabTitleText } from '@patternfly/react-core'
+import { Tabs, Tab, TabTitleText } from '@patternfly/react-core/dist/esm/components/Tabs'
 
 import {
   Events,

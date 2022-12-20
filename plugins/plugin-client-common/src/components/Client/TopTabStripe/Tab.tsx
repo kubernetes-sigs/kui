@@ -17,7 +17,7 @@
 import React from 'react'
 import { decode } from 'html-entities'
 import { i18n, Event, Events, ExecType, Themes } from '@kui-shell/core'
-import { NavItem } from '@patternfly/react-core'
+import { NavItem } from '@patternfly/react-core/dist/esm/components/Nav'
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'

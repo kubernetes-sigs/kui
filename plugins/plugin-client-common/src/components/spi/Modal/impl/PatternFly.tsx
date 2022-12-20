@@ -17,7 +17,8 @@
 import React from 'react'
 import Props from '../model'
 
-import { Button, Modal } from '@patternfly/react-core'
+import { Modal } from '@patternfly/react-core/dist/esm/components/Modal'
+import { Button } from '@patternfly/react-core/dist/esm/components/Button'
 
 export default function PatternFlyModal(props: Props): React.ReactElement {
   return (

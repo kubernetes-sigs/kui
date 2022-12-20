@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Spinner } from '@patternfly/react-core'
+import { Spinner } from '@patternfly/react-core/dist/esm/components/Spinner'
 
 import Props from '../model'
 

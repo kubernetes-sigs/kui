@@ -18,7 +18,13 @@ import React from 'react'
 import { v4 } from 'uuid'
 import { i18n, Tab } from '@kui-shell/core'
 import { Choices, CodeBlock, Graph, Memoizer, Wizard as Wiz } from 'madwizard'
-import { Chip, ChipGroup, Grid, GridItem, Progress, Tile, WizardStep } from '@patternfly/react-core'
+
+import { Grid, GridItem } from '@patternfly/react-core/dist/esm/layouts/Grid'
+import { Chip } from '@patternfly/react-core/dist/esm/components/Chip'
+import { Tile } from '@patternfly/react-core/dist/esm/components/Tile'
+import { Progress } from '@patternfly/react-core/dist/esm/components/Progress'
+import { ChipGroup } from '@patternfly/react-core/dist/esm/components/ChipGroup'
+import { WizardStep } from '@patternfly/react-core/dist/esm/components/Wizard'
 
 import Wizard, { Props as WizardProps } from '../Wizard/KWizard'
 

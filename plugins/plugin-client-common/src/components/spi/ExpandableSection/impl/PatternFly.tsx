@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-import { ExpandableSection } from '@patternfly/react-core'
+import { ExpandableSection } from '@patternfly/react-core/dist/esm/components/ExpandableSection'
 
 import Props from '../model'
 

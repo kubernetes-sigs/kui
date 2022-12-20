@@ -15,7 +15,12 @@
  */
 
 import React from 'react'
-import { Accordion, AccordionItem, AccordionToggle, AccordionContent } from '@patternfly/react-core'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionToggle,
+  AccordionContent
+} from '@patternfly/react-core/dist/esm/components/Accordion'
 
 import { Events, getPrimaryTabId, i18n } from '@kui-shell/core'
 import Props from '../model'

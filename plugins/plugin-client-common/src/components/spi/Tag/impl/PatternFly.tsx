@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Badge } from '@patternfly/react-core'
+import { Badge } from '@patternfly/react-core/dist/esm/components/Badge'
 
 import Props from '../model'
 

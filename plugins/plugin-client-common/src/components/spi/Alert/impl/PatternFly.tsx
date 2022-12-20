@@ -17,9 +17,11 @@
 import React from 'react'
 
 // ugh, avoid backdrop.css parse errors in plugin prescan
-const Alert = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Alert })))
+const Alert = React.lazy(() =>
+  import('@patternfly/react-core/dist/esm/components/Alert').then(_ => ({ default: _.Alert }))
+)
 const AlertActionCloseButton = React.lazy(() =>
-  import('@patternfly/react-core').then(_ => ({ default: _.AlertActionCloseButton }))
+  import('@patternfly/react-core/dist/esm/components/Alert').then(_ => ({ default: _.AlertActionCloseButton }))
 )
 
 import { Props } from '..'

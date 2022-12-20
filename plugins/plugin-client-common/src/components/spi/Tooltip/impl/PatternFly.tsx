@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tooltip } from '@patternfly/react-core'
+import { Tooltip } from '@patternfly/react-core/dist/esm/components/Tooltip'
 
 import Props, { isMarkdownProps, isReferenceProps } from '../model'
 

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Page } from '@patternfly/react-core'
+import { Page } from '@patternfly/react-core/dist/esm/components/Page'
 import { Events, Tab, isReadOnlyClient } from '@kui-shell/core'
 
 import Sidebar from './Sidebar'

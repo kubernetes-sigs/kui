@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Button } from '@patternfly/react-core'
+import { Button } from '@patternfly/react-core/dist/esm/components/Button'
 
 import Props from '../model'
 

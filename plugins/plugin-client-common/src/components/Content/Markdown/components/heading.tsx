@@ -15,8 +15,8 @@
  */
 
 import React from 'react'
-import { Text, TextVariants } from '@patternfly/react-core'
 import { HeadingProps } from 'react-markdown/lib/ast-to-react'
+import { Text, TextVariants } from '@patternfly/react-core/dist/esm/components/Text'
 
 export function anchorFrom(uuid: string, txt: string): string {
   return `${uuid}-${txt}`

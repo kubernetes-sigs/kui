@@ -17,8 +17,7 @@
 import Debug from 'debug'
 import React from 'react'
 import { i18n, Arguments, Button } from '@kui-shell/core'
-
-import { Icons } from '@kui-shell/plugin-client-common'
+import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
 
 import { getCommandFromArgs } from '../../util/util'
 import Terminal, { TerminalState } from './Terminal'

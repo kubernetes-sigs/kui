@@ -16,14 +16,19 @@
 
 import React from 'react'
 
-import { ViewLevel, Select, TextWithIconWidget, TextWithIconWidgetOptions } from '@kui-shell/plugin-client-common'
 import { Events, getCurrentTab, getTab, Tab, TabState, encodeComponent, pexecInCurrentTab, i18n } from '@kui-shell/core'
 import { KubeContext } from '@kui-shell/plugin-kubectl'
+
+import Select from '@kui-shell/plugin-client-common/mdist/components/spi/Select'
+import TextWithIconWidget, {
+  ViewLevel,
+  Options as TextWithIconWidgetOptions
+} from '@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/TextWithIconWidget'
 
 type Props = TextWithIconWidgetOptions
 
 interface State {
-  currentContext: string
+  currentContext: string | null
   allContexts: KubeContext[]
   options: { label: string; isSelected: boolean; description: string; command: string }[]
   viewLevel: ViewLevel
@@ -58,7 +63,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      currentContext: strings('Loading...'),
+      currentContext: null,
       allContexts: [],
       options: [],
       viewLevel: 'loading'
@@ -268,6 +273,20 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     }
   }
 
+  private setLoadingMessage() {
+    setTimeout(() => {
+      if (!this.unmounted) {
+        this.setState(curState => {
+          if (curState.currentContext === null) {
+            return { currentContext: strings('Loading...') }
+          } else {
+            return null
+          }
+        })
+      }
+    }, 2000)
+  }
+
   /**
    * Once we have mounted, we immediately check the current branch,
    * and schedule an update based on standard REPL events.
@@ -275,6 +294,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
    */
   public componentDidMount() {
     this.unmounted = false
+    this.setLoadingMessage()
 
     if (!ready) {
       Events.eventBus.once('/tab/new', this.handler)
@@ -298,7 +318,9 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    return (
+    return this.state.currentContext === null ? (
+      <React.Fragment />
+    ) : (
       <TextWithIconWidget
         className={this.props.className}
         text={this.state.currentContext}

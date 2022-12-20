@@ -22,7 +22,8 @@ import { Terminal as XTerminal, ITheme } from 'xterm'
 
 import { Events, Job, Streamable, ToolbarText, i18n, isResizable } from '@kui-shell/core'
 
-import { inDebugMode, Loading } from '@kui-shell/plugin-client-common'
+import { inDebugMode } from '@kui-shell/plugin-client-common'
+import Loading from '@kui-shell/plugin-client-common/mdist/components/spi/Loading'
 
 import { getCommandFromArgs } from '../../util/util'
 import { getContainer, withKubeconfigFrom } from '../../../controller/kubectl/options'

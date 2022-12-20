@@ -20,7 +20,7 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   DescriptionListDescription
-} from '@patternfly/react-core'
+} from '@patternfly/react-core/dist/esm/components/DescriptionList'
 
 import Props from '../model'
 

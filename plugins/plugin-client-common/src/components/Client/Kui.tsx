@@ -38,9 +38,12 @@ import KuiContext from './context'
 import CommonClientProps from './props/Common'
 import GuidebookProps from './props/Guidebooks'
 import KuiConfiguration from './KuiConfiguration'
-import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
-import { TabContainer, Loading, Alert } from '../..'
+import TabContainer from './TabContainer'
 import loadUserSettings, { on as onUserSettingsChange } from './UserSettings'
+import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
+
+import Alert from '../spi/Alert'
+import Loading from '../spi/Loading'
 
 const InputStripe = React.lazy(() => import('./InputStripe'))
 const LoadingCard = React.lazy(() => import('./LoadingCard'))
@@ -48,6 +51,16 @@ const LoadingCard = React.lazy(() => import('./LoadingCard'))
 const debug = Debug('<Kui/>')
 const strings = i18n('client')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
+
+/**
+ * Here we arrange the CSS for base functionality of Kui. Order is
+ * preserved in the resulting <link> tags.
+ *
+ */
+import '../../../web/css/static/carbon-overrides-common.css'
+import '../../../web/css/static/inverted-colors.css'
+import '../../../web/css/static/ui.css'
+import '../../../web/css/static/repl.scss'
 
 const defaultThemeProperties: Themes.ThemeProperties = {
   components: 'patternfly',

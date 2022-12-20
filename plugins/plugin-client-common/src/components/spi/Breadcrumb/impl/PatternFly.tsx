@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core'
+import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core/dist/esm/components/Breadcrumb'
 
 import Props from '../model'
 import { getCurrentPageIdx } from '..'

@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-import { ProgressVariant } from '@patternfly/react-core'
+import { ProgressVariant } from '@patternfly/react-core/dist/esm/components/Progress'
 
 import {
   ReadinessHandler,
@@ -29,7 +29,9 @@ import { Graph, Choices } from 'madwizard'
 
 import { ProgressStepState } from '../../../ProgressStepper'
 
-const PatternFlyProgress = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Progress })))
+const PatternFlyProgress = React.lazy(() =>
+  import('@patternfly/react-core/dist/esm/components/Progress').then(_ => ({ default: _.Progress }))
+)
 
 const strings = i18n('plugin-client-common', 'code')
 

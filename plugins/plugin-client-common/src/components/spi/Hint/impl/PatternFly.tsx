@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Hint, HintBody } from '@patternfly/react-core'
+import { Hint, HintBody } from '@patternfly/react-core/dist/esm/components/Hint'
 
 import Icons from '../../Icons'
 import Props from '../model'

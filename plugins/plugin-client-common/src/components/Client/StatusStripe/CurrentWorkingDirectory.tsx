@@ -15,9 +15,10 @@
  */
 
 import React from 'react'
-
-import { Icons, ViewLevel, TextWithIconWidget } from '../../../'
 import { Capabilities, Events, i18n, Util } from '@kui-shell/core'
+
+import Icons from '../../spi/Icons'
+import TextWithIconWidget, { ViewLevel } from './TextWithIconWidget'
 
 const strings = i18n('plugin-client-common')
 

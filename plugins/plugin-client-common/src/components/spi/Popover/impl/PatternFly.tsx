@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Popover } from '@patternfly/react-core'
+import { Popover } from '@patternfly/react-core/dist/esm/components/Popover'
 
 import Props from '../model'
 import '../../../../../web/scss/components/Popover/PatternFly.scss'

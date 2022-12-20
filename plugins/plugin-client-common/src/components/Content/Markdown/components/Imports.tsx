@@ -16,9 +16,9 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { TreeView, TreeViewProps } from '@patternfly/react-core'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
 import { Tree, Graph, Choices, CodeBlock, Memoizer } from 'madwizard'
+import { TreeView, TreeViewProps } from '@patternfly/react-core/dist/esm/components/TreeView'
 
 import Icons, { SupportedIcon } from '../../../spi/Icons'
 // import Spinner from '../../../Views/Terminal/Block/Spinner'

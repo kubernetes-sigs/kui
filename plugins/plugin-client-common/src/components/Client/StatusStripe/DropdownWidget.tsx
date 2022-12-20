@@ -16,9 +16,8 @@
 
 import React from 'react'
 
-import { DropDownProps } from '../../spi/DropDown'
-import { DropDown, DropDownAction } from '../../..'
 import Tooltip, { Props as TooltipProps } from '../../spi/Tooltip'
+import DropDown, { DropDownProps, DropDownAction } from '../../spi/DropDown'
 
 export type Props = Pick<DropDownProps, 'position'> & {
   /** Dom identifier for status stripe wrapper around the button */

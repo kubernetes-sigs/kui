@@ -15,7 +15,13 @@
  */
 
 import React from 'react'
-import { Dropdown, DropdownItem, DropdownSeparator, KebabToggle, DropdownToggle } from '@patternfly/react-core'
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownSeparator,
+  KebabToggle,
+  DropdownToggle
+} from '@patternfly/react-core/dist/esm/components/Dropdown'
 
 import Icons from '../../Icons'
 import Props, { Action } from '../model'

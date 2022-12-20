@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Text, TextVariants } from '@patternfly/react-core'
+import { Text, TextVariants } from '@patternfly/react-core/dist/esm/components/Text'
 
 export default function p(props: React.HTMLAttributes<HTMLParagraphElement>) {
   return <Text component={TextVariants.p} {...props} />
