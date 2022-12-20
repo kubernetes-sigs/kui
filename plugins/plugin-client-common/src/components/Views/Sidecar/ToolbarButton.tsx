@@ -69,28 +69,46 @@ export default class ToolbarButton<
     }
   }
 
-  private readonly _buttonOnclick = this.buttonOnclick.bind(this)
-
-  public render() {
+  /** @return text of tooltip */
+  private get tooltipText() {
     const { button } = this.props
 
-    // we want bottom-end, but PatternFly 4.152.4 (also 4.157.3) does
-    // not seem to render bottom-end correctly; the caret/pointer is
-    // not visible see
-    // https://github.com/patternfly/patternfly/issues/4382
+    return button.label || button.mode
+  }
+
+  /** @return label of the button */
+  private get buttonLabel() {
+    const { button } = this.props
+
+    return button.icon ? button.icon : button.label || button.mode
+  }
+
+  /** @return whether we need a tooltip wrapper */
+  private needsTooltip() {
+    return this.tooltipText !== this.buttonLabel
+  }
+
+  private readonly _buttonOnclick = this.buttonOnclick.bind(this)
+
+  /** @return a react component for the button */
+  private content() {
+    const { button } = this.props
+
     return (
-      <Tooltip content={button.label || button.mode}>
-        <span
-          className={
-            'kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button' +
-            (button.icon ? ' kui--toolbar-button-with-icon' : '')
-          }
-        >
-          <div role="presentation" onClick={this._buttonOnclick} data-mode={button.mode}>
-            <span role="tab">{button.icon ? button.icon : button.label || button.mode}</span>
-          </div>
-        </span>
-      </Tooltip>
+      <span
+        className={
+          'kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button' +
+          (button.icon ? ' kui--toolbar-button-with-icon' : '')
+        }
+      >
+        <div role="presentation" onClick={this._buttonOnclick} data-mode={button.mode}>
+          <span role="tab">{this.buttonLabel}</span>
+        </div>
+      </span>
     )
+  }
+
+  public render() {
+    return !this.needsTooltip() ? this.content() : <Tooltip content={this.tooltipText}>{this.content()}</Tooltip>
   }
 }
