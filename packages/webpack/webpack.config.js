@@ -29,19 +29,9 @@ const CompressionPlugin = !noCompression && require('compression-webpack-plugin'
 const CopyPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const TerserJSPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { IgnorePlugin, ProvidePlugin } = require('webpack')
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-
-// in case the client has some oddities that require classnames to be preserved
-const terserOptions = process.env.KEEP_CLASSNAMES
-  ? {
-      terserOptions: {
-        keep_classnames: true
-      }
-    }
-  : {}
 
 const sassLoaderChain = [
   {
@@ -54,12 +44,23 @@ const sassLoaderChain = [
   'sass-loader'
 ]
 
-const optimization = {}
+const optimization = {
+  splitChunks: {
+    cacheGroups: {
+      styles: {
+        name: 'styles',
+        type: 'css/mini-extract',
+        chunks: chunk => chunk.name === 'main',
+        enforce: true
+      }
+    }
+  }
+}
 if (process.env.NO_OPT) {
   console.log('optimization? disabled')
   optimization.minimize = false
 } else {
-  optimization.minimizer = [new TerserJSPlugin(terserOptions), new CssMinimizerPlugin()]
+  optimization.minimizer = ['...', new CssMinimizerPlugin()]
 }
 
 const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
@@ -409,7 +410,7 @@ const fallback = !inBrowser
 const alias = !inBrowser
   ? {}
   : {
-    url: require.resolve('./url')
+      url: require.resolve('./url')
     }
 
 module.exports = {
@@ -494,7 +495,7 @@ module.exports = {
       {
         test: /\.css$/i,
         exclude: thisPath('web/css/static'),
-        use: ['style-loader', 'css-loader']
+        use: sassLoaderChain
       },
 
       {
