@@ -59,7 +59,6 @@
     "source-map-loader": "4.0.1",
     "stream-browserify": "3.0.0",
     "stream-http": "3.2.0",
-    "style-loader": "3.3.1",
     "svg-url-loader": "8.0.0",
     "timers-browserify": "2.0.12",
     "tty-browserify": "0.0.1",
