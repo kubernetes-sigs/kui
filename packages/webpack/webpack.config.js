@@ -274,6 +274,7 @@ if (contentSecurityPolicyForDevServer) {
 
 const htmlBuildOptions = Object.assign(
   {
+    scriptLoading: 'defer',
     inject: false
   },
   clientOptions,
