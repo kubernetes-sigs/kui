@@ -24,7 +24,11 @@
 import React from 'react'
 
 import { Events, getCurrentTab, pexecInCurrentTab, i18n } from '@kui-shell/core'
-import { TextWithIconWidget as Widget, TextWithIconWidgetProps, Markdown } from '@kui-shell/plugin-client-common'
+
+const Markdown = React.lazy(() => import('@kui-shell/plugin-client-common/mdist/components/Content/Markdown'))
+import Widget, {
+  Props as TextWithIconWidgetProps
+} from '@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/TextWithIconWidget'
 
 import '../../web/scss/components/UpdateChecker/_index.scss'
 

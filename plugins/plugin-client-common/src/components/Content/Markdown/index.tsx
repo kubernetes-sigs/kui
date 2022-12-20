@@ -17,7 +17,7 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
-import { TextContent } from '@patternfly/react-core'
+import { TextContent } from '@patternfly/react-core/dist/esm/components/Text/TextContent'
 
 import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
 import { Capabilities, Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'

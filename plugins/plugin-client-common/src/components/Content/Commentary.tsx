@@ -16,8 +16,8 @@
 
 import React from 'react'
 import { EventEmitter } from 'events'
-import { TextContent } from '@patternfly/react-core'
 import { CommentaryResponse, Tab, i18n } from '@kui-shell/core'
+import { TextContent } from '@patternfly/react-core/dist/esm/components/Text/TextContent'
 
 import Card from '../spi/Card'
 import Button from '../spi/Button'

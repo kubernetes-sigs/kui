@@ -16,13 +16,12 @@
 
 import React from 'react'
 
-import {
-  Icons,
+import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
+import Select from '@kui-shell/plugin-client-common/mdist/components/spi/Select'
+import TextWithIconWidget, {
   ViewLevel,
-  Select,
-  TextWithIconWidget,
-  TextWithIconWidgetOptions
-} from '@kui-shell/plugin-client-common'
+  Options as TextWithIconWidgetOptions
+} from '@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/TextWithIconWidget'
 
 import { Events, i18n, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
@@ -34,7 +33,7 @@ import { isInternalNamespace } from '@kui-shell/plugin-kubectl/heuristics'
 type Props = TextWithIconWidgetOptions
 
 interface State {
-  currentNamespace: string
+  currentNamespace: string | null
   allNamespaces: string[]
   viewLevel: ViewLevel
 }
@@ -49,7 +48,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     super(props)
 
     this.state = {
-      currentNamespace: strings('Loading...'),
+      currentNamespace: null,
       allNamespaces: [],
       viewLevel: 'loading'
     }
@@ -143,6 +142,20 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     }
   }
 
+  private setLoadingMessage() {
+    setTimeout(() => {
+      if (!this.unmounted) {
+        this.setState(curState => {
+          if (curState.currentNamespace === null) {
+            return { currentNamespace: strings('Loading...') }
+          } else {
+            return null
+          }
+        })
+      }
+    }, 2000)
+  }
+
   /**
    * Once we have mounted, we immediately check the current branch,
    * and schedule an update based on standard REPL events.
@@ -150,6 +163,8 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
    */
   public componentDidMount() {
     this.unmounted = false
+    this.setLoadingMessage()
+
     if (!ready) {
       Events.eventBus.once('/tab/new', this.handler)
     } else {
@@ -269,7 +284,9 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   }
 
   public render() {
-    return (
+    return this.state.currentNamespace === null ? (
+      <React.Fragment />
+    ) : (
       <TextWithIconWidget
         className={this.props.className}
         text={this.state.currentNamespace}

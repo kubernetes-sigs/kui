@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { Divider, Select, SelectGroup, SelectOption } from '@patternfly/react-core'
+import { Divider } from '@patternfly/react-core/dist/esm/components/Divider'
+import { Select, SelectGroup, SelectOption } from '@patternfly/react-core/dist/esm/components/Select'
 
 import { pexecInCurrentTab, Util } from '@kui-shell/core'
 

@@ -16,25 +16,33 @@
 
 import React from 'react'
 
-import { Capabilities } from '@kui-shell/core'
-import {
-  Kui,
-  KuiProps,
-  Settings,
-  GitHubIcon,
-  ContextWidgets,
-  MeterWidgets,
-  CurrentWorkingDirectory,
-  SpaceFiller
-} from '@kui-shell/plugin-client-common'
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+
+import Kui, { Props as KuiProps } from '@kui-shell/plugin-client-common/mdist/components/Client/Kui'
+const Settings = React.lazy(
+  () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/Settings')
+)
+const GitHubIcon = React.lazy(
+  () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/GitHubIcon')
+)
+const ContextWidgets = React.lazy(
+  () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/ContextWidgets')
+)
+const MeterWidgets = React.lazy(
+  () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/MeterWidgets')
+)
+const CurrentWorkingDirectory = React.lazy(
+  () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/CurrentWorkingDirectory')
+)
+const SpaceFiller = React.lazy(
+  () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/SpaceFiller')
+)
 
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 
-const Search = React.lazy(() => import('@kui-shell/plugin-electron-components').then(_ => ({ default: _.Search })))
+const Search = React.lazy(() => import('@kui-shell/plugin-electron-components/mdist/components/Search'))
 const CurrentGitBranch = React.lazy(() => import('@kui-shell/plugin-git').then(_ => ({ default: _.CurrentGitBranch })))
-const UpdateChecker = React.lazy(() =>
-  import('@kui-shell/plugin-electron-components').then(_ => ({ default: _.UpdateChecker }))
-)
+const UpdateChecker = React.lazy(() => import('@kui-shell/plugin-electron-components/mdist/components/UpdateChecker'))
 const ProxyOfflineIndicator = React.lazy(() =>
   import('@kui-shell/plugin-proxy-support').then(_ => ({ default: _.ProxyOfflineIndicator }))
 )
@@ -89,7 +97,7 @@ export default function renderMain(props: KuiProps) {
       {...props}
       isPopup={isPopup}
       quietExecCommand={quietExecCommand}
-      toplevel={!Capabilities.inBrowser() && <Search />}
+      toplevel={!inBrowser() && <Search />}
       guidebooks={guidebooks.submenu}
       commandLine={
         props.commandLine ||
@@ -124,8 +132,8 @@ export default function renderMain(props: KuiProps) {
       <MeterWidgets className="kui--hide-in-narrower-windows">
         {/* <ClusterUtilization /> */}
         {/* !isPopup && <OpenWhiskGridWidget /> */}
-        {Capabilities.inBrowser() && <ProxyOfflineIndicator />}
-        {!isPopup && !Capabilities.inBrowser() && <UpdateChecker />}
+        {inBrowser() && <ProxyOfflineIndicator />}
+        {!isPopup && !inBrowser() && <UpdateChecker />}
         <Settings />
         <GitHubIcon />
       </MeterWidgets>

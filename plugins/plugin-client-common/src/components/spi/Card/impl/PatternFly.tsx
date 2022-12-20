@@ -15,19 +15,18 @@
  */
 
 import React from 'react'
+
+import { Brand } from '@patternfly/react-core/dist/esm/components/Brand'
+import { KebabToggle, Dropdown, DropdownItem } from '@patternfly/react-core/dist/esm/components/Dropdown'
 import {
-  Brand,
   Card,
   CardActions,
   CardBody,
   CardFooter,
   CardHeader,
   CardHeaderMain,
-  CardTitle,
-  Dropdown,
-  DropdownItem,
-  KebabToggle
-} from '@patternfly/react-core'
+  CardTitle
+} from '@patternfly/react-core/dist/esm/components/Card'
 
 import Props from '../model'
 import { DropDownAction } from '../../DropDown'

@@ -16,16 +16,6 @@
 
 import React from 'react'
 
-/**
- * Here we arrange the CSS for base functionality of Kui. Order is
- * preserved in the resulting <link> tags.
- *
- */
-import '../web/css/static/carbon-overrides-common.css'
-import '../web/css/static/inverted-colors.css'
-import '../web/css/static/ui.css'
-import '../web/css/static/repl.scss'
-
 // default client
 export { default as Kui, Props as KuiProps } from './components/Client/Kui'
 

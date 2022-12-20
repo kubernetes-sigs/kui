@@ -15,8 +15,9 @@
  */
 
 import React from 'react'
-import { DropDown, Icons } from '@kui-shell/plugin-client-common'
 import { Arguments, Button, ParsedOptions, Job, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
+import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
+import DropDown from '@kui-shell/plugin-client-common/mdist/components/spi/DropDown'
 
 import { Pod, isPod, Deployment, ReplicaSet } from '../../model/resource'
 

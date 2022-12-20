@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { LabelGroup, Label } from '@patternfly/react-core'
+import { Label } from '@patternfly/react-core/dist/esm/components/Label'
+import { LabelGroup } from '@patternfly/react-core/dist/esm/components/LabelGroup'
 
 import BaseProps from '../model'
 

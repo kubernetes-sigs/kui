@@ -24,7 +24,8 @@
 
 import React from 'react'
 import { i18n } from '@kui-shell/core'
-import { Title, TitleSizes, Wizard, WizardProps } from '@patternfly/react-core'
+import { Title, TitleSizes } from '@patternfly/react-core/dist/esm/components/Title'
+import { Wizard, WizardProps } from '@patternfly/react-core/dist/esm/components/Wizard'
 
 import Icons from '../../../../spi/Icons'
 import Footer, { KuiFooterExtraProps } from './Footer'

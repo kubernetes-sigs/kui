@@ -31,7 +31,7 @@
 import React from 'react'
 import { css } from '@patternfly/react-styles'
 import styles from '@patternfly/react-styles/css/components/Wizard/wizard'
-import { WizardStep } from '@patternfly/react-core'
+import { WizardStep } from '@patternfly/react-core/dist/esm/components/Wizard'
 
 import Button, { Props as ButtonProps } from '../../../../spi/Button'
 

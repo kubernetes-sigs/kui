@@ -17,9 +17,11 @@
 import { i18n, Table, Tab, REPL } from '@kui-shell/core'
 
 import React from 'react'
-import { Tbody, Tr, Td } from '@patternfly/react-table'
-import { EmptyState, EmptyStateVariant, Bullseye, Title, EmptyStateIcon } from '@patternfly/react-core'
-import { SearchIcon } from '@patternfly/react-icons'
+import { Title } from '@patternfly/react-core/dist/esm/components/Title'
+import { Bullseye } from '@patternfly/react-core/dist/esm/layouts/Bullseye'
+import { Tbody, Tr, Td } from '@patternfly/react-table/dist/esm/components/TableComposable'
+import { EmptyState, EmptyStateVariant, EmptyStateIcon } from '@patternfly/react-core/dist/esm/components/EmptyState'
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon'
 
 import renderCell from './TableCell'
 

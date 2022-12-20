@@ -15,17 +15,16 @@
  */
 
 import React from 'react'
+import { Capabilities, KeyCodes, isReadOnlyClient } from '@kui-shell/core'
+import { Button } from '@patternfly/react-core/dist/esm/components/Button'
+import { Nav, NavList } from '@patternfly/react-core/dist/esm/components/Nav'
 import {
-  Nav,
-  NavList,
-  Button,
   Masthead,
   MastheadMain,
   MastheadBrand,
   MastheadContent,
   MastheadToggle
-} from '@patternfly/react-core'
-import { Capabilities, KeyCodes, isReadOnlyClient } from '@kui-shell/core'
+} from '@patternfly/react-core/dist/esm/components/Masthead'
 
 import TabModel from '../TabModel'
 import KuiContext from '../context'

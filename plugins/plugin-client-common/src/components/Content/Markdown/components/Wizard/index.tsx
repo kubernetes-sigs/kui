@@ -26,7 +26,7 @@ import { Status, statusFromStatusVector } from '../../../ProgressStepper'
 import { MiniProgressStepper, StepperProps } from '../../../MiniProgressStepper'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from '../../../LinkStatus'
 
-import { WizardStep } from '@patternfly/react-core'
+import { WizardStep } from '@patternfly/react-core/dist/esm/components/Wizard'
 
 const KWizard = React.lazy(() => import('./KWizard'))
 

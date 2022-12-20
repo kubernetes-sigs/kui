@@ -17,7 +17,11 @@
 import React from 'react'
 import { basename, dirname, join } from 'path'
 
-import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
+import TextWithIconWidget, {
+  ViewLevel
+} from '@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/TextWithIconWidget'
+
 import {
   Capabilities,
   Events,
@@ -179,13 +183,9 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
       ? []
       : this.state.status
           .split(/\n/)
-          .map(line => {
-            const match = line.match(/(.+)\s+(.+)/)
-            if (match) {
-              return { M: match[1], file: match[2] }
-            }
-          })
-          .filter(_ => _)
+          .map(line => line.match(/(.+)\s+(.+)/))
+          .filter(Boolean)
+          .map(match => ({ M: match[1], file: match[2] }))
   }
 
   /** @return UI that summarizes the `statusModel` changes */

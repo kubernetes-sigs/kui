@@ -17,7 +17,7 @@
 import React from 'react'
 import { LiProps, OrderedListProps, UnorderedListProps } from 'react-markdown/lib/ast-to-react'
 
-import { List, ListComponent, ListItem } from '@patternfly/react-core'
+import { List, ListComponent, ListItem } from '@patternfly/react-core/dist/esm/components/List'
 
 import {
   ProgressStepper,

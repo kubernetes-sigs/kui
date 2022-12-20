@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
-import { PageSidebar, PageSidebarProps } from '@patternfly/react-core'
+import { PageSidebar, PageSidebarProps } from '@patternfly/react-core/dist/esm/components/Page/PageSidebar'
 
 import CommonProps from './props/Common'
 import BrandingProps from './props/Branding'
@@ -24,10 +24,18 @@ import GuidebookProps, { isGuidebook, Guidebook, isMenu, MenuItem } from './prop
 
 import '../../../web/scss/components/Sidebar/_index.scss'
 
-const Nav = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Nav })))
-const NavItem = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavItem })))
-const NavList = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavList })))
-const NavExpandable = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavExpandable })))
+const Nav = React.lazy(() =>
+  import('@patternfly/react-core/dist/esm/components/Nav/Nav').then(_ => ({ default: _.Nav }))
+)
+const NavItem = React.lazy(() =>
+  import('@patternfly/react-core/dist/esm/components/Nav/NavItem').then(_ => ({ default: _.NavItem }))
+)
+const NavList = React.lazy(() =>
+  import('@patternfly/react-core/dist/esm/components/Nav/NavList').then(_ => ({ default: _.NavList }))
+)
+const NavExpandable = React.lazy(() =>
+  import('@patternfly/react-core/dist/esm/components/Nav/NavExpandable').then(_ => ({ default: _.NavExpandable }))
+)
 
 type Props = Pick<CommonProps, 'noTopTabs'> &
   BrandingProps &
