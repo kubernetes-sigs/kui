@@ -17,7 +17,8 @@
 import { Table } from '@kui-shell/core'
 
 import React from 'react'
-import { SortByDirection, Thead, Th, Tr } from '@patternfly/react-table'
+import { SortByDirection } from '@patternfly/react-table/dist/esm/components/Table'
+import { Thead, Th, Tr } from '@patternfly/react-table/dist/esm/components/TableComposable'
 
 import { isSortableCol } from './sort'
 

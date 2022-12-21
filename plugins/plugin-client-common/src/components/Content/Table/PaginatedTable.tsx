@@ -27,7 +27,8 @@ import {
 } from '@kui-shell/core'
 
 import React from 'react'
-import { SortByDirection, TableComposable } from '@patternfly/react-table'
+import { SortByDirection } from '@patternfly/react-table/dist/esm/components/Table'
+import { TableComposable } from '@patternfly/react-table/dist/esm/components/TableComposable'
 
 import sortRow from './sort'
 import Card from '../../spi/Card'

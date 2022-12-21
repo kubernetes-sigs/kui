@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { TableRowProps, TableDataCellProps, TableHeaderCellProps } from 'react-markdown/lib/ast-to-react'
-import { TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
+import { TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table/dist/esm/components/TableComposable'
 
 export function table(props: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
