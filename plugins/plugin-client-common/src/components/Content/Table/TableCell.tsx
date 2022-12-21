@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { Td } from '@patternfly/react-table'
+import { Td } from '@patternfly/react-table/dist/esm/components/TableComposable'
 import {
   Capabilities,
   ExecOptions,
