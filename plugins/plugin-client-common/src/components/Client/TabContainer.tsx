@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { Page } from '@patternfly/react-core/dist/esm/components/Page'
-import { Events, Tab, isReadOnlyClient } from '@kui-shell/core'
+import { Events, Tab, isReadOnlyClient, pexecInCurrentTab } from '@kui-shell/core'
 
 import Sidebar from './Sidebar'
 import TabModel, { TopTabButton } from './TabModel'
@@ -150,6 +150,16 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    *
    */
   private async onCloseTab(idx: number) {
+    // execute a command onClose?
+    const tabModel = this.state.tabs[idx]
+    if (tabModel && tabModel.onClose) {
+      try {
+        await pexecInCurrentTab(tabModel.onClose, undefined, true)
+      } catch (err) {
+        console.error('Error executing tab onClose handler', err)
+      }
+    }
+
     const residualTabs = this.state.tabs.slice(0, idx).concat(this.state.tabs.slice(idx + 1))
 
     if (residualTabs.length > 0) {
@@ -192,6 +202,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       spec.exec
     )
     this.listenForTabClose(model)
+
     return model
   }
 
@@ -266,22 +277,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         this.props.onTabReady(tab)
       }
       this.isFirstTabReady = true
-    }
-
-    // then, for all tabs: we were asked to execute a command line in
-    // the new tab?
-    const tabModel = this.state.tabs.find(_ => _.uuid === tab.uuid)
-    if (tabModel) {
-      // execute a command onClose?
-      if (tabModel.onClose) {
-        Events.eventBus.on('/tab/close', async tab => {
-          try {
-            await tab.REPL.qexec(tabModel.onClose)
-          } catch (err) {
-            console.error('Error executing tab onClose handler', err)
-          }
-        })
-      }
     }
   }
 
