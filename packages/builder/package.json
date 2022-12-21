@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/builder",
-  "version": "12.2.0",
+  "version": "13.0.0-dev-20221221-131328",
   "description": "Kui plugin development helpers",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -29,9 +29,9 @@
     "@babel/cli": "7.19.3",
     "@babel/core": "7.20.5",
     "@babel/plugin-transform-modules-commonjs": "7.19.6",
+    "@electron/rebuild": "^3.2.10",
     "babel-plugin-dynamic-import-node-babel-7": "2.0.7",
     "babel-plugin-ignore-html-and-css-imports": "0.0.2",
-    "@electron/rebuild": "^3.2.10",
     "shelljs": "0.8.5"
   },
   "kui": {
