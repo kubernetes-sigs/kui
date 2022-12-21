@@ -112,6 +112,9 @@ type Props = TerminalOptions &
 
     tabTitle?: string
 
+    /** Callback after we mount */
+    onReady?: () => void
+
     /** handler for terminal clear */
     onClear?: () => void
 
@@ -1242,6 +1245,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private mounted = false
   public componentDidMount() {
     this.mounted = true
+
+    if (this.props.onReady) {
+      this.props.onReady()
+    }
   }
 
   public componentWillUnmount() {

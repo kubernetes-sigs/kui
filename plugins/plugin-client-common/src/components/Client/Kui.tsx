@@ -332,15 +332,6 @@ export class Kui extends React.PureComponent<Props, State> {
     if (this.state.commandLine && this.firstTab) {
       this.firstTab = false
 
-      while (true) {
-        const hack = tab.querySelector('.kui--tab-content.visible .kui--scrollback[data-position="default"]')
-        if (hack) {
-          break
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 500))
-        }
-      }
-
       setTimeout(() =>
         pexecInCurrentTab(
           this.state.commandLine.map(_ => encodeComponent(_)).join(' '),

@@ -66,6 +66,9 @@ type State = Partial<WithTab> & {
   sessionInitError?: Error
   showSessionInitDone: boolean
 
+  /** Terminal readiness */
+  isTerminalReady: boolean
+
   /** Does this tab have a left strip layout? */
   hasLeftStrip: boolean
 
@@ -119,6 +122,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       tab: React.createRef(),
       sessionInit: 'NotYet',
       showSessionInitDone: true,
+      isTerminalReady: false,
       hasLeftStrip: false,
       hasRightStrip: false,
       _terminal: React.createRef(),
@@ -149,18 +153,25 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
+  /**
+   * This method fires `this.props.onTabReady` after *both* the tab is
+   * ready and the terminal is ready.
+   */
+  private maybeFireTabReady(isTabReady: boolean, isTerminalReady: boolean) {
+    try {
+      if (this.props.onTabReady && isTabReady && isTerminalReady) {
+        this.props.onTabReady(this.state.tab.current)
+      }
+    } catch (err) {
+      console.error('Error in onTabReady', err)
+    }
+  }
+
   public componentDidMount() {
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
       TabContent.delayedFocus(this.state)
-
-      try {
-        if (this.props.onTabReady) {
-          this.props.onTabReady(this.state.tab.current)
-        }
-      } catch (err) {
-        console.error('Error in onTabReady', err)
-      }
+      this.maybeFireTabReady(true, this.state.isTerminalReady)
     }
 
     Events.eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, onTabNew)
@@ -322,6 +333,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.state.tab.current.state.desiredStatusStripeDecoration = { type: 'default' }
   }
 
+  /** Terminal is ready for action */
+  private readonly _onTerminalReady = () => {
+    this.setState({ isTerminalReady: true })
+    this.maybeFireTabReady(true, this.state.sessionInit === 'Done')
+  }
+
   private terminal() {
     if (this.state.sessionInit !== 'NotYet') {
       return (
@@ -334,6 +351,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
               config={config}
               toggleAttribute={this._toggleAttribute}
               onClear={this._onClear}
+              onReady={this._onTerminalReady}
               ref={this.state._terminal}
               hasLeftStrip={this.state.hasLeftStrip}
               hasRightStrip={this.state.hasRightStrip}
