@@ -20,10 +20,10 @@ import { CommentaryResponse, Tab, i18n } from '@kui-shell/core'
 import { TextContent } from '@patternfly/react-core/dist/esm/components/Text/TextContent'
 
 import Card from '../spi/Card'
-import Button from '../spi/Button'
 import { MutabilityContext } from '../Client/MutabilityContext'
 
 const Markdown = React.lazy(() => import('./Markdown'))
+const Button = React.lazy(() => import('../spi/Button'))
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 
 const strings = i18n('plugin-client-common')
