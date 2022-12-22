@@ -44,6 +44,7 @@ type Props = Choices.Choices & {
 
 type State = {
   activeKey: number
+  previousActiveKey: number
 }
 
 const activateEvents = new EventEmitter()
@@ -62,6 +63,12 @@ function emitTabSwitch(uuid: string, group: string, member: string) {
   switchEvents.emit(uuid, group, member)
 }
 
+export type CurrentMarkdownTabProps = State
+export const CurrentMarkdownTab = React.createContext<CurrentMarkdownTabProps>({
+  activeKey: 0,
+  previousActiveKey: undefined
+})
+
 export class LinkableTabs extends React.PureComponent<Props, State> {
   private readonly slugs = new Slugger()
   private readonly cleaners: (() => void)[] = []
@@ -69,10 +76,9 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
     this.state = {
-      activeKey: LinkableTabs.findActiveKey(props)
+      activeKey: LinkableTabs.findActiveKey(props),
+      previousActiveKey: undefined
     }
-
-    this.initEvents()
   }
 
   private static findActiveKey(props: Props) {
@@ -91,7 +97,7 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
       .map(_ => this.slugs.slug(_.props.title))
       .forEach((slug, activeKey) => {
         const onActivate = (evt?: React.MouseEvent) => {
-          this.setState({ activeKey })
+          this.setState(curState => ({ activeKey, previousActiveKey: curState.activeKey }))
 
           if (evt) {
             // prevent default interpretation of onClick for the href
@@ -101,6 +107,10 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
         activateEvents.on(slug, onActivate)
         this.cleaners.push(() => activateEvents.off(`/markdown/tabs/activate/${slug}`, onActivate))
       })
+  }
+
+  public componentDidMount() {
+    this.initEvents()
   }
 
   public componentWillUnmount() {
@@ -120,9 +130,10 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
     emitTabSwitch(this.props.uuid, LinkableTabs.group(this.props), this.member(selectedTab))
     // props.choices.set(LinkableTabs.group(this.props), selectedTab.props.title)
 
-    this.setState({
-      activeKey: tabIndex
-    })
+    this.setState(curState => ({
+      activeKey: tabIndex,
+      previousActiveKey: curState.activeKey
+    }))
   }
 
   public render() {
@@ -154,7 +165,9 @@ export class LinkableTabs extends React.PureComponent<Props, State> {
             title={<TabTitleText>{_.props.title}</TabTitleText>}
           >
             <Card className="kui--markdown-tab-card">
-              <React.Fragment>{_.props && _.props.children}</React.Fragment>
+              <CurrentMarkdownTab.Provider value={this.state}>
+                {_.props && _.props.children}
+              </CurrentMarkdownTab.Provider>
             </Card>
           </Tab>
         ))}
