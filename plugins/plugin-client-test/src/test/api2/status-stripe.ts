@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { Common, Selectors } from '@kui-shell/test'
+import { Common, CLI, Selectors } from '@kui-shell/test'
 
 /** see CounterWidget */
 const colors = ['ok' as const, 'warn' as const, 'error' as const, 'normal' as const]
@@ -34,9 +34,16 @@ describe('test client status stripe', function (this: Common.ISuite) {
   // the count in the UI that we expect to see next
   let count = 0
 
-  it('should show as ok', async () => {
+  const timeout = CLI.waitTimeout
+
+  it('should show desired color for current count', async () => {
+    // ugh, some events may flow in asynchronously on initial page
+    // load that bump the `count`; this mostly seems to affect
+    // browser-based rather than electron-based test runs
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
     console.error('A')
-    await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET(id)).then(_ => _.waitForDisplayed())
+    await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET(id)).then(_ => _.waitForDisplayed({ timeout }))
     console.error('B')
     const text = await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET_LABEL(id)).then(_ => _.getText())
     console.error('C', text)
@@ -60,7 +67,7 @@ describe('test client status stripe', function (this: Common.ISuite) {
       console.error('F1')
       await this.app.client
         .$(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
-        .then(_ => _.waitForDisplayed())
+        .then(_ => _.waitForDisplayed({ timeout }))
       console.error('F2')
       const text = await this.app.client
         .$(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
@@ -83,7 +90,7 @@ describe('test client status stripe', function (this: Common.ISuite) {
         .then(_ => _.click())
       await this.app.client
         .$(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
-        .then(_ => _.waitForDisplayed())
+        .then(_ => _.waitForDisplayed({ timeout }))
       const text = await this.app.client
         .$(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
         .then(_ => _.getText())
