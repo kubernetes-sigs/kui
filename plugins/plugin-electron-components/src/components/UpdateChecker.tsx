@@ -111,8 +111,6 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    setTimeout(() => this.checkForUpdates(), this.props.lag || DEFAULT_LAG)
-
     this.state = {
       pinger: this.initPinger(),
       currentVersion: undefined,
@@ -208,8 +206,9 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
     }
   }
 
-  public componentDidMount() {
-    this.getCurrentVersion()
+  public async componentDidMount() {
+    await this.getCurrentVersion()
+    setTimeout(() => this.checkForUpdates(), this.props.lag || DEFAULT_LAG)
   }
 
   /** Bye! */
