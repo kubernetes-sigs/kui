@@ -271,7 +271,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             execOptions: {},
             pipeStages: { stages: [['welcome']] },
             execUUID: '',
-            execType: ExecType.TopLevel,
+            execType: ExecType.Nested,
             cancelled: false,
             echo: true,
             evaluatorOptions: {},
