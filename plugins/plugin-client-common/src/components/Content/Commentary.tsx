@@ -21,18 +21,13 @@ import { TextContent } from '@patternfly/react-core/dist/esm/components/Text/Tex
 
 import Card from '../spi/Card'
 import { MutabilityContext } from '../Client/MutabilityContext'
+import { CurrentMarkdownTab, CurrentMarkdownTabProps } from './Markdown/components/tabbed'
 
 const Markdown = React.lazy(() => import('./Markdown'))
 const Button = React.lazy(() => import('../spi/Button'))
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 
 const strings = i18n('plugin-client-common')
-
-interface State {
-  isEdit: boolean
-  textValue: string
-  lastAppliedTextValue: string
-}
 
 type Props = CommentaryResponse['props'] & {
   tab: Tab
@@ -43,22 +38,41 @@ type Props = CommentaryResponse['props'] & {
   onRender: () => void
 }
 
-export default class Commentary extends React.PureComponent<Props, State> {
+type PropsInternal = Props & CurrentMarkdownTabProps
+
+interface State {
+  initialActiveKey?: PropsInternal['activeKey']
+  isEdit: boolean
+  textValue: string
+  lastAppliedTextValue: string
+}
+class Commentary extends React.PureComponent<PropsInternal, State> {
   /** Allows decoupled edit/preview */
   private static readonly events = new EventEmitter()
 
   private readonly cleaners: (() => void)[] = []
 
-  public constructor(props: Props) {
+  public constructor(props: PropsInternal) {
     super(props)
 
     const textValue = this.initialTextValue()
     this.state = {
+      initialActiveKey: props.activeKey,
       isEdit: props.edit === false ? false : props.edit || textValue.length === 0,
       textValue,
       lastAppliedTextValue: textValue
     }
+  }
 
+  public static getDerivedStateFromProps(props: PropsInternal, state: State) {
+    if (props.previousActiveKey !== undefined && props.activeKey === state.initialActiveKey) {
+      Commentary.events.emit(Commentary.editChannel(props), state.textValue)
+    }
+
+    return state
+  }
+
+  public componentDidMount() {
     this.initCouplingEvents()
   }
 
@@ -67,14 +81,16 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
     if (this.props.send) {
       // broadcast clear
-      Commentary.events.emit(this.editChannel, '')
+      Commentary.events.emit(Commentary.editChannel(this.props), '')
     }
   }
 
   public componentDidUpdate() {
     if (this.props.send) {
       // broadcast new textValue
-      Commentary.events.emit(this.editChannel, this.state.textValue)
+      if (this.props.previousActiveKey !== undefined && this.props.activeKey === this.state.initialActiveKey) {
+        Commentary.events.emit(Commentary.editChannel(this.props), this.state.textValue)
+      }
     }
   }
 
@@ -84,12 +100,14 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   /** Broadcast current textValue */
-  private get editChannel() {
-    return `/edit/${this.props.receive || this.props.send}`
+  private static editChannel(props: PropsInternal) {
+    return `/edit/${props.receive || props.send}`
   }
 
   private readonly onGet = (cb: (textValue: string) => void) => cb(this.state.textValue)
-  private readonly onEdit = (textValue: string) => this.setState({ textValue })
+  private readonly onEdit = (textValue: string) => {
+    this.setState({ textValue })
+  }
 
   /** Are we a coupled view, i.e. split edit/preview? */
   private get isCoupled() {
@@ -104,8 +122,8 @@ export default class Commentary extends React.PureComponent<Props, State> {
   private initCouplingEvents() {
     if (this.props.receive) {
       // this is the preview side of the coupling
-      Commentary.events.on(this.editChannel, this.onEdit)
-      this.cleaners.push(() => Commentary.events.off(this.editChannel, this.onEdit))
+      Commentary.events.on(Commentary.editChannel(this.props), this.onEdit)
+      this.cleaners.push(() => Commentary.events.off(Commentary.editChannel(this.props), this.onEdit))
 
       // emit an initial request for the content
       setTimeout(() => Commentary.events.emit(this.getChannel, this.onEdit))
@@ -115,7 +133,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
       this.cleaners.push(() => Commentary.events.off(this.getChannel, this.onGet))
 
       // emit an initial value for the content
-      setTimeout(() => Commentary.events.emit(this.editChannel, this.state.textValue))
+      setTimeout(() => Commentary.events.emit(Commentary.editChannel(this.props), this.state.textValue))
     }
   }
 
@@ -340,6 +358,14 @@ export default class Commentary extends React.PureComponent<Props, State> {
       >
         {this.card()}
       </div>
+    )
+  }
+}
+
+export default class CommentaryExternal extends React.PureComponent<Props> {
+  public render() {
+    return (
+      <CurrentMarkdownTab.Consumer>{config => <Commentary {...this.props} {...config} />}</CurrentMarkdownTab.Consumer>
     )
   }
 }
