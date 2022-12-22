@@ -96,20 +96,13 @@ function setCachedSize(tab: Tab, { rows, cols }: { rows: number; cols: number })
 interface HTerminal extends XTerminal {
   _core: {
     viewport: {
-      _bufferService: {
-        cols: number
-      }
       _charSizeService: {
         width: number
       }
       _renderService: {
         dimensions: {
-          scaledCharWidth: number
-          actualCellWidth: number
-          actualCellHeight: number
-          canvasWidth: number
-          scaledCanvasWidth: number
-          scaledCellWidth: number
+          css: { cell: { width: number; height: number } }
+          device: { cell: { width: number; height: number } }
         }
       }
     }
@@ -245,14 +238,14 @@ class Resizer {
     const hack = _core.viewport
     const dimensions = hack._renderService.dimensions
     const scaledCharWidth = hack._charSizeService.width * window.devicePixelRatio
-    const ratio = scaledCharWidth / dimensions.scaledCharWidth
+    const ratio = scaledCharWidth / dimensions.device.cell.width // was: scaledCharWidth
 
     const { width, height } = this.tab.getSize()
 
-    const cols = Math.floor(width / dimensions.actualCellWidth / ratio)
-    const rows = Math.floor(height / dimensions.actualCellHeight)
+    const cols = Math.floor(width / dimensions.css.cell.width / ratio) // was: actualCellWidth
+    const rows = Math.floor(height / dimensions.css.cell.height) // was: actualCellHeight
 
-    debug('getSize', cols, rows, width, height)
+    debug('getSize', cols, rows, width, height, hack)
 
     const newSize = { rows, cols }
     if (!isNaN(rows) && !isNaN(cols)) {
