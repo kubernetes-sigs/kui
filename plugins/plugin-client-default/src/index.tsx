@@ -38,7 +38,8 @@ const SpaceFiller = React.lazy(
   () => import('@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/SpaceFiller')
 )
 
-import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
+const CurrentContext = React.lazy(() => import('@kui-shell/plugin-kubectl/components/mdist/CurrentContext'))
+const CurrentNamespace = React.lazy(() => import('@kui-shell/plugin-kubectl/components/mdist/CurrentNamespace'))
 
 const Search = React.lazy(() => import('@kui-shell/plugin-electron-components/mdist/components/Search'))
 const CurrentGitBranch = React.lazy(() => import('@kui-shell/plugin-git').then(_ => ({ default: _.CurrentGitBranch })))
