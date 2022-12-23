@@ -47,11 +47,16 @@ export default class Search extends React.Component<Props, State> {
 
   /** stop findInPage, and clear selections in page */
   private async stopFindInPage() {
-    const { getCurrentWebContents } = await import('@electron/remote')
+    const { ipcRenderer } = await import('electron')
     // note: with 'clearSelection', the focus of the input is very
     // odd; it is focused, but typing text does nothing until some
     // global refresh occurs. maybe this is just a bug in electron 6?
-    await getCurrentWebContents().stopFindInPage('activateSelection')
+    ipcRenderer.send(
+      'synchronous-message',
+      JSON.stringify({
+        operation: 'stop-find-in-page'
+      })
+    )
   }
 
   private readonly onKeydown = (evt: KeyboardEvent) => {
@@ -76,7 +81,7 @@ export default class Search extends React.Component<Props, State> {
   }
 
   public componentDidMount() {
-    this.stopFindInPage() // <-- failsafe, in case of bugs; electron seems to persist this
+    // this.stopFindInPage() // <-- failsafe, in case of bugs; electron seems to persist this
     document.body.addEventListener('keydown', this.onKeydown)
   }
 
@@ -113,7 +118,10 @@ export default class Search extends React.Component<Props, State> {
     }
 
     const { getCurrentWebContents } = await import('@electron/remote')
+    // const { ipcRenderer } = await import('electron')
+
     // Registering a callback handler
+    // ipcRenderer.once('found-in-page', async (event: Event, result: FoundInPageResult) => {
     getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
       if (this.state.isActive) {
         // we only need hack if we're doing a find as the user is typing and the options is defined for the converse
@@ -123,7 +131,13 @@ export default class Search extends React.Component<Props, State> {
       }
       this.setState(() => ({ result }))
     })
+
     // this is where we call the electron API to initiate a new find
+    /* ipcRenderer.send('synchronous-message', JSON.stringify({
+      operation: 'find-in-page',
+      value: this._input.value,
+      options
+      })) */
     getCurrentWebContents().findInPage(this._input.value, options)
   }
 
