@@ -25,7 +25,6 @@
     "*.scss"
   ],
   "dependencies": {
-    "@electron/remote": "2.0.9",
     "@patternfly/react-core": "^4.264.0",
     "needle": "^3.2.0"
   },

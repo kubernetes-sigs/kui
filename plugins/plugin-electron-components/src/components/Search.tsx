@@ -117,12 +117,10 @@ export default class Search extends React.Component<Props, State> {
       return
     }
 
-    const { getCurrentWebContents } = await import('@electron/remote')
-    // const { ipcRenderer } = await import('electron')
+    const { ipcRenderer } = await import('electron')
 
     // Registering a callback handler
-    // ipcRenderer.once('found-in-page', async (event: Event, result: FoundInPageResult) => {
-    getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
+    ipcRenderer.once('found-in-page-result', async (event: Event, result: FoundInPageResult) => {
       if (this.state.isActive) {
         // we only need hack if we're doing a find as the user is typing and the options is defined for the converse
         if (!options) {
@@ -133,12 +131,14 @@ export default class Search extends React.Component<Props, State> {
     })
 
     // this is where we call the electron API to initiate a new find
-    /* ipcRenderer.send('synchronous-message', JSON.stringify({
-      operation: 'find-in-page',
-      value: this._input.value,
-      options
-      })) */
-    getCurrentWebContents().findInPage(this._input.value, options)
+    ipcRenderer.send(
+      'synchronous-message',
+      JSON.stringify({
+        operation: 'find-in-page',
+        value: this._input.value,
+        options
+      })
+    )
   }
 
   /** findInPage api seems to result in a loss of focus */
