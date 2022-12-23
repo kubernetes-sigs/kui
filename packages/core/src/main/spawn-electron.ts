@@ -470,7 +470,7 @@ export async function createWindow(
           }
           // end of screenshot logic
 
-          const onSynchronousMessage = (event: IpcMainEvent, arg: string) => {
+          const onSynchronousMessage = async (event: IpcMainEvent, arg: string) => {
             const message = JSON.parse(arg)
             switch (message.operation) {
               case 'quit':
@@ -505,6 +505,17 @@ export async function createWindow(
                 break
               case 'unmaximize-window':
                 mainWindow.unmaximize()
+                break
+              case 'find-in-page':
+                event.sender.on('found-in-page', (ev, result) => {
+                  if (result.finalUpdate) event.sender.stopFindInPage('activateSelection')
+                  event.sender.send('found-in-page-result', result)
+                })
+                event.sender.findInPage(message.value, message.options)
+                break
+
+              case 'stop-find-in-page':
+                event.sender.stopFindInPage('activateSelection')
                 break
             }
             event.returnValue = 'ok'

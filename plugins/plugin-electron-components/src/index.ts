@@ -15,5 +15,5 @@
  */
 
 export { default as Search } from './components/Search'
-export { default as Screenshot } from './components/Screenshot'
+// export { default as Screenshot } from './components/Screenshot'
 export { default as UpdateChecker } from './components/UpdateChecker'
