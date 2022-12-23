@@ -65,8 +65,8 @@ let nWindows = 0
 /** cleaners to be invoked when the last window is closed */
 let cleaners: (() => void)[] = []
 
-/** Sigh, we still have a few lingering uses of electron/remote */
-const electronRemoteIsNeeded = true
+/** Sigh. Spectron uses @electron/remote */
+const electronRemoteIsNeeded = !!process.env.RUNNING_SHELL_TEST
 
 /** @electron/remote fails if you try to initialize it more than once */
 let electronRemoteNeedsInit = electronRemoteIsNeeded
@@ -508,7 +508,7 @@ export async function createWindow(
                 break
               case 'find-in-page':
                 event.sender.on('found-in-page', (ev, result) => {
-                  if (result.finalUpdate) event.sender.stopFindInPage('activateSelection')
+                  // if (result.finalUpdate) event.sender.stopFindInPage('activateSelection')
                   event.sender.send('found-in-page-result', result)
                 })
                 event.sender.findInPage(message.value, message.options)
