@@ -65,8 +65,11 @@ let nWindows = 0
 /** cleaners to be invoked when the last window is closed */
 let cleaners: (() => void)[] = []
 
+/** Sigh, we still have a few lingering uses of electron/remote */
+const electronRemoteIsNeeded = true
+
 /** @electron/remote fails if you try to initialize it more than once */
-let electronRemoteNeedsInit = true
+let electronRemoteNeedsInit = electronRemoteIsNeeded
 
 interface EventEmitter {
   on(event: string, listener: Function): void // eslint-disable-line @typescript-eslint/ban-types
@@ -276,7 +279,9 @@ export async function createWindow(
           subwindow?: ISubwindowPrefs
         }
         const mainWindow = new BrowserWindow(opts) as KuiBrowserWindow
-        require('@electron/remote/main').enable(mainWindow.webContents)
+        if (electronRemoteIsNeeded) {
+          require('@electron/remote/main').enable(mainWindow.webContents)
+        }
         nWindows++
         debug('createWindow::new BrowserWindow success')
 
@@ -373,23 +378,26 @@ export async function createWindow(
           commandContext = commandContext.replace(/^--/, '')
         }
 
-        if (noHeadless === true && Array.isArray(executeThisArgvPlease)) {
-          debug('setting argv', executeThisArgvPlease)
-          mainWindow.executeThisArgvPlease = executeThisArgvPlease
-        }
         debug('subwindowPrefs', subwindowPrefs)
-        if (subwindowPrefs && Object.keys(subwindowPrefs).length > 0) {
-          mainWindow.subwindow = subwindowPrefs
-        }
 
         // and load the index.html of the app.
+        const searchFields = [
+          commandContext ? `command-context=${encodeURIComponent(commandContext)}` : '',
+          noHeadless === true && Array.isArray(executeThisArgvPlease)
+            ? `executeThisArgvPlease=${encodeURIComponent(JSON.stringify(executeThisArgvPlease))}`
+            : '',
+          subwindowPrefs && Object.keys(subwindowPrefs).length > 0
+            ? `subwindow=${encodeURIComponent(JSON.stringify(subwindowPrefs))}`
+            : ''
+        ].filter(Boolean)
+
         const url =
           typeof executeThisArgvPlease === 'string'
             ? executeThisArgvPlease
             : require('url').format({
                 pathname: join(root, 'build', 'index.html'),
                 protocol: 'file:',
-                search: commandContext ? `?${commandContext}` : '',
+                search: searchFields.length === 0 ? '' : `?${searchFields.join('&')}`,
                 slashes: true
               })
         debug('mainWindow::loadURL', url)

@@ -33,9 +33,7 @@ export default (commandTree: Registrar) => {
   if (!Capabilities.inBrowser()) {
     // register a window close command handler
     commandTree.listen('/window/close', () => {
-      const { getCurrentWindow } = require('@electron/remote')
-      const w = getCurrentWindow()
-      w.close()
+      window.close()
       return true
     })
   }

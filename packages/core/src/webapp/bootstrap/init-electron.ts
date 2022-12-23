@@ -15,23 +15,19 @@
  */
 
 import Client from './client'
-import { BrowserWindow } from 'electron'
 
-interface KuiWindow extends BrowserWindow {
-  subwindow?: {
-    cwd?: string
-    env?: Record<any, any>
-    fullscreen?: boolean
-    viewName?: string
-    title?: string
-    initialTabTitle?: string
-    quietExecCommand?: boolean
-    partialExec?: string
-    noEcho?: boolean
-    theme?: string
-  }
-  executeThisArgvPlease?: string[]
-}
+/* type SubWindowPrefs = {
+  cwd?: string
+  env?: Record<any, any>
+  fullscreen?: boolean
+  viewName?: string
+  title?: string
+  initialTabTitle?: string
+  quietExecCommand?: boolean
+  partialExec?: string
+  noEcho?: boolean
+  theme?: string
+} */
 
 export async function preinit() {
   // ugh, on macos, dock- and finder-launched apps have a cwd of /
@@ -57,9 +53,10 @@ export async function preinit() {
   }
 
   try {
-    const remote = await import('@electron/remote')
-    const window = remote && (remote.getCurrentWindow() as KuiWindow)
-    const subwindow = window.subwindow
+    const { extractSearchKey } = await import('../util/search')
+
+    const prefsEnc = extractSearchKey('subwindow')
+    const subwindow = prefsEnc ? JSON.parse(prefsEnc) : undefined
 
     // so that electron's "second window" protocol can pass through
     // the environment variables from second+ windows
@@ -98,10 +95,14 @@ export async function preinit() {
 
 /** invoke the Client to render its body */
 export async function render(client: Client, root: Element) {
-  const remote = await import('@electron/remote')
-  const electronWindow = remote.getCurrentWindow() as KuiWindow
-  const prefs = electronWindow.subwindow
-  const argv = electronWindow['executeThisArgvPlease']
+  const { extractSearchKey } = await import('../util/search')
+
+  const prefsEnc = extractSearchKey('subwindow')
+  const prefs = prefsEnc ? JSON.parse(prefsEnc) : undefined
+
+  const argvEnc = extractSearchKey('executeThisArgvPlease')
+  const argv = argvEnc ? JSON.parse(argvEnc) : undefined
+
   const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
   const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
 
