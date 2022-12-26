@@ -16,11 +16,11 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import TurndownService from 'turndown'
+import { Parser, Choices } from 'madwizard'
 import { TextContent } from '@patternfly/react-core/dist/esm/components/Text/TextContent'
 
-import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
-import { Capabilities, Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'
+import type { Tab as KuiTab } from '@kui-shell/core'
+import { inElectron } from '@kui-shell/core/mdist/api/Capabilities'
 
 import ReactMarkdown, { Options } from 'react-markdown'
 
@@ -40,15 +40,8 @@ import remarkDirective from 'remark-directive'
 import emojis from 'remark-emoji'
 import frontmatter from 'remark-frontmatter'
 
-import { filepathForResponses } from '../../../controller/fetch'
-
 import components from './components'
-
-import { Parser, Choices } from 'madwizard'
-
 import { CodeBlockResponse } from './components/code'
-import prefetchTableRows from './components/code/prefetch'
-import encodePriorResponses from './components/code/encoding'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
@@ -59,7 +52,7 @@ import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
 
 const rehypePlugins = (uuid: string, choices: Choices.ChoiceState, filepath: string): Options['rehypePlugins'] => [
   Parser.rehypeWizard,
-  [Parser.rehypeTabbed, uuid, choices, { optimize: { aprioris: Capabilities.inElectron() } }],
+  [Parser.rehypeTabbed, uuid, choices, { optimize: { aprioris: inElectron() } }],
   Parser.rehypeTip,
   [Parser.rehypeCodeIndexer, uuid, filepath, {}, undefined, true],
   icons,
@@ -127,9 +120,6 @@ type State = {
   hasError: boolean
 
   source: Props['source']
-
-  /** Has the user clicked to execute a code block? */
-  codeBlockResponses: CodeBlockResponse[]
 }
 
 export default class Markdown extends React.PureComponent<Props, State> {
@@ -142,10 +132,8 @@ export default class Markdown extends React.PureComponent<Props, State> {
     super(props)
     this.state = {
       source: '',
-      hasError: false,
-      codeBlockResponses: []
+      hasError: false
     }
-    setTimeout(() => this.prepareSource())
   }
 
   /** We are going away. Invoke cleaners */
@@ -157,7 +145,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
   /** We are coming to life */
   public componentDidMount() {
     this.mounted = true
-    this.initSnapshotEvents()
+    this.prepareSource()
   }
 
   /** New props, so re-fetch inlined source if needed */
@@ -198,12 +186,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * fetch), we need to prepare the source from props into state. Yay
    * react.
    */
-  private prepareSource() {
+  private async prepareSource() {
     if (!this.mounted) {
       return
     }
 
-    const sourcePriorToInlining = Markdown.source(this.props).trim()
+    const sourcePriorToInlining = (await this.source(this.props)).trim()
 
     if (this.props.tab && this.props.tab.REPL) {
       setTimeout(async () => {
@@ -216,61 +204,16 @@ export default class Markdown extends React.PureComponent<Props, State> {
             madwizardOptions: {},
             snippetBasePath: this.snippetBasePath
           })(sourcePriorToInlining, this.props.filepath)
-          this.setState({ source: Markdown.hackSource(source), codeBlockResponses: [] })
+          this.setState({ source: Markdown.hackSource(source) })
         }
       })
     } else {
-      this.setState({ source: Markdown.hackSource(sourcePriorToInlining), codeBlockResponses: [] })
+      this.setState({ source: Markdown.hackSource(sourcePriorToInlining) })
     }
-  }
-
-  /** Handle requests to save codeBlockResponses to disk */
-  private initSnapshotEvents() {
-    const { filepath, execUUID } = this.props
-
-    if (filepath && execUUID) {
-      const onSnapshot = async () => {
-        const codeBlockResponses = this.codeBlockResponses()
-        if (codeBlockResponses.find(_ => _)) {
-          const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${encodeComponent(filepath)}`)).content
-
-          if (Array.isArray(stats) && stats.length === 1 && stats[0].dirent.mount.isLocal) {
-            try {
-              const fp = encodeComponent(filepathForResponses(filepath))
-              await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, {
-                data: encodePriorResponses(await prefetchTableRows(codeBlockResponses, this.repl))
-              })
-            } catch (err) {
-              console.error('Error saving code block responses', err)
-            }
-          } else {
-            console.error('Unable to save code block responses, since original filepath not writeable')
-          }
-        }
-      }
-      Events.eventChannelUnsafe.on(`/kui/snapshot/request/${execUUID}`, onSnapshot)
-      this.cleaners.push(() => Events.eventChannelUnsafe.off(`/kui/snapshot/request/${execUUID}`, onSnapshot))
-    }
-  }
-
-  /**
-   * @return the combined state and props of codeBlockResponses,
-   * favoring any overrides in state, because those result from
-   * executions in this session, whereas props come from pre-recorded output
-   *
-   */
-  private codeBlockResponses() {
-    const fromProps = this.props.codeBlockResponses || []
-    const fromState = this.state.codeBlockResponses || []
-
-    return Array(Math.max(fromProps.length, fromState.length))
-      .fill(undefined)
-      .map((_, idx) => fromState[idx] || fromProps[idx])
   }
 
   private codeBlockResponseWithReplayedBit(codeBlockIdx: number) {
     const fromProps = this.props.codeBlockResponses ? this.props.codeBlockResponses[codeBlockIdx] : undefined
-    const fromState = this.state.codeBlockResponses[codeBlockIdx]
 
     // replayed if we have a response in props, because the commentary
     // controller has fetched this from a json from that stores
@@ -279,7 +222,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
     // the current response to be displayed favors state, as these
     // come from re-executions in this session
-    const response = fromState || fromProps || undefined
+    const response = fromProps || undefined
 
     return Object.assign({ replayed }, response)
   }
@@ -294,7 +237,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
     repl: this.repl,
     uuid: this.uuid,
     choices: this.choices,
-    spliceInCodeExecution: this.spliceInCodeExecution.bind(this),
     codeBlockResponses: this.codeBlockResponseWithReplayedBit.bind(this)
   })
 
@@ -304,9 +246,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
   }
 
   /** @return markdown source, as string in application/markdown format */
-  private static source(props: Props) {
+  private async source(props: Props) {
     if (props.contentType === 'text/html') {
-      const { gfm } = require('turndown-plugin-gfm')
+      const [{ default: TurndownService }, { gfm }] = await Promise.all([
+        import('turndown'),
+        import('turndown-plugin-gfm')
+      ])
       const td = new TurndownService()
       td.use(gfm)
       return td.turndown(props.source)
@@ -326,31 +271,17 @@ export default class Markdown extends React.PureComponent<Props, State> {
       .replace(/{draggable=(false|true)}/g, '')
   }
 
-  /** We got a code block response from execution in this session */
-  private spliceInCodeExecution(
-    status: CodeBlockResponse['status'],
-    response: CodeBlockResponse['response'],
-    codeIdx: number
-  ) {
-    if (!this.mounted) {
-      return
-    }
-
-    this.setState(curState => {
-      const codeBlockResponses = curState.codeBlockResponses.slice()
-      codeBlockResponses[codeIdx] = {
-        status,
-        response
-      }
-
-      return {
-        codeBlockResponses
-      }
-    })
-  }
-
   private readonly _remarkPlugins = remarkPlugins(this.props.tab)
   private readonly _rehypePlugins = rehypePlugins(this.uuid, this.choices, this.props.filepath)
+
+  private get className() {
+    return (
+      this.props.className ||
+      'padding-content marked-content page-content ' +
+        (this.props.extraClassName || '') +
+        (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
+    )
+  }
 
   public render() {
     if (this.props.onRender) {
@@ -370,16 +301,11 @@ export default class Markdown extends React.PureComponent<Props, State> {
       <React.Suspense fallback={<div />}>
         <TextContent>
           <ReactMarkdown
+            className={this.className}
+            components={this._components()}
             remarkPlugins={this._remarkPlugins}
             rehypePlugins={this._rehypePlugins}
-            components={this._components()}
             data-is-nested={this.props.nested || undefined}
-            className={
-              this.props.className ||
-              'padding-content marked-content page-content ' +
-                (this.props.extraClassName || '') +
-                (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
-            }
           >
             {source}
           </ReactMarkdown>

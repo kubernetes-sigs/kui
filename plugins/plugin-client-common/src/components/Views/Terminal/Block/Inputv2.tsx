@@ -60,9 +60,9 @@ const strings = i18n('plugin-client-common')
  * Thin wrapper over the Badge component that places the badge in the
  * top left of the surrounding CodeBlock component.
  */
-function Badge(props: React.PropsWithChildren<{}>) {
+function Badge(props: React.PropsWithChildren<{ position: 'top-left' | 'top-right' }>) {
   return (
-    <span className="kui--code-block-actions" data-align="top-left">
+    <span className="kui--code-block-actions" data-align={props.position}>
       <BadgeUI>{props.children}</BadgeUI>
     </span>
   )
@@ -296,7 +296,7 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   /** UI to denote duration of the current Run */
   private timer() {
     return (
-      <Badge>
+      <Badge position="top-right">
         <Timer startTime={this.state.startTime} endTime={this.state.endTime} status={this.state.execution} />
       </Badge>
     )
@@ -315,13 +315,8 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
         </div>
       )
     } else if (this.props.optional) {
-      return <Badge>{strings('Optional')}</Badge>
+      return <Badge position="top-left">{strings('Optional')}</Badge>
     }
-  }
-
-  /** Display e.g. execution timer or optional badge */
-  private badges() {
-    return this.isExecutionInProgress ? this.timer() : this.status()
   }
 
   private actions(showAsExecutable: boolean, butUseSampleOutputOnRun: boolean) {
@@ -354,7 +349,6 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
   private input(showAsExecutable: boolean, butUseSampleOutputOnRun: boolean) {
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
-        {this.badges()}
         <div className="flex-fill">
           <CodeSnippet
             wordWrap="on"
@@ -365,6 +359,8 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
             tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
           />
         </div>
+        {this.timer()}
+        {this.status()}
         {this.actions(showAsExecutable, butUseSampleOutputOnRun)}
       </div>
     )

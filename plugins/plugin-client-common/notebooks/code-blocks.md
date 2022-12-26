@@ -7,7 +7,7 @@ Inside a code blocks, you may define metadata, such as an identifier
 when linking code blocks into [Progress Step
 Lists](#progress-step-lists).
 
-```bashy
+```bash
 echo hello
 ```
 
