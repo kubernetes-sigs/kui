@@ -91,6 +91,10 @@ export default class Sidebar extends React.PureComponent<Props, State> {
     pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`, undefined, quiet)
 
     this.setState({ currentGuidebook: _.notebook })
+
+    // toggle the sidebar closed, after the user has clicked to open a
+    // guidebook; we add a bit of delay, just cause it looks better
+    this.props.toggleOpen()
   }
 
   /** Render the menu structure of the sidebar */
