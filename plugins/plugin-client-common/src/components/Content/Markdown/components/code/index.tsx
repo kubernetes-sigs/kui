@@ -20,7 +20,7 @@ import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
 
 import bodyAndLanguage from './filter'
 
-import { Props } from '../../../Markdown'
+import { Props as MarkdownProps } from '../../../Markdown'
 import { tryFrontmatter } from '../../frontmatter'
 import { CodeBlockResponseFn } from '../../components'
 
@@ -32,13 +32,25 @@ const SimpleEditor = React.lazy(() => import('../../../Editor/SimpleEditor'))
 type CodeBlockResponse = Required<CommentaryResponse['props']>['codeBlockResponses'][number]
 export { CodeBlockResponse }
 
-export default function codeWrapper(
-  mdprops: Props,
-  uuid: string,
-  codeBlockResponses: CodeBlockResponseFn,
-  spliceInCodeExecution: (status: 'done' | 'error', response: KResponse, codeIdx: number) => void
-) {
-  return function code(props: CodeProps & { codeIdx: string }) {
+type Props = CodeProps & { codeIdx: string } & {
+  mdprops: MarkdownProps
+  uuid: string
+  codeBlockResponses: CodeBlockResponseFn
+}
+
+type State = {
+  response: CodeBlockResponse & { replayed: boolean }
+}
+
+class Code extends React.PureComponent<Props, State> {
+  private readonly _onResponse = (status: 'done' | 'error', response: KResponse) => {
+    this.setState({ response: { status, response, replayed: false } })
+  }
+
+  public render() {
+    const { props } = this
+    const { mdprops, uuid, codeBlockResponses } = props
+
     if (props.inline) {
       return <code className={props.className}>{props.children}</code>
     }
@@ -60,7 +72,7 @@ export default function codeWrapper(
       // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
       const myCodeIdx = parseInt(props.codeIdx)
 
-      const _response = codeBlockResponses(myCodeIdx)
+      const _response = this.state?.response || codeBlockResponses(myCodeIdx)
       const status = _response ? _response.status : undefined
       const response = _response ? _response.response : undefined
 
@@ -79,30 +91,28 @@ export default function codeWrapper(
       const blockId = attributes.id || `${uuid}-${myCodeIdx}`
 
       return (
-        <React.Fragment>
-          <CodeBlock
-            readonly={false}
-            id={`kui-link-${blockId}`}
-            className="kui--code-block-in-markdown"
-            tab={mdprops.tab}
-            value={body}
-            watch={attributes.watch}
-            language={language}
-            blockId={blockId}
-            cleanup={attributes.cleanup}
-            validate={attributes.validate}
-            optional={attributes.optional}
-            response={response}
-            status={statusConsideringReplay}
-            rawStatus={status}
-            arg1={myCodeIdx}
-            onResponse={spliceInCodeExecution}
-            outputOnly={outputOnly}
-            executeImmediately={mdprops.executeImmediately || attributes.execute === 'now'}
-            data-code-index={myCodeIdx}
-            data-is-maximized={attributes.maximize}
-          />
-        </React.Fragment>
+        <CodeBlock
+          readonly={false}
+          id={`kui-link-${blockId}`}
+          className="kui--code-block-in-markdown"
+          tab={mdprops.tab}
+          value={body}
+          watch={attributes.watch}
+          language={language}
+          blockId={blockId}
+          cleanup={attributes.cleanup}
+          validate={attributes.validate}
+          optional={attributes.optional}
+          response={response}
+          status={statusConsideringReplay}
+          rawStatus={status}
+          arg1={myCodeIdx}
+          onResponse={this._onResponse}
+          outputOnly={outputOnly}
+          executeImmediately={mdprops.executeImmediately || attributes.execute === 'now'}
+          data-code-index={myCodeIdx}
+          data-is-maximized={attributes.maximize}
+        />
       )
     } else {
       const { bodyForView, languageForView } = bodyAndLanguage(body, language, attributes)
@@ -129,5 +139,11 @@ export default function codeWrapper(
         </div>
       )
     }
+  }
+}
+
+export default function codeWrapper(mdprops: MarkdownProps, uuid: string, codeBlockResponses: CodeBlockResponseFn) {
+  return function code(props: Props) {
+    return <Code {...props} mdprops={mdprops} uuid={uuid} codeBlockResponses={codeBlockResponses} />
   }
 }

@@ -41,20 +41,15 @@ type Args = {
   uuid: string
   choices: Choices.ChoiceState
   codeBlockResponses: CodeBlockResponseFn
-  spliceInCodeExecution: (
-    status: CodeBlockResponse['status'],
-    response: CodeBlockResponse['response'],
-    codeIdx: number
-  ) => void
 }
 
 function typedComponents(args: Args): Components {
-  const { mdprops, repl, uuid, codeBlockResponses, spliceInCodeExecution } = args
+  const { mdprops, repl, uuid, codeBlockResponses } = args
 
   const a = _a(mdprops, uuid, repl)
   const div = _div(mdprops, uuid, args.choices)
   const img = _img(mdprops)
-  const code = _code(mdprops, uuid, codeBlockResponses, spliceInCodeExecution)
+  const code = _code(mdprops, uuid, codeBlockResponses)
   const heading = _heading(uuid)
 
   return {
