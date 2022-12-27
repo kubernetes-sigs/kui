@@ -85,10 +85,15 @@ class Commentary extends React.PureComponent<PropsInternal, State> {
     }
   }
 
-  public componentDidUpdate() {
+  public componentDidUpdate(_, prevState: State) {
     if (this.props.send) {
-      // broadcast new textValue
-      if (this.props.previousActiveKey !== undefined && this.props.activeKey === this.state.initialActiveKey) {
+      // broadcast new textValue if either:
+      // a. different textValue
+      // b. there has been a tab switch above us (i.e. in a contanining component)
+      if (
+        prevState.textValue !== this.state.textValue ||
+        (this.props.previousActiveKey !== undefined && this.props.activeKey === this.state.initialActiveKey)
+      ) {
         Commentary.events.emit(Commentary.editChannel(this.props), this.state.textValue)
       }
     }
