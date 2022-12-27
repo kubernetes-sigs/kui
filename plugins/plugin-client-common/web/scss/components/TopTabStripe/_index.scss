@@ -32,23 +32,10 @@ $tab-label-font-size: 0.875rem;
 
   @include HeaderNameContainer {
     align-items: stretch;
-    margin-right: 1em;
     position: relative;
 
     /** Override some media queries */
     padding-right: var(--pf-c-page__header-brand--xl--PaddingRight);
-
-    /* vertical separator */
-    &:after {
-      box-shadow: 1px 0 0px 0 var(--color-table-border3);
-      content: '';
-      height: 60%;
-      width: 1px;
-      right: 1px;
-      top: 50%;
-      transform: translateY(-50%);
-      position: absolute;
-    }
   }
   @include HeaderName {
     color: var(--color-text-01);
