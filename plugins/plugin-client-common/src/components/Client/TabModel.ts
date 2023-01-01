@@ -16,9 +16,12 @@
 
 import { Events, TabState } from '@kui-shell/core'
 
-/** cheapo uuid; we only need single-threaded uniqueness */
-let _uuidCounter = 1
-export function uuid() {
+/** cheapo uuid; we only need single-threaded uniqueness. Start from 2 so that we ensure the first tab always gets uuid 1. */
+export function uuidForFirstTab() {
+  return 1
+}
+let _uuidCounter = uuidForFirstTab() + 1
+function uuid() {
   return (_uuidCounter++).toString()
 }
 

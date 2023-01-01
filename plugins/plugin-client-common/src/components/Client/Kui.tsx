@@ -119,42 +119,7 @@ export class Kui extends React.PureComponent<Props, State> {
 
     this.mountGuidebooks()
 
-    // refresh the UI after user changes settings overrides
-    onUserSettingsChange(evt => {
-      this.setState(curState => {
-        // a bit of care is needed to handle removing keys
-        if (evt !== 'set') {
-          for (const key in curState.userOverrides) {
-            delete curState[key]
-          }
-        }
-
-        const newUserOverrides = loadUserSettings()
-        return Object.assign(newUserOverrides, { userOverrides: newUserOverrides })
-      })
-    })
-
-    Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
-    setTimeout(async () => {
-      const { theme } = await Themes.findThemeByName(
-        (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
-      )
-      this.setState(curState => {
-        const stateWithThemeProps = Object.assign({}, theme, curState)
-        debug('state with theme props', theme, curState)
-        return stateWithThemeProps
-      })
-    })
-
-    if (!props.noBootstrap) {
-      import('@kui-shell/core')
-        .then(_ => _.bootIntoSandbox())
-        .then(() => {
-          this.setState({ isBootstrapped: true })
-        })
-    }
-
-    let commandLine = this.props.commandLine
+    let { commandLine } = this.props
 
     // If props did not specify a commandLine, perhaps the client
     // wishes us to auto-play a guidebook?
@@ -201,6 +166,43 @@ export class Kui extends React.PureComponent<Props, State> {
         quietExecCommand
       }
     }
+  }
+
+  public async componentDidMount() {
+    const themeP = await Themes.findThemeByName(
+      (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
+    )
+
+    if (!this.props.noBootstrap) {
+      await import('@kui-shell/core')
+        .then(_ => _.bootIntoSandbox())
+        .then(() => {
+          this.setState({ isBootstrapped: true })
+        })
+    }
+
+    // refresh the UI after user changes settings overrides
+    onUserSettingsChange(evt => {
+      this.setState(curState => {
+        // a bit of care is needed to handle removing keys
+        if (evt !== 'set') {
+          for (const key in curState.userOverrides) {
+            delete curState[key]
+          }
+        }
+
+        const newUserOverrides = loadUserSettings()
+        return Object.assign(newUserOverrides, { userOverrides: newUserOverrides })
+      })
+    })
+
+    const { theme } = await themeP
+    Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
+    this.setState(curState => {
+      const stateWithThemeProps = Object.assign({}, theme, curState)
+      debug('state with theme props', theme, curState)
+      return stateWithThemeProps
+    })
   }
 
   private defaultFeatureFlag() {

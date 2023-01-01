@@ -39,9 +39,7 @@ function renderMain(
 ) {
   // re: noBootstrap; since we do the bootstrapping here, we don't
   // need the Client to do anything more
-  const root = createRoot(container)
-
-  root.render(
+  createRoot(container!).render(
     <Client
       noBootstrap
       isPopup={isPopup}
