@@ -255,7 +255,15 @@ export const formatTable = async <O extends KubeOptions>(
     if (drilldownVerb === 'get') {
       const kind =
         kindColumnIdx >= 0 ? row[kindColumnIdx].value : nameSplit.length > 1 ? nameSplit[0] : entityTypeFromCommandLine
-      return kind ? ' ' + kind : ''
+
+      // re: slashIdx, see https://github.com/kubernetes-sigs/kui/issues/9068
+      // e.g. `kubectl get pod/nginx` then user clicks to drill down on the row
+      const slashIdx = kind ? kind.indexOf('/') : -1
+      if (slashIdx >= 0) {
+        return ' ' + kind.slice(0, slashIdx)
+      } else {
+        return kind ? ' ' + kind : ''
+      }
       /* } else if (drilldownVerb === 'config') {
         return ' use-context'; */
     } else if (drilldownVerb === 'krew') {

@@ -275,6 +275,15 @@ commands.forEach(command => {
       }
     })
 
+    // see https://github.com/kubernetes-sigs/kui/issues/9068
+    it(`should list pods via '${command} get pod/nginx' then click`, async () => {
+      try {
+        await openSidecarByList(this, `${command} get pod/nginx ${inNamespace}`, 'nginx')
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+
     // it(`should click on containers sidecar tab and show containers table`, testContainersTab)
 
     // it('should drill down to log when container is clicked', testLogsTabs)
