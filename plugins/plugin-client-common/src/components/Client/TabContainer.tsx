@@ -19,7 +19,7 @@ import { Page } from '@patternfly/react-core/dist/esm/components/Page'
 import { Events, Tab, isReadOnlyClient, pexecInCurrentTab } from '@kui-shell/core'
 
 import Sidebar from './Sidebar'
-import TabModel, { TopTabButton } from './TabModel'
+import TabModel, { TopTabButton, uuidForFirstTab } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 
@@ -71,7 +71,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
     this.state = {
       isSidebarOpen: this.props.guidebooksExpanded || false,
-      tabs: [this.newTabModel()],
+      tabs: [this.newTabModel(undefined, undefined, uuidForFirstTab().toString())],
       activeIdx: 0
     }
   }
@@ -186,12 +186,12 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel(spec: Events.NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false) {
+  private newTabModel(spec: Events.NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false, uuid?: string) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
     // !this.props.title), then use that
     const model = new TabModel(
-      undefined,
+      uuid,
       spec.statusStripeDecoration,
       doNotChangeActiveTab,
       spec.title || this.props.title,

@@ -71,73 +71,77 @@ function isExecuting(props: KuiProps, ...cmds: string[]) {
  *   - <ProxyOfflineIndicator />
  *
  */
-export default function renderMain(props: KuiProps) {
-  const title = 'Welcome to Kui'
+export default class Client extends React.PureComponent<KuiProps> {
+  public render() {
+    const { props } = this
 
-  // Important: don't use popup for commands that need tabs,
-  // e.g. replaying notebooks, since `replay` currently needs tabs,
-  // and the Popup client doesn't offer that feature
-  const avoidPopupCommands = ['browse']
-  const doNotUsePopupClientVariant = isExecuting(props, ...avoidPopupCommands)
-  const isPopup = !(!props.isPopup || doNotUsePopupClientVariant)
+    const title = 'Welcome to Kui'
 
-  const quietExecCommand =
-    props.quietExecCommand !== undefined
-      ? props.quietExecCommand
-      : props.isPopup && doNotUsePopupClientVariant
-      ? false
-      : undefined
+    // Important: don't use popup for commands that need tabs,
+    // e.g. replaying notebooks, since `replay` currently needs tabs,
+    // and the Popup client doesn't offer that feature
+    const avoidPopupCommands = ['browse']
+    const doNotUsePopupClientVariant = isExecuting(props, ...avoidPopupCommands)
+    const isPopup = !(!props.isPopup || doNotUsePopupClientVariant)
 
-  return (
-    <Kui
-      noHelp
-      noSettings
-      version={version}
-      productName={productName}
-      lightweightTables
-      {...props}
-      isPopup={isPopup}
-      quietExecCommand={quietExecCommand}
-      toplevel={!inBrowser() && <Search />}
-      guidebooks={guidebooks.submenu}
-      commandLine={
-        props.commandLine ||
-        (!isPopup && [
-          'tab',
-          'new',
-          '--cmdline',
-          'commentary --readonly -f /kui/welcome.md',
-          '--bg',
-          '--title',
-          title,
-          '--status-stripe-type',
-          'blue',
-          '--status-stripe-message',
-          title,
-          '--if',
-          `kuiconfig not set ${welcomeBit}`,
-          '--onClose',
-          `kuiconfig set ${welcomeBit}`
-        ])
-      }
-    >
-      <ContextWidgets>
-        {!isPopup && <CurrentWorkingDirectory className="kui--hide-in-guidebook" />}
-        <CurrentGitBranch className="kui--hide-in-narrower-windows kui--hide-in-guidebook" />
-        <CurrentContext />
-        <CurrentNamespace />
-      </ContextWidgets>
+    const quietExecCommand =
+      props.quietExecCommand !== undefined
+        ? props.quietExecCommand
+        : props.isPopup && doNotUsePopupClientVariant
+        ? false
+        : undefined
 
-      {!isPopup && <SpaceFiller />}
+    return (
+      <Kui
+        noHelp
+        noSettings
+        version={version}
+        productName={productName}
+        lightweightTables
+        {...props}
+        isPopup={isPopup}
+        quietExecCommand={quietExecCommand}
+        toplevel={!inBrowser() && <Search />}
+        guidebooks={guidebooks.submenu}
+        commandLine={
+          props.commandLine ||
+          (!isPopup && [
+            'tab',
+            'new',
+            '--cmdline',
+            'commentary --readonly -f /kui/welcome.md',
+            '--bg',
+            '--title',
+            title,
+            '--status-stripe-type',
+            'blue',
+            '--status-stripe-message',
+            title,
+            '--if',
+            `kuiconfig not set ${welcomeBit}`,
+            '--onClose',
+            `kuiconfig set ${welcomeBit}`
+          ])
+        }
+      >
+        <ContextWidgets>
+          {!isPopup && <CurrentWorkingDirectory className="kui--hide-in-guidebook" />}
+          <CurrentGitBranch className="kui--hide-in-narrower-windows kui--hide-in-guidebook" />
+          <CurrentContext />
+          <CurrentNamespace />
+        </ContextWidgets>
 
-      <MeterWidgets className="kui--hide-in-narrower-windows">
-        {/* <ClusterUtilization /> */}
-        {/* !isPopup && <OpenWhiskGridWidget /> */}
-        {inBrowser() && <ProxyOfflineIndicator />}
-        {!isPopup && !inBrowser() && <UpdateChecker />}
-        <Settings />
-        <GitHubIcon />
-      </MeterWidgets>
-    </Kui>
-  )
+        {!isPopup && <SpaceFiller />}
+
+        <MeterWidgets className="kui--hide-in-narrower-windows">
+          {/* <ClusterUtilization /> */}
+          {/* !isPopup && <OpenWhiskGridWidget /> */}
+          {inBrowser() && <ProxyOfflineIndicator />}
+          {!isPopup && !inBrowser() && <UpdateChecker />}
+          <Settings />
+          <GitHubIcon />
+        </MeterWidgets>
+      </Kui>
+    )
+  }
 }
