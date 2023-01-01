@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { ModeRegistration, i18n } from '@kui-shell/core'
+import { Arguments, ModeRegistration, i18n } from '@kui-shell/core'
 import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
 
 import { KubeResource, isCrudableKubeResource } from '../../model/resource'
@@ -52,13 +52,14 @@ const yamlMode: ModeRegistration<KubeResource> = {
     inPlace: true,
 
     kind: 'drilldown' as const,
-    command: async (_, resource: KubeResource, args: { argvNoOptions: string[] }) => {
-      const [{ fqnOf }, { getCommandFromArgs }] = await Promise.all([
+    command: async (_, resource: KubeResource, args: Pick<Arguments, 'argvNoOptions' | 'parsedOptions'>) => {
+      const [{ fqnOf }, { withKubeconfigFrom }, { getCommandFromArgs }] = await Promise.all([
         import('../../../controller/kubectl/fqn'),
+        import('../../../controller/kubectl/options'),
         import('../../util/util')
       ])
 
-      return `${getCommandFromArgs(args)} edit ${fqnOf(resource)}`
+      return withKubeconfigFrom(args, `${getCommandFromArgs(args)} edit ${fqnOf(resource)}`)
     }
   }
 }
