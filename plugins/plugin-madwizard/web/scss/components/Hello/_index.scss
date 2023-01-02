@@ -1,0 +1,167 @@
+/*
+ * Copyright 2022 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '@kui-shell/plugin-client-common/web/scss/components/Hint/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/TopLevelTab/mixins';
+@import 'Grid';
+
+@include TopLevelTab {
+  &.codeflare--welcome-guidebook {
+    @include Split(2) {
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr 2fr;
+      grid-template-areas: 'T1 T2';
+    }
+
+    @include Split(3) {
+      grid-template-rows: 1fr 3.75fr;
+      grid-template-columns: 1fr 2fr;
+      grid-template-areas: 'T1 T2' 'T1 T3';
+    }
+  }
+}
+
+$gap: 3px;
+$cell: 1.5em;
+
+@mixin MicroGrid {
+  .pf-l-grid.codeflare--grid {
+    @content;
+  }
+}
+
+@mixin Grid {
+  .codeflare--plain-grid {
+    @content;
+  }
+}
+
+@mixin Tile {
+  .codeflare--tile {
+    @content;
+  }
+}
+
+@mixin Mini {
+  .codeflare--mini {
+    @content;
+  }
+}
+
+@include Grid {
+  font-family: var(--font-sans-serif);
+  padding: 1em;
+  flex: 1;
+}
+
+@include MicroGrid {
+  font-family: var(--font-sans-serif);
+  padding: 1em;
+  flex: 1;
+  grid-auto-rows: max-content;
+  grid-template-columns: repeat(auto-fit, $cell);
+}
+
+@include Mini {
+  grid-gap: $gap;
+  @include Tile {
+    padding: $gap;
+    height: $cell;
+  }
+}
+
+@include Tile {
+  background-color: var(--color-base00);
+
+  &[data-status='SUCCEEDED'] {
+    background-color: var(--color-green);
+    --color-tile-title: var(--color-base00);
+  }
+  &[data-status='STOPPED'] {
+    background-color: var(--color-red);
+  }
+  &[data-status='RUNNING'] {
+    background-color: var(--color-cyan);
+    --color-tile-title: var(--color-base00);
+  }
+  &[data-status='PENDING'] {
+    background-color: var(--color-yellow);
+    --color-tile-title: var(--color-base00);
+  }
+  &[data-status='ERROR'] {
+    background-color: var(--color-red);
+  }
+
+  svg {
+    fill: var(--color-text-02);
+  }
+}
+
+.codeflare--welcome-guidebook {
+  svg[icon='Lightbulb'] {
+    fill: var(--color-text-02);
+  }
+
+  @include Hint {
+    display: block;
+    .pf-c-hint__actions {
+      float: right;
+    }
+  }
+
+  .pf-c-tile__header {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .pf-c-tile__title {
+    color: var(--color-tile-title);
+    font-size: 1rem;
+    white-space: normal;
+    line-height: var(--pf-global--LineHeight--md);
+  }
+
+  .pf-c-empty-state__icon {
+    &.yellow-text {
+      color: var(--color-yellow);
+    }
+    &.blue-text {
+      color: var(--color-blue);
+    }
+    &.green-text {
+      color: var(--color-ok);
+    }
+    &.red-text {
+      color: var(--color-error);
+    }
+  }
+
+  button[type='submit'] {
+    color: var(--pf-c-button--m-primary--Color) !important;
+  }
+
+  /** TODO move this somewhere else? */
+  .codeflare--gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(10em, max-content));
+
+    & > div {
+      grid-column-start: unset;
+      grid-column-end: unset;
+    }
+  }
+}

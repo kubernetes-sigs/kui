@@ -1,17 +1,11 @@
 {
-  "name": "@kui-shell/plugin-client",
-  "version": "12.2.0",
-  "description": "Kui plugin that offers client defintion",
-  "main": "dist/headless/kui.min.js",
-  "typedocMain": "src/index.ts",
+  "name": "@kui-shell/plugin-madwizard/do",
+  "version": "0.0.1",
+  "description": "Kui plugin that offers a madwizard UI",
+  "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
-  "sideEffects": [
-    "*.css",
-    "*.scss"
-  ],
   "license": "Apache-2.0",
-  "author": "Mengting Yan",
   "homepage": "https://github.com/IBM/kui#readme",
   "bugs": {
     "url": "https://github.com/IBM/kui/issues/new"
@@ -24,8 +18,5 @@
     "kui",
     "plugin"
   ],
-  "private": true,
-  "publishConfig": {
-    "access": "public"
-  }
+  "private": true
 }

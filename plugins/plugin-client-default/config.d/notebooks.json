@@ -3,10 +3,13 @@
   "submenu": [
     {
       "label": "Kui",
+      "submenu": [{ "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" }]
+    },
+    {
+      "label": "Guidebooks",
       "submenu": [
-        { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" },
-        { "notebook": "Guidebook Playground", "filepath": "/kui/playground.md" },
-        { "notebook": "Making a Guidebook", "filepath": "/kui/make-notebook.md" }
+        { "notebook": "What is a Guidebook?", "filepath": "/kui/client/guidebook-intro.md" },
+        { "notebook": "Markdown Playground", "filepath": "/kui/playground.md" }
       ]
     },
     {

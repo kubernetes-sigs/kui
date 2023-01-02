@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import React from 'react'
+import { Arguments, ParsedOptions } from '@kui-shell/core'
+import WorkloadDesigner from './WorkloadDesigner'
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
-
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
+type Options = ParsedOptions & {
+  left?: number
 }
 
-const filename = 'guidebook-tree-model4.md'
+export function controller(args: Arguments<Options>) {
+  const lrSplit: [number, number] | undefined =
+    typeof args.parsedOptions.left === 'number' ? [args.parsedOptions.left, 100 - args.parsedOptions.left] : undefined
 
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
+  return <WorkloadDesigner REPL={args.REPL} tab={args.tab} lrSplit={lrSplit} />
 }
-
-export default IN4

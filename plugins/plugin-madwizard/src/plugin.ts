@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import controller from './controller'
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
-
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
-}
-
-const filename = 'guidebook-tree-model4.md'
-
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
-}
-
-export default IN4
+export default controller

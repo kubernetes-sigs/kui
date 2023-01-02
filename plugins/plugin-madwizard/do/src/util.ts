@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import { Arguments, Events, getPrimaryTabId } from '@kui-shell/core'
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
-
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
+/** TODO: move to core Tab api? */
+export function setTabReadonly({ tab }: Pick<Arguments, 'tab'>) {
+  Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
 }
 
-const filename = 'guidebook-tree-model4.md'
-
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
+/** TODO: move to core Tab api? */
+export function setTabReadWrite({ tab }: Pick<Arguments, 'tab'>) {
+  Events.eventBus.emitWithTabId('/kui/tab/edit/set', getPrimaryTabId(tab))
 }
-
-export default IN4

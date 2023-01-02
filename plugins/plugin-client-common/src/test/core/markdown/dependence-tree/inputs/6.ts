@@ -47,7 +47,7 @@ export const importg: (name?: string) => Tree = (name = 'importg') =>
 
 const tree: Input['tree'] = () => [
   {
-    name: filename,
+    name: 'Sequence',
     children: [importg(), importd]
   }
 ]
