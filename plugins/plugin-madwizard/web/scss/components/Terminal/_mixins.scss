@@ -14,26 +14,40 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
-
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
-
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
+@mixin MadwizardToolbar {
+  .madwizard--toolbar {
+    @content;
+  }
 }
 
-const filename = 'guidebook-tree-model4.md'
+@mixin SearchInputGroup {
+  .pf-c-text-input-group {
+    @content;
+  }
+}
 
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
+@mixin SearchBadge {
+  .pf-c-badge {
+    @content;
+  }
+}
+
+@mixin SearchIcon {
+  .pf-c-text-input-group__icon {
+    @content;
+  }
+}
+
+@mixin SearchResult {
+  .xterm-find-result-decoration {
+    @content;
+  }
+}
+
+@mixin SearchResultActive {
+  @include SearchResult {
+    &.xterm-find-active-result-decoration {
+      @content;
     }
-  ]
+  }
 }
-
-export default IN4

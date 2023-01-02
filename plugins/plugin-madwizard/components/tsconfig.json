@@ -1,0 +1,11 @@
+{
+  "extends": "../../../node_modules/@kui-shell/builder/tsconfig-base.json",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "strict": true,
+    "composite": true,
+    "jsx": "react",
+    "outDir": "mdist",
+    "rootDir": "src"
+  }
+}

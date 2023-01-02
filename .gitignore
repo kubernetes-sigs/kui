@@ -1,3 +1,6 @@
+# guidebook store mirror
+/store
+
 # electron builds
 /dist
 

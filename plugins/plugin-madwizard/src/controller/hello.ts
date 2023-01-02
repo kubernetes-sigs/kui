@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import { Arguments } from '@kui-shell/core'
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
+import '../../web/scss/components/Hello/_index.scss'
 
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
+export default function hello(args: Arguments) {
+  if (args.parsedOptions.s) {
+    process.env.GUIDEBOOK_STORE = args.parsedOptions.s
+  }
+  return args.REPL.qexec('commentary --readonly -f /kui/client/hello.md')
 }
-
-const filename = 'guidebook-tree-model4.md'
-
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
-}
-
-export default IN4

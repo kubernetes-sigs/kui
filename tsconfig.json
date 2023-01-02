@@ -32,6 +32,9 @@
       "path": "plugins/plugin-kubectl-tray-menu"
     },
     {
+      "path": "plugins/plugin-madwizard"
+    },
+    {
       "path": "plugins/plugin-proxy-support"
     },
     {

@@ -1,0 +1,157 @@
+/*
+ * Copyright 2022 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@mixin ProfileExplorer {
+  .madwizard--profile-explorer {
+    @content;
+  }
+}
+
+@mixin ProfileStatus {
+  .madwizard--profile-explorer--select-status {
+    @content;
+  }
+}
+
+@mixin EditButton {
+  .madwizard--profile-explorer-edit-button {
+    @content;
+  }
+}
+
+body[kui-theme-style] {
+  @include ProfileExplorer {
+    /** Override kui garbage */
+    .pf-c-dropdown__menu {
+      max-height: unset;
+      background: var(--pf-c-dropdown__menu--BackgroundColor);
+    }
+    .pf-c-dropdown__menu .pf-c-dropdown__menu-item:hover {
+      background-color: var(--pf-c-dropdown__menu-item--hover--BackgroundColor);
+    }
+  }
+}
+
+body[kui-theme-style='dark'] {
+  @include ProfileExplorer {
+    .pf-c-select button.pf-c-select__toggle {
+      color: var(--color-base00);
+    }
+  }
+}
+
+@include ProfileExplorer {
+  display: flex;
+  .pf-c-card__body {
+    overflow-y: auto;
+    margin-bottom: 1em;
+  }
+
+  font-family: var(--font-sans-serif);
+
+  /** Handle tree text that isn't normally wrappable, such as long kubernetes contexts */
+  .pf-c-tree-view__node-text {
+    overflow-wrap: anywhere; /** WARNING: does not work on safari; we'll need the junkier word-break: break-all there */
+  }
+
+  .pf-c-card {
+    background-color: var(--color-sidecar-background-02);
+  }
+  .pf-c-tree-view__node-container {
+  }
+
+  /** width management */
+  .pf-c-card {
+    flex: 1;
+  }
+
+  .pf-c-card .pf-c-tree-view button.pf-c-tree-view__node {
+    font-size: inherit;
+    color: var(--color-text-01);
+  }
+
+  .pf-c-card__footer {
+    button.larger-text {
+      font-size: 1.25rem;
+    }
+  }
+
+  .pf-c-tree-view {
+    --pf-c-tree-view--PaddingTop: 0;
+    --pf-c-tree-view--m-compact__node-container--PaddingTop: 1em;
+    --pf-c-tree-view--m-compact__node-container--nested--PaddingTop: 0.75rem;
+    --pf-c-tree-view--m-compact__node-container--nested--PaddingBottom: 0.75rem;
+    --pf-c-tree-view--m-compact__node-container--nested--PaddingRight: 1.5rem;
+    --pf-c-tree-view--m-compact__node-container--nested--PaddingLeft: 1.5rem;
+  }
+
+  .pf-c-tree-view__content {
+    /* so that action items align top */
+    align-items: flex-start;
+
+    /* Hmm... not sure what's going on here. Nested ChipGroups can result in horizontal overflow that isn't necessary. */
+    flex-wrap: wrap;
+  }
+
+  .pf-c-tree-view__node-text {
+    margin-top: 0;
+    color: var(--color-text-02);
+    font-size: var(--pf-global--FontSize--xs);
+  }
+
+  .pf-c-tree-view__node-title {
+    font-weight: 500;
+    line-height: var(--pf-global--LineHeight--md);
+  }
+
+  .pf-c-tree-view__node-toggle {
+    --pf-c-tree-view__node-toggle--Color: var(--color-text-01);
+  }
+
+  .pf-c-tree-view__list-item {
+    margin: 0;
+  }
+
+  hr.pf-c-divider {
+    margin: 0;
+    border: none;
+  }
+
+  &--status-light {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 10px;
+    background-color: var(--color-gray);
+
+    &--error {
+      background-color: var(--color-error);
+    }
+
+    &--pending {
+      background-color: var(--color-warning);
+    }
+
+    &--offline {
+      background-color: var(--color-red);
+    }
+
+    &--success {
+      background-color: var(--color-ok);
+    }
+  }
+}

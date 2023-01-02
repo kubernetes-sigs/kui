@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+@import '@kui-shell/plugin-client-common/web/scss/components/Table/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
+/** TODO should these be wrapped around a .Hello somehow? */
 
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
+@include Commentary {
+  @include Table {
+    background: none;
+  }
+
+  @include TableCard {
+    background: none;
+    box-shadow: none;
+  }
+
+  @include Grid {
+    padding: 1em;
+  }
 }
-
-const filename = 'guidebook-tree-model4.md'
-
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
-}
-
-export default IN4

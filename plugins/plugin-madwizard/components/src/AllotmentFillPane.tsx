@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import React from 'react'
+import { Allotment } from 'allotment'
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
+type Props = React.PropsWithChildren<{ minSize?: number }>
 
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
+export default class AllotmentFillPane extends React.PureComponent<Props> {
+  public render() {
+    return (
+      <Allotment.Pane className="flex-fill flex-layout flex-align-stretch" minSize={this.props.minSize}>
+        {this.props.children}
+      </Allotment.Pane>
+    )
+  }
 }
-
-const filename = 'guidebook-tree-model4.md'
-
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
-}
-
-export default IN4

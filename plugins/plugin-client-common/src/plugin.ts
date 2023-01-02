@@ -28,7 +28,6 @@ export default async (registrar: Registrar) => {
     await import('./controller/alert').then(_ => _.default(registrar))
     await import('./controller/card').then(_ => _.default(registrar))
     await import('./controller/commentary').then(_ => _.default(registrar))
-    await import('./controller/guide').then(_ => _.default(registrar))
     await import('./controller/user-settings').then(_ => _.default(registrar))
   }
 }

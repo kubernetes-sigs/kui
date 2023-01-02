@@ -14,26 +14,11 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+export { openWindow, handleNew } from './actions'
+export { default as UpdateFunction } from './update'
+export { default as respawn, guidebookStore } from './respawn'
 
-import Input, { Tree } from '../Input'
-import { importe, importd } from './1'
-
-const snippetsInTab5: Tree = {
-  name: 'AAA',
-  children: [{ name: 'Option 2: Tab2', children: [{ name: 'echo XXX' }] }]
-}
-
-const filename = 'guidebook-tree-model4.md'
-
-const IN4: Input = {
-  input: require.resolve(join('@kui-shell/plugin-client-common/tests/data', filename)),
-  tree: () => [
-    {
-      name: 'Sequence',
-      children: [importd, importe, snippetsInTab5]
-    }
-  ]
-}
-
-export default IN4
+export { default as ProfileWatcher } from './profile/list'
+export { default as ProfileStatusWatcher } from './profile/status'
+export { default as ProfileActiveRunWatcher } from './profile/active-runs'
+export { default as ProfileRunWatcher, RUNS_ERROR } from './profile/run'

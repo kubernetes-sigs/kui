@@ -1,0 +1,82 @@
+/*
+ * Copyright 2022 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'mixins';
+
+$max-width: 50rem;
+
+@include Ask {
+  button:not(.pf-m-link):not(.pf-c-select__toggle-button) {
+    color: var(--pf-c-button--m-primary--Color) !important;
+  }
+
+  &.pf-c-empty-state.pf-m-xs .pf-c-button.larger-text {
+    font-size: 1.5rem;
+  }
+}
+
+@include Ask {
+  .pf-c-select__toggle-text {
+    text-align: left;
+  }
+
+  /* Without this, the select is clipped at the bottom :( */
+  .pf-c-select__menu {
+    position: unset;
+    margin-top: 1em;
+  }
+}
+
+/** Title */
+@include Ask {
+  .pf-c-select__toggle {
+    /* This is the default <button> from PatternFly's <Select> */
+    display: none;
+  }
+  .pf-c-card__body .pf-c-content {
+    height: auto;
+  }
+}
+
+@include Ask {
+  .pf-c-card {
+    width: $max-width;
+    min-width: 0;
+    max-width: $max-width;
+  }
+
+  .pf-c-select__menu:not([data-is-simplistic]) .pf-c-select__menu-item-main {
+    font-weight: 500;
+  }
+  .pf-c-select__menu-item-main {
+    white-space: normal;
+  }
+}
+
+@include Ask {
+  .pf-c-card__actions {
+    align-self: unset;
+  }
+  @include AskActions {
+    button {
+      padding-top: 0;
+      padding-bottom: 0;
+      svg {
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
