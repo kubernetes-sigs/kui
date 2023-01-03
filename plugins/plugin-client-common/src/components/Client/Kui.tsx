@@ -114,10 +114,12 @@ type State = KuiConfiguration & {
  *
  */
 export class Kui extends React.PureComponent<Props, State> {
+  static {
+    Kui.mountGuidebooks()
+  }
+
   public constructor(props: Props) {
     super(props)
-
-    this.mountGuidebooks()
 
     let { commandLine } = this.props
 
@@ -213,7 +215,7 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   /** Mount any guidebooks referenced by the `@kui-shell/client/config.d/notebooks.json` model */
-  private mountGuidebooks() {
+  private static mountGuidebooks() {
     // FIXME: require versus import; fixing this will require some
     // refactoring of the plugin-core-support logic
     const { notebookVFS } = require('@kui-shell/plugin-core-support')
