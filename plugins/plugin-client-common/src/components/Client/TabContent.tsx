@@ -199,6 +199,32 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset))
 
     this.oneTimeInit()
+    this.execCommand()
+  }
+
+  private execCommand() {
+    if (this.props.initialCommandLine) {
+      setTimeout(async () => {
+        // execute a command onReady?
+        while (true) {
+          const hack = this.state.tab.current.querySelector(
+            '.kui--tab-content.visible .kui--scrollback[data-position="default"]'
+          )
+          if (hack) {
+            break
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 500))
+          }
+        }
+
+        try {
+          // const quiet = tabModel.exec && tabModel.exec === 'qexec'
+          pexecInCurrentTab(this.props.initialCommandLine, this.state.tab.current)
+        } catch (err) {
+          console.error('Error executing initial command line in new tab', err)
+        }
+      })
+    }
   }
 
   private async onOffline() {
@@ -437,29 +463,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
   private body() {
     if (!this.state.active && !this._firstRenderDone) {
       return <React.Fragment />
-    }
-
-    if (!this._firstRenderDone && this.props.initialCommandLine) {
-      setTimeout(async () => {
-        // execute a command onReady?
-        while (true) {
-          const hack = this.state.tab.current.querySelector(
-            '.kui--tab-content.visible .kui--scrollback[data-position="default"]'
-          )
-          if (hack) {
-            break
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 500))
-          }
-        }
-
-        try {
-          // const quiet = tabModel.exec && tabModel.exec === 'qexec'
-          pexecInCurrentTab(this.props.initialCommandLine, this.state.tab.current)
-        } catch (err) {
-          console.error('Error executing initial command line in new tab', err)
-        }
-      })
     }
 
     this._firstRenderDone = true
