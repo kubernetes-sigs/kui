@@ -88,7 +88,7 @@ export default class AskingTerminal extends React.PureComponent<Props, State> {
 
   private readonly _sizes = {
     qa: [80, 20],
-    noqa: [27, 73]
+    noqa: [40, 60]
   }
 
   private get sizes() {
@@ -103,7 +103,7 @@ export default class AskingTerminal extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Props, prevState: State) {
-    if (this.state && prevState && prevState.ask && prevState.ask !== this.state.ask) {
+    if (this.state && prevState && prevState.ask !== this.state.ask) {
       setTimeout(() => this.allotmentRef.current?.resize(this.sizes))
     }
   }
