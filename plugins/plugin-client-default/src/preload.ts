@@ -19,6 +19,7 @@ import { Capabilities } from '@kui-shell/core'
 // This whole file is a hack until we fix the problem with
 // plugin-client-common importing notebookVFS from plugin-core-support (cyclic dependence)
 const guidebooks = [
+  'plugin://plugin-client-common/notebooks/markdown-overview.md',
   'plugin://plugin-client-common/notebooks/code-blocks.md',
   'plugin://plugin-client-common/notebooks/expandable-section.md',
   'plugin://plugin-client-common/notebooks/hints.md',

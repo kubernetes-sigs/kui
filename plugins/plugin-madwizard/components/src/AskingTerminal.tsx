@@ -21,25 +21,11 @@ import { Prompts } from 'madwizard'
 import { Job } from '@kui-shell/core'
 import { Allotment, AllotmentHandle } from 'allotment'
 import { Loading } from '@kui-shell/plugin-client-common'
-import {
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStatePrimary,
-  EmptyStateSecondaryActions,
-  Title
-} from '@patternfly/react-core'
 
 import AskUI, { Ask } from './Ask'
+import AskingDone from './AskingDone'
 import { Props as RestartableProps } from './RestartableTerminal'
 import SelectedProfileTerminal from './SelectedProfileTerminal'
-
-import BanIcon from '@patternfly/react-icons/dist/esm/icons/ban-icon'
-import HomeIcon from '@patternfly/react-icons/dist/esm/icons/home-icon'
-import SpinnerIcon from '@patternfly/react-icons/dist/esm/icons/spinner-icon'
-import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon'
 
 import '../../web/scss/components/Allotment/_index.scss'
 
@@ -82,7 +68,7 @@ type State = {
  */
 export default class AskingTerminal extends React.PureComponent<Props, State> {
   private readonly rawPrefix = 'MADWIZARD_RAW'
-  private readonly extraCommandLine = ' --raw --raw-prefix=' + this.rawPrefix
+  private readonly extraCommandLine = ' --raw=' + this.rawPrefix
 
   private readonly allotmentRef = React.createRef<AllotmentHandle>()
 
@@ -110,58 +96,11 @@ export default class AskingTerminal extends React.PureComponent<Props, State> {
 
   /** Render a UI to indicate we are done with the Q&A */
   private done() {
-    const inProgress = this.state.status === 'running'
-    const icon = inProgress
-      ? SpinnerIcon
-      : this.state.status === 'success'
-      ? CheckCircleIcon
-      : this.state.status === 'cancelled'
-      ? BanIcon
-      : ExclamationTriangleIcon
-    const iconClass = inProgress
-      ? 'kui--spin-animation yellow-text'
-      : this.state.status === 'success'
-      ? 'green-text'
-      : this.state.status === 'error'
-      ? 'red-text'
-      : ''
-    const title = inProgress
-      ? 'Executing tasks'
-      : this.state.status === 'success'
-      ? 'Success!'
-      : this.state.status === 'cancelled'
-      ? 'Cancelled'
-      : 'Failed'
-    const body = inProgress
-      ? 'All questions have now been resolved, and execution of the remaining tasks is now underway'
-      : this.state.status === 'success'
-      ? 'All tasks in the guidebook were executed successfully'
-      : this.state.status === 'cancelled'
-      ? 'Guidebook execution was cancelled'
-      : 'Guidebook execution has failed'
-    const buttonText = inProgress ? 'Cancel' : this.state.status === 'success' ? 'Repeat this Run' : 'Retry this Run'
-    const onClick = inProgress ? () => this.state.job && this.state.job.abort('SIGINT') : () => this.props.home(true)
-
-    const homeOnClick = () => this.props.home(false)
-
-    return (
-      <EmptyState variant="xs" className="sans-serif flex-fill kui--madwizard-ask-ui">
-        <EmptyStateIcon icon={icon} className={iconClass} />
-        <Title size="lg" headingLevel="h4">
-          {title}
-        </Title>
-
-        <EmptyStateBody>{body}</EmptyStateBody>
-
-        <EmptyStatePrimary>
-          <Button onClick={onClick}>{buttonText}</Button>
-        </EmptyStatePrimary>
-
-        <EmptyStateSecondaryActions>
-          <Button className="larger-text" variant="link" icon={<HomeIcon />} onClick={homeOnClick} />
-        </EmptyStateSecondaryActions>
-      </EmptyState>
-    )
+    if (this.state.status) {
+      const onClickHome = () => this.props.home(false)
+      const onClickCancel = () => this.state.job && this.state.job.abort('SIGINT')
+      return <AskingDone status={this.state.status} onClickCancel={onClickCancel} onClickHome={onClickHome} />
+    }
   }
 
   private guide() {

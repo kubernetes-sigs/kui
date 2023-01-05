@@ -46,11 +46,15 @@ export { default as KuiContext } from './components/Client/context'
 export const Ansi = React.lazy(() => import('./components/Content/Scalar/Ansi'))
 export { default as Loading } from './components/spi/Loading'
 export const Markdown = React.lazy(() => import('./components/Content/Markdown'))
+export const Scalar = React.lazy(() => import('./components/Content/Scalar'))
 export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 
 // sidecar components
 export const TopNavSidecar = React.lazy(() => import('./components/Views/Sidecar/TopNavSidecarV2'))
 export const LeftNavSidecar = React.lazy(() => import('./components/Views/Sidecar/LeftNavSidecarV2'))
+
+// Commentary edit channels
+export { onCommentaryEdit, offCommentaryEdit } from './components/Content/Commentary'
 
 // SPI
 export const Alert = React.lazy(() => import('./components/spi/Alert'))
