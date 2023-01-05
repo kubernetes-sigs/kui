@@ -23,11 +23,14 @@ import {
   ActionGroup,
   Button,
   Card,
+  CardActions,
   CardBody,
+  CardHeader,
+  CardHeaderMain,
+  CardTitle,
   Grid,
   Form,
   FormGroup,
-  Hint,
   Select,
   SelectGroup,
   SelectProps,
@@ -55,7 +58,7 @@ export type Ask<P extends Prompts.Prompt = Prompts.Prompt> = {
   prompt: P
 
   /** Handler for when the user makes a choice */
-  onChoose(choice: ReturnType<Tree.AnsiUI['ask']>): void
+  onChoose(choice: Awaited<ReturnType<Tree.AnsiUI['ask']>>): void
 }
 
 type Props = {
@@ -139,7 +142,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
       const multiselectOptionsChecked =
         !props.ask || !Prompts.isMultiSelect(props.ask.prompt)
           ? undefined
-          : { ask: props.ask, state: props.ask.prompt.initial }
+          : { ask: props.ask, state: Array.isArray(props.ask.prompt.initial) ? props.ask.prompt.initial : [] }
 
       return {
         form,
@@ -176,7 +179,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
   /** content to show in the upper right */
   private actions() {
     return (
-      <ActionGroup>
+      <React.Fragment>
         <Tooltip content={this.state.hasInlineFilter ? `Disable filter` : `Enable filter`}>
           <Button
             variant="link"
@@ -188,18 +191,21 @@ export default class AskUI extends React.PureComponent<Props, State> {
         <Tooltip markdown={`### Home\n#### Jump back to the beginning\n\n⌘ or Alt-click to open a new window`}>
           <Button variant="link" icon={<HomeIcon />} onClick={this._home} />
         </Tooltip>
-      </ActionGroup>
+      </React.Fragment>
     )
   }
 
   private card(ask: Ask, body: React.ReactNode) {
     return (
       <Card isLarge isPlain className="sans-serif">
-        <CardBody>
-          <Hint actions={this.actions()} className="somewhat-larger-text">
-            <Markdown nested source={`### ${this.title(ask)}\n\n${ask.description || ''}`} />
-          </Hint>
-
+        <CardHeader>
+          <CardHeaderMain>
+            <CardTitle>{this.title(ask)}</CardTitle>
+          </CardHeaderMain>
+          <CardActions hasNoOffset>{this.actions()}</CardActions>
+        </CardHeader>
+        <CardBody className="somewhat-larger-text">
+          {ask.description && <Markdown nested source={ask.description} />}
           {body}
         </CardBody>
       </Card>
@@ -216,7 +222,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
     if (parent) {
       const itemId = parent.getAttribute('data-name')
       if (itemId && this.props.ask) {
-        this.props.ask.onChoose(Promise.resolve(itemId))
+        this.props.ask.onChoose(itemId)
       }
     }
   }
@@ -226,10 +232,10 @@ export default class AskUI extends React.PureComponent<Props, State> {
     if (this.props.ask) {
       if (this.state.form) {
         evt.preventDefault()
-        this.props.ask.onChoose(Promise.resolve(this.state.form.state))
+        this.props.ask.onChoose(this.state.form.state)
       } else if (this.state.multiselectOptionsChecked) {
         evt.preventDefault()
-        this.props.ask.onChoose(Promise.resolve(this.state.multiselectOptionsChecked.state))
+        this.props.ask.onChoose(this.state.multiselectOptionsChecked.state)
       }
     }
     return false
@@ -244,7 +250,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
     if (!isPlaceholder && selection && this.props.ask) {
       const name = selection.toString()
       this.setState({ userSelection: name })
-      this.props.ask.onChoose(Promise.resolve(name))
+      this.props.ask.onChoose(name)
     }
   }
 
@@ -280,7 +286,6 @@ export default class AskUI extends React.PureComponent<Props, State> {
     const isSuggested = this.state?.userSelection === _.name
     const description = (
       <React.Fragment>
-        {' '}
         {message !== _.name && (
           <div>
             <Ansi noWrap="normal" className="sans-serif">
@@ -361,7 +366,10 @@ export default class AskUI extends React.PureComponent<Props, State> {
           : []),
         ...(others.length > 0
           ? [
-              <SelectGroup key="other" label={suggested ? 'Other choices' : 'Choices'}>
+              <SelectGroup
+                key="other"
+                label={suggested ? 'Other choices' : ask.prompt.choices.length === 1 ? '' : 'Choices'}
+              >
                 {others}
               </SelectGroup>
             ]

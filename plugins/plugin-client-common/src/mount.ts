@@ -19,13 +19,14 @@
  *
  */
 export default [
+  'plugin://plugin-client-common/notebooks/advanced.md',
   'plugin://plugin-client-common/notebooks/code-blocks.md',
   'plugin://plugin-client-common/notebooks/expandable-section.md',
   'plugin://plugin-client-common/notebooks/icons.md',
   'plugin://plugin-client-common/notebooks/hints.md',
   'plugin://plugin-client-common/notebooks/tabs.md',
   'plugin://plugin-client-common/notebooks/welcome.md',
-  'plugin://plugin-client-common/notebooks/welcome.json',
+  'plugin://plugin-client-common/notebooks/markdown-overview.md',
   'plugin://plugin-client-common/notebooks/playground.md',
   'plugin://plugin-client-common/notebooks/wizard.md',
   'plugin://plugin-client-common/notebooks/make-notebook.md',

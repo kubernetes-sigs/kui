@@ -74,11 +74,8 @@ export type Options = ParsedOptions & {
   /** Use team-focused assertions */
   team?: string
 
-  /** */
-  raw?: boolean
-
-  /** */
-  'raw-prefix'?: string
+  /** In raw mode, any questions will be emitted as a raw json model either stdout, with control limits prefixed by this given string */
+  raw?: string
 }
 
 // TODO export this from madwizard
@@ -106,7 +103,7 @@ type Params = {
 }
 
 export const flags = {
-  boolean: ['u', 'V', 'n', 'q', 'i', 'y', 'z', 'raw'],
+  boolean: ['u', 'V', 'n', 'q', 'i', 'y', 'z'],
   configuration: { 'populate--': true },
   alias: {
     store: ['s'],
@@ -176,7 +173,6 @@ export function doMadwizard({ readonlyUI = true, task, withFilepath = true, cb, 
           store: parsedOptions.s || process.env.GUIDEBOOK_STORE,
           verbose: parsedOptions.V,
           raw: parsedOptions.raw,
-          rawPrefix: parsedOptions['raw-prefix'],
           ifor: parsedOptions.ifor, // interactive only for a given guidebook?
           interactive: parsedOptions.i || (!parsedOptions.ifor && !parsedOptions.y),
           assertions: assertionsFn ? assertionsFn(parsedOptions) : undefined

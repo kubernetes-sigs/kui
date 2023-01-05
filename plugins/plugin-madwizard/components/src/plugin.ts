@@ -75,4 +75,16 @@ export default function registerMadwizardComponentCommands(registrar: Registrar)
       needsUI: true
     }
   )
+
+  /**
+   * Listen for edits
+   *
+   */
+  registrar.listen(
+    '/madwizard/playground',
+    async args => import('./Playground').then(async _ => ({ react: await _.controller(args) })),
+    {
+      needsUI: true
+    }
+  )
 }

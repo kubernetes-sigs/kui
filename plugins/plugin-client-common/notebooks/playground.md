@@ -1,5 +1,5 @@
 ---
-title: Kui Playground
+title: Markdown Playground
 layout:
     1: 
         position: default
@@ -7,14 +7,14 @@ layout:
     2: default
 ---
 
-=== "Hello World"
+=== "Overview"
     ```bash
     ---
     execute: now
     maximize: true
     outputOnly: true
     ---
-    commentary --send playground \# Welcome to the Kui Playground :rocket:\n\nAuthor your own Kui Guidebook, using markdown! You can edit this example, using the editor to the left, or explore the other tabs in this playground.
+    commentary --send playground -f /kui/markdown-overview.md
     ```
 
 === "Code Blocks"
@@ -37,6 +37,16 @@ layout:
     commentary --send playground -f /kui/hints.md
     ```
 
+=== "Expandable Sections"
+    ```bash
+    ---
+    execute: now
+    maximize: true
+    outputOnly: true
+    ---
+    commentary --send playground -f /kui/expandable-section.md
+    ```
+
 === "Icons"
     ```bash
     ---
@@ -57,16 +67,6 @@ layout:
     commentary --send playground -f /kui/tabs.md
     ```
 
-=== "Tips"
-    ```bash
-    ---
-    execute: now
-    maximize: true
-    outputOnly: true
-    ---
-    commentary --send playground -f /kui/expandable-section.md
-    ```
-
 === "Wizards"
     ```bash
     ---
@@ -75,6 +75,16 @@ layout:
     outputOnly: true
     ---
     commentary --send playground -f /kui/wizard.md
+    ```
+
+=== "Advanced"
+    ```bash
+    ---
+    execute: now
+    maximize: true
+    outputOnly: true
+    ---
+    commentary --send playground -f /kui/advanced.md
     ```
 
 

@@ -46,10 +46,31 @@ interface State {
   textValue: string
   lastAppliedTextValue: string
 }
-class Commentary extends React.PureComponent<PropsInternal, State> {
-  /** Allows decoupled edit/preview */
-  private static readonly events = new EventEmitter()
 
+/** Allows decoupled edit/preview */
+const events = new EventEmitter()
+
+/** Requests for current textValue */
+function getChannel(props: Pick<PropsInternal, 'receive' | 'send'>) {
+  return `/get/${props.receive || props.send}`
+}
+
+/** Broadcast current textValue */
+function editChannel(props: Pick<PropsInternal, 'receive' | 'send'>) {
+  return `/edit/${props.receive || props.send}`
+}
+
+export function onCommentaryEdit(channel: string, cb: (textValue: string, filepath?: string) => void) {
+  const props = { receive: channel }
+  events.on(editChannel(props), cb)
+  events.emit(getChannel(props), cb)
+}
+
+export function offCommentaryEdit(channel: string, cb: (textValue: string, filepath?: string) => void) {
+  events.off(editChannel({ receive: channel }), cb)
+}
+
+class Commentary extends React.PureComponent<PropsInternal, State> {
   private readonly cleaners: (() => void)[] = []
 
   public constructor(props: PropsInternal) {
@@ -66,7 +87,7 @@ class Commentary extends React.PureComponent<PropsInternal, State> {
 
   public static getDerivedStateFromProps(props: PropsInternal, state: State) {
     if (props.previousActiveKey !== undefined && props.activeKey === state.initialActiveKey) {
-      Commentary.events.emit(Commentary.editChannel(props), state.textValue)
+      events.emit(editChannel(props), state.textValue, props.filepath)
     }
 
     return state
@@ -81,7 +102,7 @@ class Commentary extends React.PureComponent<PropsInternal, State> {
 
     if (this.props.send) {
       // broadcast clear
-      Commentary.events.emit(Commentary.editChannel(this.props), '')
+      events.emit(editChannel(this.props), '')
     }
   }
 
@@ -94,19 +115,9 @@ class Commentary extends React.PureComponent<PropsInternal, State> {
         prevState.textValue !== this.state.textValue ||
         (this.props.previousActiveKey !== undefined && this.props.activeKey === this.state.initialActiveKey)
       ) {
-        Commentary.events.emit(Commentary.editChannel(this.props), this.state.textValue)
+        events.emit(editChannel(this.props), this.state.textValue, this.props.filepath)
       }
     }
-  }
-
-  /** Requests for current textValue */
-  private get getChannel() {
-    return `/get/${this.props.receive || this.props.send}`
-  }
-
-  /** Broadcast current textValue */
-  private static editChannel(props: PropsInternal) {
-    return `/edit/${props.receive || props.send}`
   }
 
   private readonly onGet = (cb: (textValue: string) => void) => cb(this.state.textValue)
@@ -127,18 +138,18 @@ class Commentary extends React.PureComponent<PropsInternal, State> {
   private initCouplingEvents() {
     if (this.props.receive) {
       // this is the preview side of the coupling
-      Commentary.events.on(Commentary.editChannel(this.props), this.onEdit)
-      this.cleaners.push(() => Commentary.events.off(Commentary.editChannel(this.props), this.onEdit))
+      events.on(editChannel(this.props), this.onEdit)
+      this.cleaners.push(() => events.off(editChannel(this.props), this.onEdit))
 
       // emit an initial request for the content
-      setTimeout(() => Commentary.events.emit(this.getChannel, this.onEdit))
+      setTimeout(() => events.emit(getChannel(this.props), this.onEdit))
     } else if (this.props.send) {
       // this is the edit side of the coupling
-      Commentary.events.on(this.getChannel, this.onGet)
-      this.cleaners.push(() => Commentary.events.off(this.getChannel, this.onGet))
+      events.on(getChannel(this.props), this.onGet)
+      this.cleaners.push(() => events.off(getChannel(this.props), this.onGet))
 
       // emit an initial value for the content
-      setTimeout(() => Commentary.events.emit(Commentary.editChannel(this.props), this.state.textValue))
+      setTimeout(() => events.emit(editChannel(this.props), this.state.textValue, this.props.filepath))
     }
   }
 

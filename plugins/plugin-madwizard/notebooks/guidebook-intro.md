@@ -23,7 +23,7 @@ it is possible to validate whether sub-tasks are truly needed for any
 given user in their current context (this laptop versus that laptop;
 this cluster versus that, etc.).
 
-## How Kui helps
+## Madwizard
 
 The [madwizard](https://github.com/guidebooks/madwizard) tool can be
 used to "vet" that a markdown file is suitable for this kind of

@@ -65,17 +65,17 @@ const IN3: Input = {
 }
 
 const IN4: Input = {
-  title: 'Kui Playground',
+  title: 'Markdown Playground',
   input: join(ROOT2, 'playground.md'),
   splits: [
     {
       contentBlockIndex: 1,
       position: () => Selectors.SPLIT_N_AS_DEFAULT(1),
-      content: '# Welcome to the Kui Playground'
+      content: '# Welcome to the Markdown Playground'
     },
     {
       position: () => Selectors.SPLIT_N_AS_DEFAULT(2),
-      content: 'Welcome to the Kui Playground'
+      content: 'Welcome to the Markdown Playground'
     }
   ]
 }
