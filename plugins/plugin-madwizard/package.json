@@ -23,12 +23,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@guidebooks/store": "^1.9.4",
+    "@guidebooks/store": "^1.10.0",
     "@patternfly/react-core": "^4.267.6",
     "allotment": "^1.17.1",
     "chalk": "^5.2.0",
     "json-diff": "^1.0.0",
-    "madwizard": "^4.0.0",
+    "madwizard": "^4.0.1",
     "needle": "^3.2.0",
     "pretty-ms": "^7.0.1",
     "vfile": "^5.3.6",
