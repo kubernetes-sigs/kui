@@ -25,7 +25,7 @@
     "*.scss"
   ],
   "devDependencies": {
-    "@types/needle": "3.2.0"
+    "@types/needle": "^3.2.0"
   },
   "dependencies": {
     "@patternfly/react-core": "^4.264.0",

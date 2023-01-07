@@ -28,26 +28,26 @@
     "*.scss"
   ],
   "devDependencies": {
-    "@types/cookie": "0.5.1",
-    "@types/debug": "4.1.7",
-    "@types/shelljs": "0.8.11",
-    "@types/tmp": "0.2.3",
-    "@types/uuid": "9.0.0"
+    "@types/cookie": "^0.5.1",
+    "@types/debug": "^4.1.7",
+    "@types/shelljs": "^0.8.11",
+    "@types/tmp": "^0.2.3",
+    "@types/uuid": "^9.0.0"
   },
   "dependencies": {
     "@kui-shell/xterm-helpers": "^2.1.0",
-    "cookie": "0.5.0",
-    "debug": "4.3.4",
-    "globby": "11.0.4",
+    "cookie": "^0.5.0",
+    "debug": "^4.3.4",
+    "globby": "^11.0.4",
     "node-pty": "0.11.0-beta21",
-    "shelljs": "0.8.5",
-    "slash": "3.0.0",
-    "speed-date": "1.0.0",
-    "tmp": "0.2.1",
-    "uuid": "9.0.0",
-    "ws": "7.5.9",
-    "xterm": "5.1.0",
-    "xterm-addon-fit": "0.7.0",
+    "shelljs": "^0.8.5",
+    "slash": "^3.0.0",
+    "speed-date": "^1.0.0",
+    "tmp": "^0.2.1",
+    "uuid": "^9.0.0",
+    "ws": "^7.5.9",
+    "xterm": "^5.1.0",
+    "xterm-addon-fit": "^0.7.0",
     "xterm-addon-webgl": "^0.14.0"
   },
   "kui": {
