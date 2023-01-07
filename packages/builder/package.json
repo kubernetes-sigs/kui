@@ -26,6 +26,7 @@
     "prepack": "chmod +x ./build/kui-dist-init.js"
   },
   "dependencies": {
+    "@types/node": "18.11.15",
     "@babel/cli": "7.19.3",
     "@babel/core": "7.20.5",
     "@babel/plugin-transform-modules-commonjs": "7.19.6",

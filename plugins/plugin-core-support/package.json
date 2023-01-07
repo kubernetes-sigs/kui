@@ -27,6 +27,10 @@
     "*.css",
     "*.scss"
   ],
+  "devDependencies": {
+    "@types/debug": "4.1.7",
+    "@types/tmp": "0.2.3"
+  },
   "dependencies": {
     "@supercharge/promise-pool": "2.3.2",
     "debug": "4.3.4",
