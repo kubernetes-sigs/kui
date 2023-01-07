@@ -1,7 +1,7 @@
 # Welcome to the Markdown Playground :rocket:
 
-You can edit this example, using the editor to the left, or explore
-the other tabs in this playground.
+> You can edit this example, using the editor to the left, or explore
+> the other tabs in this playground.
 
 Kui interprets and displays markdown source. Kui has special
 interpretation for a some of the common bits of markdown syntax,
