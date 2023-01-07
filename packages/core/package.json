@@ -34,6 +34,15 @@
   "bin": {
     "kui": "bin/kui"
   },
+  "devDependencies": {
+    "@types/debug": "4.1.7",
+    "@types/fs-extra": "9.0.13",
+    "@types/mkdirp": "1.0.2",
+    "@types/needle": "3.2.0",
+    "@types/tmp": "0.2.3",
+    "@types/uuid": "9.0.0",
+    "@types/yargs-parser": "21.0.0"
+  },
   "dependencies": {
     "@electron/remote": "2.0.9",
     "ansi-to-html": "0.7.2",

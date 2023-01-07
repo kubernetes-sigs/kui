@@ -29,6 +29,9 @@
     "*.css",
     "*.scss"
   ],
+  "devDependencies": {
+    "@types/debug": "4.1.7"
+  },
   "dependencies": {
     "debug": "4.3.4"
   },
