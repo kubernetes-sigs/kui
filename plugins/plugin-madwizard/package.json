@@ -21,6 +21,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "devDependencies": {
     "@types/json-diff": "^0.9.1",
     "@types/needle": "^3.2.0",

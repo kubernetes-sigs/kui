@@ -30,10 +30,10 @@
     "*.scss"
   ],
   "devDependencies": {
-    "@types/debug": "4.1.7"
+    "@types/debug": "^4.1.7"
   },
   "dependencies": {
-    "debug": "4.3.4"
+    "debug": "^4.3.4"
   },
   "publishConfig": {
     "access": "public"
