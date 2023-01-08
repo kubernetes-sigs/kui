@@ -22,7 +22,7 @@ TARGET="$PWD"/packages/builder/dist/electron/vendor/node-pty/build/$PLATFORM-$AR
 
 cd "$T"
 npm init -y
-npm install node-pty@0.11.0-beta21 electron@20.1.1 electron-rebuild github:jkleinsc/nan#remove_accessor_signature
+npm install node-pty@0.11.0-beta27 electron@22.0.0 @electron/rebuild github:jkleinsc/nan#remove_accessor_signature
 npx electron-rebuild -f -w node-pty
 
 cd node_modules/node-pty
@@ -37,7 +37,7 @@ if [ -e build/Release/.forge-meta ]; then
     mv build/Release/.forge-meta $T2
 fi
 
-gzip -9 build/Release/*
+gzip -f -9 build/Release/*
 
 if [ "$1" = "install" ]; then
     cp build/Release/*.gz "$TARGET"
