@@ -41,7 +41,7 @@ export default function registerMadwizardComponentCommands(registrar: Registrar)
   ) */
 
   registrar.listen(
-    '/madwizard/plan',
+    '/plan',
     doMadwizard({
       readonlyUI: false,
       task: 'plan',
