@@ -84,10 +84,8 @@
     "@kui-shell/webpack": "file:packages/webpack",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
-    "colors": "^1.4.0",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "debug": "^4.3.4",
     "electron": "^20.3.8",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
@@ -97,18 +95,13 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-standard": "^4.1.0",
-    "expand-home-dir": "^0.0.3",
-    "fs-extra": "^11.1.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
     "nan": "github:jkleinsc/nan#6a2f95a6a2209d8aa7542fb18099fd808a802059",
     "prettier": "^2.8.2",
-    "properties-parser": "^0.3.1",
-    "tmp": "^0.2.1",
     "typedoc": "^0.23.24",
     "typedoc-plugin-markdown": "^3.14.0",
-    "typescript": "^4.9.4",
-    "uuid": "^9.0.0"
+    "typescript": "^4.9.4"
   },
   "lint-staged": {
     "**/*.{scss,css,html,js,json,md,ts,tsx}": [
