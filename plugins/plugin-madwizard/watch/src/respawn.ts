@@ -82,9 +82,12 @@ function headlessRoot() {
 
 /** @return the absolute path to the directory that contains the guidebook store for this build */
 export function guidebookStore() {
-  return process.env.GUIDEBOOK_STORE || process.env.NODE_ENV === 'development'
-    ? electronDevelopmentBuildGuidebookStore()
-    : electronProductionBuildGuidebookStore()
+  return (
+    process.env.GUIDEBOOK_STORE ||
+    (process.env.NODE_ENV === 'development'
+      ? electronDevelopmentBuildGuidebookStore()
+      : electronProductionBuildGuidebookStore())
+  )
 }
 
 /** @return an env that will at least point to our guidebook store */
