@@ -213,7 +213,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
   }
 
   private justTheMessage(choice: Ask['prompt']['choices'][number]) {
-    return stripAnsi(choice.message).replace('  ◄ you selected this last time', '')
+    return stripAnsi(choice.message).replace('  ◄ prior choice', '')
   }
 
   /** User has clicked on a simple list item */
