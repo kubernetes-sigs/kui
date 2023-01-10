@@ -18,7 +18,7 @@ import React from 'react'
 import stripAnsi from 'strip-ansi'
 import { Prompts, Tree } from 'madwizard'
 
-import { Ansi, Markdown, Tooltip } from '@kui-shell/plugin-client-common'
+import { Ansi, Tooltip } from '@kui-shell/plugin-client-common'
 import {
   ActionGroup,
   Button,
@@ -38,6 +38,8 @@ import {
   SelectOptionObject,
   TextInput
 } from '@patternfly/react-core'
+
+import Mdown from './Mdown'
 
 import HomeIcon from '@patternfly/react-icons/dist/esm/icons/home-icon'
 import FilterIcon from '@patternfly/react-icons/dist/esm/icons/filter-icon'
@@ -205,7 +207,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
           <CardActions hasNoOffset>{this.actions()}</CardActions>
         </CardHeader>
         <CardBody className="somewhat-larger-text">
-          {ask.description && <Markdown nested source={ask.description} />}
+          {ask.description && <Mdown>{ask.description}</Mdown>}
           {body}
         </CardBody>
       </Card>
