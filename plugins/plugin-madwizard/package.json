@@ -31,7 +31,7 @@
     "@types/resize-observer-browser": "^0.1.7"
   },
   "dependencies": {
-    "@guidebooks/store": "^1.11.2",
+    "@guidebooks/store": "^1.11.3",
     "@patternfly/react-core": "^4.267.6",
     "allotment": "^1.17.1",
     "chalk": "^5.2.0",
