@@ -215,7 +215,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
   }
 
   private justTheMessage(choice: Ask['prompt']['choices'][number]) {
-    return stripAnsi(choice.message).replace('  ◄ prior choice', '')
+    return stripAnsi(choice.message || '').replace('  ◄ prior choice', '')
   }
 
   /** User has clicked on a simple list item */
@@ -291,7 +291,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
         {message !== _.name && (
           <div>
             <Ansi noWrap="normal" className="sans-serif">
-              {_.message.split(/\n/).slice(-2)[0]}
+              {(_.message || '').split(/\n/).slice(-2)[0]}
             </Ansi>
           </div>
         )}
@@ -351,7 +351,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
 
       // options other than the "suggested" (i.e. prior choice)
       const others = ask.prompt.choices
-        .filter(_ => _.name !== this.state?.userSelection && (!filter || pattern.test(_.message)))
+        .filter(_ => _.name !== this.state?.userSelection && (!filter || pattern.test(_.message || '')))
         .map(_ => this._selectOptionForChoice(_))
 
       // ugh, a bit of syntactic garbage here to make typescript
@@ -406,7 +406,7 @@ export default class AskUI extends React.PureComponent<Props, State> {
 
     // is every message the same as the title?
     const isSimplistic = ask.prompt.choices.every(
-      _ => _.name === stripAnsi(_.message).replace('  ◄ you selected this last time', '')
+      _ => _.name === stripAnsi(_.message || '').replace('  ◄ prior choice', '')
     )
 
     return (
