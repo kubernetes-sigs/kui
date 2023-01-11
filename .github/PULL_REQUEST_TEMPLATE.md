@@ -7,7 +7,7 @@ Hello 👋 Thank you for submitting a pull request.
 #### Required Items
 
 - [ ] Your PR consists of a single commit (i.e. squash your commits)
-- [ ] Your commit and PR title starts with one of: `fix:` | `test:` | `chore:` | `doc:`, to indicate the nature of the fix (see [Conventional Commit](https://github.com/IBM/kui/blob/master/CONTRIBUTING.md#conventional-commits))
+- [ ] Your commit and PR title starts with one of `fix:` | `test:` | `chore:` | `doc:`, to indicate the nature of the fix (see [Conventional Commits](https://github.com/IBM/kui/blob/master/CONTRIBUTING.md#conventional-commits))
 
 #### Optional Items
 
