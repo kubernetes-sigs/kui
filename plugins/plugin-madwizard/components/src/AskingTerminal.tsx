@@ -29,6 +29,16 @@ import SelectedProfileTerminal from './SelectedProfileTerminal'
 
 import '../../web/scss/components/Allotment/_index.scss'
 
+/** Be extra cautious parsing raw messages from madwizard */
+function tryToParseJson(str: string) {
+  try {
+    return JSON.parse(str)
+  } catch (err) {
+    console.error('Suspicious raw message from madwizard', str)
+    return JSON.parse(stripAnsi(str))
+  }
+}
+
 export type AskingProps = {
   terminalProps: Pick<RestartableProps, 'tab' | 'REPL' | 'onExit' | 'searchable' | 'fontSizeAdjust'>
 
@@ -132,7 +142,7 @@ export default class AskingTerminal extends React.PureComponent<Props, State> {
         const str = (this.leftover + line.slice(idx1 < 0 ? 0 : idx1, idx2)).slice(this.rawPrefix.length + 1)
         this.leftover = ''
         try {
-          const msg = JSON.parse(stripAnsi(str)) as
+          const msg = tryToParseJson(str) as
             | { type: 'qa-done' }
             | { type: 'all-done'; success: boolean }
             | { type: 'ask'; ask: Prompts.Prompt }
@@ -155,7 +165,9 @@ export default class AskingTerminal extends React.PureComponent<Props, State> {
           console.error('Error parsing line', idx1, idx2, line, '|||', str, err)
         }
       } else {
-        this.leftover += idx1 === 0 ? line : line.slice(idx1)
+        // we haven't reached the end of line, so stash what we have
+        // so far in this.leftover
+        this.leftover += idx1 <= 0 ? line : line.slice(idx1)
       }
       return null
     } else {
