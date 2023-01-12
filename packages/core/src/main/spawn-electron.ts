@@ -126,7 +126,7 @@ function getPositionForPopup({ screen, BrowserWindow }: { screen: Screen; Browse
 /** Special purpose createWindow that accepts only an argv */
 function createWindowWithArgv(executeThisArgvPlease?: string[]) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  createWindow(true, executeThisArgvPlease)
+  createWindow(true, process.env, executeThisArgvPlease)
 }
 
 function getClientProductName(): Promise<string> {
@@ -144,6 +144,7 @@ function getClientStyles(): Promise<BrowserWindowConstructorOptions & { defaultT
 /** Open a new Electron window */
 export async function createWindow(
   noHeadless = false,
+  env: Record<any, any>,
   executeThisArgvPlease?: string | string[],
   subwindowPlease?: boolean,
   subwindowPrefs?: ISubwindowPrefs,
@@ -479,6 +480,7 @@ export async function createWindow(
               case 'new-window':
                 createWindow(
                   true,
+                  env,
                   message.argv,
                   undefined,
                   {
@@ -492,7 +494,7 @@ export async function createWindow(
                 )
                 break
               case 'open-graphical-shell':
-                createWindow(true)
+                createWindow(true, env)
                 break
               case 'enlarge-window':
                 mainWindow.setContentSize(1400, 1050, true)
@@ -533,7 +535,7 @@ export async function createWindow(
               const returnValue = await mod[message.main || 'main'](
                 message.args,
                 event.sender,
-                (argv: string | string[], prefs?: ISubwindowPrefs) => createWindow(true, argv, undefined, prefs)
+                (argv: string | string[], prefs?: ISubwindowPrefs) => createWindow(true, env, argv, undefined, prefs)
               )
               debug('invoke got returnValue', returnValue)
 
@@ -607,10 +609,8 @@ export const getCommand = (
 
   // re: argv.length === 0, this should happen for double-click launches
   const isShell =
-    !process.env.KUI_POPUP &&
-    (argv.length === 0 ||
-      argv.find(_ => _ === 'shell') ||
-      (process.env.RUNNING_SHELL_TEST && !process.env.KUI_TEE_TO_FILE))
+    !env.KUI_POPUP &&
+    (argv.length === 0 || argv.find(_ => _ === 'shell') || (env.RUNNING_SHELL_TEST && !env.KUI_TEE_TO_FILE))
 
   debug('isShell', argv, isShell)
 
@@ -628,12 +628,12 @@ export const getCommand = (
     argv = ['shell']
     subwindowPlease = false
     subwindowPrefs = { cwd, env }
-  } else if (process.env.KUI_POPUP) {
-    argv = JSON.parse(process.env.KUI_POPUP)
+  } else if (env.KUI_POPUP) {
+    argv = JSON.parse(env.KUI_POPUP)
     subwindowPrefs = { cwd, env }
   }
 
-  if (process.env.KUI_POPUP_WINDOW_RESIZE) {
+  if (env.KUI_POPUP_WINDOW_RESIZE) {
     subwindowPrefs = {
       cwd,
       env,
@@ -727,11 +727,12 @@ export async function initElectron(
         // Someone tried to run a second instance, open a new window
         // to handle it
 
+        const env = !additionalData.env ? process.env : JSON.parse(additionalData.env)
         const {
           argv,
           subwindowPlease,
           subwindowPrefs: defaultSubwindowPrefs
-        } = getCommand(commandLine, cwd, JSON.parse(additionalData.env), async () => import('electron'))
+        } = getCommand(commandLine, cwd, env, async () => import('electron'))
 
         const mySubwindowPrefs = additionalData.subwindowPrefs || defaultSubwindowPrefs
         if (!mySubwindowPrefs.width && widthFromCaller) {
@@ -741,8 +742,8 @@ export async function initElectron(
           mySubwindowPrefs.height = heightFromCaller
         }
 
-        debug('opening window for second instance', commandLine, subwindowPlease, mySubwindowPrefs)
-        createWindow(true, argv, subwindowPlease, mySubwindowPrefs)
+        debug('opening window for second instance', commandLine, subwindowPlease, mySubwindowPrefs, additionalData)
+        createWindow(true, env, argv, subwindowPlease, mySubwindowPrefs)
       }
     )
 
@@ -755,7 +756,12 @@ export async function initElectron(
       env: JSON.stringify(process.env),
       subwindowPrefs: !subwindowPrefs
         ? undefined
-        : { width: subwindowPrefs.width, height: subwindowPrefs.height, title: subwindowPrefs.title }
+        : {
+            width: subwindowPrefs.width,
+            height: subwindowPrefs.height,
+            title: subwindowPrefs.title,
+            fullscreen: subwindowPrefs.fullscreen
+          }
     }
 
     if (!app.requestSingleInstanceLock(additionalData)) {
@@ -776,7 +782,7 @@ export async function initElectron(
   // Some APIs can only be used after this event occurs.
   app.once('ready', () => {
     debug('opening primary window', command)
-    createWindow(true, command.length > 0 && command, subwindowPlease, subwindowPrefs)
+    createWindow(true, process.env, command.length > 0 && command, subwindowPlease, subwindowPrefs)
   })
 
   // Quit when all windows are closed.
@@ -795,7 +801,7 @@ export async function initElectron(
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (nWindows === 0) {
-      createWindow()
+      createWindow(false, process.env)
     }
   })
 }

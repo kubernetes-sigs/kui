@@ -344,7 +344,15 @@ export function initHeadless(argv: string[], force = false, isRunningHeadless = 
             // craft a createWindow that has a first argument of true, which will indicate `noHeadless`
             // because this will be called for cases where we want a headless -> GUI transition
             const { createWindow: createElectronWindow } = await import('./spawn-electron')
-            return createElectronWindow(true, executeThisArgvPlease, subwindowPlease, subwindowPrefs, false, true)
+            return createElectronWindow(
+              true,
+              process.env,
+              executeThisArgvPlease,
+              subwindowPlease,
+              subwindowPrefs,
+              false,
+              true
+            )
           }
         },
         argv,
