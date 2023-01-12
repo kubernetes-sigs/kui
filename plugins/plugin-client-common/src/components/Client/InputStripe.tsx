@@ -46,12 +46,14 @@ export default class InputStripe extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    Events.eventBus.onCommandComplete(this.props.uuid, this.onOutputRender.bind(this))
-
     this.state = {
       idx: 0,
       model: Active()
     }
+  }
+
+  public componentDidMount() {
+    Events.eventBus.onCommandComplete(this.props.uuid, this.onOutputRender.bind(this))
   }
 
   /** Command has completed in our tab */
