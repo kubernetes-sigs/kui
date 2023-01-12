@@ -126,22 +126,8 @@ const _currentMounts: VFS[] = []
 function orient(A: VFS, B: VFS) {
   const a = A.mountPath.split(/\//).filter(_ => _)
   const b = B.mountPath.split(/\//).filter(_ => _)
-  let lastCommonIdx = 0
-  const N = Math.min(a.length, b.length)
 
-  while (++lastCommonIdx < N) {
-    if (a[lastCommonIdx] !== b[lastCommonIdx]) {
-      break
-    }
-  }
-
-  if (lastCommonIdx === 0 || a.length === b.length) {
-    return 0
-  } else if (lastCommonIdx === a.length) {
-    return -1
-  } else {
-    return b.length - a.length
-  }
+  return b.length - a.length
 }
 
 /** Low-level mount */
