@@ -16,7 +16,17 @@
 
 import React from 'react'
 
-import { Events, getCurrentTab, getTab, Tab, TabState, encodeComponent, pexecInCurrentTab, i18n } from '@kui-shell/core'
+import {
+  Events,
+  CommandCompleteEvent,
+  getCurrentTab,
+  getTab,
+  Tab,
+  TabState,
+  encodeComponent,
+  pexecInCurrentTab,
+  i18n
+} from '@kui-shell/core'
 import { KubeContext } from '@kui-shell/plugin-kubectl'
 
 import Select from '@kui-shell/plugin-client-common/mdist/components/spi/Select'
@@ -56,6 +66,7 @@ Events.eventBus.once('/tab/new', () => (ready = true))
 
 export default class CurrentContext extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentContext.bind(this)
+  private readonly handlerForCommandComplete = this.reportCurrentContextFromCommandComplete.bind(this)
   private readonly handlerForConfigChange = this.getCurrentContextFromChange.bind(this)
   private readonly handlerNotCallingKubectl = this.getCurrentContextFromTab.bind(this)
 
@@ -161,6 +172,10 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
       allContexts: [],
       options: []
     })
+  }
+
+  private async reportCurrentContextFromCommandComplete(evt: CommandCompleteEvent) {
+    this.reportCurrentContext(evt.tab)
   }
 
   private async reportCurrentContext(idx?: Tab | number | string) {
@@ -303,7 +318,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     }
     Events.eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
-    Events.eventBus.onAnyCommandComplete(this.handler)
+    Events.eventBus.onAnyCommandComplete(this.handlerForCommandComplete)
 
     import('@kui-shell/plugin-kubectl').then(_ => _.onKubectlConfigChangeEvents(this.handlerForConfigChange))
   }
@@ -313,7 +328,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     this.unmounted = true
     Events.eventBus.off('/tab/new', this.handler)
     Events.eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
-    Events.eventBus.offAnyCommandComplete(this.handler)
+    Events.eventBus.offAnyCommandComplete(this.handlerForCommandComplete)
     import('@kui-shell/plugin-kubectl').then(_ => _.offKubectlConfigChangeEvents(this.handlerForConfigChange))
   }
 
