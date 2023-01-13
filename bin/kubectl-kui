@@ -24,7 +24,6 @@ export KUI_POPUP_WINDOW_RESIZE=true
 
 # not very important options to electron
 export NODE_NO_WARNINGS=1
-export NODE_OPTIONS="--no-warnings"
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)                                                              
 
