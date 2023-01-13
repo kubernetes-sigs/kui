@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-common",
-  "version": "12.2.0",
+  "version": "13.0.0",
   "description": "Kui plugin that offers stylesheets",
   "license": "Apache-2.0",
   "author": "Mengting Yan",
@@ -44,8 +44,8 @@
     "madwizard": "^4.2.0",
     "monaco-editor": "^0.34.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
-    "react-markdown": "^8.0.4",
     "needle": "^3.2.0",
+    "react-markdown": "^8.0.4",
     "rehype-raw": "^6.1.1",
     "rehype-slug": "^5.1.0",
     "remark-code-frontmatter": "^1.0.0",
