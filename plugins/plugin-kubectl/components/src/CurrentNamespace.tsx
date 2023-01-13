@@ -23,7 +23,7 @@ import TextWithIconWidget, {
   Options as TextWithIconWidgetOptions
 } from '@kui-shell/plugin-client-common/mdist/components/Client/StatusStripe/TextWithIconWidget'
 
-import { Events, i18n, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
+import { Events, CommandCompleteEvent, i18n, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
 import { KubeContext } from '@kui-shell/plugin-kubectl'
 
@@ -42,6 +42,7 @@ const strings = i18n('plugin-kubectl')
 
 export default class CurrentNamespace extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentNamespace.bind(this)
+  private readonly handlerForCommandComplete = this.reportCurrentNamespaceFromCommandComplete.bind(this)
   private readonly handlerNotCallingKubectl = this.getCurrentNamespaceFromTab.bind(this)
 
   public constructor(props: Props) {
@@ -67,6 +68,10 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     this.last = now
 
     return last && now - last < 250
+  }
+
+  private async reportCurrentNamespaceFromCommandComplete(evt: CommandCompleteEvent) {
+    this.reportCurrentNamespace(evt.tab)
   }
 
   private async reportCurrentNamespace(idx?: Tab | number | string) {
@@ -172,7 +177,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     }
     Events.eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
-    Events.eventBus.onAnyCommandComplete(this.handler)
+    Events.eventBus.onAnyCommandComplete(this.handlerForCommandComplete)
     import('@kui-shell/plugin-kubectl').then(_ => _.onKubectlConfigChangeEvents(this.handler))
   }
 
@@ -192,7 +197,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     Events.eventBus.off('/tab/new', this.handler)
     Events.eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
-    Events.eventBus.offAnyCommandComplete(this.handler)
+    Events.eventBus.offAnyCommandComplete(this.handlerForCommandComplete)
     import('@kui-shell/plugin-kubectl').then(_ => _.offKubectlConfigChangeEvents(this.handler))
   }
 
