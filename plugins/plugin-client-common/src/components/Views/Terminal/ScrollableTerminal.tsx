@@ -178,7 +178,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public constructor(props: Props) {
     super(props)
-
     this.initClipboardEvents()
     this.state = this.initialState()
     this.initSnapshotEvents()
@@ -1492,7 +1491,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         displayedIdx++
       }
 
-      if (scrollback.maximized && Capabilities.inBrowser() && isAnnouncement(_) && idx === 0) {
+      if (scrollback.maximized && Capabilities.inBrowser() && isAnnouncement(_) && sbidx === 0 && idx === 0) {
+        // Notes: the goal here is to avoid rendering the "Welcome to"
+        // announcement; this announcement should be the first block
+        // (idx==0) in the first split (sbidx===0)
         return null
       }
 
