@@ -90,18 +90,22 @@ export default class Sidebar extends React.PureComponent<Props, State> {
     const quiet = !this.props.noTopTabs
     pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`, undefined, quiet)
 
-    this.setState({ currentGuidebook: _.notebook })
+    this.setState({
+      currentGuidebook: _.notebook,
+      nav: this.nav(_.notebook) // pre-render to help with persistence of isExpanded state
+    })
 
-    // toggle the sidebar closed, after the user has clicked to open a
-    // guidebook; we add a bit of delay, just cause it looks better
+    // we may want to toggle the sidebar closed, after the user has
+    // clicked to open a guidebook; the enclosing component can
+    // dictate this behavior, our job is only to notify that component
     this.props.toggleOpen()
   }
 
   /** Render the menu structure of the sidebar */
-  private menu() {
+  private menu(currentGuidebook = this.currentGuidebook) {
     // helps deal with isActive; if we don't have a currentGuidebook,
     // use the first one (for now)
-    let first = !this.currentGuidebook
+    let first = !currentGuidebook
 
     const renderItem = (_: MenuItem, idx: number) => {
       const thisIsTheFirstNavItem = isGuidebook(_) && first
@@ -115,7 +119,7 @@ export default class Sidebar extends React.PureComponent<Props, State> {
           data-title={_.notebook}
           className="kui--sidebar-nav-item"
           onClick={this.onSelect.bind(this, _)}
-          isActive={this.props.indicateActiveItem && (_.notebook === this.currentGuidebook || thisIsTheFirstNavItem)}
+          isActive={this.props.indicateActiveItem && (_.notebook === currentGuidebook || thisIsTheFirstNavItem)}
         >
           {_.notebook}
         </NavItem>
@@ -148,11 +152,11 @@ export default class Sidebar extends React.PureComponent<Props, State> {
    * is named `nav` because that is what the PatternFly component
    * calls the corresponding property.
    */
-  private nav() {
+  private nav(currentGuidebook = this.currentGuidebook) {
     return (
       Array.isArray(this.props.guidebooks) && (
         <React.Fragment>
-          {this.menu()}
+          {this.menu(currentGuidebook)}
           {this.footer()}
         </React.Fragment>
       )
