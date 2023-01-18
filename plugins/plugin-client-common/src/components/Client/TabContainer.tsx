@@ -339,7 +339,15 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     )
   }
 
-  private readonly toggleSidebar = () => this.setState(curState => ({ isSidebarOpen: !curState.isSidebarOpen }))
+  private readonly toggleSidebar = () => {
+    this.setState(curState => ({ isSidebarOpen: !curState.isSidebarOpen }))
+  }
+
+  private readonly toggleSidebarFromSidebar = () => {
+    if (this.props.guidebooksExpanded !== true) {
+      this.toggleSidebar()
+    }
+  }
 
   private get needsSidebar() {
     return !!this.props.guidebooks
@@ -350,7 +358,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       <Sidebar
         version={this.props.version}
         isOpen={this.state.isSidebarOpen}
-        toggleOpen={this.toggleSidebar}
+        toggleOpen={this.toggleSidebarFromSidebar}
         noTopTabs={this.props.noTopTabs}
         guidebooks={this.props.guidebooks}
         productName={this.props.productName}
