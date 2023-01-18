@@ -22,6 +22,10 @@ set -o pipefail
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export CLIENT_HOME=$(cd "$SCRIPTDIR"/../../ && pwd)
 
+if [ "$(cat "$CLIENT_HOME/node_modules/@kui-shell/client/config.d/client.json" | jq -cr .offline)" = "true" ]; then
+    IS_OFFLINE_CLIENT=true
+fi
+
 if [ ! -d "$CLIENT_HOME/node_modules/@kui-shell" ]; then
     # npm on windows does some hacks to work around windows symlink nonsense
     CLIENT_HOME="$CLIENT_HOME/../.."
@@ -46,10 +50,6 @@ THEME="${MODULE_HOME}"/client
 
 rm -rf "$KUI_BUILDDIR"/dist/webpack/*
 
-if [ "$TARGET" != "electron-renderer" ]; then
-    (cd "${MODULE_HOME}"/proxy && npm install --no-package-lock)
-fi
-
 if [ -n "$OPEN" ]; then
     OPEN="--open"
 else
@@ -59,14 +59,20 @@ else
     rm -f $LOCKFILE
 fi
 
-echo "Watching Kui Headless bundles via webpack"
-if [ -n "$LOCKFILE" ]; then
-    LOCKFILE2=/tmp/kui-build-lock2.${PORT_OFFSET-0}
-    rm -f $LOCKFILE2
-fi
+if [ -z "$IS_OFFLINE_CLIENT" ]; then
+    if [ "$TARGET" != "electron-renderer" ]; then
+        (cd "${MODULE_HOME}"/proxy && npm install --no-package-lock)
+    fi
 
-LOCKFILE=$LOCKFILE2 npx --no-install webpack watch --progress --config "$HEADLESS_CONFIG" &
-echo $! > /tmp/kuiwatch-headless.pid
+    echo "Watching Kui Headless bundles via webpack"
+    if [ -n "$LOCKFILE" ]; then
+        LOCKFILE2=/tmp/kui-build-lock2.${PORT_OFFSET-0}
+        rm -f $LOCKFILE2
+    fi
+
+    LOCKFILE=$LOCKFILE2 npx --no-install webpack watch --progress --config "$HEADLESS_CONFIG" &
+    echo $! > /tmp/kuiwatch-headless.pid
+fi
 
 echo "Watching Kui Client bundles via webpack"
 LOCKFILE=$LOCKFILE npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
@@ -90,11 +96,11 @@ elif [ "$WATCH_ARGS" = "wait" ]; then
     wait
 fi
 
-if [ "$TARGET" != "electron-renderer" ]; then
+if [ -z "$IS_OFFLINE_CLIENT" ] && [ "$TARGET" != "electron-renderer" ]; then
     npm run proxy &
+fi
 
-    if [ -z "$RUNNING_KUI_TEST" ]; then
-       # otherwise, the tests won't start...
-       wait
-    fi
+if [ -z "$RUNNING_KUI_TEST" ]; then
+    # otherwise, the tests won't start...
+    wait
 fi
