@@ -41,7 +41,7 @@ else
         (cd node_modules/.bin && rm -f rc && node -e 'require("fs").symlinkSync("../rc/cli.js", "rc")')
     fi
 
-    (cd node_modules/node-pty && npm run install)
+    (cd node_modules/node-pty && node-gyp build)
 fi
 
 if [ -f node_modules/node-pty/build/Release/spawn-helper ]; then
