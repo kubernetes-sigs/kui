@@ -35,6 +35,9 @@ type Props = {
 }
 
 type State = CommandProps & {
+  /** Error in madwizard? */
+  internalError?: Error
+
   /** Guidebook markdown source */
   input: string
 
@@ -46,6 +49,22 @@ type State = CommandProps & {
 
   /** If status is q&a, then the current ask model */
   ask?: Ask | null
+}
+
+/** Work In Progress */
+const fakeFs: import('madwizard').MadWizardOptions['fs'] = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  mkdirp: async (path: string) => {
+    
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  readFile: (filepath: string, cb: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+    cb(null, Buffer.from('{}'))
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  writeFileAtomic: (filepath: string, buffer: string | Buffer) => {}
 }
 
 export default class Playground extends React.PureComponent<Props, State> {
@@ -169,10 +188,21 @@ export default class Playground extends React.PureComponent<Props, State> {
 
   public componentDidUpdate(prevProps: Props, prevState: State) {
     if (this.state?.input && (prevState?.input !== this.state.input || !this.state?.status)) {
-      cli(['madwizard', 'guide', '-'], undefined, {
-        vfile: new VFile({ cwd: process.cwd(), path: this.state.filepath, value: this.state.input }),
-        raw: this._onRaw,
-        shell: this._shell
+      cli(
+        ['madwizard', 'guide', '-'],
+        undefined,
+        Object.assign(
+          {},
+          { fs: fakeFs },
+          {
+            vfile: new VFile({ cwd: process.cwd(), path: this.state.filepath, value: this.state.input }),
+            raw: this._onRaw,
+            shell: this._shell
+          }
+        )
+      ).catch(err => {
+        console.error('Error from madwizard', err)
+        this.setState({ internalError: err })
       })
     }
 
@@ -205,6 +235,10 @@ export default class Playground extends React.PureComponent<Props, State> {
   }
 
   public render() {
+    if (this.state?.internalError) {
+      return 'Internal Error'
+    }
+
     return (
       <Allotment vertical defaultSizes={this.sizes} ref={this.allotmentRef}>
         <Allotment.Pane preferredSize={this.sizes[0]}>{this.guide()}</Allotment.Pane>
