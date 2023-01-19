@@ -75,7 +75,7 @@ if [ -z "$IS_OFFLINE_CLIENT" ]; then
 fi
 
 echo "Watching Kui Client bundles via webpack"
-LOCKFILE=$LOCKFILE npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
+WATCH=true LOCKFILE=$LOCKFILE npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
 echo $! > /tmp/kuiwatch-client.pid
 
 if [ -n "$LOCKFILE" ]; then

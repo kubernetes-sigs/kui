@@ -367,7 +367,7 @@ const externals = !inBrowser
       'globby',
       'fast-glob',
       'ws',
-      'readline',
+      // 'readline',
       'chokidar',
       'fsevents',
       'shelljs',

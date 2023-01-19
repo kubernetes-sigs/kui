@@ -48,11 +48,16 @@ APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 
+if [ "$(cat "$CLIENT_HOME/node_modules/@kui-shell/client/config.d/client.json" | jq -cr .offline)" = "true" ]; then
+    IS_OFFLINE_CLIENT=true
+fi
+
 echo "build-webpack CLIENT_HOME=$CLIENT_HOME"
 echo "build-webpack BUILDDIR=$BUILDDIR"
 echo "build-webpack STAGING=$STAGING"
 echo "build-webpack CORE_HOME=$CORE_HOME"
 echo "build-webpack APPDIR=$APPDIR"
+echo "build-webpack IS_OFFLINE_CLIENT=$IS_OFFLINE_CLIENT"
 
 export MODE="${MODE-production}"
 export CLIENT_HOME="$CLIENT_HOME"
@@ -65,27 +70,33 @@ function webpack {
     pushd "$STAGING" > /dev/null
     rm -f "$BUILDDIR"/*.js*
 
-    echo "Buildinging Kui Headless bundles via webpack"
-    NEEDS_KUI_PROXY=true npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=$MODE &
+    if [ -z "$IS_OFFLINE_CLIENT" ]; then
+        echo "Buildinging Kui Headless bundles via webpack"
+
+        KUI_LINK="$CLIENT_HOME"/node_modules/@kui-shell/proxy/kui
+        if [ -L "$KUI_LINK" ]; then
+            echo "removing kui link"
+            rm -f "$KUI_LINK"
+            RESTORE_KUI_LINK=true
+        fi
+        
+        NEEDS_KUI_PROXY=true npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=$MODE &
+    fi
 
     echo "Building Kui Client bundles via webpack"
     npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/webpack.config.js --mode $MODE
 
     wait
 
+    if [ -z "$IS_OFFLINE_CLIENT" ]; then
+        if [ -n "$RESTORE_KUI_LINK" ]; then
+            echo "restoring kui link"
+            git checkout packages/proxy/kui
+        fi
+    fi
+    
     popd > /dev/null
 }
 
-KUI_LINK="$CLIENT_HOME"/node_modules/@kui-shell/proxy/kui
-if [ -L "$KUI_LINK" ]; then
-    echo "removing kui link"
-    rm -f "$KUI_LINK"
-    RESTORE_KUI_LINK=true
-fi
-
 webpack
 
-if [ -n "$RESTORE_KUI_LINK" ]; then
-    echo "restoring kui link"
-    git checkout packages/proxy/kui
-fi
