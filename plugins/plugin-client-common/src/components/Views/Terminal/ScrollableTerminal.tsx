@@ -957,9 +957,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (replace && !event.cancelled) {
       const state = this.initialState()
       const split = this.state.splits[this.findSplit(this.state, uuid)]
-      const inProcess = split.blocks[findBlock(split.blocks)]
-      if (isProcessing(inProcess) || isBeingRerun(inProcess)) {
-        const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
+      const maybeInProcess = split.blocks[findBlock(split.blocks)]
+      if (maybeInProcess && (isProcessing(maybeInProcess) || isBeingRerun(maybeInProcess))) {
+        const finishedBlock = Finished(maybeInProcess, event, outputOnly, asReplay || undefined)
         state.splits[0].blocks.splice(0, 0, finishedBlock)
         this.setState(state)
         this.props.resetSplitLayout()
