@@ -18,9 +18,11 @@ import React from 'react'
 import { i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
-import TextWithIconWidget from './TextWithIconWidget'
+import TextWithIconWidget, { Options } from './TextWithIconWidget'
 
-export default class MadeWithKui extends React.PureComponent {
+type Props = Pick<Options, 'position'>
+
+export default class MadeWithKui extends React.PureComponent<Props> {
   private static readonly strings = i18n('plugin-client-common')
 
   private readonly popover = {
@@ -50,6 +52,13 @@ export default class MadeWithKui extends React.PureComponent {
   }
 
   public render() {
-    return <TextWithIconWidget text="Made with Kui" viewLevel="normal" popover={this.popover} position="top-end" />
+    return (
+      <TextWithIconWidget
+        text="Made with Kui"
+        viewLevel="normal"
+        popover={this.popover}
+        position={this.props.position || 'top-end'}
+      />
+    )
   }
 }
