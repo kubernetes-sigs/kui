@@ -17,6 +17,7 @@
 import React from 'react'
 import { VFile } from 'vfile'
 import { cli } from 'madwizard/dist/fe/cli'
+import { MadWizardOptions } from 'madwizard'
 import { Allotment, AllotmentHandle } from 'allotment'
 import { Loading, onCommentaryEdit, offCommentaryEdit } from '@kui-shell/plugin-client-common'
 
@@ -24,9 +25,11 @@ import AskUI, { Ask } from './Ask'
 import AskingDone from './AskingDone'
 import PlaygroundTerminal, { Command, CommandProps } from './PlaygroundTerminal'
 
+const PlaygroundTextual = React.lazy(() => import('./PlaygroundTextual'))
+
 import '../../web/scss/components/Allotment/_index.scss'
 
-type Props = {
+export type Props = {
   /** Channel name to listen on. This should be matched with a `commentary --send <channel>` */
   channel: string
 
@@ -54,9 +57,7 @@ type State = CommandProps & {
 /** Work In Progress */
 const fakeFs: import('madwizard').MadWizardOptions['fs'] = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  mkdirp: async (path: string) => {
-    
-  },
+  mkdirp: async (path: string) => {},
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   readFile: (filepath: string, cb: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
@@ -68,7 +69,7 @@ const fakeFs: import('madwizard').MadWizardOptions['fs'] = {
 }
 
 export default class Playground extends React.PureComponent<Props, State> {
-  private readonly allotmentRef = React.createRef<AllotmentHandle>()
+  private readonly _allotmentRef = React.createRef<AllotmentHandle>()
 
   /** Allotment split. See this.sizes() */
   private readonly _sizes = {
@@ -93,8 +94,13 @@ export default class Playground extends React.PureComponent<Props, State> {
     return this.props.tab.REPL
   }
 
+  /** Use madwizard's raw mode to deal with q&a? */
+  protected useRawMode(): boolean {
+    return true
+  }
+
   /** Callback from madwizard's raw API, which tells us the state of the wizard. */
-  private readonly _onRaw = (evt: import('madwizard').RawEvent) => {
+  private readonly onRaw = (evt: import('madwizard').RawEvent) => {
     if (evt.type === 'ask') {
       // madwizard wants us to present a question
       const prompt = evt.ask
@@ -141,6 +147,22 @@ export default class Playground extends React.PureComponent<Props, State> {
     this.setState({ input, filepath })
   }
 
+  /** Optional conduit for stdin and stdout */
+  protected stdio(): MadWizardOptions['stdio'] {
+    return undefined
+  }
+
+  /** Hook to allow subclasses to write a REPL response */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected write(response: import('@kui-shell/core').KResponse) {
+    /* Intentionally empty */
+  }
+
+  /** Hook for subclasses to deal with a fresh start of madwizard */
+  protected clear() {
+    /* Intentionally empty */
+  }
+
   /** Intercept shell executions */
   private readonly _shell = {
     willHandle() {
@@ -164,6 +186,7 @@ export default class Playground extends React.PureComponent<Props, State> {
       const status: State['commands'][number]['status'] = 'success'
       try {
         response = await this.REPL.qexec(cmdline.toString(), undefined, undefined, { env })
+        this.write(response)
       } catch (err) {
         console.error(err)
         response = err as Error
@@ -186,18 +209,25 @@ export default class Playground extends React.PureComponent<Props, State> {
     offCommentaryEdit(this.props.channel, this._onEdit)
   }
 
+  protected get status() {
+    return this.state?.status
+  }
+
   public componentDidUpdate(prevProps: Props, prevState: State) {
-    if (this.state?.input && (prevState?.input !== this.state.input || !this.state?.status)) {
+    if (this.state?.input && (prevState?.input !== this.state.input || !this.status)) {
+      this.clear()
       cli(
         ['madwizard', 'guide', '-'],
-        undefined,
+        this.stdio()?.stdout?.write,
         Object.assign(
           {},
           { fs: fakeFs },
           {
+            clear: false,
             vfile: new VFile({ cwd: process.cwd(), path: this.state.filepath, value: this.state.input }),
-            raw: this._onRaw,
-            shell: this._shell
+            raw: this.useRawMode() ? this.onRaw : undefined,
+            shell: this._shell,
+            stdio: this.stdio()
           }
         )
       ).catch(err => {
@@ -207,7 +237,7 @@ export default class Playground extends React.PureComponent<Props, State> {
     }
 
     if (this.state && prevState && prevState.ask !== this.state.ask) {
-      setTimeout(() => this.allotmentRef.current?.resize(this.sizes))
+      setTimeout(() => this._allotmentRef.current?.resize(this.sizes))
     }
   }
 
@@ -240,7 +270,7 @@ export default class Playground extends React.PureComponent<Props, State> {
     }
 
     return (
-      <Allotment vertical defaultSizes={this.sizes} ref={this.allotmentRef}>
+      <Allotment vertical defaultSizes={this.sizes} ref={this._allotmentRef}>
         <Allotment.Pane preferredSize={this.sizes[0]}>{this.guide()}</Allotment.Pane>
         {this.state?.commands?.length > 0 && (
           <Allotment.Pane preferredSize={this.sizes[1]}>{this.terminal()}</Allotment.Pane>
@@ -250,11 +280,19 @@ export default class Playground extends React.PureComponent<Props, State> {
   }
 }
 
-export function controller(args: import('@kui-shell/core').Arguments) {
+type Options = import('@kui-shell/core').ParsedOptions & {
+  ui?: 'graphics' | 'text'
+}
+
+export function controller(args: import('@kui-shell/core').Arguments<Options>) {
   const channel = args.argvNoOptions[2]
   if (!channel) {
     throw new Error('Usage: madwizard playground <channel>')
   }
 
-  return <Playground channel={channel} tab={args.tab} />
+  if (args.parsedOptions.ui === 'text') {
+    return <PlaygroundTextual channel={channel} tab={args.tab} />
+  } else {
+    return <Playground channel={channel} tab={args.tab} />
+  }
 }

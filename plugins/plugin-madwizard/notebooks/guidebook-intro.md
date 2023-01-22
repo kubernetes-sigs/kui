@@ -1,10 +1,5 @@
 ---
 title: What is a Guidebook?
-layout:
-    1: left
-    2: 
-        position: default
-        maximized: true
 ---
 
 # An Introduction to Guidebooks
@@ -33,13 +28,3 @@ including a wizard model. Kui then has a UI on top of these models.
 With this approach, the documentation can also be run through
 automated tests, ensuring that it works, and continues to do so.
 
----
-
-```shell
----
-execute: now
-maximize: true
-outputOnly: true
----
-madwizard guide demo
-```

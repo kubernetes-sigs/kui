@@ -6,10 +6,16 @@
       "submenu": [{ "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" }]
     },
     {
-      "label": "Playgrounds",
+      "label": "Guidebooks",
       "submenu": [
-        { "notebook": "Markdown Playground", "filepath": "/kui/playground.md" },
-        { "notebook": "Automatic Wizards Playground", "filepath": "/kui/madwizard/playground/playground.md" }
+        { "notebook": "What is a Guidebook?", "filepath": "/kui/madwizard/playground/guidebook-intro.md" },
+        {
+          "label": "Playgrounds",
+          "submenu": [
+            { "notebook": "Craft a Wizard", "filepath": "/kui/madwizard/playground/playground.md" },
+            { "notebook": "Explore Markdown Features", "filepath": "/kui/playground.md" }
+          ]
+        }
       ]
     },
     {

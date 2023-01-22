@@ -24,7 +24,7 @@ import { Toolbar, ToolbarContent, ToolbarItem, SearchInput } from '@patternfly/r
 
 import '../../web/scss/components/Terminal/_index.scss'
 
-type WatchInit = () => {
+export type WatchInit = () => {
   /**
    * Will be used to attach to an underlying streaming
    * provider of additional terminal output.
@@ -206,6 +206,16 @@ export default class XTerm extends React.PureComponent<Props, State> {
 
     // yes, we have initialized the terminal
     return true
+  }
+
+  /** Clear screen */
+  public clear() {
+    this.terminal.clear()
+  }
+
+  /** Write a line */
+  public write(msg: string) {
+    this.terminal.write(msg)
   }
 
   /**

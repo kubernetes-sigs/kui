@@ -23,6 +23,7 @@ import { Capabilities } from '@kui-shell/core'
 export default async function preloadMadwizard() {
   if (!Capabilities.isHeadless()) {
     const playgroundGuidebooks = [
+      'plugin://plugin-madwizard/notebooks/guidebook-intro.md',
       'plugin://plugin-madwizard/notebooks/playground.md',
       'plugin://plugin-madwizard/notebooks/hello.md',
       'plugin://plugin-madwizard/notebooks/two-choices.md',
