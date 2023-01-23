@@ -102,7 +102,7 @@ export default class PlaygroundTextual extends Playground {
 
     return (
       <div
-        className="kui--inverted-color-context flex-fill flex-layout flex-align-stretch"
+        className="kui--inverted-color-context flex-fill flex-layout flex-align-stretch kui--madwizard-playground-textual"
         style={{ backgroundColor: 'var(--color-sidecar-background-02)' }}
       >
         <Terminal watch={this._watch} searchable={false} key={this.terminalKey} ref={this._terminalRef} />
