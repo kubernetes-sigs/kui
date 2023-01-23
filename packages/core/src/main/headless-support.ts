@@ -29,7 +29,7 @@ import { Streamable } from '../models/streamable'
  */
 export const streamTo = async (which: 'stdout' | 'stderr') => {
   const [{ clearLine, cursorTo }, { print }] = await Promise.all([
-    import('readline'),
+    import('node:readline'),
     import('./headless-pretty-print')
   ])
 
