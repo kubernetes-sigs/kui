@@ -15,6 +15,7 @@
  */
 
 @import 'mixins';
+@import '@kui-shell/plugin-bash-like/web/scss/xterm.scss';
 
 /** For a few, we need to add !important to prioritize our rules over PatternFly's */
 @include MadwizardToolbar {
