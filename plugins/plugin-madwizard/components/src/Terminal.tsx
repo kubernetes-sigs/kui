@@ -278,8 +278,7 @@ export default class XTerm extends React.PureComponent<Props, State> {
       const standIn = document.querySelector('body .repl')
       if (standIn) {
         const fontTheme = getComputedStyle(standIn)
-        xterm.options.fontSize =
-          parseInt(fontTheme.fontSize.replace(/px$/, ''), 10) * (this.props.fontSizeAdjust || 16 / 14)
+        xterm.options.fontSize = parseInt(fontTheme.fontSize.replace(/px$/, ''), 10) * (this.props.fontSizeAdjust || 1)
         // terminal.setOption('lineHeight', )//parseInt(fontTheme.lineHeight.replace(/px$/, ''), 10))
 
         // FIXME. not tied to theme
@@ -381,7 +380,11 @@ export default class XTerm extends React.PureComponent<Props, State> {
     } else {
       return (
         <div className={this.state.className}>
-          <div ref={this.container} className="xterm-container" onKeyUp={this.onKeyUp} />
+          <div
+            ref={this.container}
+            className="xterm-container flex-layout flex-fill flex-align-stretch"
+            onKeyUp={this.onKeyUp}
+          />
           {this.toolbar()}
         </div>
       )
