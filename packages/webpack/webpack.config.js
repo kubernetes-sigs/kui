@@ -311,6 +311,12 @@ plugins.push({
 // node 16
 if (inBrowser) {
   plugins.push(
+    new NormalModuleReplacementPlugin(/^readline$/, resource => {
+      resource.request = require.resolve('./readline.js')
+    })
+  )
+
+  plugins.push(
     new NormalModuleReplacementPlugin(/node:/, resource => {
       const mod = resource.request.replace(/^node:/, '')
 
