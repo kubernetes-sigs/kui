@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-import { Arguments, Capabilities, Registrar } from '@kui-shell/core'
+import { Arguments, Capabilities, Registrar, Util } from '@kui-shell/core'
 
-function echo({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
-  return argvNoOptions.slice(1).join(' ') || true
+/** Expand env vars */
+export function expand(expr: number | boolean | string, env = process.env): string {
+  return typeof expr !== 'string'
+    ? expr.toString()
+    : expr.replace(/\${?([^}/\s]+)}?/g, (_, p1) => Util.expandHomeDir(typeof env[p1] !== 'undefined' ? env[p1] : _))
+}
+
+function echo({ argvNoOptions, execOptions }: Pick<Arguments, 'argvNoOptions' | 'execOptions'>) {
+  return (
+    argvNoOptions
+      .slice(1)
+      .map(_ => expand(_, execOptions.env))
+      .join(' ') || true
+  )
 }
 
 export default (registrar: Registrar) => {
