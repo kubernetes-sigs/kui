@@ -177,17 +177,20 @@ export default class Playground extends React.PureComponent<Props, State> {
       return true
     },
 
-    exec: async (cmdline: string | boolean, env: Record<string, string>) => {
+    exec: async (cmdline: string | boolean, env: Record<string, string>, isInternal: boolean) => {
       // mark start
       const command: Command = { cmdline: cmdline.toString(), status: 'in-progress', startTime: Date.now(), endTime: 0 }
-      this.setState(({ commands = [], nExecStarts = 0 }) => {
-        if (!commands.find(_ => _ === command)) {
-          commands.push(command)
-          return { commands, nExecStarts: nExecStarts + 1 }
-        } else {
-          return null
-        }
-      })
+
+      if (!isInternal) {
+        this.setState(({ commands = [], nExecStarts = 0 }) => {
+          if (!commands.find(_ => _ === command)) {
+            commands.push(command)
+            return { commands, nExecStarts: nExecStarts + 1 }
+          } else {
+            return null
+          }
+        })
+      }
 
       let response: State['commands'][number]['response']
       const status: State['commands'][number]['status'] = 'success'
@@ -199,10 +202,12 @@ export default class Playground extends React.PureComponent<Props, State> {
         response = err as Error
       }
 
-      command.endTime = Date.now()
-      command.response = response
-      command.status = status
-      this.setState(({ nExecCompletions = 0 }) => ({ nExecCompletions: nExecCompletions + 1 }))
+      if (!isInternal) {
+        command.endTime = Date.now()
+        command.response = response
+        command.status = status
+        this.setState(({ nExecCompletions = 0 }) => ({ nExecCompletions: nExecCompletions + 1 }))
+      }
 
       return typeof response !== 'object' || isPrimitiveArray(response) ? response : 'success'
     }
