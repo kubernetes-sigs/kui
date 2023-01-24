@@ -29,6 +29,12 @@ const PlaygroundTextual = React.lazy(() => import('./PlaygroundTextual'))
 
 import '../../web/scss/components/Allotment/_index.scss'
 
+/** @return whether `A` is an array of primitive values */
+function isPrimitiveArray(A: any): A is (string | number | boolean)[] {
+  return Array.isArray(A) && A.every(_ => typeof _ !== 'object')
+}
+
+/** <Playground/> react props */
 export type Props = {
   /** Channel name to listen on. This should be matched with a `commentary --send <channel>` */
   channel: string
@@ -37,6 +43,7 @@ export type Props = {
   tab: import('@kui-shell/core').Tab
 }
 
+/** <Playground/> react state */
 type State = CommandProps & {
   /** Error in madwizard? */
   internalError?: Error
@@ -164,7 +171,7 @@ export default class Playground extends React.PureComponent<Props, State> {
   }
 
   /** Intercept shell executions */
-  private readonly _shell = {
+  private readonly _shell: MadWizardOptions['shell'] = {
     willHandle() {
       // handle every shell command
       return true
@@ -197,7 +204,7 @@ export default class Playground extends React.PureComponent<Props, State> {
       command.status = status
       this.setState(({ nExecCompletions = 0 }) => ({ nExecCompletions: nExecCompletions + 1 }))
 
-      return 'success' as const
+      return typeof response !== 'object' || isPrimitiveArray(response) ? response : 'success'
     }
   }
 
