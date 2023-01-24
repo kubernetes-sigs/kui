@@ -58,7 +58,7 @@ export default class PlaygroundTerminal extends React.PureComponent<Props> {
         style={{ backgroundColor: 'var(--color-sidecar-background-02)' }}
       >
         {this.props.commands
-          .filter(_ => _.response)
+          .filter(_ => _.response && typeof _.response !== 'boolean')
           .map(_ => (
             <Flex key={_.cmdline}>
               <FlexItem>
