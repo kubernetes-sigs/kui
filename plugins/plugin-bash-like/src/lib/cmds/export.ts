@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Events, Registrar, SymbolTable } from '@kui-shell/core'
+import { Arguments, Capabilities, Events, Registrar, SymbolTable } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from './catchall'
 
 /**
@@ -31,9 +31,13 @@ const exportCommand = async (args: Arguments) => {
 
   // only add a semicolon if needed
   const semicolon = /;\s*$/.test(command) ? '' : ';'
-
   const myArgs = Object.assign({}, args, { command: `${command}${semicolon} echo -n $${key}` })
-  const value = await doExecWithStdoutViaPty(myArgs)
+
+  const value =
+    Capabilities.inBrowser() && !Capabilities.hasProxy()
+      ? arr[1].replace(/^"(.+)"$/, '$1')
+      : await doExecWithStdoutViaPty(myArgs)
+
   curDic[key] = value
 
   SymbolTable.write(tab, curDic)
