@@ -40,7 +40,7 @@
     "anser": "^2.1.1",
     "ansi-regex": "^6.0.1",
     "html-entities": "^2.3.3",
-    "madwizard": "^5.0.2",
+    "madwizard": "^5.0.3",
     "monaco-editor": "^0.34.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
     "needle": "^3.2.0",
