@@ -20,6 +20,8 @@ import Debug from 'debug'
 const debug = Debug('core/capabilities')
 debug('loading')
 
+import { isOffline } from '../api/Client'
+
 export { CapabilityRegistration as Registration } from '../models/plugin'
 
 /**
@@ -75,7 +77,10 @@ export const inBrowser = () => {
     return true
   }
 
-  if (!isHeadless() && typeof document !== 'undefined' && document.body.classList.contains('not-electron')) {
+  if (
+    isOffline() ||
+    (!isHeadless() && typeof document !== 'undefined' && document.body.classList.contains('not-electron'))
+  ) {
     setMedia(Media.Browser)
     return true
   } else {
