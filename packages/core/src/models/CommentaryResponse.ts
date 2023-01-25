@@ -61,6 +61,9 @@ export type CommentaryResponse = {
     /** [Optional] REPL controller, but required if you want your Card
      * to have functional kuiexec?command=... links via Markdown */
     repl?: REPL
+
+    /** [Optional] If true, the source specified by `filepath` does not utilize extended markdown, such as tabs and tips */
+    simple?: boolean
   }
 }
 

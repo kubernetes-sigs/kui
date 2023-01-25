@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { Choices, Parser } from 'madwizard'
+import { isWizard } from 'madwizard/dist/parser'
+import { ChoiceState } from 'madwizard/dist/choices'
 
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
@@ -28,14 +29,19 @@ const Wizard = React.lazy(() => import('./Wizard'))
 
 const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
-export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices: Choices.ChoiceState) {
+export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices: ChoiceState) {
   const tabbed = _tabbed(uuid, choices)
 
   return function div(props: React.HTMLAttributes<HTMLDivElement> & Partial<PositionProps> & Partial<TabProps>) {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const placeholder = props['data-kui-placeholder']
-    const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
+    const count =
+      typeof props['data-kui-split-count'] === 'number'
+        ? props['data-kui-split-count']
+        : props['data-kui-split-count']
+        ? parseInt(props['data-kui-split-count'], 10)
+        : undefined
 
     // Important! Default to `undefined` so that we pick up the
     // *default* behavior from the Terminal component
@@ -51,7 +57,7 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
-      const node = Parser.isWizard(props) ? (
+      const node = isWizard(props) ? (
         <Wizard uuid={uuid} {...props} choices={choices} />
       ) : (
         <div data-is-maximized={maximized || undefined}>{props.children}</div>
@@ -74,7 +80,7 @@ export default function divWrapper(mdprops: MarkdownProps, uuid: string, choices
             const node = (
               <ReactCommentary>
                 <div className="padding-content marked-content page-content" data-is-nested>
-                  {Parser.isWizard(props) ? (
+                  {isWizard(props) ? (
                     <Wizard uuid={uuid} {...props} choices={choices} />
                   ) : (
                     props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')

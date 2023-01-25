@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2023 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,80 +16,27 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import {
-  hackMarkdownSource,
-  inlineSnippets,
-  rehypeCodeIndexer,
-  rehypeTabbed,
-  rehypeTip,
-  rehypeWizard
-} from 'madwizard/dist/parser'
-import { Choices, ChoiceState, newChoiceState } from 'madwizard/dist/choices'
+import { inlineSnippets } from 'madwizard/dist/parser'
+import { ChoiceState, newChoiceState } from 'madwizard/dist/choices'
 import { TextContent } from '@patternfly/react-core/dist/esm/components/Text/TextContent'
 
 import type { Tab as KuiTab } from '@kui-shell/core'
-import { inElectron } from '@kui-shell/core/mdist/api/Capabilities'
 
+import frontmatter from 'remark-frontmatter'
 import ReactMarkdown, { Options } from 'react-markdown'
 
-// GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
-import gfm from 'remark-gfm'
-
-// ==foo== -> <mark>foo</mark>
-import hackMarks from './remark-mark.js'
-
-// ++ctrl+alt+delete++== -> <kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>delete</kbd>
-import hackKeys from './remark-keys.js'
-
-// parses out ::import{filepath} as node.type === 'leafDirective', but
-// does not create any DOM elements
-import remarkDirective from 'remark-directive'
-
-import emojis from 'remark-emoji'
-import frontmatter from 'remark-frontmatter'
-
 import components from './components'
-import { CodeBlockResponse } from './components/code'
+import { kuiFrontmatter } from './frontmatter'
 
-// react-markdown v6+ now require use of these to support html
-import rehypeRaw from 'rehype-raw'
-import rehypeSlug from 'rehype-slug'
-
-import icons from './rehype-icons'
-import { kuiFrontmatter, tryFrontmatter } from './frontmatter'
-
-const rehypePlugins = (uuid: string, choices: ChoiceState, filepath: string): Options['rehypePlugins'] => [
-  rehypeWizard,
-  [rehypeTabbed, uuid, choices, { optimize: { aprioris: inElectron() } }],
-  rehypeTip,
-  [rehypeCodeIndexer, uuid, filepath, {}, undefined, true],
-  icons,
-  rehypeRaw,
-  rehypeSlug
-]
-const remarkPlugins: (tab: KuiTab) => Options['remarkPlugins'] = (tab: KuiTab) => [
-  gfm,
-  remarkDirective,
-  [frontmatter, ['yaml', 'toml']],
-  [kuiFrontmatter, { tab }],
-  emojis // [emojis, { emoticon: true }]
-]
-
-export type Props = Partial<Choices> & {
+export type Props = {
   /** Source filepath */
   filepath?: string
 
   /** Source content */
   source: string
 
-  /** Render executable code blocks with the executable code block component [Default: true] */
-  executableCodeBlocks?: boolean
-
   /** Execute code blocks immediately? */
   executeImmediately?: boolean
-
-  /** Has the user clicked to execute a code block? */
-  codeBlockResponses?: CodeBlockResponse[]
 
   /** Source content type */
   contentType?: 'text/html' | 'application/markdown'
@@ -130,7 +77,7 @@ type State = {
   source: Props['source']
 }
 
-export default class Markdown extends React.PureComponent<Props, State> {
+export default class SimpleMarkdown extends React.PureComponent<Props, State> {
   private mounted = false
 
   /** Handlers to be called on unmount */
@@ -173,11 +120,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
   private get snippetBasePath() {
     if (this.props.snippetBasePath) {
       return this.props.snippetBasePath
-    } else {
-      const fm = tryFrontmatter(this.props.source)
-      if (fm.attributes && fm.attributes.snippets && fm.attributes.snippets.basePath) {
-        return fm.attributes.snippets.basePath
-      }
     }
   }
 
@@ -212,32 +154,17 @@ export default class Markdown extends React.PureComponent<Props, State> {
             madwizardOptions: {},
             snippetBasePath: this.snippetBasePath
           })(sourcePriorToInlining, this.props.filepath)
-          this.setState({ source: Markdown.hackSource(source) })
+          this.setState({ source: this.hackSource(source) })
         }
       })
     } else {
-      this.setState({ source: Markdown.hackSource(sourcePriorToInlining) })
+      this.setState({ source: this.hackSource(sourcePriorToInlining) })
     }
-  }
-
-  private codeBlockResponseWithReplayedBit(codeBlockIdx: number) {
-    const fromProps = this.props.codeBlockResponses ? this.props.codeBlockResponses[codeBlockIdx] : undefined
-
-    // replayed if we have a response in props, because the commentary
-    // controller has fetched this from a json from that stores
-    // pre-recorded output
-    const replayed = !!fromProps
-
-    // the current response to be displayed favors state, as these
-    // come from re-executions in this session
-    const response = fromProps || undefined
-
-    return Object.assign({ replayed }, response)
   }
 
   private readonly uuid = uuid()
 
-  private readonly choices: ChoiceState = this.props.choices || newChoiceState('default')
+  private readonly choices: ChoiceState = newChoiceState('default')
 
   /** This will be the `components` argument to `<ReactMarkdown/>` */
   private readonly _components = components({
@@ -245,7 +172,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
     repl: this.repl,
     uuid: this.uuid,
     choices: this.choices,
-    codeBlockResponses: this.codeBlockResponseWithReplayedBit.bind(this)
+    codeBlockResponses: () => undefined
   })
 
   /** `exec` controller */
@@ -272,15 +199,9 @@ export default class Markdown extends React.PureComponent<Props, State> {
    * Deal with pymdown indentation syntax, and other not-worth-parsing
    * syntax from pymdown (such as target=_blank for links).
    */
-  private static hackSource(source: string) {
-    return hackKeys(hackMarks(hackMarkdownSource(source)))
-      .trim()
-      .replace(/\){target=[^}]+}/g, ')')
-      .replace(/{draggable=(false|true)}/g, '')
+  protected hackSource(source: string) {
+    return source
   }
-
-  private readonly _remarkPlugins = remarkPlugins(this.props.tab)
-  private readonly _rehypePlugins = rehypePlugins(this.uuid, this.choices, this.props.filepath)
 
   private get className() {
     return (
@@ -290,6 +211,11 @@ export default class Markdown extends React.PureComponent<Props, State> {
         (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
     )
   }
+
+  private readonly _remarkPlugins: Options['remarkPlugins'] = [
+    [frontmatter, ['yaml', 'toml']],
+    [kuiFrontmatter, { tab: this.props.tab }]
+  ]
 
   public render() {
     if (this.props.onRender) {
@@ -312,7 +238,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
             className={this.className}
             components={this._components()}
             remarkPlugins={this._remarkPlugins}
-            rehypePlugins={this._rehypePlugins}
             data-is-nested={this.props.nested || undefined}
           >
             {source}

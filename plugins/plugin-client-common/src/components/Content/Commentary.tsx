@@ -24,6 +24,7 @@ import { MutabilityContext } from '../Client/MutabilityContext'
 import { CurrentMarkdownTab, CurrentMarkdownTabProps } from './Markdown/components/tabbed'
 
 const Markdown = React.lazy(() => import('./Markdown'))
+const SimpleMarkdown = React.lazy(() => import('./Markdown/Simple'))
 const Button = React.lazy(() => import('../spi/Button'))
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 
@@ -271,18 +272,31 @@ class Commentary extends React.PureComponent<PropsInternal, State> {
 
   private preview() {
     if (this.props.preview !== false) {
-      return (
-        <Markdown
-          nested
-          execUUID={this.props.execUUID}
-          filepath={this.props.filepath}
-          source={this.state.textValue}
-          codeBlockResponses={this.props.codeBlockResponses}
-          baseUrl={this.props.baseUrl}
-          snippetBasePath={this.props.snippetBasePath}
-          tab={this.props.tab}
-        />
-      )
+      if (this.props.simple) {
+        return (
+          <SimpleMarkdown
+            nested
+            execUUID={this.props.execUUID}
+            filepath={this.props.filepath}
+            baseUrl={this.props.baseUrl}
+            source={this.state.textValue}
+            tab={this.props.tab}
+          />
+        )
+      } else {
+        return (
+          <Markdown
+            nested
+            execUUID={this.props.execUUID}
+            filepath={this.props.filepath}
+            source={this.state.textValue}
+            codeBlockResponses={this.props.codeBlockResponses}
+            baseUrl={this.props.baseUrl}
+            snippetBasePath={this.props.snippetBasePath}
+            tab={this.props.tab}
+          />
+        )
+      }
     }
   }
 
