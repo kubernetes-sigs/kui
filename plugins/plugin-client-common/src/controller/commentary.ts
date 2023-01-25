@@ -25,7 +25,7 @@ import fetchMarkdownFile, { join } from './fetch'
  * commentary command parsedOptions type
  */
 type CommentaryOptions = ParsedOptions &
-  Pick<CommentaryResponse['props'], 'header' | 'edit' | 'preview' | 'receive' | 'send' | 'replace'> & {
+  Pick<CommentaryResponse['props'], 'header' | 'edit' | 'preview' | 'receive' | 'send' | 'replace' | 'simple'> & {
     f: string
     file: string
     title: string
@@ -119,7 +119,8 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
     send,
     title,
     readonly,
-    replace
+    replace,
+    simple
   } = args.parsedOptions
 
   const filepath = args.parsedOptions.file || args.parsedOptions.f
@@ -171,6 +172,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           replace,
           receive,
           send,
+          simple,
           snippetBasePath,
           title,
           children: '',
@@ -188,6 +190,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           replace,
           receive,
           send,
+          simple,
           snippetBasePath,
           title,
           filepath,
@@ -210,7 +213,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
  */
 export default function registerCommentaryController(commandTree: Registrar) {
   const flags = {
-    boolean: ['edit', 'header', 'preview', 'readonly', 'replace']
+    boolean: ['edit', 'header', 'preview', 'readonly', 'replace', 'simple']
   }
 
   commandTree.listen('/commentary', addComment, { outputOnly: true, flags })
