@@ -291,7 +291,12 @@ export default class AskUI extends React.PureComponent<Props, State> {
         {message !== _.name && (
           <div>
             <Ansi noWrap="normal" className="sans-serif">
-              {(_.message || '').split(/\n/).slice(-2)[0]}
+              {
+                (_.message || '')
+                  .replace(/(\n\x1b\[0m)\x1b\[0m {2}/, '$1') // eslint-disable-line no-control-regex
+                  .split(/\n/)
+                  .slice(-2)[0]
+              }
             </Ansi>
           </div>
         )}
