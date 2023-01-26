@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import { Events, getPrimaryTabId, i18n, KResponse, Registrar, Tab } from '@kui-shell/core'
+import type { NewTabRequestEvent, StatusStripeChangeEvent } from '@kui-shell/core/mdist/api/Events'
+import type { KResponse, Registrar, Tab } from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
-
-const strings = i18n('plugin-core-support')
-const usage = {
-  strict: 'switch',
-  command: 'switch',
-  required: [{ name: 'tabIndex', numeric: true, docs: 'Switch to the given tab index' }]
-}
 
 /**
  * Close the current tab
  *
  */
-function closeTab(tab: Tab, closeAllSplits: boolean) {
+async function closeTab(tab: Tab, closeAllSplits: boolean) {
+  const [{ getPrimaryTabId }, { eventBus }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Tab'),
+    import('@kui-shell/core/mdist/api/Events')
+  ])
   const uuid = closeAllSplits ? getPrimaryTabId(tab) : tab.uuid
-  Events.eventBus.emitWithTabId('/tab/close/request', uuid, tab)
+  eventBus.emitWithTabId('/tab/close/request', uuid, tab)
   return true
 }
 
@@ -41,15 +39,12 @@ function closeTab(tab: Tab, closeAllSplits: boolean) {
  *
  */
 export default function plugin(commandTree: Registrar) {
-  commandTree.listen(
-    '/tab/switch',
-    ({ argvNoOptions }) => {
-      const idx = parseInt(argvNoOptions[argvNoOptions.length - 1], 10)
-      Events.eventBus.emit('/tab/switch/request', idx - 1)
-      return true
-    },
-    { usage }
-  )
+  commandTree.listen('/tab/switch', async ({ argvNoOptions }) => {
+    const { eventBus } = await import('@kui-shell/core/mdist/api/Events')
+    const idx = parseInt(argvNoOptions[argvNoOptions.length - 1], 10)
+    eventBus.emit('/tab/switch/request', idx - 1)
+    return true
+  })
 
   /**
    * Create and initialize a new tab
@@ -57,9 +52,9 @@ export default function plugin(commandTree: Registrar) {
    */
   commandTree.listen<
     KResponse,
-    Pick<Events.NewTabRequestEvent['tabs'][0], 'cmdline' | 'onClose'> & {
+    Pick<NewTabRequestEvent['tabs'][0], 'cmdline' | 'onClose'> & {
       /** Set the status stripe decorations */
-      'status-stripe-type'?: Events.StatusStripeChangeEvent['type']
+      'status-stripe-type'?: StatusStripeChangeEvent['type']
       'status-stripe-message'?: string | string[]
 
       /** Tab titles; comma separated for multi-open */
@@ -111,6 +106,9 @@ export default function plugin(commandTree: Registrar) {
 
       // this is our response to the user if the tab was created
       // successfully
+      const { eventBus } = await import('@kui-shell/core/mdist/api/Events')
+      const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+      const strings = i18n('plugin-core-support')
       const ok = {
         content: !titles
           ? strings('Created a new tab')
@@ -123,7 +121,7 @@ export default function plugin(commandTree: Registrar) {
       if (args.parsedOptions.cmdline) {
         // caller wants to invoke a given command line in the new tab
         return new Promise(resolve => {
-          Events.eventBus.emit('/tab/new/request', {
+          eventBus.emit('/tab/new/request', {
             background: args.parsedOptions.bg,
             tabs: (titles || ['']).map((title, idx) => ({
               title,
@@ -138,7 +136,7 @@ export default function plugin(commandTree: Registrar) {
         })
       } else {
         // default case: tab opens without invoking a command line
-        Events.eventBus.emit('/tab/new/request', {
+        eventBus.emit('/tab/new/request', {
           background: args.parsedOptions.bg,
           tabs: statusStripeDecorations.map((statusStripeDecoration, idx) => ({
             statusStripeDecoration,

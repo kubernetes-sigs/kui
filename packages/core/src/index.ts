@@ -139,6 +139,7 @@ export { default as TabState, registerTabState } from './models/tab-state'
 
 // Themes
 export * from './api'
+export { Theme } from './api/Themes'
 
 // CLI
 export { Block } from './webapp/models/block'

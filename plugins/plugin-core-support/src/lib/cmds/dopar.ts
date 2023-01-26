@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, ParsedOptions } from '@kui-shell/core'
+import type { Arguments, ParsedOptions } from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   N: number

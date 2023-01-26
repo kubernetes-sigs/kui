@@ -22,7 +22,7 @@
 
 import Debug from 'debug' // the default number of history elements to show with /history
 
-import { Arguments, Registrar, Table, Row, History } from '@kui-shell/core'
+import type { Arguments, Registrar, Row } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/history')
 
@@ -75,6 +75,7 @@ const usage = {
 const again = async ({ tab, REPL }: Arguments, N: number, historyEntry) => {
   debug('again', N, historyEntry)
 
+  const { History } = await import('@kui-shell/core/mdist/api/History')
   const history = await History(tab)
   if (!history.line(N)) {
     throw new Error('Could not find the command to re-execute')
@@ -97,6 +98,8 @@ const again = async ({ tab, REPL }: Arguments, N: number, historyEntry) => {
  *
  */
 const showHistory = async ({ tab, argv, parsedOptions: options }) => {
+  const { Row, Table } = await import('@kui-shell/core/mdist/api/Table')
+  const { History } = await import('@kui-shell/core/mdist/api/History')
   const history = await History(tab)
 
   if (options.c) {
@@ -129,7 +132,7 @@ const showHistory = async ({ tab, argv, parsedOptions: options }) => {
 
   const body: Row[] = recent
     .map((line, idx) => {
-      if (!filter(line)) return
+      if (!filter(line)) return null
 
       // some commands can be super long... try to trim them down for the initial display
       const shortForm = line.raw.substring(0, line.raw.indexOf(' =')) || line.raw
@@ -174,6 +177,7 @@ export default (commandTree: Registrar) => {
 
   /** re-execute from history */
   const againCmd = () => async (args: Arguments) => {
+    const { History } = await import('@kui-shell/core/mdist/api/History')
     const history = await History(args.tab)
     const N = args.argv[1] ? parseInt(args.argv[1], 10) : history.cursor - 2 // use the last command, if the user entered only "!!"
     debug('againCmd', args.execOptions)

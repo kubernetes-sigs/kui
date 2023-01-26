@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Capabilities, Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 
 // import help from './lib/cmds/help'
 import echo from './lib/cmds/echo'
@@ -55,12 +55,12 @@ export default async (commandTree: Registrar) => {
     tabManagement(commandTree)
   ])
 
-  if (!Capabilities.isHeadless()) {
-    await Promise.all([
-      import('./lib/cmds/zoom').then(_ => _.plugin(commandTree)),
-      import('./lib/cmds/theme').then(_ => _.plugin(commandTree))
-    ])
-  }
+  // if (!Capabilities.isHeadless()) {
+  await Promise.all([
+    import('./lib/cmds/zoom').then(_ => _.plugin(commandTree)),
+    import('./lib/cmds/theme').then(_ => _.plugin(commandTree))
+  ])
+  // }
 
   // updater(commandTree) <-- disabled for now
 }

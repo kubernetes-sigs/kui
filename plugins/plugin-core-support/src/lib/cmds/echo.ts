@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import { Arguments, Capabilities, Registrar, Util } from '@kui-shell/core'
+import type { Arguments, Registrar } from '@kui-shell/core'
 
 /** Expand env vars */
-export function expand(expr: number | boolean | string, env = process.env): string {
+async function expand(expr: number | boolean | string, env = process.env): Promise<string> {
+  const { expandHomeDir } = await import('@kui-shell/core/mdist/api/Util')
+
   return typeof expr !== 'string'
     ? expr.toString()
-    : expr.replace(/\${?([^}/\s]+)}?/g, (_, p1) => Util.expandHomeDir(typeof env[p1] !== 'undefined' ? env[p1] : _))
+    : expr.replace(/\${?([^}/\s]+)}?/g, (_, p1) => expandHomeDir(typeof env[p1] !== 'undefined' ? env[p1] : _))
 }
 
-function echo({ argvNoOptions, execOptions }: Pick<Arguments, 'argvNoOptions' | 'execOptions'>) {
+export async function echo(args: Arguments) {
   return (
-    argvNoOptions
-      .slice(1)
-      .map(_ => expand(_, execOptions.env))
-      .join(' ') || true
+    Promise.all(args.argvNoOptions.slice(1).map(_ => expand(_, args.execOptions.env))).then(_ => _.join(' ')) || true
   )
 }
 
@@ -39,7 +38,5 @@ export default (registrar: Registrar) => {
   // and, in a browser deployment without a backing proxy (and hence
   // without PTY support), we should also register as a handler for
   // `echo`
-  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
-    registrar.listen('/echo', echo)
-  }
+  // registrar.listen('/echo', echo)
 }
