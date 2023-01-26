@@ -30,7 +30,6 @@ import sleep from './lib/cmds/sleep'
 import history from './lib/cmds/history/history'
 import kuiConfig from './lib/cmds/kui-config'
 import tabManagement from './lib/cmds/tab-management'
-import grammy from './lib/cmds/grammy'
 
 // import updater from './lib/admin/updater'
 
@@ -53,7 +52,6 @@ export default async (commandTree: Registrar) => {
     sleep(commandTree),
     history(commandTree),
     kuiConfig(commandTree),
-    grammy(commandTree),
     tabManagement(commandTree)
   ])
 
