@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-import { Capabilities } from '@kui-shell/core'
-
 /**
  * Register the welcome notebook
  *
  */
 export default async function preloadMadwizard() {
-  if (!Capabilities.isHeadless()) {
-    const playgroundGuidebooks = [
-      'plugin://plugin-madwizard/notebooks/guidebook-intro.md',
-      'plugin://plugin-madwizard/notebooks/playground.md',
-      'plugin://plugin-madwizard/notebooks/hello.md',
-      'plugin://plugin-madwizard/notebooks/two-choices.md',
-      'plugin://plugin-madwizard/notebooks/multi.md',
-      'plugin://plugin-madwizard/notebooks/form.md'
-    ]
+  // if (!Capabilities.isHeadless()) {
+  const playgroundGuidebooks = [
+    'plugin://plugin-madwizard/notebooks/guidebook-intro.md',
+    'plugin://plugin-madwizard/notebooks/playground.md',
+    'plugin://plugin-madwizard/notebooks/hello.md',
+    'plugin://plugin-madwizard/notebooks/two-choices.md',
+    'plugin://plugin-madwizard/notebooks/multi.md',
+    'plugin://plugin-madwizard/notebooks/form.md'
+  ]
 
-    const mainGuidebooks = [
-      'plugin://plugin-madwizard/notebooks/guidebook-intro.md',
-      'plugin://plugin-madwizard/notebooks/designer.md'
-    ]
+  const mainGuidebooks = [
+    'plugin://plugin-madwizard/notebooks/guidebook-intro.md',
+    'plugin://plugin-madwizard/notebooks/designer.md'
+  ]
 
-    const [{ mount }, { NotebookVFS }] = await Promise.all([
-      import('@kui-shell/plugin-bash-like/fs'),
-      import('@kui-shell/plugin-core-support')
-    ])
-    const vfs = new NotebookVFS('/kui/madwizard')
-    vfs.mkdir({ argvNoOptions: ['mkdir', '/kui/madwizard/playground'] })
-    mount(vfs)
+  const [{ mount }, { NotebookVFS }] = await Promise.all([
+    import('@kui-shell/plugin-bash-like/fs'),
+    import('@kui-shell/plugin-core-support')
+  ])
+  const vfs = new NotebookVFS('/kui/madwizard')
+  vfs.mkdir({ argvNoOptions: ['mkdir', '/kui/madwizard/playground'] })
+  mount(vfs)
 
-    vfs.cp(undefined, mainGuidebooks, '/kui/madwizard')
-    vfs.cp(undefined, playgroundGuidebooks, '/kui/madwizard/playground')
-  }
+  vfs.cp(undefined, mainGuidebooks, '/kui/madwizard')
+  vfs.cp(undefined, playgroundGuidebooks, '/kui/madwizard/playground')
+  // }
 }

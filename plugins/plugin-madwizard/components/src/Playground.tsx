@@ -19,6 +19,8 @@ import { VFile } from 'vfile'
 import { cli } from 'madwizard/dist/fe/cli'
 import { MadWizardOptions } from 'madwizard'
 import { Allotment, AllotmentHandle } from 'allotment'
+
+import type { Arguments, KResponse, ParsedOptions, Tab } from '@kui-shell/core'
 import { Loading, onCommentaryEdit, offCommentaryEdit } from '@kui-shell/plugin-client-common'
 
 import AskUI, { Ask } from './Ask'
@@ -40,7 +42,7 @@ export type Props = {
   channel: string
 
   /** Kui REPL controller */
-  tab: import('@kui-shell/core').Tab
+  tab: Tab
 }
 
 /** <Playground/> react state */
@@ -161,7 +163,7 @@ export default class Playground extends React.PureComponent<Props, State> {
 
   /** Hook to allow subclasses to write a REPL response */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected write(response: import('@kui-shell/core').KResponse) {
+  protected write(response: KResponse) {
     /* Intentionally empty */
   }
 
@@ -292,11 +294,11 @@ export default class Playground extends React.PureComponent<Props, State> {
   }
 }
 
-type Options = import('@kui-shell/core').ParsedOptions & {
+type Options = ParsedOptions & {
   ui?: 'graphics' | 'text'
 }
 
-export function controller(args: import('@kui-shell/core').Arguments<Options>) {
+export function controller(args: Arguments<Options>) {
   const channel = args.argvNoOptions[2]
   if (!channel) {
     throw new Error('Usage: madwizard playground <channel>')

@@ -17,6 +17,7 @@
 import React from 'react'
 import { PassThrough } from 'stream'
 import { MadWizardOptions } from 'madwizard'
+import type { KResponse } from '@kui-shell/core'
 
 import Playground from './Playground'
 import Terminal, { WatchInit } from './Terminal'
@@ -70,7 +71,7 @@ export default class PlaygroundTextual extends Playground {
   }
 
   /** Hook to allow subclasses to write a REPL response */
-  protected write(response: import('@kui-shell/core').KResponse) {
+  protected write(response: KResponse) {
     if (typeof response === 'string') {
       this._terminalRef.current?.write(response)
     }

@@ -17,7 +17,8 @@
 import React from 'react'
 import { PassThrough } from 'stream'
 import { Loading } from '@kui-shell/plugin-client-common'
-import { Arguments, Job, isResizable } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
+import { Job, isResizable } from '@kui-shell/core/mdist/api/Job'
 
 import Terminal, { TerminalOptions } from './Terminal'
 

@@ -16,7 +16,8 @@
 
 import React from 'react'
 import { v4 } from 'uuid'
-import { i18n, Tab } from '@kui-shell/core'
+import type { Tab } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { Card, CardResponse, Icons, Loading, Markdown } from '@kui-shell/plugin-client-common'
 import { ButtonProps, Chip, ChipGroup, Grid, GridItem, Progress, Tile, WizardStep } from '@patternfly/react-core'
 

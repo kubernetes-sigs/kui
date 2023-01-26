@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 import { width, height } from '@kui-shell/client/config.d/style.json'
 
 /** Register Kui Commands */

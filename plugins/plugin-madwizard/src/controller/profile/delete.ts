@@ -15,7 +15,7 @@
  */
 
 import { Profiles } from 'madwizard'
-import { Arguments } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
 
 export default async function deleteProfile(args: Arguments) {
   const N = args.argvNoOptions.length - 1

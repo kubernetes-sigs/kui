@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tab } from '@kui-shell/core'
+import type { Tab } from '@kui-shell/core'
 import { CardResponse, SplitInjector } from '@kui-shell/plugin-client-common'
 
 /** TODO we should probably mvoe this into @kui-shell/plugin-client-common */

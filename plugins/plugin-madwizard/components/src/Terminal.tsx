@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Events } from '@kui-shell/core'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 import { ITheme, Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebglAddon } from 'xterm-addon-webgl'
@@ -162,11 +162,11 @@ export default class XTerm extends React.PureComponent<Props, State> {
 
     const inject = () => this.injectTheme(this.terminal, xtermContainer)
     inject()
-    Events.eventChannelUnsafe.on('/theme/change', inject)
-    this.cleaners.push(() => Events.eventChannelUnsafe.on('/theme/change', inject))
+    eventChannelUnsafe.on('/theme/change', inject)
+    this.cleaners.push(() => eventChannelUnsafe.on('/theme/change', inject))
 
-    Events.eventChannelUnsafe.on('/zoom', inject)
-    this.cleaners.push(() => Events.eventChannelUnsafe.off('/zoom', inject))
+    eventChannelUnsafe.on('/zoom', inject)
+    this.cleaners.push(() => eventChannelUnsafe.off('/zoom', inject))
 
     if (this.props.initialContent) {
       // @starpit i don't know why we have to split the newlines...

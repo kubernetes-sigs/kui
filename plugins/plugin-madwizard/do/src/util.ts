@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-import { Arguments, Events, getPrimaryTabId } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
 
 /** TODO: move to core Tab api? */
-export function setTabReadonly({ tab }: Pick<Arguments, 'tab'>) {
-  Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
+export async function setTabReadonly({ tab }: Pick<Arguments, 'tab'>) {
+  const [{ eventBus }, { getPrimaryTabId }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Events'),
+    import('@kui-shell/core/mdist/api/Tab')
+  ])
+  eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
 }
 
 /** TODO: move to core Tab api? */
-export function setTabReadWrite({ tab }: Pick<Arguments, 'tab'>) {
-  Events.eventBus.emitWithTabId('/kui/tab/edit/set', getPrimaryTabId(tab))
+export async function setTabReadWrite({ tab }: Pick<Arguments, 'tab'>) {
+  const [{ eventBus }, { getPrimaryTabId }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Events'),
+    import('@kui-shell/core/mdist/api/Tab')
+  ])
+  eventBus.emitWithTabId('/kui/tab/edit/set', getPrimaryTabId(tab))
 }

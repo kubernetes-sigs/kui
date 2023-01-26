@@ -18,6 +18,7 @@ import React from 'react'
 import prettyMillis from 'pretty-ms'
 import { Scalar } from '@kui-shell/plugin-client-common'
 import { Flex, FlexItem } from '@patternfly/react-core'
+import type { KResponse, Tab } from '@kui-shell/core'
 
 import '../../web/scss/components/Playground/PlaygroundTerminal.scss'
 import CheckCircleIcon from '@patternfly/react-icons/dist/esm/icons/check-circle-icon'
@@ -26,7 +27,7 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/excl
 export type Command = {
   cmdline: string
   status: 'success' | 'error' | 'in-progress'
-  response?: import('@kui-shell/core').KResponse
+  response?: KResponse
   startTime: number
   endTime: number
 }
@@ -41,7 +42,7 @@ export type CommandProps = {
 
 type Props = CommandProps & {
   /** Kui REPL controller */
-  tab: import('@kui-shell/core').Tab
+  tab: Tab
 }
 
 /** Visualize the command executions from <Playground/> */

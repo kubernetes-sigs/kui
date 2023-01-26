@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
 
 import '../../web/scss/components/Hello/_index.scss'
 
