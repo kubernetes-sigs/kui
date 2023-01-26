@@ -17,7 +17,8 @@
 import Debug from 'debug'
 import React from 'react'
 import { TreeView, TreeViewProps } from '@patternfly/react-core'
-import { Arguments, encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
+import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 import { CardResponse, Icons, Loading, Markdown, SupportedIcon } from '@kui-shell/plugin-client-common'
 
 import { Graph, CodeBlock, Choices, Memoizer, Tree } from 'madwizard'

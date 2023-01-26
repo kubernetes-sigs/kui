@@ -17,7 +17,8 @@
 import React from 'react'
 import { Loading } from '@kui-shell/plugin-client-common'
 import { respawn } from '@kui-shell/plugin-madwizard/watch'
-import { Arguments, encodeComponent } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
+import { encodeComponent } from '@kui-shell/core/mdist/api/Exec'
 
 import { Props as BaseProps } from './RestartableTerminal'
 import AskingTerminal, { AskingProps } from './AskingTerminal'

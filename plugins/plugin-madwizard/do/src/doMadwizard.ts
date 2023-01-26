@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, ParsedOptions, ReactResponse, Tab } from '@kui-shell/core'
+import type { Arguments, ParsedOptions, ReactResponse, Tab } from '@kui-shell/core'
 
 export type Options = ParsedOptions & {
   /** Alternate guidebook store */

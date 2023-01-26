@@ -23,7 +23,7 @@
  */
 
 import React from 'react'
-import { i18n } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { Title, TitleSizes, Wizard, WizardProps } from '@patternfly/react-core'
 import { Icons } from '@kui-shell/plugin-client-common'
 

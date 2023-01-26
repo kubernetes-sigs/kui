@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KResponse, Registrar } from '@kui-shell/core'
+import type { KResponse, Registrar } from '@kui-shell/core'
 import { version } from '@kui-shell/client/package.json'
 
 import { Options, flags, doMadwizard } from './doMadwizard'

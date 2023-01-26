@@ -157,8 +157,8 @@ export default class AskUI extends React.PureComponent<Props, State> {
   /** User has clicked home button */
   private readonly _home = async (evt: React.MouseEvent) => {
     if (evt.metaKey || evt.altKey) {
-      const { Capabilities } = await import('@kui-shell/core')
-      if (Capabilities.inBrowser()) {
+      const { inBrowser } = await import('@kui-shell/core/mdist/api/Capabilities')
+      if (inBrowser()) {
         window.open(window.location.href)
       } else {
         const { ipcRenderer } = await import('electron')

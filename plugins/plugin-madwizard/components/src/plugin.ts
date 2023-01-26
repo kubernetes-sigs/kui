@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 import { doMadwizard, flags } from '@kui-shell/plugin-madwizard/do'
 
 /** Register Kui Commands */

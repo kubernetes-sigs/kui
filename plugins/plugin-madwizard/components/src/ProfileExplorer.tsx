@@ -283,7 +283,7 @@ class ProfileCard extends React.PureComponent<ProfileCardProps, ProfileCardState
   }
 
   private executeKuiCommand(question: string, cmdline: string) {
-    import('@kui-shell/core').then(_ =>
+    import('@kui-shell/core/mdist/api/Exec').then(_ =>
       _.pexecInCurrentTab(`confirm --asking "${question}" "${cmdline}"`, undefined, false, true)
     )
   }

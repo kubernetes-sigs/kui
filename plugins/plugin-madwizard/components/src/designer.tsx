@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Arguments, ParsedOptions } from '@kui-shell/core'
+import type { Arguments, ParsedOptions } from '@kui-shell/core'
 import WorkloadDesigner from './WorkloadDesigner'
 
 type Options = ParsedOptions & {

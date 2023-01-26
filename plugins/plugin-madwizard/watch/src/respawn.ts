@@ -15,7 +15,7 @@
  */
 
 import { join } from 'path'
-import { encodeComponent } from '@kui-shell/core'
+import { encodeComponent } from '@kui-shell/core/mdist/api/Exec'
 import { main } from '@kui-shell/client/package.json'
 
 async function getAppPath() {

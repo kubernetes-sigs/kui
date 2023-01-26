@@ -18,7 +18,7 @@ import React from 'react'
 import { Chalk } from 'chalk'
 import stripAnsi from 'strip-ansi'
 import { Prompts } from 'madwizard'
-import { Job } from '@kui-shell/core'
+import type { Job } from '@kui-shell/core'
 import { Allotment, AllotmentHandle } from 'allotment'
 import { Loading } from '@kui-shell/plugin-client-common'
 

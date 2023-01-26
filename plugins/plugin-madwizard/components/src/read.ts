@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
 
 async function fetchMarkdownFile(filepath: string, args: Pick<Arguments, 'REPL'>) {
   const { loadNotebook } = await import('@kui-shell/plugin-client-common/notebook')
