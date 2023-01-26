@@ -19,6 +19,8 @@ const debug = Debug('core/api/client')
 
 import loadClientNotebooksMenuDefinition, { isMenu, isLeaf } from '../main/load'
 
+export { isPopup } from '../webapp/popup-core'
+
 /** Is the current client running in offline/disconnected mode? */
 export function isOfflineClient(): boolean {
   try {

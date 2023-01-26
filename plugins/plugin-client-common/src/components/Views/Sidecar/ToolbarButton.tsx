@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { Button, ResourceWithMetadata, isViewButton, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
+
+import { isViewButton } from '@kui-shell/core/mdist/api/Response'
+import type { Button, ResourceWithMetadata, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
 
 import LocationProps from './Location'
 import Tooltip from '../../spi/Tooltip'

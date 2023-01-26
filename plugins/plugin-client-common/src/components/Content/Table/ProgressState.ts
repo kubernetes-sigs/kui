@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { WatchPusher } from '@kui-shell/core'
+import type { WatchPusher } from '@kui-shell/core'
 
 /** Progress per row; keyed by rowKey, value is the same as the progress update parameter */
 export default interface ProgressState {

@@ -15,7 +15,12 @@
  */
 
 import React from 'react'
-import { Capabilities, Events, Tab as KuiTab, TabState, initializeSession, pexecInCurrentTab } from '@kui-shell/core'
+
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
+import { initializeSession } from '@kui-shell/core/mdist/api/Session'
+import { Tab as KuiTab, TabState } from '@kui-shell/core/mdist/api/Tab'
+import { eventBus, eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 import KuiContext from './context'
 const Confirm = React.lazy(() => import('../Views/Confirm'))
@@ -174,29 +179,29 @@ export default class TabContent extends React.PureComponent<Props, State> {
       this.maybeFireTabReady(true, this.state.isTerminalReady)
     }
 
-    Events.eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, onTabNew)
-    this.cleaners.push(() => Events.eventChannelUnsafe.off(`/tab/new/${this.props.uuid}`, onTabNew))
+    eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, onTabNew)
+    this.cleaners.push(() => eventChannelUnsafe.off(`/tab/new/${this.props.uuid}`, onTabNew))
 
     const onError = (sessionInitError: Error) => {
       this.setState({ sessionInit: 'Error', sessionInitError })
     }
-    Events.eventChannelUnsafe.on(`/tab/new/error/${this.props.uuid}`, onError)
-    this.cleaners.push(() => Events.eventChannelUnsafe.off(`/tab/new/error/${this.props.uuid}`, onError))
+    eventChannelUnsafe.on(`/tab/new/error/${this.props.uuid}`, onError)
+    this.cleaners.push(() => eventChannelUnsafe.off(`/tab/new/error/${this.props.uuid}`, onError))
 
     const onOffline = this.onOffline.bind(this)
-    Events.eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
-    this.cleaners.push(() => Events.eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
+    eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
+    this.cleaners.push(() => eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
 
-    Events.eventBus.onWithTabId('/kui/tab/edit/toggle', this.props.uuid, this.toggleEditMode)
-    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/toggle', this.props.uuid, this.toggleEditMode))
+    eventBus.onWithTabId('/kui/tab/edit/toggle', this.props.uuid, this.toggleEditMode)
+    this.cleaners.push(() => eventBus.offWithTabId('/kui/tab/edit/toggle', this.props.uuid, this.toggleEditMode))
 
     const onEditSet = this.setEditMode(true)
-    Events.eventBus.onWithTabId('/kui/tab/edit/set', this.props.uuid, onEditSet)
-    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/set', this.props.uuid, onEditSet))
+    eventBus.onWithTabId('/kui/tab/edit/set', this.props.uuid, onEditSet)
+    this.cleaners.push(() => eventBus.offWithTabId('/kui/tab/edit/set', this.props.uuid, onEditSet))
 
     const onEditUnset = this.setEditMode(false)
-    Events.eventBus.onWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset)
-    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset))
+    eventBus.onWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset)
+    this.cleaners.push(() => eventBus.offWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset))
 
     this.oneTimeInit()
     this.execCommand()
@@ -207,7 +212,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       setTimeout(async () => {
         // execute a command onReady?
         while (true) {
-          const hack = this.state.tab.current.querySelector(
+          const hack = this.state?.tab?.current?.querySelector(
             '.kui--tab-content.visible .kui--scrollback[data-position="default"]'
           )
           if (hack) {
@@ -242,7 +247,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   private static onSessionInitError(uuid: string, sessionInitError: Error) {
-    Events.eventChannelUnsafe.emit(`/tab/new/error/${uuid}`, sessionInitError)
+    eventChannelUnsafe.emit(`/tab/new/error/${uuid}`, sessionInitError)
   }
 
   private oneTimeInit() {
@@ -256,8 +261,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
         // session init hook goes here
         initializeSession(state.tab.current)
           .then(() => {
-            Events.eventBus.emit('/tab/new', state.tab.current)
-            Events.eventChannelUnsafe.emit(`/tab/new/${props.uuid}`, state.tab.current)
+            eventBus.emit('/tab/new', state.tab.current)
+            eventChannelUnsafe.emit(`/tab/new/${props.uuid}`, state.tab.current)
           })
           .catch(TabContent.onSessionInitError.bind(undefined, props.uuid))
 
@@ -324,7 +329,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public componentWillUnmount() {
-    Events.eventBus.emit('/tab/close', this.state.tab.current)
+    eventBus.emit('/tab/close', this.state.tab.current)
     this.cleaners.forEach(cleaner => cleaner())
   }
 
@@ -396,7 +401,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
   /** Use client-provided (or default) proxy disconnected notice, if warranted */
   private proxyDisconnectNotice() {
-    if (Capabilities.inBrowser() && this.state.sessionInit !== 'Done') {
+    if (inBrowser() && this.state.sessionInit !== 'Done') {
       return (
         <KuiContext.Consumer>
           {config => (

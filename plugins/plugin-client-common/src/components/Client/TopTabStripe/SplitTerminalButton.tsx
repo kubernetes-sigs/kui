@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { Capabilities, i18n, pexecInCurrentTab } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import Icons from '../../spi/Icons'
 import ctrlOrMeta from './ctrlOrMeta'
@@ -35,7 +37,7 @@ export default class SplitTerminalButton extends React.PureComponent {
   private tooltip() {
     return (
       <Tooltip reference={this.ref} position="bottom">
-        {strings('Split the terminal', Capabilities.inBrowser() ? '' : ctrlOrMeta('Y'))}
+        {strings('Split the terminal', inBrowser() ? '' : ctrlOrMeta('Y'))}
       </Tooltip>
     )
   }

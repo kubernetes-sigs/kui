@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { Events, Tab as KuiTab } from '@kui-shell/core'
+
+import { eventBus } from '@kui-shell/core/mdist/api/Events'
+import { Tab as KuiTab } from '@kui-shell/core/mdist/api/Tab'
 
 import Width from '../../Sidecar/width'
 import SplitPosition from '../SplitPosition'
@@ -127,7 +129,7 @@ export default class Block extends React.PureComponent<Props, State> {
       isMaximized: width === Width.Maximized
     })
     setTimeout(() => {
-      Events.eventBus.emitTabLayoutChange(this.props.tab.uuid)
+      eventBus.emitTabLayoutChange(this.props.tab.uuid)
       if (this.state._block) {
         this.state._block.scrollIntoView(true)
       }

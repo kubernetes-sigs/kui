@@ -16,7 +16,10 @@
 
 import React from 'react'
 import Modal from '../spi/Modal'
-import { Events, i18n, Tab as KuiTab } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { Tab as KuiTab } from '@kui-shell/core/mdist/api/Tab'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 const strings = i18n('plugin-core-support')
 
@@ -64,7 +67,7 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
 
   private initEvents() {
     const requestChannel = `/kui-shell/Confirm/v1/tab/${this.props.uuid}`
-    Events.eventChannelUnsafe.on(requestChannel, this.onConfirmStart.bind(this))
+    eventChannelUnsafe.on(requestChannel, this.onConfirmStart.bind(this))
   }
 
   private onConfirmStart({ command, asking, execUUID }: { command: string; asking?: string; execUUID: string }) {
@@ -77,7 +80,7 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
       this.setState({ isActive: false })
 
       const responseChannel = `/kui-shell/Confirm/v1/tab/${this.props.uuid}/execUUID/${this.state.execUUID}/confirmed`
-      Events.eventChannelUnsafe.emit(responseChannel, { confirmed })
+      eventChannelUnsafe.emit(responseChannel, { confirmed })
     }
   }
 

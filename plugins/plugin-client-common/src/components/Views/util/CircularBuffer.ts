@@ -15,7 +15,7 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { ParsedOptions } from '@kui-shell/core'
+import type { ParsedOptions } from '@kui-shell/core'
 
 export interface BaseHistoryEntry {
   cwd: string

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table as KuiTable } from '@kui-shell/core'
+import type { Table as KuiTable } from '@kui-shell/core'
 
 /** NAME -> Name */
 function capitalize(str: string): string {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren } from 'react'
-import { ToolbarAlert } from '@kui-shell/core'
+import type { PropsWithChildren } from 'react'
+import type { ToolbarAlert } from '@kui-shell/core'
 
 type Props = PropsWithChildren<{
   alert: ToolbarAlert

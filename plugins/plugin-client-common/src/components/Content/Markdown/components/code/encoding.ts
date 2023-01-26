@@ -15,7 +15,8 @@
  */
 
 import { CodeBlockResponse } from '.'
-import { isCodedError, isWatchable } from '@kui-shell/core'
+import { isWatchable } from '@kui-shell/core/mdist/api/Watch'
+import { isCodedError } from '@kui-shell/core/mdist/api/Response'
 
 function stringifyError(response: Error) {
   return { code: isCodedError(response) ? response.code : 1, message: response.message }

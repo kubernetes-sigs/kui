@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Events } from '@kui-shell/core'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 function strip(link: string) {
   return link.replace(/^kui-link-/, '')
@@ -29,18 +29,18 @@ export function linkGetChannel(id: string) {
 }
 
 export function subscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[], link?: string) => void) {
-  Events.eventChannelUnsafe.on(linkUpdateChannel(link), statusUpdateHandler)
+  eventChannelUnsafe.on(linkUpdateChannel(link), statusUpdateHandler)
 
   // request the first update
-  Events.eventChannelUnsafe.emit(linkGetChannel(link))
+  eventChannelUnsafe.emit(linkGetChannel(link))
 }
 
 export function unsubscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[], link?: string) => void) {
-  Events.eventChannelUnsafe.off(linkUpdateChannel(link), statusUpdateHandler)
+  eventChannelUnsafe.off(linkUpdateChannel(link), statusUpdateHandler)
 }
 
 export function emitLinkUpdate(link: string, status: 'success' | 'error' | 'in-progress' | 'blank') {
-  Events.eventChannelUnsafe.emit(
+  eventChannelUnsafe.emit(
     linkUpdateChannel(link),
     status === 'success'
       ? [1, 0, 0]

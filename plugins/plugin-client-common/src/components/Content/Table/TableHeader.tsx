@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table } from '@kui-shell/core'
+import type { Table } from '@kui-shell/core'
 
 import React from 'react'
 import { SortByDirection } from '@patternfly/react-table/dist/esm/components/Table'

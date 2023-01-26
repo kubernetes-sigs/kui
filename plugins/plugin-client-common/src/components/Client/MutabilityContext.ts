@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { isOfflineClient, isReadOnlyClient } from '@kui-shell/core'
+import { isOfflineClient, isReadOnlyClient } from '@kui-shell/core/mdist/api/Client'
 
 export interface MutabilityState {
   /** This current tab allows the user to change the tab in various
@@ -47,7 +47,7 @@ export function initializeState(): MutabilityState {
 }
 
 export function setReadOnlyBit(state: MutabilityState, editable: boolean): MutabilityState {
-  return { editable: editable, executable: state.executable }
+  return { editable, executable: state.executable }
 }
 
 export function toggleReadOnlyBit(state: MutabilityState): MutabilityState {

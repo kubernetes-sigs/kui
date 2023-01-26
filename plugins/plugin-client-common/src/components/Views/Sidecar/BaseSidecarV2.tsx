@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { KResponse, Tab as KuiTab, ParsedOptions, isPopup } from '@kui-shell/core'
+
+import { isPopup } from '@kui-shell/core/mdist/api/Client'
+import type { KResponse, Tab as KuiTab, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'
 import LocationProps from './Location'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ParsedOptions } from '@kui-shell/core'
+import type { ParsedOptions } from '@kui-shell/core'
 import { BaseHistoryEntry } from './CircularBuffer'
 
 /** Helper to confirm equality of two commands, by comparing argvNoOptions */

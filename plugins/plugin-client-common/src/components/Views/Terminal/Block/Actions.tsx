@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { Tab, i18n } from '@kui-shell/core'
+
+import { Tab } from '@kui-shell/core/mdist/api/Tab'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
 
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'

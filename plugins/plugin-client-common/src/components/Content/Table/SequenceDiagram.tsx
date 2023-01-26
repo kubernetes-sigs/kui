@@ -17,7 +17,10 @@
 import React from 'react'
 import { basename } from 'path'
 import prettyMillis from 'pretty-ms'
-import { REPL, Row, Tab, Table, i18n, Util } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import type { REPL, Row, Tab, Table } from '@kui-shell/core'
+import { flatten, prettyPrintBytes } from '@kui-shell/core/mdist/api/Util'
 
 import Bar from './Bar'
 import ErrorCell from './ErrorCell'
@@ -35,7 +38,7 @@ import '../../../../web/scss/components/Table/SequenceDiagram/_index.scss'
 
 const strings = i18n('plugin-client-common')
 
-const safePrettyPrintBytes = Util.prettyPrintBytes
+const safePrettyPrintBytes = prettyPrintBytes
 
 function Progress(props: { percent: number; className: string }) {
   return <Bar left={0} width={props.percent} className={props.className} />
@@ -471,9 +474,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     const durationColoring = new DefaultColoring(this.props.response)
     const durationColor = durationColoring.durationCss.bind(durationColoring)
 
-    return Util.flatten(
+    return flatten(
       this.state.intervals.map((interval, intervalIdx) =>
-        Util.flatten(
+        flatten(
           interval.rows.map((row, rowIdx) => {
             const startDate = new Date(row.attributes[idx1].value)
             const startMillis = startDate.getTime()

@@ -15,7 +15,7 @@
  */
 
 import { Choices } from 'madwizard'
-import { REPL } from '@kui-shell/core'
+import type { REPL } from '@kui-shell/core'
 import { Components } from 'react-markdown'
 
 import _a from './a'

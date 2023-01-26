@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { Tab, REPL, Table, isWatchable } from '@kui-shell/core'
+import type { Tab, REPL, Table } from '@kui-shell/core'
+import { isWatchable } from '@kui-shell/core/mdist/api/Watch'
 import { KuiContext } from '../../../'
 
 const PaginatedTable = React.lazy(() => import('./PaginatedTable'))

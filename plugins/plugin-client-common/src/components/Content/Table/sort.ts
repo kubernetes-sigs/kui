@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Row, Table } from '@kui-shell/core'
-import { SortByDirection } from '@patternfly/react-table'
+import type { Row, Table } from '@kui-shell/core'
+import type { SortByDirection } from '@patternfly/react-table'
 
 const byte = 1
 const kilobyte = 1024 * byte

@@ -20,17 +20,26 @@
 import Debug from 'debug'
 import React from 'react'
 
+import { Tab } from '@kui-shell/core/mdist/api/Tab'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
+import { encodeComponent, pexecInCurrentTab, REPL } from '@kui-shell/core/mdist/api/Exec'
 import {
-  Capabilities,
-  Client,
-  Events,
-  i18n,
-  REPL,
-  pexecInCurrentTab,
-  encodeComponent,
-  Tab,
-  Themes
-} from '@kui-shell/core'
+  Theme,
+  ThemeProperties,
+  findThemeByName,
+  getPersistedThemeChoice,
+  getDefaultTheme
+} from '@kui-shell/core/mdist/api/Themes'
+import {
+  guidebooksMenu,
+  isOffline,
+  clientGuidebooks,
+  singletonGuidebooks,
+  showGuidebooksSidebar,
+  firstOpenGuidebook
+} from '@kui-shell/core/mdist/api/Client'
 
 import automount from '../../mount'
 
@@ -62,7 +71,7 @@ import '../../../web/css/static/inverted-colors.css'
 import '../../../web/css/static/ui.css'
 import '../../../web/css/static/repl.scss'
 
-const defaultThemeProperties: Themes.ThemeProperties = {
+const defaultThemeProperties: ThemeProperties = {
   components: 'patternfly',
   topTabNames: 'fixed'
 }
@@ -125,8 +134,8 @@ export class Kui extends React.PureComponent<Props, State> {
 
     // If props did not specify a commandLine, perhaps the client
     // wishes us to auto-play a guidebook?
-    if (!commandLine && Client.singletonGuidebooks() && Client.showGuidebooksSidebar()) {
-      const autoplay = Client.firstOpenGuidebook()
+    if (!commandLine && singletonGuidebooks() && showGuidebooksSidebar()) {
+      const autoplay = firstOpenGuidebook()
       if (autoplay) {
         commandLine = ['replay', '-r', autoplay]
       }
@@ -134,7 +143,7 @@ export class Kui extends React.PureComponent<Props, State> {
 
     let quietExecCommand = this.props.quietExecCommand !== undefined ? this.props.quietExecCommand : !this.props.isPopup
 
-    if (Capabilities.inBrowser()) {
+    if (inBrowser()) {
       const windowQuery = window.location.search
       if (windowQuery) {
         // parse and extract the question mark in window.location.search
@@ -157,7 +166,7 @@ export class Kui extends React.PureComponent<Props, State> {
         commandLine,
         quietExecCommand
       })
-      debug('initial state:inBrowser?', Capabilities.inBrowser())
+      debug('initial state:inBrowser?', inBrowser())
       debug('initial state:given properties', props)
       debug('initial state:final value', this.state)
     } catch (err) {
@@ -171,17 +180,15 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   public async componentDidMount() {
-    const themeP = await Themes.findThemeByName(
-      (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
-    )
+    const themeP = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
 
-    if (!this.props.noBootstrap) {
+    /* if (!this.props.noBootstrap) {
       await import('@kui-shell/core')
         .then(_ => _.bootIntoSandbox())
         .then(() => {
           this.setState({ isBootstrapped: true })
         })
-    }
+    } */
 
     // refresh the UI after user changes settings overrides
     onUserSettingsChange(evt => {
@@ -199,7 +206,7 @@ export class Kui extends React.PureComponent<Props, State> {
     })
 
     const { theme } = await themeP
-    Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
+    eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
     this.setState(curState => {
       const stateWithThemeProps = Object.assign({}, theme, curState)
       debug('state with theme props', theme, curState)
@@ -225,7 +232,7 @@ export class Kui extends React.PureComponent<Props, State> {
     debug('Mounting plugin-client-common guidebooks', automount)
     notebookVFS.cp(undefined, automount, '/kui')
 
-    const guidebooks = Client.clientGuidebooks()
+    const guidebooks = clientGuidebooks()
     if (guidebooks && Array.isArray(guidebooks)) {
       debug('Mounting client guidebooks', guidebooks)
 
@@ -259,9 +266,7 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private defaultLoadingDone() {
-    return Client.isOffline()
-      ? null
-      : (repl: REPL) => (!Capabilities.inBrowser() ? undefined : <LoadingCard repl={repl} />)
+    return isOffline() ? null : (repl: REPL) => (!inBrowser() ? undefined : <LoadingCard repl={repl} />)
   }
 
   private defaultLoadingError() {
@@ -281,7 +286,7 @@ export class Kui extends React.PureComponent<Props, State> {
    *
    */
   private defaultSessionBehavior(): KuiConfiguration {
-    const behavior = !Capabilities.inBrowser()
+    const behavior = !inBrowser()
       ? {}
       : {
           loading: this.defaultLoading(),
@@ -294,7 +299,7 @@ export class Kui extends React.PureComponent<Props, State> {
     return behavior
   }
 
-  private onThemeChange({ themeModel }: { themeModel: Themes.Theme }) {
+  private onThemeChange({ themeModel }: { themeModel: Theme }) {
     this.setState(curState => {
       // note the priority order, from highest to lowest:
       //  1) any properties defined by the theme (since we just switched themes)
@@ -372,22 +377,20 @@ export class Kui extends React.PureComponent<Props, State> {
               <TabContainer
                 productName={this.props.productName}
                 version={this.props.version}
-                noActiveInput={this.props.noActiveInput || !!this.props.bottomInput || Client.isOffline()}
+                noActiveInput={this.props.noActiveInput || !!this.props.bottomInput || isOffline()}
                 bottom={bottom}
                 noNewTabButton={this.props.noNewTabButton}
                 noNewSplitButton={this.props.noNewSplitButton}
-                title={this.props.initialTabTitle || (Client.isOffline() ? ' ' : undefined)}
+                title={this.props.initialTabTitle || (isOffline() ? ' ' : undefined)}
                 onTabReady={this.state.commandLine && this._onTabReady}
                 closeableTabs={this.props.closeableTabs}
-                noTopTabs={this.props.noTopTabs || Client.singletonGuidebooks()}
-                guidebooks={
-                  this.props.guidebooks === false ? undefined : this.props.guidebooks || Client.guidebooksMenu()
-                }
+                noTopTabs={this.props.noTopTabs || singletonGuidebooks()}
+                guidebooks={this.props.guidebooks === false ? undefined : this.props.guidebooks || guidebooksMenu()}
                 guidebooksCommand={
                   this.props.guidebooksCommand ||
-                  (Client.singletonGuidebooks() ? 'commentary --replace --readonly -f' : undefined)
+                  (singletonGuidebooks() ? 'commentary --replace --readonly -f' : undefined)
                 }
-                guidebooksExpanded={this.props.guidebooksExpanded || Client.showGuidebooksSidebar()}
+                guidebooksExpanded={this.props.guidebooksExpanded || showGuidebooksSidebar()}
               ></TabContainer>
               {this.props.toplevel}
               {this.props.statusStripe !== false && (

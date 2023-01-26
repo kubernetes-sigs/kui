@@ -15,7 +15,10 @@
  */
 
 import React from 'react'
-import { Events, Streamable, Tab, pexecInCurrentTab } from '@kui-shell/core'
+
+import type { Streamable, Tab } from '@kui-shell/core'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 import Scalar from '../../../Content/Scalar'
 const Ansi = React.lazy(() => import('../../../Content/Scalar/Ansi'))
@@ -56,7 +59,7 @@ export default abstract class StreamingConsumer<
     // done with this part... not done with all parts
     const done = () => {
       // this.props.onRender()
-      Events.eventChannelUnsafe.emit(`/command/stdout/done/${tab.uuid}/${execUUID}`)
+      eventChannelUnsafe.emit(`/command/stdout/done/${tab.uuid}/${execUUID}`)
     }
 
     // part === null: the controller wants to clear prior output
@@ -117,10 +120,10 @@ export default abstract class StreamingConsumer<
     const streamingChannel = `/command/stdout/${this.props.tab.uuid}/${this.state.execUUID}`
 
     try {
-      Events.eventChannelUnsafe.on(streamingChannel, this._streamingConsumer)
+      eventChannelUnsafe.on(streamingChannel, this._streamingConsumer)
       return await pexecInCurrentTab(cmdline, this.props.tab, false, true, this.state.execUUID)
     } finally {
-      Events.eventChannelUnsafe.off(streamingChannel, this._streamingConsumer)
+      eventChannelUnsafe.off(streamingChannel, this._streamingConsumer)
     }
   }
 }

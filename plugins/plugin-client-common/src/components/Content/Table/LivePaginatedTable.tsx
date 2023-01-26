@@ -15,7 +15,11 @@
  */
 
 import React from 'react'
-import { i18n, Table as KuiTable, Row as KuiRow, sameRow, Watchable, WatchPusher, isSuspendable } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { isSuspendable } from '@kui-shell/core/mdist/api/Job'
+import { Watchable, WatchPusher } from '@kui-shell/core/mdist/api/Watch'
+import { Table as KuiTable, Row as KuiRow, sameRow } from '@kui-shell/core/mdist/api/Table'
 
 import Icons from '../../spi/Icons'
 import kuiHeaderFromBody from './kuiHeaderFromBody'

@@ -19,7 +19,10 @@
 
 import React from 'react'
 import { decode } from 'html-entities'
-import { Events, pexecInCurrentTab, i18n } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
+import { StatusStripeChangeEvent, eventBus } from '@kui-shell/core/mdist/api/Events'
 
 import Settings from './Settings'
 import Icons from '../../spi/Icons'
@@ -29,7 +32,7 @@ import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 
 const strings = i18n('plugin-client-common')
 
-type State = Events.StatusStripeChangeEvent
+type State = StatusStripeChangeEvent
 export type Props = Partial<State> &
   React.PropsWithChildren<{
     noHelp?: boolean
@@ -37,9 +40,7 @@ export type Props = Partial<State> &
   }>
 
 /** see https://github.com/microsoft/TypeScript/issues/10485 */
-function hasType(
-  evt: Partial<Events.StatusStripeChangeEvent>
-): evt is Pick<Required<Events.StatusStripeChangeEvent>, 'type'> {
+function hasType(evt: Partial<StatusStripeChangeEvent>): evt is Pick<Required<StatusStripeChangeEvent>, 'type'> {
   return evt.type !== undefined
 }
 
@@ -52,13 +53,11 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    Events.eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
+    eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
   }
 
   /** Overlay default values for required state variables */
-  private withStateDefaults(
-    evt: Partial<Events.StatusStripeChangeEvent>
-  ): Omit<Required<Events.StatusStripeChangeEvent>, 'message'> {
+  private withStateDefaults(evt: Partial<StatusStripeChangeEvent>): Omit<Required<StatusStripeChangeEvent>, 'message'> {
     if (hasType(evt)) {
       return evt
     } else {
@@ -67,7 +66,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
   }
 
   /** Status Stripe change request */
-  private onChangeRequest(evt: Events.StatusStripeChangeEvent) {
+  private onChangeRequest(evt: StatusStripeChangeEvent) {
     this.setState(this.withStateDefaults(evt))
   }
 

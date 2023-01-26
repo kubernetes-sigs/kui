@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
+import type { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
 
 import Tag from '../../spi/Tag'
 import HTMLDom from '../../Content/Scalar/HTMLDom'

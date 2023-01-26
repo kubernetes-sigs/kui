@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { pexecInCurrentTab, radioTableCellToString } from '@kui-shell/core'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
+import { radioTableCellToString } from '@kui-shell/core/mdist/api/Table'
 
 import Props from './model'
 import DropDown from '../DropDown'

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
+import type { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
 import Tooltip from '../../spi/Tooltip'

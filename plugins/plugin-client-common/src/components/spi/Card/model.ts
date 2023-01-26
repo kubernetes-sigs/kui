@@ -16,7 +16,7 @@
 
 import { ReactNode } from 'react'
 
-import { Tab } from '@kui-shell/core'
+import type { Tab } from '@kui-shell/core'
 import { DropDownAction } from '../DropDown'
 
 interface Props {

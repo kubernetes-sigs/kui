@@ -16,7 +16,9 @@
 
 import React from 'react'
 import { isAbsolute as pathIsAbsolute, dirname, join, relative } from 'path'
-import { REPL, maybeKuiLink, pexecInCurrentTab } from '@kui-shell/core'
+
+import { maybeKuiLink } from '@kui-shell/core/mdist/api/Response'
+import { REPL, pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import { Props } from '../../Markdown'
 import { anchorFrom } from './heading'

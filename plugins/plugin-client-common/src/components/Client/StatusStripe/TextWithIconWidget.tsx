@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { pexecInCurrentTab } from '@kui-shell/core'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import Tooltip from '../../spi/Tooltip'
 

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { i18n, Table, Tab, REPL } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import type { Table, Tab, REPL } from '@kui-shell/core'
 
 import React from 'react'
 import { Title } from '@patternfly/react-core/dist/esm/components/Title'

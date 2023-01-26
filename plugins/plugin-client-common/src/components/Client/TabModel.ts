@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Events, TabState } from '@kui-shell/core'
+import { TabState } from '@kui-shell/core/mdist/api/Tab'
+import { NewTabRequestEvent, StatusStripeChangeEvent } from '@kui-shell/core/mdist/api/Events'
 
 /** cheapo uuid; we only need single-threaded uniqueness. Start from 2 so that we ensure the first tab always gets uuid 1. */
 export function uuidForFirstTab() {
@@ -32,14 +33,14 @@ export interface TopTabButton<P extends { key: string } = { key: string }> {
 export default class TabModel {
   public constructor(
     private readonly _uuid = uuid(),
-    private readonly desiredStatusStripeDecoration?: Events.StatusStripeChangeEvent,
+    private readonly desiredStatusStripeDecoration?: StatusStripeChangeEvent,
     doNotChangeActiveTab?: boolean,
     private readonly _title?: string,
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = [],
     private readonly _initialCommandLine?: string,
     private readonly _onClose?: string,
-    private readonly _exec?: Events.NewTabRequestEvent['tabs'][0]['exec']
+    private readonly _exec?: NewTabRequestEvent['tabs'][0]['exec']
   ) {
     this._state.capture()
 

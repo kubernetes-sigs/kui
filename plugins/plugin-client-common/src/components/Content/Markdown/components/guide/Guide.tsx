@@ -16,7 +16,8 @@
 
 import React from 'react'
 import { v4 } from 'uuid'
-import { i18n, Tab } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import type { Tab } from '@kui-shell/core'
 import { Choices, CodeBlock, Graph, Memoizer, Wizard as Wiz } from 'madwizard'
 
 import { Grid, GridItem } from '@patternfly/react-core/dist/esm/layouts/Grid'

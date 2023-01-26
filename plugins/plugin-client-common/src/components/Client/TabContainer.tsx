@@ -16,7 +16,11 @@
 
 import React from 'react'
 import { Page } from '@patternfly/react-core/dist/esm/components/Page'
-import { Events, Tab, isReadOnlyClient, pexecInCurrentTab } from '@kui-shell/core'
+
+import { Tab } from '@kui-shell/core/mdist/api/Tab'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
+import { isReadOnlyClient } from '@kui-shell/core/mdist/api/Client'
+import { eventBus, NewTabRequestEvent } from '@kui-shell/core/mdist/api/Events'
 
 import Sidebar from './Sidebar'
 import TabModel, { TopTabButton, uuidForFirstTab } from './TabModel'
@@ -77,7 +81,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    Events.eventBus.on('/tab/new/request', (evt: Events.NewTabRequestEvent) => {
+    eventBus.on('/tab/new/request', (evt: NewTabRequestEvent) => {
       // the protocol is: if we are opening multiple tabs in the
       // "foreground", then make sure the *first* of the new tabs is
       // active
@@ -98,14 +102,14 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       }
     })
 
-    Events.eventBus.on('/tab/switch/request', (idx: number) => {
+    eventBus.on('/tab/switch/request', (idx: number) => {
       this.onSwitchTab(idx)
     })
 
-    Events.eventBus.on('/kui/tab/edit/toggle/index', (idx: number) => {
+    eventBus.on('/kui/tab/edit/toggle/index', (idx: number) => {
       const tab = this.state.tabs[idx]
       if (tab && tab.uuid) {
-        Events.eventBus.emitWithTabId('/kui/tab/edit/toggle', tab.uuid)
+        eventBus.emitWithTabId('/kui/tab/edit/toggle', tab.uuid)
       }
     })
   }
@@ -140,7 +144,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       })
     }
 
-    setTimeout(() => Events.eventBus.emit('/tab/switch/request/done', { idx, tab: nextTabState }))
+    setTimeout(() => eventBus.emit('/tab/switch/request/done', { idx, tab: nextTabState }))
   }
 
   private readonly _onSwitchTab = this.onSwitchTab.bind(this)
@@ -176,7 +180,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   private readonly _onCloseTab = this.onCloseTab.bind(this)
 
   private listenForTabClose(model: TabModel) {
-    Events.eventBus.onceWithTabId('/tab/close/request', model.uuid, async (uuid: string, tab: Tab) => {
+    eventBus.onceWithTabId('/tab/close/request', model.uuid, async (uuid: string, tab: Tab) => {
       if (this.state.tabs.length === 1) {
         // then we are closing the last tab, so close the window
         tab.REPL.qexec('window close')
@@ -186,7 +190,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel(spec: Events.NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false, uuid?: string) {
+  private newTabModel(spec: NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false, uuid?: string) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
     // !this.props.title), then use that
@@ -210,7 +214,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * New Tab event
    *
    */
-  private onNewTab(spec: Events.NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false) {
+  private onNewTab(spec: NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false) {
     // if we already have a tab with this title, and this isn't a
     // background tab, then switch to it
     if (spec.title) {

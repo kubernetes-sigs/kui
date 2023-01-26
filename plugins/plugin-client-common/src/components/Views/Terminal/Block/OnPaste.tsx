@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab as KuiTab } from '@kui-shell/core'
+import type { Tab as KuiTab } from '@kui-shell/core'
 
 import { isClipboardTransferString } from '../ClipboardTransfer'
 import { InputElement, InputProvider as Input } from './Input'

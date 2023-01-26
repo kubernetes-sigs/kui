@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { REPL, Row, isTable } from '@kui-shell/core'
+import { Row, isTable } from '@kui-shell/core/mdist/api/Table'
+import type { REPL } from '@kui-shell/core'
 
 import { CodeBlockResponse } from '.'
 

@@ -18,7 +18,11 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
-import { Events, Tab as KuiTab, teeToFile, pexecInCurrentTab } from '@kui-shell/core'
+
+import { teeToFile } from '@kui-shell/core/mdist/api/Tee'
+import { eventBus } from '@kui-shell/core/mdist/api/Events'
+import { Tab as KuiTab } from '@kui-shell/core/mdist/api/Tab'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import CommonClientProps from './props/Common'
 import InputStripe from '../Client/InputStripe'
@@ -42,12 +46,12 @@ export default class Popup extends React.PureComponent<Props, State> {
 
     const tabModel = new TabModel()
 
-    Events.eventBus.onceWithTabId('/tab/close/request', tabModel.uuid, async (_, tab: KuiTab) => {
+    eventBus.onceWithTabId('/tab/close/request', tabModel.uuid, async (_, tab: KuiTab) => {
       // tab close is window close for the popup client
       tab.REPL.qexec('window close', undefined, undefined, { tab })
     })
 
-    Events.eventBus.onCommandComplete(tabModel.uuid, async ({ tab, command, response }) => {
+    eventBus.onCommandComplete(tabModel.uuid, async ({ tab, command, response }) => {
       if (process.env.KUI_TEE_TO_FILE) {
         // tee the response to a file
         // maybe in the future we could do this better

@@ -15,7 +15,12 @@
  */
 
 import React from 'react'
-import { encodeComponent, Events, pexecInCurrentTab, Settings as Setting, Themes, Util } from '@kui-shell/core'
+
+import { flatten } from '@kui-shell/core/mdist/api/Util'
+import { uiThemes } from '@kui-shell/core/mdist/api/Settings'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
+import { getPersistedThemeChoice } from '@kui-shell/core/mdist/api/Themes'
+import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import DropdownWidget, { Props as DropdownWidgetProps } from './DropdownWidget'
 
@@ -37,7 +42,7 @@ export default class Settings extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    Events.eventChannelUnsafe.on('/theme/change', ({ theme }: { theme: string }) => {
+    eventChannelUnsafe.on('/theme/change', ({ theme }: { theme: string }) => {
       this.setState({ currentTheme: theme })
     })
     this.recomputeThemeList()
@@ -45,10 +50,10 @@ export default class Settings extends React.PureComponent<Props, State> {
 
   private async recomputeThemeList() {
     const [currentTheme, themes] = await Promise.all([
-      Themes.getPersistedThemeChoice(),
-      Setting.uiThemes()
+      getPersistedThemeChoice(),
+      uiThemes()
         .then(_ => _.map(({ themes }) => themes))
-        .then(Util.flatten)
+        .then(flatten)
     ])
 
     this.setState({

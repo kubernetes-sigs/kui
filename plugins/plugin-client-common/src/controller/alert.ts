@@ -13,15 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Arguments,
-  Registrar,
-  ParsedOptions,
-  UsageError,
-  UsageModel,
-  ReactResponse,
-  isSupportedToolbarTextType
-} from '@kui-shell/core'
+
+import type { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
 
 import Alert from '../components/spi/Alert'
 
@@ -62,11 +55,16 @@ const usage: UsageModel = {
  * alert command handler
  *
  */
-function doAlert(opts: Arguments<AlertOptions>): ReactResponse {
+async function doAlert(opts: Arguments<AlertOptions>): Promise<ReactResponse> {
   const argv = opts.argvNoOptions
   const option = opts.parsedOptions
   const type = argv[1]
   const title = argv[2]
+
+  const [{ isSupportedToolbarTextType }, { UsageError }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Sidecar'),
+    import('@kui-shell/core/mdist/api/Response')
+  ])
 
   if (isSupportedToolbarTextType(type)) {
     return { react: Alert({ alert: { type, title, body: option.body }, className: 'kui--terminal-alert' }) }

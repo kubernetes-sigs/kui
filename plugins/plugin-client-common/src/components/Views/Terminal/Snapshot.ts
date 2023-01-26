@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { CommandCompleteEvent, isWatchable } from '@kui-shell/core'
+import type { CommandCompleteEvent } from '@kui-shell/core'
+import { isWatchable } from '@kui-shell/core/mdist/api/Watch'
 
 import { FinishedBlock, isAnnouncement, isCancelled, isEmpty, isOk, isOops } from './Block/BlockModel'
 

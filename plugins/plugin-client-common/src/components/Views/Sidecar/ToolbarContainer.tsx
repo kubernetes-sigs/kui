@@ -15,17 +15,17 @@
  */
 
 import React from 'react'
-import { ToolbarText, ToolbarAlert, Button } from '@kui-shell/core'
+import type { ToolbarText, ToolbarAlert, Button } from '@kui-shell/core'
 
 import Alert from '../../spi/Alert'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
-export { Props as ToolbarContainerProps }
 
 export type Props = React.PropsWithChildren<
   ToolbarProps & {
     didUpdateToolbar: (toolbarText: ToolbarText) => void
   }
 >
+export { Props as ToolbarContainerProps }
 
 interface State {
   extraButtons?: Button[]

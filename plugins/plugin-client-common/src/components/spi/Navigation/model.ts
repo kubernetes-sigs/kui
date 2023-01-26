@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, Link, MultiModalMode, NavResponse, Tab } from '@kui-shell/core'
+import type { Button, Link, MultiModalMode, NavResponse, Tab } from '@kui-shell/core'
 import { BaseHistoryEntry } from '../../Views/util/CircularBuffer'
 
 interface Nav {

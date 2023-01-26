@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExecType } from '@kui-shell/core'
+import { ExecType } from '@kui-shell/core/mdist/api/Command'
 
 import { hasUUID, isActive } from './BlockModel'
 import { isHTMLInputElement, isHTMLTextAreaElement, InputProvider as Input } from './Input'
@@ -32,7 +32,7 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
       }
     } else if (!shiftInTextAreaMode) {
       // user typed Enter; we've finished Reading, now Evalute
-      const { doEval } = await import('@kui-shell/core')
+      const { doEval } = await import('@kui-shell/core/mdist/api/Internal')
 
       // Do we already have an execUUID? if so, this means we are in the
       // midst of a command re-execution. In order to have the command

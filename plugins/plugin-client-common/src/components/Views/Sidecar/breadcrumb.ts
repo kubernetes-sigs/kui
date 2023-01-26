@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Breadcrumb } from '@kui-shell/core'
+import type { Breadcrumb } from '@kui-shell/core'
 
 type TopNavBreadcrumb = Breadcrumb & { deemphasize?: boolean; isCurrentPage?: boolean; className?: string }
 

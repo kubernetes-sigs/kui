@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
+import type { Tab } from '@kui-shell/core'
 
 interface LocationProps {
   /** The top-level Tab in which this button is situated */

@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import React from 'react'
-import { Tab, NavResponse } from '@kui-shell/core'
+import type { Tab, NavResponse } from '@kui-shell/core'
 
 import Width from './width'
 import { Loading } from '../../..'
