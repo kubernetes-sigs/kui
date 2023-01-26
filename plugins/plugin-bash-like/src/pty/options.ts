@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ParsedOptions } from '@kui-shell/core'
+import type { ParsedOptions } from '@kui-shell/core'
 
 /** Options for client/doExec */
 interface Options extends ParsedOptions {

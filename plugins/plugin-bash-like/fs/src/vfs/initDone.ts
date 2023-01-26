@@ -16,8 +16,6 @@
 
 import Debug from 'debug'
 
-const debug = Debug('plugin-bash-like/fs/initDone')
-
 const initDones: { initDone: Promise<void>; placeholderMountPath: string }[] = []
 
 export function pushInitDone(initDone: Promise<void>, placeholderMountPath: string) {
@@ -30,6 +28,7 @@ export async function waitForMountsToFinish(filepath: string) {
     _ => filepath.startsWith(_.placeholderMountPath) || filepath === _.placeholderMountPath + '/'
   )
   if (waitForThis) {
+    const debug = Debug('plugin-bash-like/fs/initDone')
     debug('waiting for mount', waitForThis.placeholderMountPath)
     await waitForThis.initDone
     debug('waiting for mount: done!', waitForThis.placeholderMountPath)

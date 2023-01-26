@@ -16,7 +16,7 @@
 
 import ptyServer from './server'
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 
 /**
  * This is the module

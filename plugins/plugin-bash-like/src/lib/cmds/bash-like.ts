@@ -23,13 +23,11 @@
 import Debug from 'debug'
 import { spawn, SpawnOptions, exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
-import { Capabilities, Arguments, ExecOptions, ExecType, Registrar } from '@kui-shell/core'
+import type { Arguments, ExecOptions, Registrar } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
 import { dispatchToShell } from './catchall'
-
-const debug = Debug('plugins/bash-like/cmds/general')
 
 function doSpawn(
   argv: string[],
@@ -38,6 +36,8 @@ function doSpawn(
 ): Promise<string | number | boolean | Record<string, any>> {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
+    const { isHeadless, inProxy } = await import('@kui-shell/core/mdist/api/Capabilities')
+
     try {
       const options: SpawnOptions = {
         cwd: execOptions.cwd,
@@ -50,7 +50,7 @@ function doSpawn(
         options.shell = process.env.SHELL
       }
 
-      if (!execOptions.onInit && !execOptions.onExit && Capabilities.isHeadless() && !Capabilities.inProxy()) {
+      if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
         options.stdio = 'inherit'
       }
 
@@ -69,13 +69,16 @@ function doSpawn(
   })
 }
 
-export const doExec = (
+export const doExec = async (
   cmdLine: string,
   argv: string[],
   execOptions: ExecOptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<string | number | boolean | Record<string, any>> => {
-  if (!execOptions.onInit && !execOptions.onExit && Capabilities.isHeadless() && !Capabilities.inProxy()) {
+  const debug = Debug('plugins/bash-like/cmds/general')
+  const { isHeadless, inProxy } = await import('@kui-shell/core/mdist/api/Capabilities')
+
+  if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
     return doSpawn(argv, execOptions)
   }
 
@@ -197,7 +200,9 @@ export const doExec = (
   })
 }
 
-const specialHandler = (args: Arguments) => {
+const specialHandler = async (args: Arguments) => {
+  const { ExecType } = await import('@kui-shell/core/mdist/api/Command')
+
   if (args.execOptions.type === ExecType.TopLevel) {
     throw new Error('this command is intended for internal consumption only')
   }

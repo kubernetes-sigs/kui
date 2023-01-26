@@ -17,9 +17,9 @@
 import TrieSearch from 'trie-search'
 import micromatch from 'micromatch'
 
-import { Arguments, CodedError, Util } from '@kui-shell/core'
+import type { Arguments, CodedError } from '@kui-shell/core'
+import type { FStat, VFS } from '..'
 
-import { FStat, VFS } from '..'
 import { basename, dirname, join } from './posix'
 
 const uid = -1
@@ -34,13 +34,13 @@ export interface BaseEntry {
 
 export type Directory = BaseEntry
 
-export interface Leaf<D extends any> {
+export interface Leaf<D> {
   mountPath: string
   isExecutable?: boolean
   data: D
 }
 
-export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implements VFS {
+export abstract class TrieVFS<D, L extends Leaf<D> = Leaf<D>> implements VFS {
   public readonly isLocal = false
   public readonly isVirtual = true
 
@@ -172,7 +172,8 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   }
 
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
-    return Util.flatten(
+    const { flatten } = await import('@kui-shell/core/mdist/api/Util')
+    return flatten(
       await Promise.all(
         filepaths
           .map(filepath => ({ filepath, entries: this.find(filepath, parsedOptions.d) }))
@@ -185,7 +186,7 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   /** Insert filepath into directory */
   public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
     return Promise.all(
-      srcFilepaths.map(srcFilepath => {
+      srcFilepaths.map(async srcFilepath => {
         const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json)$/)
         const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json)$/)
         const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json)$/)

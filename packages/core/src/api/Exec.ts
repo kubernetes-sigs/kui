@@ -17,3 +17,4 @@
 export { default as REPL } from '../models/repl'
 export { pexecInCurrentTab } from '../webapp/tab'
 export { default as encodeComponent } from '../repl/encode'
+export { split, _split, Split } from '../repl/split'

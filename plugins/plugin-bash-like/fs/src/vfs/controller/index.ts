@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 import clientSide from './client-side'
 import serverSide from './server-side'
 

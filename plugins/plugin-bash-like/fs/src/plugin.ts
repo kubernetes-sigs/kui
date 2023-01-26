@@ -25,7 +25,7 @@ import mkTemp from './lib/mkTemp'
 import vfs from './vfs/controller'
 import { plugin as tabCompletion } from './lib/tab-completion'
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 
 /**
  * This is the module

@@ -17,12 +17,9 @@
 import Debug from 'debug'
 import { basename } from 'path'
 import { Writable } from 'stream'
-import { Arguments, CodedError, Util } from '@kui-shell/core'
-import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
+import type { Arguments, CodedError } from '@kui-shell/core'
 
-import CommandsFS from './CommandsFS'
-
-const debug = Debug('plugin/bash-like/fs/vfs/delegates')
+import type { DirEntry, VFS } from '.'
 
 /** '/a/b/c' -> 3 */
 function countSlashes(path: string) {
@@ -69,6 +66,8 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
   if (!/[*/]$/.test(path)) {
     path = path + '/'
   }
+
+  const { findMatchingMounts } = await import('./find')
 
   const depthOfPath = countSlashes(path)
   try {
@@ -121,7 +120,10 @@ function removeDuplicates2(vfses: DirEntry[]): DirEntry[] {
  *
  */
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
-  const filepaths = parameters[1].length === 0 ? [Util.cwd()] : parameters[1].map(absolute)
+  const { cwd, flatten } = await import('@kui-shell/core/mdist/api/Util')
+  const { absolute, multiFindMount } = await import('./find')
+
+  const filepaths = parameters[1].length === 0 ? [cwd()] : parameters[1].map(absolute)
 
   const mounts = await multiFindMount(filepaths, true)
   const vfsContentP = Promise.all(
@@ -133,22 +135,24 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
           // re: the regexp test, this is an imperfect solution to
           // https://github.com/IBM/kui/issues/7168
           if (!/globby is not defined/.test(err.message)) {
+            const debug = Debug('plugin/bash-like/fs/vfs/delegates')
             debug(err)
           }
           throw err
         }
       }
     })
-  ).then(Util.flatten)
+  ).then(flatten)
 
   // this maintains the mapping from input to mountContent: DirEntry[][]
   const mountContentPerInput = Promise.all(filepaths.map(lsMounts))
 
   // fire off the ls of Kui registered commands
+  const { default: CommandsFS } = await import('./CommandsFS')
   const commandContentPromise = CommandsFS.ls(parameters[0], filepaths)
 
   // and this flattens that down to a DirEntry[]
-  const mountContent = Util.flatten(await mountContentPerInput)
+  const mountContent = flatten(await mountContentPerInput)
 
   if (mounts.length === 0 && mountContent.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${filepaths}`)
@@ -179,6 +183,7 @@ export async function cp(
   srcFilepaths: string[],
   dstFilepath: string
 ): ReturnType<VFS['cp']> {
+  const { findMount } = await import('./find')
   const mount1 = await Promise.all(srcFilepaths.map(_ => findMount(_)))
   const mount2 = await findMount(dstFilepath)
 
@@ -238,6 +243,7 @@ export async function cp(
  *
  */
 export async function rm(...parameters: Parameters<VFS['rm']>): ReturnType<VFS['rm']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(parameters[1])
   return mount.rm(parameters[0], parameters[1], parameters[2])
 }
@@ -247,6 +253,7 @@ export async function rm(...parameters: Parameters<VFS['rm']>): ReturnType<VFS['
  *
  */
 export async function fstat(...parameters: Parameters<VFS['fstat']>): ReturnType<VFS['fstat']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(parameters[1])
   return mount.fstat(parameters[0], parameters[1], parameters[2], parameters[3])
 }
@@ -256,6 +263,7 @@ export async function fstat(...parameters: Parameters<VFS['fstat']>): ReturnType
  *
  */
 export async function fwrite(...parameters: Parameters<VFS['fwrite']>): ReturnType<VFS['fwrite']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(parameters[1])
   return mount.fwrite(parameters[0], parameters[1], parameters[2], parameters[3])
 }
@@ -270,6 +278,7 @@ export async function pipe(
   length: number,
   stream: Writable
 ): ReturnType<VFS['pipe']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(filepath, undefined, true)
 
   if (!mount || !mount.pipe) {
@@ -290,6 +299,7 @@ export async function fslice(
   unit: 'bytes' | 'lines' = 'bytes',
   end?: number
 ): ReturnType<VFS['fslice']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(filepath, undefined, true)
 
   if (!mount) {
@@ -319,6 +329,7 @@ export async function fslice(
           break
         }
       } catch (err) {
+        const debug = Debug('plugin/bash-like/fs/vfs/delegates')
         debug(err)
         break
       }
@@ -333,6 +344,7 @@ export async function fslice(
  *
  */
 export async function mkdir(...parameters: Parameters<VFS['mkdir']>): ReturnType<VFS['mkdir']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(parameters[1])
   return mount.mkdir(parameters[0], parameters[1])
 }
@@ -342,6 +354,7 @@ export async function mkdir(...parameters: Parameters<VFS['mkdir']>): ReturnType
  *
  */
 export async function rmdir(...parameters: Parameters<VFS['rmdir']>): ReturnType<VFS['rmdir']> {
+  const { findMount } = await import('./find')
   const mount = await findMount(parameters[1])
   return mount.rmdir(parameters[0], parameters[1])
 }

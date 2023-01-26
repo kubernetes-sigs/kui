@@ -20,28 +20,15 @@
  *
  */
 
-import { Arguments, Capabilities, Registrar, i18n, Util } from '@kui-shell/core'
-
-import CommandsFS from '../vfs/CommandsFS'
-import { VFS, absolute, findMount } from '../vfs'
-import { localFilepath } from './usage-helpers'
-
-const strings = i18n('plugin-bash-like')
+import type { Arguments, Registrar } from '@kui-shell/core'
+import type VFS from '../vfs/VFS'
 
 /** e.g. cd /tmp && echo hi */
 const RE_CD_TO_PTY = /(&&|\|\|)/
 
-const usage = {
-  cd: {
-    strict: 'cd',
-    command: 'cd',
-    title: strings('cdUsageTitle'),
-    header: strings('cdUsageHeader'),
-    optional: localFilepath
-  }
-}
-
 async function failFastCd(dir: string, dirAsProvided: string, args: Arguments, mount: VFS) {
+  const { absolute } = await import('../vfs/find')
+
   const { isDirectory, fullpath } = !mount
     ? { isDirectory: true, fullpath: absolute(dir) }
     : await mount.fstat(args, absolute(dir))
@@ -52,10 +39,14 @@ async function failFastCd(dir: string, dirAsProvided: string, args: Arguments, m
       process.env.OLDPWD = ''
     }
 
-    const OLDPWD = Util.cwd() // remember it for when we're done
-    const newDir = Util.expandHomeDir(fullpath)
+    const [{ cwd, expandHomeDir }, { inBrowser }] = await Promise.all([
+      import('@kui-shell/core/mdist/api/Util'),
+      import('@kui-shell/core/mdist/api/Capabilities')
+    ])
+    const OLDPWD = cwd() // remember it for when we're done
+    const newDir = expandHomeDir(fullpath)
 
-    if (isLocal && !Capabilities.inBrowser()) {
+    if (isLocal && !inBrowser()) {
       process.chdir(newDir)
     }
 
@@ -95,8 +86,12 @@ const cd = async (args: Arguments) => {
     throw new Error(`cd: not a directory: ${dirAsProvided}`)
   }
 
-  const dir = !dirAsProvided ? Util.expandHomeDir('~') : dirAsProvided === '-' ? process.env.OLDPWD : dirAsProvided
+  const { expandHomeDir } = await import('@kui-shell/core/mdist/api/Util')
+  const { default: CommandsFS } = await import('../vfs/CommandsFS')
 
+  const dir = !dirAsProvided ? expandHomeDir('~') : dirAsProvided === '-' ? process.env.OLDPWD : dirAsProvided
+
+  const { findMount } = await import('../vfs/find')
   const mount = await findMount(dir, undefined, true)
   try {
     return await failFastCd(dir, dirAsProvided, args, mount)
@@ -125,22 +120,32 @@ const bcd = async ({ command, execOptions, REPL }: Arguments) => {
   return pwd
 }
 
+async function cdWrap(args: Arguments) {
+  const { inBrowser } = await import('@kui-shell/core/mdist/api/Capabilities')
+  if (!inBrowser) {
+    return cd(args)
+  } else {
+    return bcd(args)
+  }
+}
+
 /**
  * Register command handlers
  *
  */
 export default (commandTree: Registrar) => {
+  const usage = {
+    strict: 'cd',
+    command: 'cd',
+    title: 'change working directory',
+    header: 'Update the current working directory for local filesystem manipulations',
+    optional: [{ name: 'path', docs: 'local file path', file: true, positional: true }]
+  }
+
   commandTree.listen('/kuicd', cd, {
+    usage,
     requiresLocal: true
   })
 
-  if (!Capabilities.inBrowser()) {
-    commandTree.listen('/cd', cd, {
-      usage: usage.cd
-    })
-  } else {
-    commandTree.listen('/cd', bcd, {
-      usage: usage.cd
-    })
-  }
+  commandTree.listen('/cd', cdWrap, { usage })
 }

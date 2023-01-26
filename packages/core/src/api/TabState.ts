@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 The Kubernetes Authors
+ * Copyright 2023 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-import { i18n } from '@kui-shell/core'
-const strings = i18n('plugin-bash-like')
-
-/**
- * A parameter that is a local file
- *
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const localFilepath: any[] = [{ name: 'path', docs: strings('localFilePath'), file: true, positional: true }]
+export { default as TabState, registerTabState } from '../models/tab-state'

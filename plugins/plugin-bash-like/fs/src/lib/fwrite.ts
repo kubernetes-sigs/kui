@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Arguments, CodedError, RawResponse, Registrar } from '@kui-shell/core'
 import { dirname } from 'path'
+import type { Arguments, CodedError, RawResponse, Registrar } from '@kui-shell/core'
 
 export type FwriteOptions = {
   append?: boolean

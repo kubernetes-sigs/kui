@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { ExecOptions, REPL, Util, encodeComponent } from '@kui-shell/core'
+import type { ExecOptions, REPL } from '@kui-shell/core'
 
 export default async function cwd(execOptions: ExecOptions, repl: REPL): Promise<string> {
+  const [{ expandHomeDir, cwd }, { encodeComponent }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Util'),
+    import('@kui-shell/core/mdist/api/Exec')
+  ])
+
   return (
     execOptions.cwd ||
-    (!(await repl.rexec<{ dirent: { mount: { isLocal: boolean } } }>(`vfs ls -d ${encodeComponent(Util.cwd())}`))
-      .content[0].dirent.mount.isLocal
-      ? Util.expandHomeDir('~')
-      : Util.cwd())
+    (!(await repl.rexec<{ dirent: { mount: { isLocal: boolean } } }>(`vfs ls -d ${encodeComponent(cwd())}`)).content[0]
+      .dirent.mount.isLocal
+      ? expandHomeDir('~')
+      : cwd())
   )
 }

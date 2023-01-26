@@ -15,16 +15,18 @@
  */
 
 import Debug from 'debug'
-import { spawn } from 'child_process'
-import { ExecOptions, REPL, encodeComponent } from '@kui-shell/core'
+import type { ExecOptions, REPL } from '@kui-shell/core'
 
-const debug = Debug('plugin-bash-like/exec/pipe')
-
-export default function doExecPipe(
+export default async function doExecPipe(
   argvs: string[][],
   repl: REPL,
   execOptions?: Pick<ExecOptions, 'cwd' | 'env' | 'stderr' | 'stdout'>
 ) {
+  const [{ spawn }, { encodeComponent }] = await Promise.all([
+    import('child_process'),
+    import('@kui-shell/core/mdist/api/Exec')
+  ])
+
   const firstPipeIdx = argvs.findIndex(_ => _[0] !== 'cat')
 
   const children = argvs
@@ -46,6 +48,7 @@ export default function doExecPipe(
         // first stage: wire process.stdin to child.stdin
         if (firstPipeIdx > 0) {
           const filepath = argvs[firstPipeIdx - 1][1]
+          const debug = Debug('plugin-bash-like/exec/pipe')
           debug('piping input file to first child', filepath)
           const ingress = repl.qexec(`vfs cat ${encodeComponent(filepath)}`, undefined, undefined, {
             data: child.stdin

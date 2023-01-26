@@ -15,24 +15,12 @@
  */
 
 import { UTC as speedDate } from 'speed-date'
-import {
-  i18n,
-  split,
-  encodeComponent,
-  Arguments,
-  CodedError,
-  ParsedOptions,
-  MixedResponse,
-  Registrar,
-  Table,
-  TableStyle
-} from '@kui-shell/core'
+
+import type { Arguments, CodedError, ParsedOptions, MixedResponse, Registrar, Table } from '@kui-shell/core'
 
 import { GlobStats } from '..'
-import { localFilepath } from './usage-helpers'
 
 const dateFormatter = speedDate('MMM DD HH:mm')
-const strings = i18n('plugin-bash-like')
 
 /** Heading names */
 const Key = {
@@ -209,7 +197,7 @@ function attrs(
  * Turn an array of glob results into a Kui Table
  *
  */
-function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
+async function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Promise<Table> {
   const rev = args.parsedOptions.r ? -1 : 1
   const sorter = args.parsedOptions.S ? bySize(rev) : args.parsedOptions.t ? byTime(rev) : byLex(rev)
 
@@ -218,6 +206,11 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   const hasUid = entries.some(_ => (_.dirent && _.dirent.username) || (_.stats && _.stats.uid >= 0))
   const hasGid = entries.some(_ => _.stats && _.stats.gid >= 0)
   const hasMtime = entries.some(_ => _.stats && _.stats.mtimeMs)
+
+  const [{ encodeComponent }, { TableStyle }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Exec'),
+    import('@kui-shell/core/mdist/api/Table')
+  ])
 
   const body = entries.sort(sorter).map(_ => ({
     name: nameOf(_),
@@ -324,6 +317,7 @@ const doLs =
     }
 
     if (pipeToGrep || pipeToGrepToWordcount) {
+      const { split } = await import('@kui-shell/core/mdist/api/Exec')
       const rest = pipeToGrepToWordcount ? pipeToGrepToWordcount[1] : pipeToGrep[1]
       const grepFor = split(rest)
         .filter(_ => !/^-/.test(_))[0]
@@ -343,52 +337,18 @@ const doLs =
     }
   }
 
-const usage = (command: string) => ({
-  command,
-  title: strings('lsUsageTitle'),
-  header: strings('lsUsageHeader'),
-  noHelpAlias: true,
-  optional: localFilepath.concat([
-    { name: '-A', boolean: true, docs: strings('lsDashAUsageDocs') },
-    {
-      name: '-a',
-      boolean: true,
-      docs: strings('lsDashaUsageDocs')
-    },
-    { name: '-d', boolean: true, docs: strings('lsDashdUsageDocs') },
-    {
-      name: '-c',
-      boolean: true,
-      docs: strings('lsDashcUsageDocs')
-    },
-    { name: '-C', boolean: true, hidden: true },
-    { name: '-l', boolean: true, hidden: true },
-    { name: '-h', boolean: true, hidden: true },
-    {
-      name: '-t',
-      boolean: true,
-      docs: strings('lsDashtUsageDocs')
-    },
-    { name: '-r', boolean: true, docs: strings('lsDashrUsageDocs') },
-    { name: '-s', boolean: true, hidden: true }, // "show size", which we always do; so hidden: true
-    { name: '-S', boolean: true, docs: strings('lsDashSUsageDocs') }
-  ])
-})
-
 /**
  * Register command handlers
  *
  */
 export default (commandTree: Registrar) => {
+  const flags = {
+    boolean: ['A', 'a', 'd', 'c', 'C', 'l', 'h', 't', 'r', 's', 'S']
+  }
   const ls = commandTree.listen('/ls', doLs('ls'), {
-    usage: usage('ls'),
-    flags: {
-      boolean: usage('ls')
-        .optional.filter(_ => _.boolean)
-        .map(_ => _.name.replace(/^-(-)?/, ''))
-    }
+    flags
   })
   commandTree.synonym('/lls', doLs('lls'), ls, {
-    usage: usage('lls')
+    flags
   })
 }

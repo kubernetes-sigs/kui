@@ -29,4 +29,4 @@ export { default as doCancel } from '../webapp/cancel'
 
 export { splitFor } from '../webapp/tab'
 
-export { doEval } from '../repl/exec'
+export { exec as internalBeCarefulExec, doEval } from '../repl/exec'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, RawResponse, Registrar } from '@kui-shell/core'
+import type { Arguments, RawResponse, Registrar } from '@kui-shell/core'
 
 export async function mkTemp(): Promise<RawResponse<string>> {
   const { file: tmpFile } = await import('tmp')

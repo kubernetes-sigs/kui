@@ -21,4 +21,6 @@ export { default as File, isFile } from './lib/File'
 import * as TrieVFS from './vfs/TrieVFS'
 export { TrieVFS }
 
-export { VFS, mount, DirEntry, ParallelismOptions } from './vfs'
+export { mount } from './vfs/mount'
+export { ParallelismOptions } from './vfs'
+export { default as VFS, DirEntry } from './vfs/VFS'

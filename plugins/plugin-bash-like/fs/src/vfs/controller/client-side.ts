@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
+import type { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import { fstatImpl, fwriteImpl, lsImpl } from './server-side'
 import { cp, rm, mkdir, rmdir } from '../delegates'

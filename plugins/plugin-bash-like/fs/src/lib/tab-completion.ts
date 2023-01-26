@@ -15,17 +15,7 @@
  */
 
 import { basename, dirname as pathDirname } from 'path'
-
-import {
-  Tab,
-  Arguments,
-  CommandLine,
-  Registrar,
-  registerTabCompletionEnumerator,
-  TabCompletionSpec,
-  CompletionResponse,
-  Util
-} from '@kui-shell/core'
+import type { Tab, Arguments, CommandLine, Registrar, TabCompletionSpec, CompletionResponse } from '@kui-shell/core'
 
 import { ls } from '../vfs/delegates'
 import { GlobStats } from '../lib/glob'
@@ -94,9 +84,10 @@ async function doComplete(args: Arguments) {
   const dirname = lastIsDir ? last : pathDirname(last)
 
   if (dirname) {
+    const { expandHomeDir } = await import('@kui-shell/core/mdist/api/Util')
     try {
       // Note: by passing a: true, we effect an `ls -a`, which will give us dot files
-      const dirToScan = Util.expandHomeDir(dirname)
+      const dirToScan = expandHomeDir(dirname)
       const fileList = await ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan])
       const _matchingFiles = findMatchingFilesFrom(await fileList, dirToScan, last, lastIsDir)
       const matchingFiles = _matchingFiles && _matchingFiles.length !== 0 ? _matchingFiles : []
@@ -122,7 +113,8 @@ async function doComplete(args: Arguments) {
  * when the user is doing a `git checkout myBran<tab>`.
  *
  */
-export function preload() {
+export async function preload() {
+  const { registerTabCompletionEnumerator } = await import('@kui-shell/core/mdist/api/TabCompletion')
   registerTabCompletionEnumerator(completeLocalFiles, -100)
 }
 

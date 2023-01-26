@@ -31,12 +31,11 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { Abortable, CodedError, ExecOptions, FlowControllable, Registrar } from '@kui-shell/core'
-
-const debug = Debug('plugins/bash-like/pty/server')
+import type { Abortable, CodedError, ExecOptions, FlowControllable, Registrar } from '@kui-shell/core'
 
 let portRange = 8083
 const servers = []
+const debugStr = 'plugins/bash-like/pty/server'
 
 /** handler for shell/pty exit */
 export type ExitHandler = (exitCode: number) => void
@@ -169,6 +168,8 @@ type Shell = { shellExe: string; shellOpts: string[] }
 let cachedLoginShell: string
 export const getLoginShell = (): Promise<string> => {
   return new Promise((resolve, reject) => {
+    const debug = Debug(debugStr)
+
     if (cachedLoginShell) {
       debug('returning cached login shell', cachedLoginShell)
       resolve(cachedLoginShell)
@@ -239,6 +240,7 @@ export function setShellAliases(aliases: Record<string, string>) {
  *
  */
 export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) => async (ws: Channel) => {
+  const debug = Debug(debugStr)
   debug('onConnection', uid, gid, ws)
 
   // for now, we need to use a dynamic import here, because the plugin
@@ -338,7 +340,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           return exitNow(msg.exitCode || 0)
 
         case 'request': {
-          const { internalBeCarefulExec: exec } = await import('@kui-shell/core')
+          const { internalBeCarefulExec: exec } = await import('@kui-shell/core/mdist/api/Internal')
           if (msg.env) {
             process.env = msg.env
           }
@@ -566,6 +568,7 @@ export const main = async (
       }
     }).then(({ wss, port, exitNow }: { wss: Server; port: number; exitNow: ExitHandler }) => {
       if (!expectedCookie) {
+        const debug = Debug(debugStr)
         debug('listening for connection')
         wss.on(
           'connection',
@@ -594,6 +597,7 @@ export default (commandTree: Registrar) => {
       new Promise(async (resolve, reject) => {
         try {
           await new StdioChannelKuiSide().init((exitCode: number) => {
+            const debug = Debug(debugStr)
             debug('done with stdiochannel')
             process.exit(exitCode)
             // resolve(true)

@@ -17,32 +17,28 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import {
-  Capabilities,
-  i18n,
-  MultiModalResponse,
-  Arguments,
-  Registrar,
-  KResponse,
-  ParsedOptions,
-  Util
-} from '@kui-shell/core'
+import type { MultiModalResponse, Arguments, Registrar, KResponse, ParsedOptions } from '@kui-shell/core'
+
 import File from './File'
 import { contentTypeOf } from './open'
 import { fslice } from '../vfs/delegates'
-
-const strings = i18n('plugin-bash-like')
-const debug = Debug('plugins/bash-like/cmds/head')
 
 export interface HeadOptions extends ParsedOptions {
   n: number // line counts
   c: number // bytes
 }
 
-export function showResponseAsMMR(filepath: string, data: string): MultiModalResponse {
+export async function showResponseAsMMR(filepath: string, data: string): Promise<MultiModalResponse> {
   const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
   const enclosingDirectory = dirname(filepath)
   const packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
+
+  const [{ i18n }, { absolute, expandHomeDir }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/i18n'),
+    import('@kui-shell/core/mdist/api/Util')
+  ])
+
+  const strings = i18n('plugin-bash-like')
 
   const mode = {
     mode: 'view',
@@ -62,7 +58,7 @@ export function showResponseAsMMR(filepath: string, data: string): MultiModalRes
     spec: {
       filepath,
       size: 0,
-      fullpath: Util.absolute(Util.expandHomeDir(filepath))
+      fullpath: absolute(expandHomeDir(filepath))
     }
   }
 
@@ -72,6 +68,7 @@ export function showResponseAsMMR(filepath: string, data: string): MultiModalRes
 async function head(args: Arguments<HeadOptions>): Promise<KResponse> {
   const { argvNoOptions, parsedOptions } = args
   const filepath = argvNoOptions[argvNoOptions.indexOf('head') + 1]
+  const debug = Debug('plugins/bash-like/cmds/head')
   debug('head', filepath)
 
   if (typeof filepath === 'number' && filepath < 0) {
@@ -90,7 +87,9 @@ async function head(args: Arguments<HeadOptions>): Promise<KResponse> {
       parsedOptions.c || parsedOptions.n || 10,
       parsedOptions.c ? 'bytes' : 'lines'
     )
-    if (Capabilities.isHeadless() && !Capabilities.inProxy()) {
+
+    const { isHeadless, inProxy } = await import('@kui-shell/core/mdist/api/Capabilities')
+    if (isHeadless() && !inProxy()) {
       return data
     } else {
       return showResponseAsMMR(filepath, data)

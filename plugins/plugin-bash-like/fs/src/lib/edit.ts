@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 
 export default (registrar: Registrar) => {
   registrar.listen('/edit', ({ command, REPL }) => {

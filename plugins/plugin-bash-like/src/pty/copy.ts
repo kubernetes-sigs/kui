@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { XtermResponse, XtermResponseCell } from '@kui-shell/core'
+import type { XtermResponse, XtermResponseCell } from '@kui-shell/core'
 import { prepareCellForDomRenderer } from '@kui-shell/xterm-helpers'
 
 import { IBufferCell, IBufferLine, Terminal } from 'xterm'

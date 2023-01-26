@@ -17,23 +17,17 @@
 import Debug from 'debug'
 import { basename, dirname } from 'path'
 
-import {
+import type {
   MultiModalResponse,
-  MultiModalMode as Mode,
-  i18n,
+  MultiModalMode,
   Arguments,
   Registrar,
   KResponse,
-  SupportedStringContent,
-  Util
+  SupportedStringContent
 } from '@kui-shell/core'
 
 import File from './File'
 import { FStat } from './fstat'
-import { localFilepath } from './usage-helpers'
-
-const strings = i18n('plugin-bash-like')
-const debug = Debug('plugins/bash-like/cmds/open')
 
 /** Important for alignment to the Editor view component */
 export function contentTypeOf(suffix: string): SupportedStringContent {
@@ -59,9 +53,11 @@ export function contentTypeOf(suffix: string): SupportedStringContent {
 async function open(args: Arguments): Promise<KResponse> {
   const { argvNoOptions, REPL } = args
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
+  const debug = Debug('plugins/bash-like/cmds/open')
   debug('open', filepath)
 
-  const fullpath = Util.absolute(Util.expandHomeDir(filepath))
+  const { absolute, expandHomeDir } = await import('@kui-shell/core/mdist/api/Util')
+  const fullpath = absolute(expandHomeDir(filepath))
 
   // suffix excluding gzip extension
   const suffix = filepath.replace(/\.gz$/, '').replace(/^.+\.(\w+)/, '$1')
@@ -112,7 +108,10 @@ async function open(args: Arguments): Promise<KResponse> {
       const name = basename(filepath)
       const packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
-      const mode: Mode =
+      const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+      const strings = i18n('plugin-bash-like')
+
+      const mode: MultiModalMode =
         typeof data === 'string'
           ? {
               mode: 'view',
@@ -145,18 +144,10 @@ async function open(args: Arguments): Promise<KResponse> {
   }
 }
 
-const usage = {
-  strict: 'open',
-  command: 'open',
-  title: strings('openUsageTitle'),
-  header: strings('openUsageHeader'),
-  optional: localFilepath
-}
-
 /**
  * Register command handlers
  *
  */
 export default (registrar: Registrar) => {
-  registrar.listen('/open', open, { usage })
+  registrar.listen('/open', open)
 }
