@@ -18,7 +18,7 @@ import React from 'react'
 import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
-import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
+import type { File } from '@kui-shell/plugin-bash-like/fs'
 import {
   Button,
   Events,
@@ -45,6 +45,10 @@ import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
 import '../../../../web/scss/components/Editor/Editor.scss'
 
 const strings = i18n('plugin-client-common', 'editor')
+
+export function isFile(file: File | MultiModalResponse): file is File {
+  return file.apiVersion === 'kui-shell/v1' && file.kind === 'File'
+}
 
 type Props = MonacoOptions &
   ToolbarProps & {

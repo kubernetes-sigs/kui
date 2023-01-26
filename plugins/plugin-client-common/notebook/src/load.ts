@@ -15,16 +15,20 @@
  */
 
 import Debug from 'debug'
-import { FStat } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, Util, encodeComponent } from '@kui-shell/core'
-
-const debug = Debug('plugin-client-common/notebook/load')
+import type { FStat } from '@kui-shell/plugin-bash-like/fs'
+import type { Arguments } from '@kui-shell/core'
 
 export async function loadNotebook(
   filepath: string,
   { REPL }: Pick<Arguments, 'REPL'>,
   errOk = false
 ): Promise<string | object> {
+  const debug = Debug('plugin-client-common/notebook/load')
+  const [{ encodeComponent }, { absolute, expandHomeDir }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Exec'),
+    import('@kui-shell/core/mdist/api/Util')
+  ])
+
   try {
     // replace any environment variable references
     filepath = filepath.replace(/\${?([^/s]+)}?/g, (_, p1) => process.env[p1])
@@ -34,7 +38,7 @@ export async function loadNotebook(
       return (await REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
     } else {
       //   --with-data says give us the file contents
-      const fullpath = Util.absolute(Util.expandHomeDir(filepath))
+      const fullpath = absolute(expandHomeDir(filepath))
       const stats = (await REPL.rexec<FStat>(`vfs fstat ${encodeComponent(fullpath)} --with-data`)).content
 
       if (stats.isDirectory) {
