@@ -18,9 +18,7 @@ import { userInfo } from 'os'
 import { stat, Stats, constants } from 'fs'
 import { VFS } from '../vfs'
 
-import { i18n, Capabilities, CodedError, Arguments, ParsedOptions, Util } from '@kui-shell/core'
-
-const strings = i18n('plugin-bash-like')
+import type { CodedError, Arguments, ParsedOptions } from '@kui-shell/core'
 
 /** Just the bits of fs.Stats that we need */
 type PartialStats = Pick<Stats, 'size' | 'mtimeMs' | 'uid' | 'gid' | 'mode'>
@@ -125,11 +123,16 @@ export async function kuiglob(
   // webpack bundling with browser targets.
   const globby = require('globby')
 
+  const [{ expandHomeDir }, { isHeadless }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Util'),
+    import('@kui-shell/core/mdist/api/Capabilities')
+  ])
+
   // this is the list of top-level entry points the user asked us to
   // traverse
   const inputs = argvNoOptions
     .slice(argvNoOptions.indexOf('kuiglob') + 1)
-    .map(Util.expandHomeDir) // ~ -> /home/me/
+    .map(expandHomeDir) // ~ -> /home/me/
     .map(_ => _.replace(/([^\\])"/g, '$1')) // /tmp/"foo bar" -> /tmp/foo bar
 
   const stats = inputs.length === 0 ? [] : await Promise.all(inputs.map(isDir))
@@ -178,7 +181,7 @@ export async function kuiglob(
           dot: parsedOptions.a || parsedOptions.all,
           stats: needStats,
           objectMode: !needStats,
-          cwd: Capabilities.isHeadless() ? process.cwd() : tab.state.getState('plugins/plugin-bash-like', 'v1', 'cwd')
+          cwd: isHeadless() ? process.cwd() : tab.state.getState('plugins/plugin-bash-like', 'v1', 'cwd')
         })) as any as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
 
@@ -212,6 +215,8 @@ export async function kuiglob(
     // we found nothing; be careful only to report a 404 if: a) user
     // specified no wildcards b) none of the inputs were directories;
     // e.g. `ls emptyDir` will glob nothing, but shouldn't be a 404
+    const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+    const strings = i18n('plugin-bash-like')
     const error: CodedError = new Error(strings('No such file or directory', inputs.join(' ')))
     error.code = 404
     throw error

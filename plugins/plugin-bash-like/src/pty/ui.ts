@@ -15,17 +15,16 @@
  */
 
 import Debug from 'debug'
-import { Events } from '@kui-shell/core'
-
-const debug = Debug('plugins/bash-like/pty/ui')
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 /**
  * Update the UI to inform the user that the connection to the proxy is offline
  *
  */
 export function setOffline() {
+  const debug = Debug('plugins/bash-like/pty/ui')
   debug('setOffline')
-  Events.eventChannelUnsafe.emit('/proxy/offline')
+  eventChannelUnsafe.emit('/proxy/offline')
 }
 
 /**
@@ -33,6 +32,7 @@ export function setOffline() {
  *
  */
 export function setOnline() {
+  const debug = Debug('plugins/bash-like/pty/ui')
   debug('setOnline')
-  Events.eventChannelUnsafe.emit('/proxy/online')
+  eventChannelUnsafe.emit('/proxy/online')
 }

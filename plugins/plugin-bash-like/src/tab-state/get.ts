@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TabState } from '@kui-shell/core'
+import type { TabState } from '@kui-shell/core'
 
 import { apiVersion, name } from './key'
 

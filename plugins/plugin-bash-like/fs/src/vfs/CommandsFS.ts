@@ -15,7 +15,8 @@
  */
 
 import { dirname } from 'path'
-import { commandsTrie, Util } from '@kui-shell/core'
+import { flatten } from '@kui-shell/core/mdist/api/Util'
+import { commandsTrie } from '@kui-shell/core/mdist/api/Trie'
 
 import { VFS } from '..'
 import { TrieVFS, Leaf, Directory, BaseEntry } from './TrieVFS'
@@ -53,7 +54,7 @@ class CommandsFS extends TrieVFS<string> {
   }
 
   private fillInParents(filepath: string, entries: BaseEntry[]) {
-    const parents = Util.flatten(entries.map(_ => this.parentsOf(_.mountPath, filepath.replace(/\/$/, ''))))
+    const parents = flatten(entries.map(_ => this.parentsOf(_.mountPath, filepath.replace(/\/$/, ''))))
     return entries.concat(parents)
   }
 

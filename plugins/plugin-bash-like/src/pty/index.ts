@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, ExecOptions } from '@kui-shell/core'
+import type { Tab, ExecOptions } from '@kui-shell/core'
 
 import Options from './options'
 export { main } from './server'

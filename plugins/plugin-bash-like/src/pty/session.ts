@@ -18,26 +18,27 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Events, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
+import type { CodedError, Tab, PreloadRegistrar } from '@kui-shell/core'
 
 import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
 
 import { getSessionForTab, invalidateCache, isExiting } from './sessionCache'
 
-const strings = i18n('plugin-bash-like')
-const debug = Debug('plugins/bash-like/pty/session')
+const debugStr = 'plugins/bash-like/pty/session'
 
 /**
  * Return the cached websocket for the given tab
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getChannelForTab(tab: Tab): Promise<Channel> {
+export async function getChannelForTab(tab: Tab): Promise<Channel> {
+  const { inBrowser } = await import('@kui-shell/core/mdist/api/Capabilities')
+
   if (isExiting()) {
     // prevent any stagglers re-establishing a channel
     throw new Error('Exiting')
-  } else if (Capabilities.inBrowser()) {
+  } else if (inBrowser()) {
     return getSessionForTab(tab)
   }
 }
@@ -56,6 +57,7 @@ export function pollUntilOnline(tab: Tab) {
     }, 5000)
 
     const once = (iter = 0) => {
+      const debug = Debug(debugStr)
       debug('trying to establish session', tab)
 
       return tab.REPL.qexec('echo initializing session', undefined, undefined, {
@@ -67,7 +69,7 @@ export function pollUntilOnline(tab: Tab) {
           setOnline()
           resolve()
         })
-        .catch(error => {
+        .catch(async error => {
           const err = error as CodedError
           if (err.code !== 503) {
             // don't bother complaining too much about connection refused
@@ -75,6 +77,9 @@ export function pollUntilOnline(tab: Tab) {
             invalidateCache(tab)
           }
           setTimeout(() => once(iter + 1), iter < 10 ? 2000 : iter < 100 ? 4000 : 10000)
+
+          const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+          const strings = i18n('plugin-bash-like')
           return strings('Could not establish a new session')
         })
     }
@@ -107,10 +112,11 @@ async function newSessionForTab(tab: Tab) {
 }
 
 /** Connection to Kui proxy has been severed */
-export function invalidateSession(tab: Tab) {
+export async function invalidateSession(tab: Tab) {
+  const { eventBus } = await import('@kui-shell/core/mdist/api/Events')
   invalidateCache(tab)
-  Events.eventBus.emit('/tab/offline', tab)
-  Events.eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
+  eventBus.emit('/tab/offline', tab)
+  eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
 }
 
 /**
@@ -123,7 +129,9 @@ export async function init(registrar: PreloadRegistrar) {
     return { proxyServer: { enabled: false } }
   })
 
-  if (Capabilities.inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
+  const { inBrowser } = await import('@kui-shell/core/mdist/api/Capabilities')
+  if (inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
+    const debug = Debug(debugStr)
     debug('initializing pty sessions')
     registrar.registerSessionInitializer(newSessionForTab)
   }

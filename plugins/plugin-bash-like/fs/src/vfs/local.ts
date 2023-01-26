@@ -17,9 +17,11 @@
 import { createGunzip } from 'zlib'
 import { createReadStream } from 'fs'
 import { PassThrough, Writable } from 'stream'
-import { Arguments, Capabilities, CodedError, Util } from '@kui-shell/core'
+import { expandHomeDir } from '@kui-shell/core/mdist/api/Util'
+import type { Arguments, CodedError } from '@kui-shell/core'
 
-import { VFS, mount } from '.'
+import VFS from './VFS'
+import { mount } from './mount'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
 import { fstat, FStat } from '../lib/fstat'
 import { _fwrite } from '../lib/fwrite'
@@ -83,7 +85,7 @@ class LocalVFS implements VFS {
 
   /** Pipe a content slice to the given `stream` */
   public pipe(filepath: string, offset: number, _length: number, stream: Writable): Promise<void> {
-    const fullpath = Util.expandHomeDir(filepath)
+    const fullpath = expandHomeDir(filepath)
 
     return new Promise((resolve, reject) => {
       // re: end = _length - 1, this is because the end option is inclusive and _length is not
@@ -152,7 +154,8 @@ class LocalVFS implements VFS {
 export default async () => {
   // don't bother mounting a local filesystem in browser mode without
   // a proxy
-  if (!Capabilities.inBrowser() || Capabilities.hasProxy()) {
+  const { inBrowser, hasProxy } = await import('@kui-shell/core/mdist/api/Capabilities')
+  if (!inBrowser() || hasProxy()) {
     mount(new LocalVFS())
   }
 }

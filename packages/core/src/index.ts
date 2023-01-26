@@ -15,6 +15,7 @@
  */
 
 // Capabilities
+export { CapabilityRegistration } from './api/Capabilities'
 export * from './api'
 
 // Commands

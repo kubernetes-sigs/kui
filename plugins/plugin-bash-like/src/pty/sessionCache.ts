@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
-import { Channel } from './channel'
+import type { Tab } from '@kui-shell/core'
+import type { Channel } from './channel'
 
 let _exiting = false
 let _singleChannel: Promise<Channel> // share session across tabs see https://github.com/IBM/kui/issues/6453

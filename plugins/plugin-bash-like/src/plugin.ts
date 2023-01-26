@@ -18,7 +18,7 @@ import bash from './lib/cmds/bash-like'
 import ptyServer from './pty/server'
 import exportCommand from './lib/cmds/export'
 
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 
 /**
  * This is the module

@@ -15,14 +15,11 @@
  */
 
 import Debug from 'debug'
-
-import { encodeComponent, Arguments, Registrar, KResponse } from '@kui-shell/core'
+import type { Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import { FStat } from '../'
 import { fslice } from '../vfs/delegates'
 import { HeadOptions, showResponseAsMMR } from './head'
-
-const debug = Debug('plugins/bash-like/cmds/tail')
 
 type TailOptions = HeadOptions & {
   q: boolean
@@ -40,6 +37,7 @@ async function tail(args: Arguments<TailOptions>): Promise<KResponse> {
     )
   }
 
+  const debug = Debug('plugins/bash-like/cmds/tail')
   const { argvNoOptions, parsedOptions } = args
   const filepath = argvNoOptions[argvNoOptions.indexOf('tail') + 1]
   debug('tail', filepath)
@@ -51,6 +49,7 @@ async function tail(args: Arguments<TailOptions>): Promise<KResponse> {
     return args.REPL.qexec(args.command.replace(filepath, newarg))
   }
 
+  const { encodeComponent } = await import('@kui-shell/core/mdist/api/Exec')
   const { size } = (await args.REPL.rexec<FStat>(`vfs fstat ${encodeComponent(filepath)}`)).content
 
   try {

@@ -21,21 +21,11 @@ import { v4 as uuid } from 'uuid'
 import { IDisposable, Terminal as XTerminal } from 'xterm'
 // import { webLinksInit } from 'xterm/lib/addons/webLinks/webLinks'
 
-// uses of the public kui-shell API
-import {
-  Capabilities,
-  Tab,
-  REPL,
-  Job,
-  Abortable,
-  FlowControllable,
-  XtermResponse,
-  CodedError,
-  Events,
-  ExecType,
-  ExecOptions,
-  disableInputQueueing
-} from '@kui-shell/core'
+// eslint-disable-next-line import/no-duplicates
+import type { Tab, REPL, Job, Abortable } from '@kui-shell/core'
+
+// eslint-disable-next-line import/no-duplicates
+import type { FlowControllable, XtermResponse, CodedError, ExecOptions } from '@kui-shell/core'
 
 import Options from './options'
 import ChannelId from './channel-id'
@@ -72,7 +62,7 @@ function bumpGeneration() {
 }
 if (window) {
   window.addEventListener('resize', bumpGeneration)
-  Events.eventChannelUnsafe.on('/zoom', bumpGeneration)
+  import('@kui-shell/core/mdist/api/Events').then(_ => _.eventChannelUnsafe.on('/zoom', bumpGeneration))
 }
 function getCachedSize(tab: Tab): Size {
   const cachedSize: Size = tab['_kui_pty_cachedSize']
@@ -372,6 +362,8 @@ async function initOnMessage(
   let pendingWrites = 0
   let disposeOnRender: IDisposable
 
+  const { ExecType } = await import('@kui-shell/core/mdist/api/Command')
+
   // eslint-disable-next-line no-use-before-define
   const focus = (terminal: KuiTerminal) => {
     if (!terminal._kuiAlreadyFocused) {
@@ -445,7 +437,7 @@ async function initOnMessage(
   const scrollPoll = terminal && setInterval(doScroll, 400)
 
   const onFirstMessage = () => {
-    const queuedInput = disableInputQueueing(tab)
+    const queuedInput = '' // disableInputQueueing(tab)
     if (queuedInput.length > 0) {
       debug('queued input up front', queuedInput)
       setTimeout(() => ws.send(JSON.stringify({ type: 'data', data: queuedInput, uuid: ourUUID })), 50)
@@ -756,7 +748,8 @@ const getOrCreateChannel = async (
   initOnMessage: (ws: Channel) => void,
   focus: (terminal: KuiTerminal) => void
 ): Promise<Channel> => {
-  const channelFactory = Capabilities.inBrowser()
+  const { inBrowser } = await import('@kui-shell/core/mdist/api/Capabilities')
+  const channelFactory = inBrowser()
     ? window['webview-proxy'] !== undefined
       ? webviewChannelFactory
       : remoteChannelFactory
@@ -783,7 +776,7 @@ const getOrCreateChannel = async (
     ws.send(JSON.stringify(msg))
   }
 
-  const cachedws = getChannelForTab(tab)
+  const cachedws = await getChannelForTab(tab)
 
   if (!cachedws) {
     // Then we need to allocate a new channel. BE CAREFUL: avoid races
@@ -800,7 +793,7 @@ const getOrCreateChannel = async (
 
     // when the websocket has closed, notify the user
 
-    if (Capabilities.inBrowser()) {
+    if (inBrowser()) {
       const onClose = function (evt) {
         debug('channel has closed', evt.target, uuid)
         ws.removeEventListener('close', onClose)
@@ -838,6 +831,9 @@ export const doExec = (
   new Promise((resolve, reject) => {
     // this is the main work
     const exec = async () => {
+      const { ExecType } = await import('@kui-shell/core/mdist/api/Command')
+      const { eventChannelUnsafe } = await import('@kui-shell/core/mdist/api/Events')
+
       // attach the terminal to the DOM
       let resizer: Resizer
       let terminal: KuiTerminal
@@ -884,10 +880,10 @@ export const doExec = (
           // theming
           // injectFont(terminal) // inject once on startup
           const doInjectTheme = () => injectFont(terminal, true)
-          Events.eventChannelUnsafe.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
+          eventChannelUnsafe.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
           resizer = new Resizer(terminal, tab, execOptions, ourUUID)
-          Events.eventChannelUnsafe.once(`/command/stdout/done/${tab.uuid}/${execOptions.execUUID}`, () => {
+          eventChannelUnsafe.once(`/command/stdout/done/${tab.uuid}/${execOptions.execUUID}`, () => {
             resizer.resize()
           })
 
@@ -900,11 +896,11 @@ export const doExec = (
             injectFont(terminal, true)
             resizer.resize()
           }
-          Events.eventChannelUnsafe.on('/zoom', doZoom)
+          eventChannelUnsafe.on('/zoom', doZoom)
 
           const cleanupEventHandlers = () => {
-            Events.eventChannelUnsafe.off('/zoom', doZoom)
-            Events.eventChannelUnsafe.off('/theme/change', doInjectTheme)
+            eventChannelUnsafe.off('/zoom', doZoom)
+            eventChannelUnsafe.off('/theme/change', doInjectTheme)
           }
 
           // heuristic for hiding empty rows

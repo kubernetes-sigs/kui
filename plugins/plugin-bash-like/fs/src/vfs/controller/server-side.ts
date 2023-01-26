@@ -15,7 +15,7 @@
  */
 
 import { Writable } from 'stream'
-import { Arguments, RawResponse, Registrar } from '@kui-shell/core'
+import type { Arguments, RawResponse, Registrar } from '@kui-shell/core'
 
 import { ls, fslice, fstat, fwrite, pipe } from '../delegates'
 import { KuiGlobOptions, GlobStats } from '../../lib/glob'

@@ -15,8 +15,7 @@
  */
 
 import { readFile, stat } from 'fs'
-
-import { Arguments, ParsedOptions, CodedError, Util } from '@kui-shell/core'
+import type { Arguments, ParsedOptions, CodedError } from '@kui-shell/core'
 
 export interface FStat {
   viewer: string
@@ -49,13 +48,15 @@ function readData(fullpath: string): Promise<string> {
  * Kui command for fs.stat
  *
  */
-export const fstat = ({
+export const fstat = async ({
   argvNoOptions,
   parsedOptions
 }: Pick<Arguments<FStatOptions>, 'argvNoOptions' | 'parsedOptions'>) => {
+  const { expandHomeDir } = await import('@kui-shell/core/mdist/api/Util')
+
   const filepath = argvNoOptions[1]
   const viewer = 'open'
-  const fullpath = Util.expandHomeDir(filepath)
+  const fullpath = expandHomeDir(filepath)
 
   const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
 

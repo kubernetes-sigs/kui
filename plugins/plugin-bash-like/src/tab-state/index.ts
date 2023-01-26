@@ -15,12 +15,13 @@
  */
 
 import Debug from 'debug'
-import { Capabilities, TabState, registerTabState, Util } from '@kui-shell/core'
+import type { TabState } from '@kui-shell/core'
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+import { cwd, fallbackCWD } from '@kui-shell/core/mdist/api/Util'
+import { registerTabState } from '@kui-shell/core/mdist/api/TabState'
 
 import getTabState from './get'
 import { apiVersion, name } from './key'
-
-const debug = Debug('plugins/bash-like/tab-state')
 
 function setTabState(tab: TabState, key: string, value: any) {
   tab.setState(name, apiVersion, key, value)
@@ -28,18 +29,20 @@ function setTabState(tab: TabState, key: string, value: any) {
 
 const capture = (tab: TabState) => {
   setTabState(tab, 'env', Object.assign({}, process.env))
-  setTabState(tab, 'cwd', Util.cwd())
+  setTabState(tab, 'cwd', cwd())
 
+  const debug = Debug('plugins/bash-like/tab-state')
   debug('captured tab state', tab.uuid, getTabState(tab, 'cwd'))
 }
 
 const restore = (tab: TabState) => {
   const env = getTabState(tab, 'env')
   const cwd = getTabState(tab, 'cwd')
+  const debug = Debug('plugins/bash-like/tab-state')
   debug('restoring state', tab.uuid, cwd)
   process.env = env
   if (cwd !== undefined) {
-    if (Capabilities.inBrowser() || process.env.VIRTUAL_CWD) {
+    if (inBrowser() || process.env.VIRTUAL_CWD) {
       debug('changing cwd', process.env.PWD, cwd)
       process.env.PWD = cwd
     } else {
@@ -47,13 +50,13 @@ const restore = (tab: TabState) => {
         debug('changing cwd', cwd)
         process.chdir(cwd)
       } catch (err) {
-        console.error(`Error in chdir, using fallback plan: ${Util.fallbackCWD(cwd)}`, err)
+        console.error(`Error in chdir, using fallback plan: ${fallbackCWD(cwd)}`, err)
         try {
-          process.chdir(Util.fallbackCWD(cwd))
+          process.chdir(fallbackCWD(cwd))
         } catch (err) {
           // wow, things really are weird, then
           console.error(err)
-          process.chdir(Util.fallbackCWD())
+          process.chdir(fallbackCWD())
         }
       }
     }

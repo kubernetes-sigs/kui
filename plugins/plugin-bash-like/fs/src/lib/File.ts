@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MultiModalResponse, ResourceWithMetadata } from '@kui-shell/core'
+import type { MultiModalResponse, ResourceWithMetadata } from '@kui-shell/core'
 
 const apiVersion = 'kui-shell/v1'
 const kind = 'File'

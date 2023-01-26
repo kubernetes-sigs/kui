@@ -15,11 +15,13 @@
  */
 
 import Debug from 'debug'
-import { CodedError, Streamable, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
+import type { CodedError, Streamable, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import cwd from '../util/cwd'
 
-const debug = Debug('plugins/bash-like/cmds/catchall')
+function debug(msg: string) {
+  return Debug('plugins/bash-like/cmds/catchall')(msg)
+}
 
 /**
  * Command handler that dispatches to an outer shell
@@ -46,7 +48,7 @@ export const dispatchToShell = async ({
     }
   }
 
-  const { ExecType } = await import('@kui-shell/core')
+  const { ExecType } = await import('@kui-shell/core/mdist/api/Command')
   const useRaw =
     (execOptions.raw || execOptions.type === ExecType.Nested) &&
     execOptions.quiet === undefined &&
@@ -60,9 +62,9 @@ export const dispatchToShell = async ({
 
   const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
 
-  const { Capabilities } = await import('@kui-shell/core')
+  const { isHeadless, inBrowser } = await import('@kui-shell/core/mdist/api/Capabilities')
 
-  if (Capabilities.isHeadless() || (!Capabilities.inBrowser() && useRaw)) {
+  if (isHeadless() || (!inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
     const actualArgv = argv[0] === 'sendtopty' ? argv.slice(1) : argv
     const response = await doExec(actualCommand, actualArgv, eOptions).catch(cleanUpError)
@@ -108,7 +110,7 @@ export const dispatchToShell = async ({
 export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOptions>(
   args: Arguments<O>
 ): Promise<string> {
-  const { Capabilities } = await import('@kui-shell/core')
+  const { isHeadless } = await import('@kui-shell/core/mdist/api/Capabilities')
   // eslint-disable-next-line no-async-promise-executor
   return new Promise<string>(async (resolve, reject) => {
     let stdout = ''
@@ -137,7 +139,7 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
       // if the PTY emitted anything on stdout, use this as the message
       const message = stdout || err.message
 
-      if (stdout && Capabilities.isHeadless()) {
+      if (stdout && isHeadless()) {
         // avoid stack traces to our own code? see
         // https://github.com/kubernetes-sigs/kui/issues/7334
         debug(message)
@@ -159,9 +161,9 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
  *
  */
 export const preload = async (commandTree: Registrar) => {
-  const { Capabilities } = await import('@kui-shell/core')
+  const { inBrowser, hasProxy } = require('@kui-shell/core/mdist/api/Capabilities')
 
-  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
+  if (inBrowser() && !hasProxy()) {
     debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
   }

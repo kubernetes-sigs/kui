@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import { Arguments, Capabilities, Events, Registrar, SymbolTable } from '@kui-shell/core'
-import { doExecWithStdoutViaPty } from './catchall'
+import type { Arguments, Registrar } from '@kui-shell/core'
 
 /**
  * export command
  *
  */
 const exportCommand = async (args: Arguments) => {
+  const [{ doExecWithStdoutViaPty }, { inBrowser, hasProxy }, { eventBus }, { SymbolTable }] = await Promise.all([
+    import('./catchall'),
+    import('@kui-shell/core/mdist/api/Capabilities'),
+    import('@kui-shell/core/mdist/api/Events'),
+    import('@kui-shell/core/mdist/api/SymbolTable')
+  ])
+
   const { command, tab, parsedOptions } = args
   const curDic = SymbolTable.read(tab)
 
@@ -33,15 +39,12 @@ const exportCommand = async (args: Arguments) => {
   const semicolon = /;\s*$/.test(command) ? '' : ';'
   const myArgs = Object.assign({}, args, { command: `${command}${semicolon} echo -n $${key}` })
 
-  const value =
-    Capabilities.inBrowser() && !Capabilities.hasProxy()
-      ? arr[1].replace(/^"(.+)"$/, '$1')
-      : await doExecWithStdoutViaPty(myArgs)
+  const value = inBrowser() && !hasProxy() ? arr[1].replace(/^"(.+)"$/, '$1') : await doExecWithStdoutViaPty(myArgs)
 
   curDic[key] = value
 
   SymbolTable.write(tab, curDic)
-  Events.eventBus.emitEnvUpdate(key, value)
+  eventBus.emitEnvUpdate(key, value)
 
   return true
 }
