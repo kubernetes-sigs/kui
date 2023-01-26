@@ -20,8 +20,8 @@ import { editor as Monaco } from 'monaco-editor'
 
 import { eventBus, eventChannelUnsafe, TabLayoutChangeEvent } from '@kui-shell/core/mdist/api/Events'
 import type { MultiModalResponse } from '@kui-shell/core'
-import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
+import { isFile } from '.'
 import getKuiFontSize from './lib/fonts'
 import { language } from './lib/file-types'
 import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
