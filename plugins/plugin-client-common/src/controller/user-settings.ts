@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { CodedError, Registrar, i18n } from '@kui-shell/core'
+import type { CodedError, Registrar } from '@kui-shell/core'
 
 import KuiConfiguration from '../components/Client/KuiConfiguration'
 import { get, reset, set, unset } from '../components/Client/UserSettings'
 
-const strings = i18n('plugin-client-common/user-settings')
 const settings: (keyof KuiConfiguration)[] = ['prompt', '_for_testing_']
 
 /**
@@ -36,6 +35,9 @@ export default async (registrar: Registrar) => {
   settings.forEach(setting => {
     /** Read out a given user setting override */
     registrar.listen(`/kuiconfig/get/${setting}`, async () => {
+      const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+      const strings = i18n('plugin-client-common/user-settings')
+
       const value = await get(setting)
       if (!value) {
         const error: CodedError = new Error(strings('You have not specified a value for this setting'))

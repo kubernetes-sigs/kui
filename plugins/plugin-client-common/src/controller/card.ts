@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
+import type { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
 
 import card from '../components/spi/Card'
 import fetchMarkdownFile from './fetch'

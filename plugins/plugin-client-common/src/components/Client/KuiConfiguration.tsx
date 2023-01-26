@@ -19,13 +19,13 @@ import InterfaceProps from './props/Interface'
 import SessionProps from './props/Session'
 import BrandingProps from './props/Branding'
 import FeatureFlags from './props/FeatureFlags'
-import { Themes } from '@kui-shell/core'
+import { ThemeProperties } from '@kui-shell/core/mdist/api/Themes'
 
 type TestingFlags = {
   _for_testing_: number
 }
 
-type KuiConfiguration = Partial<Themes.ThemeProperties> &
+type KuiConfiguration = Partial<ThemeProperties> &
   Partial<InputProps> &
   Partial<InterfaceProps> &
   Partial<SessionProps> &

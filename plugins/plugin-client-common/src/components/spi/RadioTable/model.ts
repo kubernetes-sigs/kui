@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RadioTable, REPL } from '@kui-shell/core'
+import type { RadioTable, REPL } from '@kui-shell/core'
 
 interface Props {
   /** The model to be rendered */

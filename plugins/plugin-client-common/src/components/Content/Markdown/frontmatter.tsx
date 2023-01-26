@@ -19,7 +19,7 @@ import { visit } from 'unist-util-visit'
 import { Literal, Node, Root, Text } from 'hast'
 import { visitParents } from 'unist-util-visit-parents'
 
-import { Tab } from '@kui-shell/core'
+import type { Tab } from '@kui-shell/core'
 
 import KuiFrontmatter, { hasWizardSteps, isNormalSplit, isValidPosition, isValidPositionObj } from './KuiFrontmatter'
 import { preprocessCodeBlocksInContent } from './components/code/remark-codeblocks-topmatter'

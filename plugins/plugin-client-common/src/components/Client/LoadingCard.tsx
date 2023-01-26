@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { i18n, REPL } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { REPL } from '@kui-shell/core/mdist/api/Exec'
 
 import Card from '../spi/Card'
 

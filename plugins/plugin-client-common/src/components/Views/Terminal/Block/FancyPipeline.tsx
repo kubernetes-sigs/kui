@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Arguments } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
 
 type Props = Pick<Arguments['pipeStages'], 'prefix' | 'stages' | 'redirect' | 'redirector'> & Pick<Arguments, 'REPL'>
 

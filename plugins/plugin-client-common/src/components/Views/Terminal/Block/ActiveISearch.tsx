@@ -17,7 +17,9 @@
 import Debug from 'debug'
 import React from 'react'
 
-import { Capabilities, isCursorMovement, HistoryModel, History } from '@kui-shell/core'
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+import { isCursorMovement } from '@kui-shell/core/mdist/api/Keys'
+import { HistoryModel, History } from '@kui-shell/core/mdist/api/History'
 
 import Input from './Input'
 
@@ -194,7 +196,7 @@ export async function onKeyUp(this: Input, evt: React.KeyboardEvent) {
     evt.ctrlKey &&
     (process.platform === 'darwin' ||
       /Macintosh/.test(navigator.userAgent) ||
-      (!Capabilities.inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
+      (!inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
       evt.metaKey)
   ) {
     if (evt.key === 'r') {

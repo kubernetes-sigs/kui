@@ -27,7 +27,7 @@ describe(`clear the console from scratch ${process.env.MOCHA_RUN_TARGET || ''}`,
     CLI.command('kuiecho hello', this.app).then(ReplExpect.okWithString('hello')).catch(Common.oops(this, true)))
 })
 
-describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
+describe(`Clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -82,7 +82,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function (th
   )
 
   // get something on the screen
-  it(`should sleep`, () => CLI.command('sleep 1', this.app).catch(Common.oops(this, true)))
+  it(`should sleep`, () => CLI.command('sleep 1', this.app).then(ReplExpect.justOK).catch(Common.oops(this, true)))
 
   it('should clear the console', () => clear())
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab as KuiTab, NewSplitRequest } from '@kui-shell/core'
+import type { Tab as KuiTab, NewSplitRequest } from '@kui-shell/core'
 
 import Block from './Block'
 import SplitPosition from './SplitPosition'

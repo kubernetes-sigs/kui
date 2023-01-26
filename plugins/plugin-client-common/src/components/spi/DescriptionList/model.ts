@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DescriptionList } from '@kui-shell/core'
+import type { DescriptionList } from '@kui-shell/core'
 
 export default interface Props {
   className?: string

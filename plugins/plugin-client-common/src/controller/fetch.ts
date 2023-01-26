@@ -16,7 +16,7 @@
 
 import { basename, dirname as pathDirname, join as pathJoin } from 'path'
 
-import { Arguments, CommentaryResponse } from '@kui-shell/core'
+import type { Arguments, CommentaryResponse } from '@kui-shell/core'
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
 function isUrl(a: string) {

@@ -15,7 +15,11 @@
  */
 
 import { v4 } from 'uuid'
-import { CommandCompleteEvent, Events, ScalarResponse, getTabId } from '@kui-shell/core'
+
+import { getTabId } from '@kui-shell/core/mdist/api/Tab'
+import { eventBus } from '@kui-shell/core/mdist/api/Events'
+import type { CommandCompleteEvent, ScalarResponse } from '@kui-shell/core'
+
 import ScrollableTerminal, { getSelectionText } from './ScrollableTerminal'
 import { FinishedBlock, isFinished, hasStartEvent, isWithCompleteEvent } from './Block/BlockModel'
 
@@ -132,7 +136,7 @@ export function onPaste(this: ScrollableTerminal, evt: ClipboardEvent) {
 export function onCopy(this: ScrollableTerminal, evt: ClipboardEvent, onSuccess?: (target: Target) => void) {
   const target = confirmTarget(this)
   if (target) {
-    Events.eventBus.emitSnapshotRequest(
+    eventBus.emitSnapshotRequest(
       {
         execUUID: target.execUUID,
         cb: async (snapshotBuffer: Buffer) => {

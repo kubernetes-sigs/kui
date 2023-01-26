@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Registrar } from '@kui-shell/core'
+import type { Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/core-support/base64')
 

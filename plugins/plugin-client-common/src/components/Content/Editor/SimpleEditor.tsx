@@ -17,7 +17,7 @@
 import React from 'react'
 import { editor as Monaco, KeyMod, KeyCode } from 'monaco-editor'
 
-import { Events } from '@kui-shell/core'
+import { eventBus, eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 import getKuiFontSize from './lib/fonts'
 import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
@@ -230,15 +230,15 @@ export default class SimpleEditor extends React.Component<Props, State> {
       const onZoom = () => {
         editor.updateOptions({ fontSize: getKuiFontSize() })
       }
-      Events.eventChannelUnsafe.on('/zoom', onZoom)
-      cleaners.push(() => Events.eventChannelUnsafe.off('/zoom', onZoom))
+      eventChannelUnsafe.on('/zoom', onZoom)
+      cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
       if (props.tabUUID) {
         const onTabLayoutChange = () => {
           editor.layout()
         }
-        Events.eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-        cleaners.push(() => Events.eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       }
       setTimeout(() => editor.layout(), 50)
 

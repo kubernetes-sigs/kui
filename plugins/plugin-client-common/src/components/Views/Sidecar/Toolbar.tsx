@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { ToolbarText, Button, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
+import type { ToolbarText, Button, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import LocationProps from './Location'

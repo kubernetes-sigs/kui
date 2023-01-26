@@ -15,7 +15,12 @@
  */
 
 import React from 'react'
-import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { isTable } from '@kui-shell/core/mdist/api/Table'
+import { doCancel } from '@kui-shell/core/mdist/api/Internal'
+import { Tab as KuiTab } from '@kui-shell/core/mdist/api/Tab'
+import { hasSourceReferences } from '@kui-shell/core/mdist/api/Response'
 
 import Timer from './Timer'
 import Actions from './Actions'

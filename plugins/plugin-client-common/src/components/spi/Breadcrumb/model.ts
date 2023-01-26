@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { REPL, Breadcrumb as BreadcrumbModel } from '@kui-shell/core'
+import type { REPL, Breadcrumb as BreadcrumbModel } from '@kui-shell/core'
 
 /**
  * The View extends the core BreadcrumbModel with a handful of

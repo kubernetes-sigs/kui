@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab } from '@kui-shell/core'
+import type { Tab } from '@kui-shell/core'
 
 interface Props {
   className?: string

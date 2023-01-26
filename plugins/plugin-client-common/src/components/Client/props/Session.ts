@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react'
-import { REPL } from '@kui-shell/core'
+import { REPL } from '@kui-shell/core/mdist/api/Exec'
 
 type SessionProps = {
   /** [Optional] session init started view */

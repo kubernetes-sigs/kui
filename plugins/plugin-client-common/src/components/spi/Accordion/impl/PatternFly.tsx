@@ -22,7 +22,10 @@ import {
   AccordionContent
 } from '@patternfly/react-core/dist/esm/components/Accordion'
 
-import { Events, getPrimaryTabId, i18n } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { eventBus } from '@kui-shell/core/mdist/api/Events'
+import { getPrimaryTabId } from '@kui-shell/core/mdist/api/Tab'
+
 import Props from '../model'
 
 import '../../../../../web/scss/components/Accordion/PatternFly.scss'
@@ -63,7 +66,7 @@ export default class PatternFlyAccordion extends React.PureComponent<Props, Stat
                 onClick={() => {
                   this.setState(curState => ({ expandedIdx: curState.expandedIdx !== idx ? idx : -1 }))
                   if (this.props.tab) {
-                    Events.eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
+                    eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
                   }
                 }}
                 isExpanded={this.state.expandedIdx === idx}

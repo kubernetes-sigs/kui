@@ -16,7 +16,11 @@
 
 import Debug from 'debug'
 
-import { Capabilities, Events, KeyCodes, doCancel, HistoryLine, splitFor } from '@kui-shell/core'
+import { KeyCodes } from '@kui-shell/core/mdist/api/Keys'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
+import { doCancel, splitFor } from '@kui-shell/core/mdist/api/Internal'
+import { HistoryLine } from '@kui-shell/core/mdist/api/History'
+import { inBrowser, inElectron } from '@kui-shell/core/mdist/api/Capabilities'
 
 import { isHTMLInputElement, InputElement, InputProvider as Input } from './Input'
 import startTabCompletion from './TabCompletion'
@@ -133,7 +137,7 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
     if (char === KeyCodes.UP || (char === KeyCodes.P && event.ctrlKey)) {
       // go to previous command in history
       setTimeout(async () => {
-        const historyModel = await (await import('@kui-shell/core')).History(tab)
+        const historyModel = await (await import('@kui-shell/core/mdist/api/History')).History(tab)
         const entry = historyModel.previous()
         if (entry) {
           updateInputAndMoveCaretToEOL(this, entry)
@@ -146,34 +150,34 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
         tab.REPL.pexec('exit', { tab })
       }
     } else if (char === KeyCodes.PAGEUP) {
-      if (Capabilities.inBrowser()) {
+      if (inBrowser()) {
         debug('pageup')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
       }
     } else if (char === KeyCodes.PAGEDOWN) {
-      if (Capabilities.inBrowser()) {
+      if (inBrowser()) {
         debug('pagedown')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
       }
     } else if (
-      (char === KeyCodes.L && (event.ctrlKey || (Capabilities.inElectron() && event.metaKey))) ||
+      (char === KeyCodes.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
       (process.platform === 'darwin' && char === KeyCodes.K && event.metaKey)
     ) {
       // clear screen; capture and restore the current
       // prompt value, in keeping with unix terminal
       // behavior
-      Events.eventChannelUnsafe.emit('/terminal/clear')
-      Events.eventChannelUnsafe.emit(`/terminal/clear/${this.props.uuid}`)
-      Events.eventChannelUnsafe.emit(`/close/views/${this.props.uuid}`)
+      eventChannelUnsafe.emit('/terminal/clear')
+      eventChannelUnsafe.emit(`/terminal/clear/${this.props.uuid}`)
+      eventChannelUnsafe.emit(`/close/views/${this.props.uuid}`)
       // restore the prompt cursor position
       // debug('restoring cursor position', currentCursorPosition)
       // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
     } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
       // going DOWN past the last history item will result in '', i.e. a blank line
       setTimeout(async () => {
-        const historyModel = await (await import('@kui-shell/core')).History(tab)
+        const historyModel = await (await import('@kui-shell/core/mdist/api/History')).History(tab)
         const entry = historyModel.next()
         updateInputAndMoveCaretToEOL(this, entry)
       })

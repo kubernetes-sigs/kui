@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { maybeKuiLink } from '@kui-shell/core'
+import { maybeKuiLink } from '@kui-shell/core/mdist/api/Response'
 
 import Icons, { SupportedIcon } from '../spi/Icons'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
@@ -196,7 +196,8 @@ interface LinkStatusProps {
   children: any[]
 }
 
-export type ProgressStepCompatible<TitleProps extends any = any> = {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type ProgressStepCompatible<TitleProps = any> = {
   className?: string
 
   /* Eslint fubar___ children: [

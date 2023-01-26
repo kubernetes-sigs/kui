@@ -16,7 +16,10 @@
 
 import React from 'react'
 import { decode } from 'html-entities'
-import { i18n, Event, Events, ExecType, Themes } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { Event, eventBus, eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
+import { ExecType } from '@kui-shell/core/mdist/api/Command'
+import { Theme, findThemeByName, getPersistedThemeChoice, getDefaultTheme } from '@kui-shell/core/mdist/api/Themes'
 import { NavItem } from '@patternfly/react-core/dist/esm/components/Nav'
 
 import Icons from '../../spi/Icons'
@@ -54,7 +57,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   private onCommandStart: (evt: Event) => void
   private onCommandComplete: (evt: Event) => void
-  private onThemeChange: (evt: { themeModel: Themes.Theme }) => void
+  private onThemeChange: (evt: { themeModel: Theme }) => void
 
   public constructor(props: Props) {
     super(props)
@@ -72,9 +75,7 @@ export default class Tab extends React.PureComponent<Props, State> {
   public componentDidMount() {
     if (!this.props.topTabNames) {
       setTimeout(async () => {
-        const { theme } = await Themes.findThemeByName(
-          (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
-        )
+        const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
         if (theme.topTabNames && !this._unmounted) {
           this.setState({
             topTabNames: theme.topTabNames
@@ -90,9 +91,9 @@ export default class Tab extends React.PureComponent<Props, State> {
   }
 
   private removeCommandEvaluationListeners() {
-    Events.eventBus.offCommandStart(this.props.uuid, this.onCommandStart)
-    Events.eventBus.offCommandComplete(this.props.uuid, this.onCommandStart)
-    Events.eventChannelUnsafe.off('/theme/change', this.onThemeChange)
+    eventBus.offCommandStart(this.props.uuid, this.onCommandStart)
+    eventBus.offCommandComplete(this.props.uuid, this.onCommandStart)
+    eventChannelUnsafe.off('/theme/change', this.onThemeChange)
   }
 
   /**
@@ -131,7 +132,7 @@ export default class Tab extends React.PureComponent<Props, State> {
       }
     }
 
-    this.onThemeChange = ({ themeModel }: { themeModel: Themes.Theme }) => {
+    this.onThemeChange = ({ themeModel }: { themeModel: Theme }) => {
       if (!this._unmounted) {
         this.setState({
           topTabNames: themeModel.topTabNames || 'fixed'
@@ -139,9 +140,9 @@ export default class Tab extends React.PureComponent<Props, State> {
       }
     }
 
-    Events.eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
-    Events.eventBus.onCommandComplete(this.props.uuid, this.onCommandComplete)
-    Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange)
+    eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
+    eventBus.onCommandComplete(this.props.uuid, this.onCommandComplete)
+    eventChannelUnsafe.on('/theme/change', this.onThemeChange)
   }
 
   private isUsingCommandName() {

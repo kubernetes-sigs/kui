@@ -16,7 +16,8 @@
 
 import React from 'react'
 import { editor as Monaco } from 'monaco-editor'
-import { i18n, Button, REPL } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import type { Button, REPL } from '@kui-shell/core'
 import { File } from '@kui-shell/plugin-bash-like/fs'
 
 import Icons from '../../spi/Icons'

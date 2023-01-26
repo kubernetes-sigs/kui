@@ -15,7 +15,9 @@
  */
 
 import React, { PropsWithChildren } from 'react'
-import { Events, Tab as KuiTab } from '@kui-shell/core'
+
+import { eventBus } from '@kui-shell/core/mdist/api/Events'
+import { Tab as KuiTab } from '@kui-shell/core/mdist/api/Tab'
 
 import KuiContext from './context'
 import Block from '../Views/Terminal/Block'
@@ -53,7 +55,7 @@ export default class InputStripe extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    Events.eventBus.onCommandComplete(this.props.uuid, this.onOutputRender.bind(this))
+    eventBus.onCommandComplete(this.props.uuid, this.onOutputRender.bind(this))
   }
 
   /** Command has completed in our tab */

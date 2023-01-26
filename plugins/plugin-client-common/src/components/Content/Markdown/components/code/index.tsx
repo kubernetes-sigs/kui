@@ -16,7 +16,8 @@
 
 import React from 'react'
 import { CodeProps } from 'react-markdown/lib/ast-to-react'
-import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
+import { getPrimaryTabId } from '@kui-shell/core/mdist/api/Tab'
+import type { KResponse, CommentaryResponse } from '@kui-shell/core'
 
 import bodyAndLanguage from './filter'
 

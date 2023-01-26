@@ -16,7 +16,10 @@
 
 import React from 'react'
 import { basename } from 'path'
-import { Tab, KResponse, isTable, getPrimaryTabId, hasSourceReferences } from '@kui-shell/core'
+
+import { isTable } from '@kui-shell/core/mdist/api/Table'
+import { Tab, getPrimaryTabId } from '@kui-shell/core/mdist/api/Tab'
+import { KResponse, hasSourceReferences } from '@kui-shell/core/mdist/api/Response'
 
 const Accordion = React.lazy(() => import('../../spi/Accordion'))
 const SimpleEditor = React.lazy(() => import('../../Content/Editor/SimpleEditor'))
@@ -33,18 +36,24 @@ type Props = {
 export default class SourceRef extends React.PureComponent<Props> {
   /** render sourceRef content. Currently only use SimpleEditor. */
   protected sourceRefContent(content: string, contentType: string) {
-    return () => (
-      <React.Suspense fallback={<div />}>
-        <SimpleEditor
-          tabUUID={getPrimaryTabId(this.props.tab)}
-          content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
-          contentType={contentType}
-          className="kui--source-ref-editor"
-          fontSizeAdjust={12 / 14}
-          simple
-        />
-      </React.Suspense>
-    )
+    const tabUUID = () => getPrimaryTabId(this.props.tab)
+    return function sourceRefContent() {
+      return (
+        <React.Suspense fallback={<div />}>
+          <SimpleEditor
+            tabUUID={tabUUID()}
+            content={content.replace(
+              /\n$/,
+              ''
+            )} /* monaco's renderFinalNewline option doesn't seem to do what we need */
+            contentType={contentType}
+            className="kui--source-ref-editor"
+            fontSizeAdjust={12 / 14}
+            simple
+          />
+        </React.Suspense>
+      )
+    }
   }
 
   public render() {

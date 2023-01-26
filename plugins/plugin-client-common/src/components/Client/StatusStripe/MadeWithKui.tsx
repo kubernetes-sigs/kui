@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
 
 import Icons from '../../spi/Icons'
 import TextWithIconWidget, { Options } from './TextWithIconWidget'

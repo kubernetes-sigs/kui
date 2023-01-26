@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import { Capabilities, Events, getTabId, Arguments, Registrar } from '@kui-shell/core'
+import type { Arguments, Registrar } from '@kui-shell/core'
 
-const clear = ({ tab }: Arguments) => {
-  if (!Capabilities.isHeadless()) {
+const clear = async ({ tab }: Arguments) => {
+  const [{ isHeadless }, { eventChannelUnsafe }, { getTabId }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Capabilities'),
+    import('@kui-shell/core/mdist/api/Events'),
+    import('@kui-shell/core/mdist/api/Tab')
+  ])
+
+  if (!isHeadless()) {
     setTimeout(() => {
-      Events.eventChannelUnsafe.emit(`/terminal/clear/${getTabId(tab)}`)
-      Events.eventChannelUnsafe.emit(`/close/views/${getTabId(tab)}`)
-    })
+      eventChannelUnsafe.emit(`/terminal/clear/${getTabId(tab)}`)
+      eventChannelUnsafe.emit(`/close/views/${getTabId(tab)}`)
+    }, 100)
   }
 
   return true

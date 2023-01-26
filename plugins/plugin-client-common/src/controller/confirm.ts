@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-import { Events, getPrimaryTabId, Registrar, ExecType, UsageModel, i18n, pexecInCurrentTab } from '@kui-shell/core'
-
-const strings = i18n('plugin-core-support')
-
-const usage: UsageModel = {
-  command: 'confirm',
-  strict: 'confirm',
-  example: 'confirm [--asking <confirmation message>] <your-command-to-execute>',
-  docs: 'Confirmation Modal',
-  optional: [
-    {
-      name: '--asking',
-      docs: strings('confirmationMessage')
-    }
-  ],
-  required: [
-    {
-      name: 'command',
-      docs: strings('commandToBeExecuted')
-    }
-  ]
-}
+import type { Registrar } from '@kui-shell/core'
 
 /**
  * This plugin introduces the /confirm command
@@ -44,11 +23,26 @@ const usage: UsageModel = {
 export default async (commandTree: Registrar) => {
   commandTree.listen(
     '/confirm',
-    ({ tab, argvNoOptions, parsedOptions, execOptions, REPL }) =>
-      new Promise((resolve, reject) => {
+    async ({ tab, argvNoOptions, parsedOptions, execOptions, REPL }) => {
+      const [{ i18n }, { ExecType }, { getPrimaryTabId }, { pexecInCurrentTab }, { eventChannelUnsafe }] =
+        await Promise.all([
+          import('@kui-shell/core/mdist/api/i18n'),
+          import('@kui-shell/core/mdist/api/Command'),
+          import('@kui-shell/core/mdist/api/Tab'),
+          import('@kui-shell/core/mdist/api/Exec'),
+          import('@kui-shell/core/mdist/api/Events')
+        ])
+
+      const strings = i18n('plugin-core-support')
+
+      return new Promise((resolve, reject) => {
         const asking = parsedOptions.asking || strings('areYouSure')
         const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
         const { execUUID } = execOptions
+
+        if (!command) {
+          throw new Error('Usage: confirm command line')
+        }
 
         const requestChannel = `/kui-shell/Confirm/v1/tab/${getPrimaryTabId(tab)}`
         const responseChannel = `${requestChannel}/execUUID/${execUUID}/confirmed`
@@ -63,9 +57,10 @@ export default async (commandTree: Registrar) => {
           }
         }
 
-        Events.eventChannelUnsafe.once(responseChannel, onConfirm)
-        Events.eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
-      }),
-    { usage, incognito: ['popup'] }
+        eventChannelUnsafe.once(responseChannel, onConfirm)
+        eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
+      })
+    },
+    { incognito: ['popup'] }
   )
 }

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
+import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 import { PageSidebar, PageSidebarProps } from '@patternfly/react-core/dist/esm/components/Page/PageSidebar'
 
 import CommonProps from './props/Common'

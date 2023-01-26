@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { Capabilities, KeyCodes, isReadOnlyClient } from '@kui-shell/core'
+import { KeyCodes } from '@kui-shell/core/mdist/api/Keys'
+import { inElectron } from '@kui-shell/core/mdist/api/Capabilities'
+import { isReadOnlyClient } from '@kui-shell/core/mdist/api/Client'
 import { Button } from '@patternfly/react-core/dist/esm/components/Button'
 import { Nav, NavList } from '@patternfly/react-core/dist/esm/components/Nav'
 import {
@@ -87,7 +89,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
    *
    */
   private addKeyboardListeners() {
-    if (Capabilities.inElectron()) {
+    if (inElectron()) {
       // switch tabs based on keyboard events
       document.addEventListener('keydown', event => {
         if (event.metaKey && event.shiftKey) {

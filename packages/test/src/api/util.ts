@@ -489,11 +489,9 @@ export function switchToTopLevelTabViaClick(ctx: Common.ISuite, N: number) {
     .catch(Common.oops(ctx, true))
 }
 
-export function doClear(this: Common.ISuite, residualBlockCount = 1, splitIndex = 1) {
-  return CLI.commandInSplit('clear', this.app, splitIndex)
-    .then(() => ReplExpect.consoleToBeClear(this.app, residualBlockCount, splitIndex))
-    .then(() => SidecarExpect.closed)
-    .catch(Common.oops(this, true))
+export async function doClear(this: Common.ISuite, residualBlockCount = 1, splitIndex = 1) {
+  await this.app.client.keys([keys.CONTROL, 'l', 'NULL']) // use control-l to clear
+  await ReplExpect.consoleToBeClear(this.app, residualBlockCount, splitIndex)
 }
 
 export function clickNewTabButton(ctx: Common.ISuite, expectedNewTabIndex: number) {

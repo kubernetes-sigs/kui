@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table } from '@kui-shell/core'
+import { Table } from '@kui-shell/core/mdist/api/Table'
 
 type FeatureFlags = {
   /** [Optional] disable table title? */

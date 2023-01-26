@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { i18n, pexecInCurrentTab } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import Tooltip from '../spi/Tooltip'
 import Spinner from '../Views/Terminal/Block/Spinner'

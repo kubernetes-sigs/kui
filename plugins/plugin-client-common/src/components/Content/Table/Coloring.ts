@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table } from '@kui-shell/core'
+import type { Table } from '@kui-shell/core'
 import prettyPrintDuration from 'pretty-ms'
 
 export interface Coloring {

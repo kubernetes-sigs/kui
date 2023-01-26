@@ -27,3 +27,5 @@ export {
   StatusStripeChangeEvent,
   TabLayoutChangeEvent
 } from '../core/events'
+
+export { Event } from '../models/command'

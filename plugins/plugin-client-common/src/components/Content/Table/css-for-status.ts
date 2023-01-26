@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Cell } from '@kui-shell/core'
+import type { Cell } from '@kui-shell/core'
 import TrafficLight from './TrafficLight'
 
 /**

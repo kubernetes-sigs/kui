@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, ParsedOptions, TabLayoutModificationResponse, NewSplitRequest, i18n } from '@kui-shell/core'
-
-const strings = i18n('plugin-client-common')
+import type { Arguments, ParsedOptions, TabLayoutModificationResponse, NewSplitRequest } from '@kui-shell/core'
 
 type Options = NewSplitRequest['options']
 type CommandLineOptions = ParsedOptions & Omit<Options, 'inverseColors'> & { inverse: boolean }
@@ -30,7 +28,9 @@ export function debug(args: Arguments) {
  * This plugin introduces the /split command
  *
  */
-export default function split(args?: Arguments<CommandLineOptions>): TabLayoutModificationResponse<NewSplitRequest> {
+export default async function split(
+  args?: Arguments<CommandLineOptions>
+): Promise<TabLayoutModificationResponse<NewSplitRequest>> {
   if (args.parsedOptions.swap) {
     if (!Array.isArray(args.parsedOptions.swap) || args.parsedOptions.swap.length !== 2) {
       console.error('Expected exactly two --swap options', args.parsedOptions.swap)
@@ -50,6 +50,9 @@ export default function split(args?: Arguments<CommandLineOptions>): TabLayoutMo
     masquerade: args.execOptions.masquerade,
     data: args.execOptions.data
   }
+
+  const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+  const strings = i18n('plugin-client-common')
 
   return {
     apiVersion: 'kui-shell/v1',

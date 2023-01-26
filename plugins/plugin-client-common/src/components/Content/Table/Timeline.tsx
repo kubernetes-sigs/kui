@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
-import { REPL, Tab, Table, i18n } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import type { REPL, Tab, Table } from '@kui-shell/core'
 
 import DefaultColoring, { Coloring } from './Coloring'
 import '../../../../web/scss/components/Table/Timeline.scss'

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { Choices, CodeBlock, Graph, Memoizer, Parser } from 'madwizard'
 
 import Progress from './Progress'

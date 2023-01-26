@@ -15,8 +15,10 @@
  */
 
 import React from 'react'
-import { MultiModalMode, Link, isLinkWithCommand, i18n } from '@kui-shell/core'
 import { Nav, NavExpandable, NavItem, NavList } from '@patternfly/react-core/dist/esm/components/Nav'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { MultiModalMode, Link, isLinkWithCommand } from '@kui-shell/core/mdist/api/Response'
 
 import NavigationProps from '../model'
 

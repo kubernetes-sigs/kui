@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { REPL } from '@kui-shell/core'
+import type { REPL } from '@kui-shell/core'
 
 import Width from './width'
 import Icons from '../../spi/Icons'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NewSplitRequest } from '@kui-shell/core'
+import type { NewSplitRequest } from '@kui-shell/core'
 
 type SplitPosition = Required<Required<NewSplitRequest>['options']>['position']
 

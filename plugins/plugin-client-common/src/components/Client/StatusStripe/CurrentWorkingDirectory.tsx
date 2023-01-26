@@ -15,7 +15,11 @@
  */
 
 import React from 'react'
-import { Capabilities, Events, i18n, Util } from '@kui-shell/core'
+
+import { cwd } from '@kui-shell/core/mdist/api/Util'
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
+import { wireToStandardEvents, unwireToStandardEvents } from '@kui-shell/core/mdist/api/Events'
 
 import Icons from '../../spi/Icons'
 import TextWithIconWidget, { ViewLevel } from './TextWithIconWidget'
@@ -39,7 +43,7 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
 
     this.state = {
       text: '',
-      viewLevel: Capabilities.inBrowser() ? 'hidden' : 'normal'
+      viewLevel: inBrowser() ? 'hidden' : 'normal'
     }
   }
 
@@ -48,7 +52,7 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
    *
    */
   private async reportCurrentDirectory() {
-    const dir = Util.cwd()
+    const dir = cwd()
     this.setState({
       text: dir ? (dir === process.env.HOME ? dir : dir.replace(process.env.HOME, '~')) : undefined,
       viewLevel: dir ? 'normal' : 'hidden'
@@ -62,12 +66,12 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
    */
   public componentDidMount() {
     this.handler()
-    Events.wireToStandardEvents(this.handler)
+    wireToStandardEvents(this.handler)
   }
 
   /** Make sure to unsubscribe! */
   public componentWillUnmount() {
-    Events.unwireToStandardEvents(this.handler)
+    unwireToStandardEvents(this.handler)
   }
 
   public render() {

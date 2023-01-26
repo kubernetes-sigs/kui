@@ -17,7 +17,7 @@
 import { format } from 'url'
 import { basename } from 'path'
 
-import { Arguments, CommentaryResponse, Events, ParsedOptions, Registrar, getPrimaryTabId } from '@kui-shell/core'
+import type { Arguments, CommentaryResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import fetchMarkdownFile, { join } from './fetch'
 
@@ -105,8 +105,12 @@ function formatBaseUrl(filepath: string) {
 }
 
 /** TODO: move to core Tab api? */
-export function setTabReadonly({ tab }: Arguments) {
-  Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
+export async function setTabReadonly({ tab }: Arguments) {
+  const [{ eventBus }, { getPrimaryTabId }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Events'),
+    import('@kui-shell/core/mdist/api/Tab')
+  ])
+  eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
 }
 
 async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
