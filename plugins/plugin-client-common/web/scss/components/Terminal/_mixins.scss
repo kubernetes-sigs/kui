@@ -152,6 +152,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin IsNotAnnouncement {
+  &:not([data-announcement]) {
+    @content;
+  }
+}
+
 @mixin BlockFocusAttributes {
   &:focus,
   &[data-is-focused] {
