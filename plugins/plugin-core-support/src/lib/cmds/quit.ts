@@ -19,26 +19,8 @@
  *
  */
 
-import { Arguments, Capabilities, Registrar } from '@kui-shell/core'
-
-const doQuit = ({ REPL }: Arguments) => REPL.qexec('tab close')
-
-const usage = (command: string) => ({
-  command,
-  strict: command,
-  docs: 'Quit the program'
-})
+import type { Arguments, Registrar } from '@kui-shell/core'
 
 export default (commandTree: Registrar) => {
-  if (!Capabilities.inBrowser()) {
-    // register a window close command handler
-    commandTree.listen('/window/close', () => {
-      window.close()
-      return true
-    })
-  }
-
-  commandTree.listen('/exit', doQuit, {
-    usage: usage('exit')
-  })
+  commandTree.listen('/exit', ({ REPL }: Arguments) => REPL.qexec('tab close'))
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Events, UsageError, Arguments, Registrar } from '@kui-shell/core'
+import type { Arguments, Registrar } from '@kui-shell/core'
 import '../../../web/css/static/zoom.css'
 
 const MAX_ZOOM_IN = 12
@@ -73,10 +73,7 @@ const _set = newZoom => {
     main.setAttribute('data-zoom', newZoom)
     // maybe? repl.scrollIntoView()
   } else {
-    throw new UsageError({
-      message: 'Unsupported zoom level',
-      usage: usage.set
-    })
+    throw new Error('Unsupported zoom level')
   }
 
   const editors = document.querySelectorAll('.monaco-editor-wrapper')
@@ -122,7 +119,8 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     event.preventDefault()
     reset()
     setTimeout(async () => {
-      Events.eventChannelUnsafe.emit('/zoom', 1)
+      const { eventChannelUnsafe } = await import('@kui-shell/core/mdist/api/Events')
+      eventChannelUnsafe.emit('/zoom', 1)
     }, 100)
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
@@ -132,7 +130,8 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
     _set(newZoom)
     setTimeout(async () => {
-      Events.eventChannelUnsafe.emit('/zoom', newZoom)
+      const { eventChannelUnsafe } = await import('@kui-shell/core/mdist/api/Events')
+      eventChannelUnsafe.emit('/zoom', newZoom)
     }, 100)
   }
 }

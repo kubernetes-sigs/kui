@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Capabilities, Events, KResponse, ParsedOptions, Registrar, encodeComponent, Util } from '@kui-shell/core'
+import type { StatusStripeChangeEvent } from '@kui-shell/core/mdist/api/Events'
+import type { KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
@@ -40,7 +41,7 @@ const replayUsage = {
 
 interface ReplayOptions extends ParsedOptions {
   'new-window': boolean
-  'status-stripe': Events.StatusStripeChangeEvent['type']
+  'status-stripe': StatusStripeChangeEvent['type']
 
   /** Support for pymdownx.snippets */
   'snippet-base-path': string
@@ -78,9 +79,15 @@ export default function (registrar: Registrar) {
   registrar.listen<KResponse, ReplayOptions>(
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL }) => {
-      const filepaths = argvNoOptions.slice(1).map(_ => Util.expandHomeDir(_))
+      const [{ expandHomeDir }, { encodeComponent }, { inElectron }] = await Promise.all([
+        import('@kui-shell/core/mdist/api/Util'),
+        import('@kui-shell/core/mdist/api/Exec'),
+        import('@kui-shell/core/mdist/api/Capabilities')
+      ])
 
-      if (parsedOptions['new-window'] && Capabilities.inElectron()) {
+      const filepaths = argvNoOptions.slice(1).map(_ => expandHomeDir(_))
+
+      if (parsedOptions['new-window'] && inElectron()) {
         // the electron bits are sequestered in plugin-electron, to
         // avoid pulling in electron for purely browser-based clients
         return REPL.qexec(`replay-electron ${filepaths}`)
@@ -123,7 +130,8 @@ export default function (registrar: Registrar) {
 
   // register the `snapshot` command
   registrar.listen('/snapshot', async args => {
-    await Events.eventBus.emitSnapshotRequest({}, args.tab.uuid)
+    const { eventBus } = await import('@kui-shell/core/mdist/api/Events')
+    await eventBus.emitSnapshotRequest({}, args.tab.uuid)
     return true
   })
 }

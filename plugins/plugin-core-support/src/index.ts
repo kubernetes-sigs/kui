@@ -16,4 +16,5 @@
 
 // this file defines the external API
 
+export { echo } from './lib/cmds/echo'
 export { NotebookVFS, default as notebookVFS } from './notebooks/vfs'

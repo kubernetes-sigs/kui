@@ -16,42 +16,17 @@
 
 import Debug from 'debug'
 
-import { i18n, RadioTable, CellShould, Arguments, Registrar, Settings, Themes, Util } from '@kui-shell/core'
+import type { RadioTable, Arguments, Registrar, Theme } from '@kui-shell/core'
 
-const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/theme')
 
-/**
- * The command usage model
- *
- */
-const usage = {
-  theme: {
-    command: 'theme',
-    strict: 'theme',
-    docs: strings('theme.usageDocs')
-  },
-  themes: {
-    command: 'themes',
-    strict: 'themes',
-    docs: strings('theme.usageDocs')
-  },
-  list: {
-    command: 'list',
-    strict: 'list',
-    docs: strings('theme.usageDocs')
-  },
-  reset: {
-    command: 'reset',
-    strict: 'reset',
-    docs: strings('theme.resetUsageDocs')
-  },
-  set: {
-    command: 'set',
-    strict: 'set',
-    docs: 'Set the current theme',
-    required: [{ name: 'string', docs: strings('theme.setUsageRequiredDocs') }]
-  }
+async function i18n() {
+  const { i18n } = await import('@kui-shell/core/mdist/api/i18n')
+  return i18n('plugin-core-support')
+}
+
+async function strings(key: string) {
+  return (await i18n())(key)
 }
 
 /**
@@ -59,11 +34,16 @@ const usage = {
  *
  */
 const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
+  const strings = await i18n()
+  const { uiThemes } = await import('@kui-shell/core/mdist/api/Settings')
+  const { CellShould } = await import('@kui-shell/core/mdist/api/Table')
+  const { getPersistedThemeChoice, getDefaultTheme, findThemeByName } = await import('@kui-shell/core/mdist/api/Themes')
+
   const header = {
     cells: [
-      strings('Theme'),
-      { value: strings('Style'), hints: CellShould.HideWhenNarrow },
-      { value: strings('Provider'), hints: CellShould.BeHidden }
+      await strings('Theme'),
+      { value: await strings('Style'), hints: CellShould.HideWhenNarrow },
+      { value: await strings('Provider'), hints: CellShould.BeHidden }
     ]
   }
 
@@ -71,15 +51,16 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
   // settings.themes model; e.g. they previously selected a theme that
   // has since been eliminated
   const currentTheme = async () => {
-    const chosenTheme = (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
-    return Themes.findThemeByName(chosenTheme) ? chosenTheme : Themes.getDefaultTheme()
+    const chosenTheme = (await getPersistedThemeChoice()) || (await getDefaultTheme())
+    return findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
   }
   debug('currentTheme', await currentTheme())
-  // debug('theme list', Settings.uiThemes())
+  // debug('theme list', uiThemes())
 
-  const body = Util.flatten(
-    (await Settings.uiThemes()).map(({ plugin, themes }) =>
-      themes.map((theme: Themes.Theme) => ({
+  const { flatten } = await import('@kui-shell/core/mdist/api/Util')
+  const body = flatten(
+    (await uiThemes()).map(({ plugin, themes }) =>
+      themes.map((theme: Theme) => ({
         nameIdx: 0,
         cells: [
           { value: theme.name },
@@ -103,7 +84,7 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
   const table: RadioTable = {
     apiVersion: 'kui-shell/v1',
     kind: 'RadioTable',
-    title: strings('theme.Available Themes'),
+    title: await strings('theme.Available Themes'),
     header,
     body,
     defaultSelectedIdx
@@ -119,8 +100,19 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
 const set = async ({ argvNoOptions }: Arguments) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
-  await Themes.switchToTheme(theme)
+  const { switchToTheme } = await import('@kui-shell/core/mdist/api/Themes')
+  await switchToTheme(theme)
   return true
+}
+
+async function getPersistedThemeChoice() {
+  const { getPersistedThemeChoice } = await import('@kui-shell/core/mdist/api/Themes')
+  return getPersistedThemeChoice()
+}
+
+async function resetToDefaultTheme() {
+  const { resetToDefaultTheme } = await import('@kui-shell/core/mdist/api/Themes')
+  return resetToDefaultTheme()
 }
 
 /**
@@ -130,30 +122,19 @@ const set = async ({ argvNoOptions }: Arguments) => {
 export const plugin = (commandTree: Registrar) => {
   debug('plugin')
 
-  commandTree.listen('/theme/list', list, {
-    usage: usage.list
-  })
-  commandTree.listen('/themes', list, {
-    usage: usage.themes
-  })
-  commandTree.listen('/theme', list, {
-    usage: usage.theme
-  })
-
-  commandTree.listen('/theme/set', set, {
-    usage: usage.set
-  })
+  commandTree.listen('/theme/list', list)
+  commandTree.listen('/themes', list)
+  commandTree.listen('/theme', list)
+  commandTree.listen('/theme/set', set)
 
   // returns the current persisted theme choice; helpful for debugging
   commandTree.listen(
     '/theme/current',
-    async () => (await Themes.getPersistedThemeChoice()) || strings('theme.currentTheme'),
+    async () => (await getPersistedThemeChoice()) || (await strings('theme.currentTheme')),
     {
       hidden: true
     }
   ) // for debugging
 
-  commandTree.listen('/theme/reset', Themes.resetToDefaultTheme, {
-    usage: usage.reset
-  })
+  commandTree.listen('/theme/reset', resetToDefaultTheme)
 }
