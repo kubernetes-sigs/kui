@@ -16,18 +16,21 @@
 
 import React from 'react'
 
-import {
+import type {
+  ScalarContent,
   ScalarResource,
   SupportedStringContent,
-  isCommandStringContent,
   FunctionThatProducesContent,
   ReactProvider,
+  EditableSpec
+} from '@kui-shell/core'
+
+import {
+  isCommandStringContent,
   isReactProvider,
   isScalarContent,
-  ScalarContent,
-  EditableSpec,
   isStringWithOptionalContentType
-} from '@kui-shell/core'
+} from '@kui-shell/core/mdist/api/Response'
 
 import { Loading } from '../../'
 import KuiMMRContent, { KuiMMRProps } from './KuiContent'

@@ -18,19 +18,11 @@ import Debug from 'debug'
 import React from 'react'
 import { Tabs, Tab, TabTitleText } from '@patternfly/react-core/dist/esm/components/Tabs'
 
-import {
-  Events,
-  Tab as KuiTab,
-  ToolbarText,
-  MultiModalMode,
-  MultiModalResponse,
-  isResourceWithMetadata,
-  addRelevantModes,
-  isResourceByReference,
-  badgeRegistrar,
-  isButton,
-  Button
-} from '@kui-shell/core'
+import type { Button, Tab as KuiTab, ToolbarText, MultiModalMode, MultiModalResponse } from '@kui-shell/core'
+
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
+import { isButton, isResourceByReference, isResourceWithMetadata } from '@kui-shell/core/mdist/api/Response'
+import { addRelevantModes, badgeRegistrar } from '@kui-shell/core/mdist/api/Sidecar'
 
 import Badge from './Badge'
 import KuiContext from '../../Client/context'
@@ -191,11 +183,11 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
   private broadcastFocusChange(idx: number) {
     // de-focus the old mode
     const oldMode = this.current.tabs[this.current.currentTabIndex]
-    Events.eventChannelUnsafe.emit(`/mode/focus/off/tab/${this.props.uuid}/mode/${oldMode.mode}`, oldMode)
+    eventChannelUnsafe.emit(`/mode/focus/off/tab/${this.props.uuid}/mode/${oldMode.mode}`, oldMode)
 
     // re-focus the new mode
     const newMode = this.current.tabs[idx]
-    Events.eventChannelUnsafe.emit(`/mode/focus/on/tab/${this.props.uuid}/mode/${newMode.mode}`, newMode)
+    eventChannelUnsafe.emit(`/mode/focus/on/tab/${this.props.uuid}/mode/${newMode.mode}`, newMode)
   }
 
   /** eventKey property for a Tab */

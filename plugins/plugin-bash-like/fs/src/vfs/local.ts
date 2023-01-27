@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { createGunzip } from 'zlib'
-import { createReadStream } from 'fs'
 import { PassThrough, Writable } from 'stream'
 import { expandHomeDir } from '@kui-shell/core/mdist/api/Util'
 import type { Arguments, CodedError } from '@kui-shell/core'
 
-import VFS from './VFS'
+import type VFS from './VFS'
 import { mount } from './mount'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
 import { fstat, FStat } from '../lib/fstat'
@@ -84,8 +82,10 @@ class LocalVFS implements VFS {
   }
 
   /** Pipe a content slice to the given `stream` */
-  public pipe(filepath: string, offset: number, _length: number, stream: Writable): Promise<void> {
+  public async pipe(filepath: string, offset: number, _length: number, stream: Writable): Promise<void> {
     const fullpath = expandHomeDir(filepath)
+    const { createGunzip } = await import('zlib')
+    const { createReadStream } = await import('fs')
 
     return new Promise((resolve, reject) => {
       // re: end = _length - 1, this is because the end option is inclusive and _length is not

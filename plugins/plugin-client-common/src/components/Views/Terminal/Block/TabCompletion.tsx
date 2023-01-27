@@ -19,14 +19,14 @@
 import Debug from 'debug'
 import React from 'react'
 import minimist from 'yargs-parser'
+
 import {
-  typeahead,
-  getCurrentTab,
   CompletionResponse,
-  findCompletions as findCompletionsFromRegistrar,
-  _split,
-  Split
-} from '@kui-shell/core'
+  typeahead,
+  findCompletions as findCompletionsFromRegistrar
+} from '@kui-shell/core/mdist/api/TabCompletion'
+import { getCurrentTab } from '@kui-shell/core/mdist/api/Tab'
+import { _split, Split } from '@kui-shell/core/mdist/api/Exec'
 
 import Button from '../../../spi/Button'
 import { InputElement, InputProvider as Input } from './Input'

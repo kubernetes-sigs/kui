@@ -16,9 +16,11 @@
 
 import React from 'react'
 
+import type { Tab as KuiTab, Stream, Streamable } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 import {
-  Events,
-  i18n,
   isAbortableResponse,
   isCodedError,
   isCommentaryResponse,
@@ -31,11 +33,8 @@ import {
   isNavResponse,
   isXtermResponse,
   isTable,
-  Tab as KuiTab,
-  Stream,
-  Streamable,
-  Util
-} from '@kui-shell/core'
+  isHTML
+} from '@kui-shell/core/mdist/api/Response'
 
 import { BlockViewTraits, BlockOperationTraits } from './'
 
@@ -132,7 +131,7 @@ export default class Output extends React.PureComponent<Props, State> {
       // done with this part... not done with all parts
       const done = () => {
         this.props.onRender()
-        Events.eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
+        eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
       }
 
       // part === null: the controller wants to clear prior output
@@ -175,7 +174,7 @@ export default class Output extends React.PureComponent<Props, State> {
     if (!state.alreadyListen && (isActive(props.model) || isProcessing(props.model))) {
       // listen for streaming output (unless the output has been redirected to a file)
       const tabUUID = props.uuid
-      Events.eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+      eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
 
       return {
         alreadyListen: true,
@@ -186,7 +185,7 @@ export default class Output extends React.PureComponent<Props, State> {
       const tabUUID = props.uuid
 
       if (!isEmpty(props.model)) {
-        Events.eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+        eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       }
 
       return {
@@ -352,7 +351,7 @@ export default class Output extends React.PureComponent<Props, State> {
         isCommentaryResponse(response) ||
         isTabLayoutModificationResponse(response) ||
         isReactResponse(response) ||
-        Util.isHTML(response) ||
+        isHTML(response) ||
         isMarkdownResponse(response) ||
         (Array.isArray(response) && response.length > 0) ||
         (typeof response === 'string' && response.length > 0) ||

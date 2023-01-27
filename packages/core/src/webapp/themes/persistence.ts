@@ -16,7 +16,6 @@
 
 import Debug from 'debug'
 
-import i18n from '../../util/i18n'
 import eventChannelUnsafe from '../../core/events'
 import { webpackPath } from '../../plugins/path'
 import { CodedError } from '../../models/errors'
@@ -25,8 +24,10 @@ import { clearPreference, getPreference, setPreference } from '../../core/userda
 import findThemeByName from './find'
 import getDefaultTheme from './default'
 
-const strings = i18n('core')
-const debug = Debug('core/themes/persistence')
+function debug(formatter: any, ...args: any[]) {
+  const debug = Debug('core/themes/persistence')
+  debug(formatter, ...args)
+}
 
 /**
  * Key into userdata preference model that indicates that currently selected theme
@@ -72,6 +73,8 @@ export const switchTo = async (theme: string, saveNotNeeded = false): Promise<vo
   const themeWithPlugin = await findThemeByName(theme)
   if (!themeWithPlugin) {
     debug('could not find theme', theme)
+    const { default: i18n } = await import('../../util/i18n')
+    const strings = i18n('core')
     const error = new Error(strings('theme.unknown')) as CodedError
     error.code = 404
     throw error

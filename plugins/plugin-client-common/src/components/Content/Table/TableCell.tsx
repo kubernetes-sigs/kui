@@ -18,17 +18,11 @@ import Debug from 'debug'
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
 import { Td } from '@patternfly/react-table/dist/esm/components/TableComposable'
-import {
-  Capabilities,
-  ExecOptions,
-  split,
-  Table as KuiTable,
-  Cell as KuiCell,
-  Row as KuiRow,
-  Tab,
-  REPL,
-  pexecInCurrentTab
-} from '@kui-shell/core'
+
+import type { ExecOptions, Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
+
+import { isHeadless } from '@kui-shell/core/mdist/api/Capabilities'
+import { split, pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
@@ -94,7 +88,7 @@ export function onClickForCell(
             masquerade: opts.masquerade,
             data: opts.data
           })
-        } else if (!Capabilities.isHeadless() && drilldownTo === 'new-window') {
+        } else if (!isHeadless() && drilldownTo === 'new-window') {
           const { ipcRenderer } = await import('electron')
           ipcRenderer.send(
             'synchronous-message',

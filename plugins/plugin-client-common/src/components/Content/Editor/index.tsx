@@ -19,19 +19,20 @@ import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 
 import type { File } from '@kui-shell/plugin-bash-like/fs'
-import {
+import type {
   Button,
-  Events,
   REPL,
   EditableSpec,
   SaveError,
   StringContent,
   ToolbarText,
   ToolbarProps,
-  MultiModalResponse,
-  encodeComponent,
-  i18n
+  MultiModalResponse
 } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { encodeComponent } from '@kui-shell/core/mdist/api/Exec'
+import { eventBus, eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
 import Icons from '../../spi/Icons'
 import ClearButton from './ClearButton'
@@ -386,8 +387,8 @@ export default class Editor extends React.PureComponent<Props, State> {
       const onZoom = () => {
         editor.updateOptions({ fontSize: getKuiFontSize() })
       }
-      Events.eventChannelUnsafe.on('/zoom', onZoom)
-      cleaners.push(() => Events.eventChannelUnsafe.off('/zoom', onZoom))
+      eventChannelUnsafe.on('/zoom', onZoom)
+      cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
       const sizeToFit = !props.sizeToFit
         ? () => true
@@ -413,8 +414,8 @@ export default class Editor extends React.PureComponent<Props, State> {
         sizeToFit()
         editor.layout()
       }
-      Events.eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-      cleaners.push(() => Events.eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+      eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+      cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
 
       editor['clearDecorations'] = () => {
         // debug('clearing decorations', editor['__cloudshell_decorations'])

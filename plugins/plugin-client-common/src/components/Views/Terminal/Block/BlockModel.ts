@@ -16,16 +16,11 @@
 
 import { v4 as uuid } from 'uuid'
 
-import {
-  CommandStartEvent,
-  CommandCompleteEvent,
-  KResponse,
-  ScalarResponse,
-  hideReplayOutput,
-  isCommentaryResponse,
-  isError,
-  Util
-} from '@kui-shell/core'
+import type { CommandStartEvent, CommandCompleteEvent, KResponse, ScalarResponse } from '@kui-shell/core'
+
+import { hideReplayOutput } from '@kui-shell/core/mdist/api/Client'
+import { isCommentaryResponse, isError } from '@kui-shell/core/mdist/api/Response'
+import { cwd as kuiCwd } from '@kui-shell/core/mdist/api/Util'
 
 // this used to be defined here
 export { isError }
@@ -109,7 +104,7 @@ export default BlockModel
 
 /** Capture the current working directory */
 function cwd() {
-  const dir = Util.cwd()
+  const dir = kuiCwd()
   return dir ? dir.replace(process.env.HOME, '~') : undefined
 }
 
@@ -182,7 +177,7 @@ export function Announcement(response: ScalarResponse, execUUID = uuid(), maximi
     outputOnly: true,
     isAnnouncement: true,
     startTime: Date.now(),
-    cwd: cwd(),
+    cwd: kuiCwd(),
     state: BlockState.ValidResponse
   }
 }

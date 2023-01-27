@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { default as typeahead } from '../commands/typeahead'
+
 export {
   registerEnumerator as registerTabCompletionEnumerator,
   TabCompletionSpec,

@@ -17,18 +17,18 @@
 import Debug from 'debug'
 import React from 'react'
 import { v4 as uuid } from 'uuid'
+import type { KResponse, Tab } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
+import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
 import {
-  Events,
-  KResponse,
-  Tab,
-  i18n,
   isError,
   isMixedResponse,
   isTable,
   isXtermResponse,
-  hasSourceReferences,
-  pexecInCurrentTab
-} from '@kui-shell/core'
+  hasSourceReferences
+} from '@kui-shell/core/mdist/api/Response'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
@@ -231,14 +231,14 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
       )
 
       channels.forEach(channel => {
-        Events.eventChannelUnsafe.on(channel, this.onWatchEvent)
-        this.cleaners.push(() => Events.eventChannelUnsafe.off(channel, this.onWatchEvent))
+        eventChannelUnsafe.on(channel, this.onWatchEvent)
+        this.cleaners.push(() => eventChannelUnsafe.off(channel, this.onWatchEvent))
       })
     }
   }
 
   private emitLinkStatus(execution = this.state.execution) {
-    Events.eventChannelUnsafe.emit(
+    eventChannelUnsafe.emit(
       linkUpdateChannel(this.props.blockId),
       execution === 'not-yet' || execution === 'replayed'
         ? [0, 0, 0] // indicates nothing has happened yet, in this session
@@ -255,8 +255,8 @@ export default class CodeBlock<T1, T2, T3> extends StreamingConsumer<Props<T1, T
     if (this.props.blockId) {
       const get = linkGetChannel(this.props.blockId)
       const emit = this.emitLinkStatus.bind(this)
-      Events.eventChannelUnsafe.on(get, emit)
-      this.cleaners.push(() => Events.eventChannelUnsafe.off(get, emit))
+      eventChannelUnsafe.on(get, emit)
+      this.cleaners.push(() => eventChannelUnsafe.off(get, emit))
     }
   }
 
