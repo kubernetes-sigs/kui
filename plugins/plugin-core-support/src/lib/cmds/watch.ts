@@ -16,12 +16,11 @@
 
 import Debug from 'debug'
 
-import {
+import type {
   Abortable,
   ExecOptions,
   Watcher,
   WatchPusher,
-  isTable,
   KResponse,
   ParsedOptions,
   Registrar,
@@ -29,7 +28,7 @@ import {
   Arguments
 } from '@kui-shell/core'
 
-const debug = Debug('plugins/plugin-core-support/watch')
+const debugStr = 'plugins/plugin-core-support/watch'
 
 interface Options extends ParsedOptions {
   n: number
@@ -59,6 +58,7 @@ class TableWatcher implements Abortable, Watcher {
       watch: { iteration: this.watchState.iteration++, accumulator: this.watchState.accumulator }
     })
 
+    const { isTable } = await import('@kui-shell/core/mdist/api/Table')
     if (isTable(table)) {
       this.pusher.header(table.header)
       this.pusher.setBody(table.body)
@@ -89,6 +89,7 @@ class TableWatcher implements Abortable, Watcher {
             this.abort()
           }
         } catch (err) {
+          const debug = Debug(debugStr)
           debug(`watch-until failed exeuting ${this.until}`, err)
         }
       }
@@ -115,6 +116,7 @@ export default function (registrar: Registrar) {
       const response = await args.REPL.qexec(cmdline, undefined, undefined, { watch: watchState })
       const interval = args.parsedOptions.n || args.parsedOptions.interval || 2000
 
+      const { isTable } = await import('@kui-shell/core/mdist/api/Table')
       if (isTable(response)) {
         return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval, watchState, until) })
       } else {
@@ -130,6 +132,7 @@ export default function (registrar: Registrar) {
                 clearTimeout(timeout)
               }
             } catch (err) {
+              const debug = Debug(debugStr)
               debug(`watch-until failed exeuting ${until}`, err)
             }
           }

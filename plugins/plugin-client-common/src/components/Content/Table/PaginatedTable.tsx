@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  Tab,
-  REPL,
-  Table as KuiTable,
-  Row as KuiRow,
-  TableStyle,
-  i18n,
-  isTableWithCount,
-  isTableWithTimestamp,
-  isWatchable
-} from '@kui-shell/core'
+import type { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
+import { TableStyle, isTableWithCount, isTableWithTimestamp } from '@kui-shell/core/mdist/api/Table'
+import { isWatchable } from '@kui-shell/core/mdist/api/Watch'
 
 import React from 'react'
 import { SortByDirection } from '@patternfly/react-table/dist/esm/components/Table'

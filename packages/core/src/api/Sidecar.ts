@@ -15,3 +15,20 @@
  */
 
 export { ToolbarText, ToolbarAlert, isSupportedToolbarTextType } from '../webapp/views/toolbar-text'
+
+export {
+  SidecarModeFilter as ModeFilter,
+  ModeDeclaration,
+  ModeRegistration,
+  registerModeWhen,
+  registerSidecarMode as registerMode,
+  apply as addRelevantModes
+} from '../webapp/views/registrar/modes'
+
+export {
+  Badge,
+  BadgeSpec,
+  BadgeRegistration,
+  registerSidecarBadge as registerBadge,
+  registrar as badgeRegistrar
+} from '../webapp/views/registrar/badges'

@@ -16,11 +16,16 @@
 
 import React from 'react'
 
-import {
+import type {
   Arguments,
   ParsedOptions,
   Tab as KuiTab,
   Content,
+  MultiModalResponse,
+  ToolbarProps
+} from '@kui-shell/core'
+
+import {
   isRadioTable,
   isReactProvider,
   isStringWithOptionalContentType,
@@ -30,10 +35,8 @@ import {
   isScalarContent,
   isStringDiffContent,
   isDescriptionList,
-  MultiModalResponse,
-  ToolbarProps,
-  Util
-} from '@kui-shell/core'
+  isHTML
+} from '@kui-shell/core/mdist/api/Response'
 
 import Eval from './Eval'
 const Editor = React.lazy(() => import('./Editor'))
@@ -146,7 +149,7 @@ export default class KuiContent extends React.PureComponent<KuiMMRProps, State> 
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />
-      } else if (Util.isHTML(mode.content)) {
+      } else if (isHTML(mode.content)) {
         return <HTMLDom content={mode.content} />
       } else {
         console.error('Unsupported scalar content', mode)

@@ -15,13 +15,14 @@
  */
 
 import React from 'react'
+
+import type { CommandCompleteEvent, KResponse } from '@kui-shell/core'
+
+import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import {
   isAbortableResponse,
   isMessageWithUsageModel,
   isMessageWithCode,
-  CommandCompleteEvent,
-  KResponse,
-  i18n,
   isCommentaryResponse,
   isMarkdownResponse,
   isMultiModalResponse,
@@ -34,8 +35,8 @@ import {
   isMixedResponse,
   isXtermResponse,
   isUsageError,
-  Util
-} from '@kui-shell/core'
+  isHTML
+} from '@kui-shell/core/mdist/api/Response'
 
 const Ansi = React.lazy(() => import('./Ansi'))
 const Commentary = React.lazy(() => import('../Commentary'))
@@ -205,7 +206,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
     } else if (isReactResponse(response)) {
       this.onRender()
       return response.react
-    } else if (Util.isHTML(response)) {
+    } else if (isHTML(response)) {
       // ^^^ intentionally using an "else" so that typescript double
       // checks that we've covered every case of ScalarResponse
       this.onRender()

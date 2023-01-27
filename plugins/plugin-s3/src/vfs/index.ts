@@ -18,7 +18,6 @@
 
 import Debug from 'debug'
 import minimatch from 'minimatch'
-import { createGunzip } from 'zlib'
 import { createWriteStream } from 'fs'
 import { basename, dirname, join } from 'path'
 import { Client, ItemBucketMetadata } from 'minio'
@@ -928,6 +927,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Stream content slice */
   public async pipe(filepath: string, offset: number, length: number, destStream: Writable): Promise<void> {
+    const { createGunzip } = await import('zlib')
     await this.initDone
     const { bucketName, fileName } = this.split(filepath)
     // eslint-disable-next-line no-async-promise-executor
