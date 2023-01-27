@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { decode } from 'html-entities'
+import { decodeHTML } from 'entities'
 import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { Event, eventBus, eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 import { ExecType } from '@kui-shell/core/mdist/api/Command'
@@ -170,7 +170,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   private titleText() {
     const content = this.props.title ? this.props.title : strings('Tab')
-    return decode(content) // decode html entities such as &mdash;
+    return decodeHTML(content) // decode html entities such as &mdash;
   }
 
   private get hasCustomLabel() {
