@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
-import { decode } from 'html-entities'
+import { decodeHTML } from 'entities'
 
 import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { pexecInCurrentTab } from '@kui-shell/core/mdist/api/Exec'
@@ -89,7 +89,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
 
   /** Simplistic Markdown, to help with performance. Our full Markdown.tsx is pretty heavy-weight. */
   private simpleMarkdown(str: string) {
-    const msg = decode(str)
+    const msg = decodeHTML(str)
     const pat = /\*\*[^*]+\*\*/g
     const bolds = msg.match(pat)
 
