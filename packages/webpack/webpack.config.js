@@ -31,7 +31,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { IgnorePlugin, ProvidePlugin } = require('webpack')
-// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 const sassLoaderChain = [
   {
@@ -150,9 +149,14 @@ console.log('clientHome', process.env.CLIENT_HOME)
  */
 const plugins = []
 
-// if (process.env.WEBPACK_ANALYZER) {
-//  plugins.push(new BundleAnalyzerPlugin())
-// }
+if (process.env.WEBPACK_ANALYZER) {
+  try {
+    const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+    plugins.push(new BundleAnalyzerPlugin())
+  } catch (err) {
+    console.error('Failed to load webpack-bundle-analyzer', err)
+  }
+}
 
 // any compression plugins?
 if (CompressionPlugin) {
