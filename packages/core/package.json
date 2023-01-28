@@ -38,7 +38,6 @@
     "@types/debug": "^4.1.7",
     "@types/fs-extra": "^9.0.13",
     "@types/mkdirp": "^1.0.2",
-    "@types/needle": "^3.2.0",
     "@types/tmp": "^0.2.3",
     "@types/uuid": "^9.0.0",
     "@types/yargs-parser": "^21.0.0"
@@ -50,7 +49,6 @@
     "debug": "^4.3.4",
     "fs-extra": "^11.1.0",
     "mkdirp": "^1.0.4",
-    "needle": "^3.2.0",
     "pretty-ms": "^7.0.1",
     "properties-parser": "^0.3.1",
     "tmp": "^0.2.1",

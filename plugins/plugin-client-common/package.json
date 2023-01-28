@@ -25,7 +25,6 @@
     "*.scss"
   ],
   "devDependencies": {
-    "@types/needle": "^3.2.0",
     "@types/resize-observer-browser": "^0.1.7",
     "@types/tmp": "^0.2.3",
     "@types/turndown": "^5.0.1",
@@ -43,7 +42,6 @@
     "madwizard": "^5.0.3",
     "monaco-editor": "^0.34.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
-    "needle": "^3.2.0",
     "react-markdown": "^8.0.5",
     "rehype-raw": "^6.1.1",
     "rehype-slug": "^5.1.0",
