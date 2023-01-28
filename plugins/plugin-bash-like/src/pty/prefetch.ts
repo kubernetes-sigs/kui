@@ -18,7 +18,6 @@ import Debug from 'debug'
 const debug = Debug('plugins/bash-like/pty/prefetch')
 
 import { exec } from 'child_process'
-import * as propertiesParser from 'properties-parser'
 
 /**
  * Preprocess bash/zsh environment variables
@@ -37,7 +36,7 @@ function prefetchEnv() {
     const shell = await getLoginShell()
     debug('prefetchEnv got shell', shell)
 
-    exec(`${shell} -l -c printenv`, (err, stdout, stderr) => {
+    exec(`${shell} -l -c printenv`, async (err, stdout, stderr) => {
       try {
         if (stderr) {
           debug(stderr)
@@ -46,6 +45,7 @@ function prefetchEnv() {
           debug('error in prefetchEnv 1', err)
           reject(err)
         } else {
+          const { default: propertiesParser } = await import('properties-parser')
           const env = propertiesParser.parse(stdout.toString())
           debug('got env', env)
           for (const key in env) {

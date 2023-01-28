@@ -264,7 +264,11 @@ export async function createWindow(
         }
 
         if (electronRemoteNeedsInit) {
-          require('@electron/remote/main').initialize()
+          // some hacks to allow @kui-shell/core to avoid specifying a
+          // direct dependence on @electron/remote; this dep pulls in
+          // all of electron, which some clients will not need
+          const foolWebpackHack = 'index.js'
+          require('@electron/remote/main/' + foolWebpackHack).initialize()
           electronRemoteNeedsInit = false
         }
 
