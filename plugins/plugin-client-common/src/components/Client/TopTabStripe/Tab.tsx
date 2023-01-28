@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { decodeHTML } from 'entities'
+import { decodeHTML } from 'entities/lib/decode.js'
 import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { Event, eventBus, eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 import { ExecType } from '@kui-shell/core/mdist/api/Command'
