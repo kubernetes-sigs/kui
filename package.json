@@ -59,6 +59,7 @@
     "npm": ">=6.9.0"
   },
   "dependencies": {
+    "@electron/remote": "^2.0.9",
     "@kui-shell/client": "file:plugins/plugin-client-default",
     "@kui-shell/core": "file:packages/core",
     "@kui-shell/plugin-bash-like": "file:plugins/plugin-bash-like",
