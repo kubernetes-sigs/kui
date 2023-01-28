@@ -20,5 +20,4 @@ export { default as respawn, guidebookStore } from './respawn'
 
 export { default as ProfileWatcher } from './profile/list'
 export { default as ProfileStatusWatcher } from './profile/status'
-export { default as ProfileActiveRunWatcher } from './profile/active-runs'
-export { default as ProfileRunWatcher, RUNS_ERROR } from './profile/run'
+export { default as ProfileRunWatcher, onRun, offRun, RUNS_ERROR } from './profile/run'

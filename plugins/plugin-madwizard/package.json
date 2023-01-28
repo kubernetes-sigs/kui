@@ -27,7 +27,6 @@
   ],
   "devDependencies": {
     "@types/json-diff": "^0.9.1",
-    "@types/needle": "^3.2.0",
     "@types/resize-observer-browser": "^0.1.7"
   },
   "dependencies": {
@@ -36,7 +35,6 @@
     "chalk": "^5.2.0",
     "json-diff": "^1.0.0",
     "madwizard": "^5.0.3",
-    "needle": "^3.2.0",
     "pretty-ms": "^7.0.1",
     "vfile": "^5.3.6",
     "xterm": "^5.1.0",
