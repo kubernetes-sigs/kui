@@ -264,11 +264,11 @@ export async function createWindow(
         }
 
         if (electronRemoteNeedsInit) {
-          // some hacks to allow @kui-shell/core to avoid specifying a
+          // use the webpackIgnore magic comment to avoid specifying a
           // direct dependence on @electron/remote; this dep pulls in
-          // all of electron, which some clients will not need
-          const foolWebpackHack = 'index.js'
-          require('@electron/remote/main/' + foolWebpackHack).initialize()
+          // all of electron, which some clients will not need. if you
+          // need it, make sure to install @electron/remote yourself.
+          await import(/* webpackIgnore: true */ '@electron/remote/main/index.js').then(_ => _.initialize())
           electronRemoteNeedsInit = false
         }
 
@@ -285,7 +285,10 @@ export async function createWindow(
         }
         const mainWindow = new BrowserWindow(opts) as KuiBrowserWindow
         if (electronRemoteIsNeeded) {
-          require('@electron/remote/main').enable(mainWindow.webContents)
+          // see the webpackIgnore: true comment just above
+          await import(/* webpackIgnore: true */ '@electron/remote/main/index.js').then(_ =>
+            _.enable(mainWindow.webContents)
+          )
         }
         nWindows++
         debug('createWindow::new BrowserWindow success')
