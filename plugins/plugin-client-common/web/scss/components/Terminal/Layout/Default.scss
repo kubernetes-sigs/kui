@@ -55,14 +55,14 @@
   @include Columns(2);
   grid-template-areas: 'T1 T2';
 }
-@media all and (max-width: 950px) {
+@media all and (max-width: 950px) and (min-height: 450px) {
   @include Split(2) {
     @include Rows(3);
     @include Columns(1);
     grid-template-areas: 'T1' 'T2' 'T2';
   }
 }
-@media all and (max-width: 500px) {
+@media all and (max-width: 550px) {
   @include Split(2) {
     @include Rows(2);
     @include Columns(1);

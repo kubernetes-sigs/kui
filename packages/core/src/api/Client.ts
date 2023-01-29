@@ -138,7 +138,11 @@ export function clientGuidebooks(): string[] {
 /** @return whether to show the Sidebar onload */
 export function showGuidebooksSidebar(): boolean {
   try {
-    return window.innerWidth >= 800 && require('@kui-shell/client/config.d/client.json').showGuidebooksSidebar
+    return (
+      window.innerHeight >= 450 &&
+      window.innerWidth >= 800 &&
+      require('@kui-shell/client/config.d/client.json').showGuidebooksSidebar
+    )
   } catch (err) {
     return false
   }
