@@ -62,6 +62,13 @@
     grid-template-areas: 'T1' 'T2' 'T2';
   }
 }
+@media all and (max-width: 500px) {
+  @include Split(2) {
+    @include Rows(2);
+    @include Columns(1);
+    grid-template-areas: 'T1' 'T2';
+  }
+}
 
 @include Split(3) {
   @include Rows(4);
