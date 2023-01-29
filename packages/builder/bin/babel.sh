@@ -33,25 +33,50 @@ function babel {
     if [ "$i" == "packages/builder" ]; then OUT=build; fi
 
     # echo "babeling $1 to $OUT"
-    echo "npx --no-install babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored"
+    if [ -z "$WATCH" ]; then
+        echo "npx --no-install babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored $WATCH"
+    else
+        npx --no-install babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored $WATCH
+    fi
 }
 
 declare -a LIST=()
+declare -a NAMES=()
 for i in {packages,plugins}/*; do
     if [ -d $i/mdist ]; then
-        cmd=$(babel $i)
-        LIST+=("$cmd")
+        if [ -z "$WATCH" ]; then
+            cmd=$(babel $i)
+            LIST+=("$cmd")
+        else
+            babel $i &
+        fi
     fi
 
     for j in $i/*; do
         if [ -d $j/mdist ]; then
-            cmd=$(babel $j)
-            LIST+=("$cmd")
+            if [ -z "$WATCH" ]; then
+                cmd=$(babel $j)
+                LIST+=("$cmd")
+            else
+                babel $j &
+            fi
         fi
     done
 done
 
 # ugh, bash versus quotes; we just gave up and launched node here:
 # the L.slice is to strip of the trailing comma that the bash printf line emits
-export L=$(printf "\"%s\"," "${LIST[@]}")
-node -e 'require("concurrently")(JSON.parse("[" + process.env.L.slice(0, process.env.L.length - 1) + "]"), { maxProcesses: require("os").cpus().length }).result.then(() => console.log("ok"))'
+if [ -z "$WATCH" ]; then
+    export L=$(printf "\"%s\"," "${LIST[@]}")
+    node -e 'require("concurrently")(JSON.parse("[" + process.env.L.slice(0, process.env.L.length - 1) + "]"), { maxProcesses: require("os").cpus().length }).result.then(() => console.log("ok"))'
+else
+    SAVE_IFS="$IFS"
+    IFS=","
+    NAMESJOIN="${NAMES[*]}"
+    IFS="$SAVE_IFS"
+
+    export L=$(printf "'%s'," "${LIST[@]}")
+
+    wait
+    # concurrently -n $NAMESJOIN $L
+fi

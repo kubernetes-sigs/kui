@@ -31,6 +31,12 @@ import { apiVersion as defaultThemeApiVersion, ThemeSet } from '../webapp/themes
 
 import { getModel } from '../commands/tree'
 
+interface PrescanOptions {
+  assembly?: boolean
+  pluginRoot?: string
+  externalOnly?: boolean
+}
+
 /**
  * A data structure to facilitate computation of the Prescan model
  *
@@ -495,12 +501,6 @@ export const generatePrescanModel = async (
     catchalls: getModel().catchalls,
     docs: undefined // assembler.ts will fill this in
   }
-}
-
-interface PrescanOptions {
-  assembly?: boolean
-  pluginRoot?: string
-  externalOnly?: boolean
 }
 
 /**
