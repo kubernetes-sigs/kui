@@ -17,7 +17,7 @@
 @use 'sass:math';
 @import 'mixins';
 
-$padding: 2em;
+$padding: 1.375em;
 
 html.kui--18px {
   @include ScrollbackBlockList {
