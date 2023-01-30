@@ -43,5 +43,5 @@ if [ -d node_modules/@kui-shell/client/notebooks ]; then
     if [ ! -d node_modules/@kui-shell/build/ ]; then
         mkdir node_modules/@kui-shell/build
     fi
-    (echo -n "["; for file in node_modules/@kui-shell/client/notebooks/*.{md,json}; do echo -n "\"$(basename $file)\","; done; echo -n "]") | sed 's/\,]/]/' > node_modules/@kui-shell/build/client-guidebooks.json
+    (echo -n "["; (cd node_modules/\@kui-shell/client/notebooks && find . \( -name '*.md' -o -name '*.json' \) -print) | sed 's/\.\///' | xargs -I{} -n1 echo -n '"{}",'; echo -n "]") | sed 's/\,]/]/' > node_modules/@kui-shell/build/client-guidebooks.json
 fi
