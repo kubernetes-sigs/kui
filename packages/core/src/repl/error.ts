@@ -24,7 +24,7 @@ function isCustomError(response: KResponse): response is CustomError {
   return err && typeof err === 'object' && typeof err.name === 'string' && typeof err.message === 'string'
 }
 
-export default function isError(response: KResponse): response is ErrorLike {
+export default function isError(response: unknown): response is ErrorLike {
   return (
     response &&
     (response.constructor === Error ||

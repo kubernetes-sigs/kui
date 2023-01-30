@@ -16,11 +16,13 @@
 
 import React from 'react'
 import { VFile } from 'vfile'
+import { dirname } from 'path'
 import { cli } from 'madwizard/dist/fe/cli'
 import { MadWizardOptions } from 'madwizard'
 import { Allotment, AllotmentHandle } from 'allotment'
 
 import type { Arguments, KResponse, ParsedOptions, Tab } from '@kui-shell/core'
+
 import { Loading, onCommentaryEdit, offCommentaryEdit } from '@kui-shell/plugin-client-common'
 
 import AskUI, { Ask } from './Ask'
@@ -36,31 +38,71 @@ function isPrimitiveArray(A: any): A is (string | number | boolean)[] {
   return Array.isArray(A) && A.every(_ => typeof _ !== 'object')
 }
 
-/** <Playground/> react props */
-export type Props = {
-  /** Channel name to listen on. This should be matched with a `commentary --send <channel>` */
-  channel: string
-
-  /** Kui REPL controller */
-  tab: Tab
-}
-
-/** <Playground/> react state */
-type State = CommandProps & {
-  /** Error in madwizard? */
-  internalError?: Error
-
+type Channel = string
+type MarkdownSource = {
   /** Guidebook markdown source */
   input: string
 
   /** Guidebook markdown original filepath */
   filepath?: string
+}
 
-  /** Current madwizard guide status */
-  status?: 'q&a' | 'running' | 'error' | 'success'
+/** <Playground/> react props */
+export type Props = {
+  /** Channel name to listen on. This should be matched with a `commentary --send <channel>` */
+  source: Channel | MarkdownSource
 
-  /** If status is q&a, then the current ask model */
-  ask?: Ask | null
+  /** Kui REPL controller */
+  tab: Tab
+
+  /** Guidebook store root */
+  store?: string
+}
+
+function isChannel(source: Props['source']): source is Channel {
+  return typeof source === 'string'
+}
+
+/** <Playground/> react state */
+type State = CommandProps &
+  MarkdownSource & {
+    /** Error in madwizard? */
+    internalError?: Error
+
+    /** Current madwizard guide status */
+    status?: 'q&a' | 'running' | 'error' | 'success'
+
+    /** If status is q&a, then the current ask model */
+    ask?: Ask | null
+  }
+
+async function loadNotebookFromSource(source: string, REPL: Tab['REPL'], snippetBasePath?: string) {
+  const [{ loadNotebook }, { inlineSnippets }] = await Promise.all([
+    import('@kui-shell/plugin-client-common/notebook'),
+    import('madwizard/dist/parser')
+  ])
+
+  const fetcher = (filepath: string) =>
+    loadNotebook(filepath, { REPL })
+      .catch(err =>
+        loadNotebook(filepath + '.md', { REPL })
+          .catch(() => loadNotebook(filepath + '/index.md', { REPL }))
+          .catch(() => {
+            throw err
+          })
+      )
+      .then(_ => _.toString())
+
+  return inlineSnippets({
+    fetcher,
+    snippetBasePath,
+    madwizardOptions: {}
+  })(source, '/')
+}
+
+async function loadNotebookFromFilepath(filepath: string, REPL: Tab['REPL']) {
+  const { loadNotebook } = await import('@kui-shell/plugin-client-common/notebook')
+  return loadNotebookFromSource((await loadNotebook(filepath, { REPL })).toString(), REPL, dirname(filepath))
 }
 
 /** Work In Progress */
@@ -97,6 +139,20 @@ export default class Playground extends React.PureComponent<Props, State> {
       : !this.state?.ask
       ? this._sizes.qadone
       : this._sizes.qa
+  }
+
+  public constructor(props: Props) {
+    super(props)
+
+    if (!isChannel(props.source)) {
+      this.state = {
+        input: props.source.input,
+        filepath: props.source.filepath,
+        nExecStarts: 0,
+        nExecCompletions: 0,
+        commands: []
+      }
+    }
   }
 
   private get REPL() {
@@ -140,18 +196,7 @@ export default class Playground extends React.PureComponent<Props, State> {
 
   private readonly _onCancel = this._onHome
   private readonly _onEdit = async (source: string, filepath?: string) => {
-    const [{ loadNotebook }, { inlineSnippets }] = await Promise.all([
-      import('@kui-shell/plugin-client-common/notebook'),
-      import('madwizard/dist/parser')
-    ])
-
-    const fetcher = (filepath: string) => loadNotebook(filepath, { REPL: this.REPL }).then(_ => _.toString())
-    const input = await inlineSnippets({
-      fetcher,
-      madwizardOptions: {}
-      // snippetBasePath: this.snippetBasePath
-    })(source, '/')
-
+    const input = await loadNotebookFromSource(source, this.REPL)
     this.clearCommands()
     this.setState({ input, filepath })
   }
@@ -174,9 +219,9 @@ export default class Playground extends React.PureComponent<Props, State> {
 
   /** Intercept shell executions */
   private readonly _shell: MadWizardOptions['shell'] = {
-    willHandle() {
+    willHandle(cmdline: string | boolean) {
       // handle every shell command
-      return true
+      return cmdline !== 'pip-install'
     },
 
     exec: async (cmdline: string | boolean, env: Record<string, string>, isInternal: boolean) => {
@@ -216,38 +261,53 @@ export default class Playground extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    onCommentaryEdit(this.props.channel, this._onEdit)
+    if (isChannel(this.props.source)) {
+      // we don't have the markdown source yet, so listen on the given
+      // channel for that source
+      onCommentaryEdit(this.props.source, this._onEdit)
+    } else {
+      // great, we were given the source on props, so we can start the
+      // play right away
+      this.playGuidebook(this.props.source.input, this.props.source.filepath)
+    }
   }
 
   public componentWillUnmount() {
-    offCommentaryEdit(this.props.channel, this._onEdit)
+    if (isChannel(this.props.source)) {
+      offCommentaryEdit(this.props.source, this._onEdit)
+    }
   }
 
   protected get status() {
     return this.state?.status
   }
 
+  private playGuidebook(input: string, filepath?: string) {
+    this.clear()
+    cli(
+      ['madwizard', 'guide', '-'],
+      this.stdio()?.stdout?.write,
+      Object.assign(
+        {},
+        { fs: fakeFs },
+        {
+          clear: false,
+          vfile: new VFile({ cwd: process.cwd(), path: filepath, value: input }),
+          raw: this.useRawMode() ? this.onRaw : undefined,
+          shell: this._shell,
+          stdio: this.stdio(),
+          store: this.props.store || process.env.GUIDEBOOK_STORE
+        }
+      )
+    ).catch(err => {
+      console.error('Error from madwizard', err)
+      this.setState({ internalError: err })
+    })
+  }
+
   public componentDidUpdate(prevProps: Props, prevState: State) {
     if (this.state?.input && (prevState?.input !== this.state.input || !this.status)) {
-      this.clear()
-      cli(
-        ['madwizard', 'guide', '-'],
-        this.stdio()?.stdout?.write,
-        Object.assign(
-          {},
-          { fs: fakeFs },
-          {
-            clear: false,
-            vfile: new VFile({ cwd: process.cwd(), path: this.state.filepath, value: this.state.input }),
-            raw: this.useRawMode() ? this.onRaw : undefined,
-            shell: this._shell,
-            stdio: this.stdio()
-          }
-        )
-      ).catch(err => {
-        console.error('Error from madwizard', err)
-        this.setState({ internalError: err })
-      })
+      this.playGuidebook(this.state.input, this.state.filepath)
     }
 
     if (this.state && prevState && prevState.ask !== this.state.ask) {
@@ -294,19 +354,40 @@ export default class Playground extends React.PureComponent<Props, State> {
   }
 }
 
-type Options = ParsedOptions & {
-  ui?: 'graphics' | 'text'
-}
+type Options = ParsedOptions &
+  Pick<Props, 'store'> & {
+    /** Present choices graphically or textually? [default: 'graphics'] */
+    ui?: 'graphics' | 'text'
+  }
 
-export function controller(args: Arguments<Options>) {
+/** Open a Playground that listens for source on a given named `channel` */
+export function listenOnChannel(args: Arguments<Options>) {
   const channel = args.argvNoOptions[2]
   if (!channel) {
     throw new Error('Usage: madwizard playground <channel>')
   }
 
   if (args.parsedOptions.ui === 'text') {
-    return <PlaygroundTextual channel={channel} tab={args.tab} />
+    return <PlaygroundTextual source={channel} tab={args.tab} store={args.parsedOptions.store} />
   } else {
-    return <Playground channel={channel} tab={args.tab} />
+    return <Playground source={channel} tab={args.tab} store={args.parsedOptions.store} />
+  }
+}
+
+/** Open a Playground for the source in the given `filepath` */
+export async function readFromFile(args: Arguments<Options>) {
+  const filepath = args.argvNoOptions[3]
+  if (!filepath) {
+    throw new Error('Usage: madwizard playground file <filepath>')
+  }
+
+  const input = await loadNotebookFromFilepath(filepath, args.REPL)
+
+  const source: MarkdownSource = { input, filepath }
+
+  if (args.parsedOptions.ui === 'text') {
+    return <PlaygroundTextual source={source} tab={args.tab} store={args.parsedOptions.store} />
+  } else {
+    return <Playground source={source} tab={args.tab} store={args.parsedOptions.store} />
   }
 }

@@ -548,6 +548,9 @@ module.exports = {
       { test: /LICENSE/, use: 'ignore-loader' },
       { test: /license.txt/, use: 'ignore-loader' },
 
+      { test: /notebooks\/.+\.py$/, type: 'asset/source' },
+      { test: /notebooks\/.+\.txt$/, type: 'asset/source' },
+
       // was: file-loader; but that loader does not allow for dynamic
       // loading of markdown *content* in a browser-based client
       { test: /\.md$/, use: 'raw-loader' }, // was: 'snippet-inliner'
