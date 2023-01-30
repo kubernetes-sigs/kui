@@ -15,21 +15,21 @@
  */
 
 @import 'mixins';
-@import '../TopTabStripe/mixins';
+@import '../Page/mixins';
 
 body[kui-theme-style='light'] {
   @include Sidebar {
     --kui--sidebar-color-01: var(--color-base00);
     --kui--sidebar-color-02: var(--color-base02);
   }
-  @include TopTabStripe {
+  @include KuiTabContainer {
     @include SidebarToggleButton {
       --kui--sidebar-toggle-button-color: var(--color-text-02);
     }
   }
 }
 
-@include TopTabStripe {
+@include KuiTabContainer {
   @include Sidebar {
     --kui--sidebar-color-01: var(--color-text-01);
     --kui--sidebar-color-02: var(--color-text-02);
