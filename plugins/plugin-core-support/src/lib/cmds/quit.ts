@@ -22,5 +22,11 @@
 import type { Arguments, Registrar } from '@kui-shell/core'
 
 export default (commandTree: Registrar) => {
+  // register a window close command handler
+  commandTree.listen('/window/close', () => {
+    window.close()
+    return true
+  })
+
   commandTree.listen('/exit', ({ REPL }: Arguments) => REPL.qexec('tab close'))
 }
