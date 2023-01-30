@@ -241,3 +241,9 @@ $tab-label-font-size: 0.875rem;
     align-items: stretch;
   }
 }
+
+@media (orientation: landscape) and (max-height: 450px) {
+  @include TopTabStripeAbsolute {
+    display: none;
+  }
+}

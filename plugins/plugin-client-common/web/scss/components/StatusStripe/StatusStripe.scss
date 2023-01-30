@@ -287,3 +287,9 @@ $z-index: var(--pf-global--ZIndex--xs);
 
   @include HideInNarrowWindows;
 }
+
+@media (orientation: landscape) and (max-height: 450px) {
+  @include StatusStripe {
+    display: none;
+  }
+}

@@ -23,7 +23,6 @@ $height: 3em;
 }
 
 @mixin TopTabStripe {
-  .pf-c-page,
   .kui--top-tab-stripe-header {
     @content;
   }
