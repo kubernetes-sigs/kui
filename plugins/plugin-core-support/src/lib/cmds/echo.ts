@@ -25,18 +25,28 @@ async function expand(expr: number | boolean | string, env = process.env): Promi
     : expr.replace(/\${?([^}/\s]+)}?/g, (_, p1) => expandHomeDir(typeof env[p1] !== 'undefined' ? env[p1] : _))
 }
 
-export async function echo(args: Arguments) {
+async function kuiecho(args: Arguments) {
   return (
     Promise.all(args.argvNoOptions.slice(1).map(_ => expand(_, args.execOptions.env))).then(_ => _.join(' ')) || true
   )
 }
 
+export async function echo(args: Arguments) {
+  const { inBrowser, hasProxy } = await import('@kui-shell/core/mdist/api/Capabilities')
+  if (inBrowser() && !hasProxy()) {
+    return kuiecho(args)
+  } else {
+    const { doExecWithPty } = await import('@kui-shell/plugin-bash-like')
+    return doExecWithPty(args)
+  }
+}
+
 export default (registrar: Registrar) => {
   // For debugging the command line parser. This avoids the PTY.
-  registrar.listen('/kuiecho', echo)
+  registrar.listen('/kuiecho', kuiecho)
 
   // and, in a browser deployment without a backing proxy (and hence
   // without PTY support), we should also register as a handler for
   // `echo`
-  // registrar.listen('/echo', echo)
+  registrar.listen('/echo', echo)
 }
