@@ -32,6 +32,7 @@
     "_watch": "bash -c \"npm run kill; export CSP_ALLOWED_HOSTS='http: https: data: filesystem: about: blob: ws: wss:'; kui-watch-webpack\"",
     "watch:webpack": "npm run kill; npm run pty:nodejs && npm run _watch $WATCH_ARGS",
     "watch:browser": "concurrently -n COMPILE,WEBPACK --kill-others 'npm run watch:source' 'npm run watch:webpack'",
+    "watch:browser:offline": "export IS_OFFLINE_CLIENT=true; concurrently -n COMPILE,WEBPACK --kill-others 'npm run watch:source' 'npm run watch:webpack'",
     "watch:electron": "bash -c \"npm run pty:electron && TARGET=electron-renderer npm run _watch\"",
     "watch": "bash -c \"npm run kill; npm run compile && npm run link && concurrently -n COMPILE,WEBPACK --kill-others 'npm run watch:source' 'npm run watch:electron'\"",
     "proxy": "export PORT=8081; npm run kill:proxy; export KUI_USE_HTTP=true; cd packages/proxy/app && npm install && ../../../tools/travis/proxy.sh ../../..",

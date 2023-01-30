@@ -173,7 +173,10 @@ if (inBrowser) {
   plugins.push(
     new ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
-      process: require.resolve('./process.js')
+      process:
+        process.env.WATCH && process.env.IS_OFFLINE_CLIENT
+          ? require.resolve('./offline.js')
+          : require.resolve('./process.js')
     })
   )
 }

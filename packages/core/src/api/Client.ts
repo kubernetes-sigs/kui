@@ -24,7 +24,10 @@ export { isPopup } from '../webapp/popup-core'
 /** Is the current client running in offline/disconnected mode? */
 export function isOfflineClient(): boolean {
   try {
-    const { offline, readonly, executable } = require('@kui-shell/client/config.d/client.json')
+    const { offline: offlineFromClientSpec, readonly, executable } = require('@kui-shell/client/config.d/client.json')
+
+    // see @kui-shell/webpack/offline.js for injecting the env var
+    const offline = process.env.IS_OFFLINE_CLIENT || offlineFromClientSpec
 
     if (offline === undefined && readonly !== undefined && executable !== undefined) {
       return readonly && !executable
