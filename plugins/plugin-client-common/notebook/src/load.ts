@@ -24,8 +24,8 @@ export async function loadNotebook(
   errOk = false
 ): Promise<string | object> {
   const debug = Debug('plugin-client-common/notebook/load')
-  const [{ encodeComponent }, { absolute, expandHomeDir }] = await Promise.all([
-    import('@kui-shell/core/mdist/api/Exec'),
+  const [{ isError }, { absolute, expandHomeDir }] = await Promise.all([
+    import('@kui-shell/core/mdist/api/Response'),
     import('@kui-shell/core/mdist/api/Util')
   ])
 
@@ -35,13 +35,15 @@ export async function loadNotebook(
 
     debug('attempting to load guidebook data', filepath)
     if (/^https:/.test(filepath)) {
-      return (await REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
+      return (await REPL.rexec<(string | object)[]>(`_fetchfile ${REPL.encodeComponent(filepath)}`)).content[0]
     } else {
       //   --with-data says give us the file contents
       const fullpath = absolute(expandHomeDir(filepath))
-      const stats = (await REPL.rexec<FStat>(`vfs fstat ${encodeComponent(fullpath)} --with-data`)).content
+      const stats = (await REPL.rexec<FStat | Error>(`vfs fstat ${REPL.encodeComponent(fullpath)} --with-data`)).content
 
-      if (stats.isDirectory) {
+      if (isError(stats)) {
+        throw stats
+      } else if (stats.isDirectory) {
         throw new Error('Invalid filepath')
       } else {
         debug('successfully loaded guidebook data', filepath)

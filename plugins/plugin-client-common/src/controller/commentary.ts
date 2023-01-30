@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { format } from 'url'
 import { basename } from 'path'
 
 import type { Arguments, CommentaryResponse, ParsedOptions, Registrar } from '@kui-shell/core'
@@ -93,8 +92,9 @@ type CommentaryOptions = ParsedOptions &
   ]
 } */
 
-function formatBaseUrl(filepath: string) {
+async function formatBaseUrl(filepath: string) {
   if (/^http:/.test(filepath)) {
+    const { format } = await import('url')
     const url = new URL(filepath)
 
     url.pathname = url.pathname.replace(basename(url.pathname), '{filename}')
@@ -161,7 +161,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
   const baseUrl = args.parsedOptions['base-url']
     ? join(args.parsedOptions['base-url'], '{filename}')
     : filepath
-    ? formatBaseUrl(filepath)
+    ? await formatBaseUrl(filepath)
     : undefined
 
   if (data !== undefined) {
@@ -212,6 +212,46 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
 }
 
 /**
+ * This delegate is helpful to wrap the rendering of a given markdown
+ * `filepath` in a maximized view that is injected as a replacement
+ * for the current view.
+ */
+function delegate(args: Arguments) {
+  const delegate = args.argvNoOptions[2]
+  const filepath = args.argvNoOptions[3]
+  if (!delegate || !filepath) {
+    throw new Error('Usage: commentary delegate <filepath>')
+  }
+
+  const children = `
+---
+layout:
+    1:
+        position: default
+        maximized: true
+---
+
+\`\`\`shell
+---
+execute: now
+outputOnly: true
+maximize: true
+---
+${delegate} ${args.REPL.encodeComponent(filepath)}
+\`\`\`
+`
+
+  return {
+    apiVersion: 'kui-shell/v1',
+    kind: 'CommentaryResponse',
+    props: {
+      replace: true,
+      children
+    }
+  }
+}
+
+/**
  * This plugin introduces the commentary command
  *
  */
@@ -222,4 +262,5 @@ export default function registerCommentaryController(commandTree: Registrar) {
 
   commandTree.listen('/commentary', addComment, { outputOnly: true, flags })
   commandTree.listen('/#', addComment, { outputOnly: true, noCoreRedirect: true, flags })
+  commandTree.listen('/commentary/delegate', delegate, { outputOnly: true, needsUI: true })
 }

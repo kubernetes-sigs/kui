@@ -187,9 +187,9 @@ export abstract class TrieVFS<D, L extends Leaf<D> = Leaf<D>> implements VFS {
   public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
     return Promise.all(
       srcFilepaths.map(async srcFilepath => {
-        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json)$/)
-        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json)$/)
-        const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json)$/)
+        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json|txt|py)$/)
+        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json|txt|py)$/)
+        const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json|txt)$/)
         const match = match1 || match2 || match3
         if (match) {
           const dir = dirname(dstFilepath)

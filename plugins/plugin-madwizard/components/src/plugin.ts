@@ -77,12 +77,26 @@ export default function registerMadwizardComponentCommands(registrar: Registrar)
   )
 
   /**
-   * Listen for edits
+   * Playground that listens for edits on the provided channel
+   *    madwizard playground <channel>
    *
    */
   registrar.listen(
     '/madwizard/playground',
-    async args => import('./Playground').then(async _ => ({ react: await _.controller(args) })),
+    async args => import('./Playground').then(async _ => ({ react: await _.listenOnChannel(args) })),
+    {
+      needsUI: true
+    }
+  )
+
+  /**
+   * Playground for a given filepath
+   *    madwizard playground file <filepath>
+   *
+   */
+  registrar.listen(
+    '/madwizard/playground/file',
+    async args => import('./Playground').then(async _ => ({ react: await _.readFromFile(args) })),
     {
       needsUI: true
     }

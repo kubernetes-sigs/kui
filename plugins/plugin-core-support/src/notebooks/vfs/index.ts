@@ -16,16 +16,8 @@
 
 import { TrieVFS, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
-interface Tutorial {
-  name: string
-  tutorial: Record<string, any> // FIXME type for snapshot
-
-  path: string
-  nameForDisplay: string
-}
-
 type NotebookLeaf = TrieVFS.Leaf<{ srcFilepath: string }>
-type NotebookEntry = TrieVFS.Directory | NotebookLeaf
+// type NotebookEntry = TrieVFS.Directory | NotebookLeaf
 
 export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implements VFS {
   protected viewer() {
@@ -46,7 +38,7 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
     const { srcFilepath } = data
 
     const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json)$/)
-    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json)$/)
+    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json|txt|py)$/)
     const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json)$/)
     const match = match1 || match2 || match3
     if (match) {
@@ -75,6 +67,18 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
                 /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
                   file +
                   '.md'
+              )
+            : extension === 'txt'
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.txt'
+              )
+            : extension === 'py'
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.py'
               )
             : import(
                 /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +

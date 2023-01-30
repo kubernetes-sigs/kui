@@ -88,7 +88,13 @@ export default class Sidebar extends React.PureComponent<Props, State> {
   /** User has clicked to select a given Guidebook */
   private onSelect(_: Guidebook) {
     const quiet = !this.props.noTopTabs
-    pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`, undefined, quiet)
+
+    // if the notebooks.json entry has a `play` field, then pass this
+    // through the commentary delegate, which just wraps the `play`
+    // command into a full-screen/maximized in-place replay of the
+    // filepath
+    const cmd = _.play ? `commentary delegate '${_.play}'` : this.props.guidebooksCommand || 'replay'
+    pexecInCurrentTab(`${cmd} ${encodeComponent(_.filepath)}`, undefined, quiet)
 
     this.setState({
       currentGuidebook: _.notebook,

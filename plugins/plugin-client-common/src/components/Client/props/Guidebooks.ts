@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export type Guidebook = { notebook: string; filepath: string }
+/** An leaf node in config.d/notebooks.json */
+export type Guidebook = { notebook: string; filepath: string; play?: string }
+
+/** An interior node in config.d/notebooks.json */
+// eslint-disable-next-line no-use-before-define
 type Menu = { label: string; submenu: MenuItem[]; expanded?: boolean }
+
+/** Any node in config.d/notebooks.json */
 export type MenuItem = Guidebook | Menu | object
 
 export function isGuidebook(item: MenuItem): item is Guidebook {
