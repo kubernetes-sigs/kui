@@ -48,8 +48,10 @@ APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 
-if [ "$(cat "$CLIENT_HOME/node_modules/@kui-shell/client/config.d/client.json" | jq -cr .offline)" = "true" ]; then
-    IS_OFFLINE_CLIENT=true
+if [ -z "$IS_OFFLINE_CLIENT" ]; then
+    if [ "$(cat "$CLIENT_HOME/node_modules/@kui-shell/client/config.d/client.json" | jq -cr .offline)" = "true" ]; then
+        IS_OFFLINE_CLIENT=true
+    fi
 fi
 
 echo "build-webpack CLIENT_HOME=$CLIENT_HOME"

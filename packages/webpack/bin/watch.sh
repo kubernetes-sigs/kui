@@ -22,8 +22,10 @@ set -o pipefail
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export CLIENT_HOME=$(cd "$SCRIPTDIR"/../../ && pwd)
 
-if [ "$(cat "$CLIENT_HOME/node_modules/@kui-shell/client/config.d/client.json" | jq -cr .offline)" = "true" ]; then
-    IS_OFFLINE_CLIENT=true
+if [ -z "$IS_OFFLINE_CLIENT" ]; then
+    if [ "$(cat "$CLIENT_HOME/node_modules/@kui-shell/client/config.d/client.json" | jq -cr .offline)" = "true" ]; then
+        IS_OFFLINE_CLIENT=true
+    fi
 fi
 
 if [ ! -d "$CLIENT_HOME/node_modules/@kui-shell" ]; then

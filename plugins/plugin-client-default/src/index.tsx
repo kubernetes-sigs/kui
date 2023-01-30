@@ -16,6 +16,7 @@
 
 import React from 'react'
 
+import { isOffline } from '@kui-shell/core/mdist/api/Client'
 import { inBrowser } from '@kui-shell/core/mdist/api/Capabilities'
 
 import Kui, { Props as KuiProps } from '@kui-shell/plugin-client-common/mdist/components/Client/Kui'
@@ -91,6 +92,8 @@ export default class Client extends React.PureComponent<KuiProps> {
         ? false
         : undefined
 
+    const offline = isOffline()
+
     return (
       <Kui
         noHelp
@@ -126,9 +129,9 @@ export default class Client extends React.PureComponent<KuiProps> {
       >
         <ContextWidgets>
           {!isPopup && <CurrentWorkingDirectory className="kui--hide-in-guidebook" />}
-          <CurrentGitBranch className="kui--hide-in-narrower-windows kui--hide-in-guidebook" />
-          <CurrentContext />
-          <CurrentNamespace />
+          {!offline && <CurrentGitBranch className="kui--hide-in-narrower-windows kui--hide-in-guidebook" />}
+          {!offline && <CurrentContext />}
+          {!offline && <CurrentNamespace />}
         </ContextWidgets>
 
         {!isPopup && <SpaceFiller />}
@@ -136,8 +139,8 @@ export default class Client extends React.PureComponent<KuiProps> {
         <MeterWidgets className="kui--hide-in-narrower-windows">
           {/* <ClusterUtilization /> */}
           {/* !isPopup && <OpenWhiskGridWidget /> */}
-          {inBrowser() && <ProxyOfflineIndicator />}
-          {!isPopup && !inBrowser() && <UpdateChecker />}
+          {!offline && inBrowser() && <ProxyOfflineIndicator />}
+          {!offline && !isPopup && !inBrowser() && <UpdateChecker />}
           <Settings />
           <GitHubIcon />
         </MeterWidgets>
