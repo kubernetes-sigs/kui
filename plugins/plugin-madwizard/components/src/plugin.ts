@@ -98,7 +98,8 @@ export default function registerMadwizardComponentCommands(registrar: Registrar)
     '/madwizard/playground/file',
     async args => import('./Playground').then(async _ => ({ react: await _.readFromFile(args) })),
     {
-      needsUI: true
+      needsUI: true,
+      outputOnly: true
     }
   )
 }
