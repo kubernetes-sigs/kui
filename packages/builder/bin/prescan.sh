@@ -52,5 +52,5 @@ if [ -d node_modules/@kui-shell/client/notebooks ]; then
     if [ ! -d "$(dirname $TGT)" ]; then
         mkdir "$(dirname $TGT)"
     fi
-    (echo -n "["; (cd node_modules/\@kui-shell/client/notebooks && find . \( -name '*.md' -o -name '*.py' -o -name '*.txt' -o -name '*.json' \) -print) | sed 's/\.\///' | xargs -I{} -n1 echo -n '"{}",'; echo -n "]") | sed 's/\,]/]/' > "$TGT"
+    (echo -n "["; (cd node_modules/\@kui-shell/client/notebooks && find -L . \( -name '*.md' -o -name '*.py' -o -name '*.txt' -o -name '*.json' \) -print) | sed 's/\.\///' | xargs -I{} -n1 echo -n '"{}",'; echo -n "]") | sed 's/\,]/]/' > "$TGT"
 fi
