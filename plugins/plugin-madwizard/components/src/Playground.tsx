@@ -247,7 +247,7 @@ export default class Playground extends React.PureComponent<Props, State> {
       let response: State['commands'][number]['response']
       const status: State['commands'][number]['status'] = 'success'
       try {
-        response = await this.REPL.qexec(cmdline.toString(), undefined, undefined, { env })
+        response = await this.REPL.qexec(command.cmdline, undefined, undefined, { env })
         this.write(response)
       } catch (err) {
         console.error(err)
