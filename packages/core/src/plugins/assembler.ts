@@ -185,7 +185,8 @@ export const compile = async (
 
   const modelWithUsage = amendWithUsageModels(model)
 
-  const destFile = externalOnly ? join(pluginRoot, '@kui-shell/prescan.json') : prescanned()
+  const destFile =
+    process.env.KUI_PRESCAN || (externalOnly ? join(pluginRoot, '@kui-shell/prescan.json') : prescanned())
   await Promise.all([writePrescanned(modelWithUsage, destFile)])
 
   if (externalOnly) {

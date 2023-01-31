@@ -25,23 +25,32 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
 
+# webpack.config.js may set this in its watcher to ask us to generate
+# the prescan in a specific location
+export KUI_PRESCAN
+
 # make typescript happy, until we have the real prescan model ready
 # (produced by builder/lib/configure.js, but which cannot be run
 # until after we've compiled the source)
-mkdir -p ./node_modules/@kui-shell
-touch ./node_modules/@kui-shell/prescan.json
+if [ -z "$KUI_PRESCAN" ]; then
+    mkdir -p ./node_modules/@kui-shell
+    if [ ! -e ./node_modules/@kui-shell/prescan.json ]; then
+        touch ./node_modules/@kui-shell/prescan.json
+    fi
+fi
 
 # pre-compile plugin registry
 if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
-    echo "compiling plugin registry $CLIENT_HOME"
+    echo "compiling plugin registry $CLIENT_HOME to ${KUI_PRESCAN-default location}"
     node ./node_modules/@kui-shell/builder/dist/bin/compile.js
 fi
 
 # generate the index.json in @kui-shell/client/notebooks/index.json
 if [ -d node_modules/@kui-shell/client/notebooks ]; then
-    echo "Generating client-guidebooks.json"
-    if [ ! -d node_modules/@kui-shell/build/ ]; then
-        mkdir node_modules/@kui-shell/build
+    TGT=${KUI_PRESCAN_GUIDEBOOKS-node_modules/@kui-shell/build/client-guidebooks.json}
+    echo "Generating client-guidebooks.json to $TGT"
+    if [ ! -d "$(dirname $TGT)" ]; then
+        mkdir "$(dirname $TGT)"
     fi
-    (echo -n "["; (cd node_modules/\@kui-shell/client/notebooks && find . \( -name '*.md' -o -name '*.py' -o -name '*.txt' -o -name '*.json' \) -print) | sed 's/\.\///' | xargs -I{} -n1 echo -n '"{}",'; echo -n "]") | sed 's/\,]/]/' > node_modules/@kui-shell/build/client-guidebooks.json
+    (echo -n "["; (cd node_modules/\@kui-shell/client/notebooks && find . \( -name '*.md' -o -name '*.py' -o -name '*.txt' -o -name '*.json' \) -print) | sed 's/\.\///' | xargs -I{} -n1 echo -n '"{}",'; echo -n "]") | sed 's/\,]/]/' > "$TGT"
 fi
