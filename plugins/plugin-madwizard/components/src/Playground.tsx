@@ -219,14 +219,19 @@ export default class Playground extends React.PureComponent<Props, State> {
 
   /** Intercept shell executions */
   private readonly _shell: MadWizardOptions['shell'] = {
-    willHandle(cmdline: string | boolean) {
+    willHandle(cmdline: string | boolean, exec: string) {
       // handle every shell command
-      return cmdline !== 'pip-install'
+      return !exec || /^ray-submit/.test(exec)
     },
 
-    exec: async (cmdline: string | boolean, env: Record<string, string>, isInternal: boolean) => {
+    exec: async (cmdline: string | boolean, env: Record<string, string>, isInternal: boolean, exec?: string) => {
       // mark start
-      const command: Command = { cmdline: cmdline.toString(), status: 'in-progress', startTime: Date.now(), endTime: 0 }
+      const command: Command = {
+        cmdline: exec || cmdline.toString(),
+        status: 'in-progress',
+        startTime: Date.now(),
+        endTime: 0
+      }
 
       if (!isInternal) {
         this.setState(({ commands = [], nExecStarts = 0 }) => {
