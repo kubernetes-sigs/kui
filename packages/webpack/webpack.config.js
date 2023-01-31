@@ -452,15 +452,7 @@ module.exports = {
     }
   }, */
   watchOptions: {
-    ignored: [
-      '**/dist/headless/**',
-      '**/dist/webpack/**',
-      '**/dist/electron/**',
-      '**/*.d.ts',
-      '**/*.js.map',
-      '**/node_modules/**',
-      '**/clients/default/**'
-    ]
+    ignored: /node_modules\/(?!@kui-shell\/(prescan\.json|build\/client-guidebooks\.json))/
   },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*', 'Set-Cookie': 'KUI_PROXY_COHOSTED=false' },
