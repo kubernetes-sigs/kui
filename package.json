@@ -40,7 +40,7 @@
     "compile:prep": "touch node_modules/@kui-shell/prescan.json",
     "compile:source:es6": "tsc --build tsconfig.json",
     "compile:source": "npm run compile:prep && npm run compile:source:es6 && npx kui-babel",
-    "compile:prescan": "npx kui-babel && npx kui-prescan",
+    "compile:prescan": "npx kui-prescan",
     "compile:clean": "tsc --build tsconfig.json --clean",
     "compile": "npm run compile:source && npm run compile:prescan",
     "rebuild": "npm run compile:clean; npm run compile",
