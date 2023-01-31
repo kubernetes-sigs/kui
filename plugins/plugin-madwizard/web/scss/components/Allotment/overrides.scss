@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
+
 .split-view-view {
   display: flex;
+}
+
+@include NotMaximizedBlock {
+  .split-view {
+    min-height: 600px;
+    max-height: 100%;
+  }
 }
