@@ -23,13 +23,13 @@ import type { PreloadRegistration } from '@kui-shell/core'
 const registration: PreloadRegistration = () => {
   const asyncs = []
 
-  // if (!Capabilities.isHeadless()) {
-  asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
-  // }
+  if (!process.env.KUI_HEADLESS) {
+    asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
+  }
 
-  // if (!Capabilities.isHeadless() || Capabilities.inProxy()) {
-  asyncs.push(import('./notebooks/vfs').then(_ => _.preload()))
-  // }
+  if (!process.env.KUI_HEADLESS || process.env.KUI_REPL_MODE !== undefined) {
+    asyncs.push(import('./notebooks/vfs').then(_ => _.preload()))
+  }
 
   return Promise.all(asyncs)
 }
