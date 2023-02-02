@@ -63,7 +63,7 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: 
   const checkHelmInstall = async (res: ReplExpect.AppAndCount) => {
     await ReplExpect.ok(res)
     await SidecarExpect.open(res)
-    await SidecarExpect.showingLeftNav('Overview')(res)
+    await SidecarExpect.showing(name)(res)
   }
 
   it('should update the helm repo to add bitnami', () => {

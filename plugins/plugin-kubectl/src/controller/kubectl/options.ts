@@ -330,7 +330,11 @@ export function isForAllNamespaces(parsedOptions: KubeOptions) {
 }
 
 /** Copy over any kubeconfig/context/cluster/namespace specifications from the given args */
-export function withKubeconfigFrom(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>, cmdline: string): string {
+export function withKubeconfigFrom(
+  args: Pick<Arguments<KubeOptions>, 'parsedOptions'>,
+  cmdline: string,
+  context = 'context'
+): string {
   let extras = ' '
 
   if (args.parsedOptions.kubeconfig && !/--kubeconfig/.test(cmdline)) {
@@ -338,7 +342,11 @@ export function withKubeconfigFrom(args: Pick<Arguments<KubeOptions>, 'parsedOpt
   }
 
   if (args.parsedOptions.context && !/--context/.test(cmdline)) {
-    extras += ` --context ${args.parsedOptions.context}`
+    extras += ` --${context} ${args.parsedOptions.context}`
+  }
+
+  if (args.parsedOptions.context && !/--kube-context/.test(cmdline)) {
+    extras += ` --${context} ${args.parsedOptions.context}`
   }
 
   if (args.parsedOptions.cluster && !/--cluster/.test(cmdline)) {
