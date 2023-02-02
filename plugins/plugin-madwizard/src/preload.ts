@@ -19,7 +19,8 @@
  *
  */
 export default async function preloadMadwizard() {
-  // if (!Capabilities.isHeadless()) {
+  if (process.env.KUI_HEADLESS) return
+
   const playgroundGuidebooks = [
     'plugin://plugin-madwizard/notebooks/guidebook-intro.md',
     'plugin://plugin-madwizard/notebooks/playground.md',
@@ -44,5 +45,4 @@ export default async function preloadMadwizard() {
 
   vfs.cp(undefined, mainGuidebooks, '/kui/madwizard')
   vfs.cp(undefined, playgroundGuidebooks, '/kui/madwizard/playground')
-  // }
 }
