@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Arguments, DescriptionList, ExecOptions, Registrar, Menu, NavResponse, i18n } from '@kui-shell/core'
+import { Arguments, DescriptionList, Registrar, MultiModalResponse, i18n } from '@kui-shell/core'
 import { doHelp, withKubeconfigFrom, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import isUsage from './usage'
@@ -32,15 +32,11 @@ const debug = Debug('plugin-kubectl/helm/controller/helm/status')
 export const format = async (
   name: string,
   args: Arguments<KubeOptions>,
-  response: string,
-  execOptions: ExecOptions
-): Promise<NavResponse> => {
-  const command = 'kubectl'
-  const verb = 'get'
-
-  debug('nested?', execOptions.nested)
-  debug('command', command)
-  debug('verb', verb)
+  response: string
+): Promise<MultiModalResponse> => {
+  // start fetching the associated resources
+  const resourcesP = args.REPL.qexec<string>(withKubeconfigFrom(args, `helm get manifest ${name}`, 'kube-context'))
+  const valuesP = args.REPL.qexec<string>(withKubeconfigFrom(args, `helm get values ${name}`, 'kube-context'))
 
   const [headerString] = response.split(/RESOURCES:|(?=NOTES:)/)
 
@@ -52,8 +48,12 @@ export const format = async (
   const revisionFromHelmStatusOutput = revisionMatch[1]
   debug('revision', revisionFromHelmStatusOutput)
 
+  // -l app.kubernetes.io/managed-by: Helm
+  // meta.helm.sh/release-name: ray-myapp-7820e072-7e3e-4b46-829e-28a4a28a7457
+
+  // Status description list
   const statusMatch = headerString.match(/LAST DEPLOYED: (.*)\nNAMESPACE: (.*)\nSTATUS: (.*)/)
-  const status: DescriptionList = {
+  const statusDL: DescriptionList = {
     apiVersion: 'kui-shell/v1',
     kind: 'DescriptionList',
     spec: {
@@ -64,51 +64,48 @@ export const format = async (
       ]
     }
   }
-
-  const summary = ''
-
-  const notesMatch = response.match(/NOTES:\n([\s\S]+)?/)
-  const notes = notesMatch && notesMatch[1]
-
-  const overviewMenu: Menu = {
-    label: 'Overview',
-    items: []
+  const status = {
+    mode: 'Status',
+    content: statusDL
   }
 
-  overviewMenu.items.push({
-    mode: 'status',
-    label: strings('status'),
-    content: status
-  })
-
-  if (summary) {
-    overviewMenu.items.push({
-      mode: 'summary',
-      label: strings('summary'),
-      content: summary,
-      contentType: 'text/markdown'
-    })
+  const resources = {
+    mode: 'Managed Resources',
+    contentType: 'yaml',
+    content: (await resourcesP).replace(/^\s*---\s+/, '')
   }
 
-  if (notes) {
-    overviewMenu.items.push({
-      mode: 'notes',
-      label: strings2('Notes'),
-      content: `\`\`\`${notes}\`\`\``,
-      contentType: 'text/markdown'
-    })
+  const values = {
+    mode: 'Values',
+    contentType: 'yaml',
+    content: (await valuesP).replace(/^\s*USER-SUPPLIED VALUES:\s+/, '')
   }
 
-  return {
+  const drilldown = {
+    mode: 'Show Managed Resources',
+    kind: 'drilldown' as const,
+    showRelatedResource: true,
+    command: withKubeconfigFrom(
+      args,
+      `kubectl get all -l app.kubernetes.io/managed-by=Helm,app.kubernetes.io/name=${name}`
+    )
+  }
+
+  const mmr: MultiModalResponse = {
     apiVersion: 'kui-shell/v1',
-    kind: 'NavResponse',
-    breadcrumbs: [
-      { label: 'helm' },
-      { label: 'release', command: withKubeconfigFrom(args, `helm ls`) },
-      { label: name }
-    ],
-    menus: [overviewMenu]
+    kind: 'HelmChart',
+    metadata: {
+      name
+    },
+    onclick: {
+      kind: withKubeconfigFrom(args, 'helm ls', 'kube-context'),
+      name: withKubeconfigFrom(args, `helm ls ${name}`, 'kube-context')
+    },
+    buttons: [drilldown],
+    modes: [status, resources, values]
   }
+
+  return mmr
 }
 
 async function doStatus(args: Arguments<KubeOptions>) {
@@ -120,7 +117,7 @@ async function doStatus(args: Arguments<KubeOptions>) {
   const response = await doExecWithStdout(args)
 
   try {
-    return format(name, args, response, args.execOptions)
+    return format(name, args, response)
   } catch (err) {
     console.error('error formatting status', err)
     return response
