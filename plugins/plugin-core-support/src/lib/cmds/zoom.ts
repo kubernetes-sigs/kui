@@ -15,7 +15,6 @@
  */
 
 import type { Arguments, Registrar } from '@kui-shell/core'
-import '../../../web/css/static/zoom.css'
 
 const MAX_ZOOM_IN = 12
 const MAX_ZOOM_OUT = -2

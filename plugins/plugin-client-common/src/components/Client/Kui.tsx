@@ -70,6 +70,7 @@ import '../../../web/css/static/carbon-overrides-common.css'
 import '../../../web/css/static/inverted-colors.css'
 import '../../../web/css/static/ui.css'
 import '../../../web/css/static/repl.scss'
+import '../../../web/css/static/zoom.css'
 
 const defaultThemeProperties: ThemeProperties = {
   components: 'patternfly',
