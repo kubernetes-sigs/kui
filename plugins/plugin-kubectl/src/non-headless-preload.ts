@@ -23,6 +23,7 @@ import yamlMode from './lib/view/modes/yaml'
 import summaryMode from './lib/view/modes/Summary'
 import crdSummaryMode from './lib/view/modes/crd-summary'
 import configmapSummaryMode from './lib/view/modes/configmap-summary'
+import containersMode from './lib/view/modes/Containers'
 import logsMode from './lib/view/modes/logs-mode'
 import ExecIntoPad from './lib/view/modes/ExecIntoPod'
 import lastAppliedMode from './lib/view/modes/last-applied'
@@ -58,6 +59,7 @@ export default async (registrar: PreloadRegistrar) => {
     logsMode,
     ExecIntoPad,
     lastAppliedMode,
+    containersMode,
     EditButton,
     // managedFieldsMode,
     showCRDResources,

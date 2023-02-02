@@ -39,7 +39,12 @@ async function content(_, resource: WithRawData) {
     content: dump(
       JSON.parse(
         JSON.stringify(load(resource.kuiRawData), (key, value) =>
-          key === 'managedFields' || key === 'annotations' /* || key === 'labels' */ ? undefined : value
+          key === 'managedFields' ||
+          key === 'annotations' ||
+          key === 'containers' ||
+          key === 'containerStatuses' /* || key === 'labels' */
+            ? undefined
+            : value
         )
       )
     )
