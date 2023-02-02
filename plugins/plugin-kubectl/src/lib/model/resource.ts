@@ -32,7 +32,7 @@ export interface KubeStatusCondition {
   phase?: string
 }
 
-interface KubeContainerStatus {
+export interface KubeContainerStatus {
   name: string
   containerID: string
   restartCount: number
@@ -304,7 +304,7 @@ interface ContainerSpec {
   image: string
   imagePullPolicy: string
   name: string
-  resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  resources: Record<string, unknown>
   terminationMessagePath: string
   terminationMessagePolicy: string
   volumeMounts: { mountPath: string; name: string }[]
