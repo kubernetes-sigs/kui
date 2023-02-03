@@ -314,7 +314,7 @@ export default class XTerm extends React.PureComponent<Props, State> {
     // regressions in the future
   }
 
-  private readonly onSearch = (filter: string) => {
+  private readonly onSearch = (evt: React.FormEvent<HTMLInputElement>, filter: string) => {
     this.setState({ filter })
     this.searchAddon.findNext(filter, this.searchOptions)
   }
