@@ -16,6 +16,8 @@
 
 import React from 'react'
 import type { Arguments, ParsedOptions } from '@kui-shell/core'
+import { defaultGuidebook as defaultGuidebookFromClient } from '@kui-shell/plugin-madwizard/do'
+
 import WorkloadDesigner from './WorkloadDesigner'
 
 type Options = ParsedOptions & {
@@ -26,5 +28,12 @@ export function controller(args: Arguments<Options>) {
   const lrSplit: [number, number] | undefined =
     typeof args.parsedOptions.left === 'number' ? [args.parsedOptions.left, 100 - args.parsedOptions.left] : undefined
 
-  return <WorkloadDesigner REPL={args.REPL} tab={args.tab} lrSplit={lrSplit} />
+  return (
+    <WorkloadDesigner
+      REPL={args.REPL}
+      tab={args.tab}
+      lrSplit={lrSplit}
+      defaultGuidebook={defaultGuidebookFromClient()}
+    />
+  )
 }
