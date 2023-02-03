@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [13.1.0](https://github.com/IBM/kui/compare/v4.5.0...v13.1.0) (2023-02-03)
+
+
+### Bug Fixes
+
+* add side-effect: false ([5120700](https://github.com/IBM/kui/commit/5120700))
+* command history is erratic for first tab ([36cb9b4](https://github.com/IBM/kui/commit/36cb9b4))
+* optimize load time by avoiding loading patternfly and plugin-client-common index.js ([e10829a](https://github.com/IBM/kui/commit/e10829a))
+* **packages/core:** Events api created and typedoc documentation generated ([531461d](https://github.com/IBM/kui/commit/531461d))
+* Switching Carbon tabs can cause content to scroll off-viewport ([51a2aad](https://github.com/IBM/kui/commit/51a2aad)), closes [#6014](https://github.com/IBM/kui/issues/6014)
+
+
+### chore
+
+* update to react 18 ([277095f](https://github.com/IBM/kui/commit/277095f))
+
+
+### Features
+
+* allow table drilldown to a new window ([96d1d0e](https://github.com/IBM/kui/commit/96d1d0e))
+* background new tabs ([be9f986](https://github.com/IBM/kui/commit/be9f986)), closes [#5550](https://github.com/IBM/kui/issues/5550)
+* Feature: improve support for parallelization across VFS operations ([e05d7e0](https://github.com/IBM/kui/commit/e05d7e0)), closes [#5831](https://github.com/IBM/kui/issues/5831)
+* improved support for passing through window titles for new windows ([670d429](https://github.com/IBM/kui/commit/670d429))
+* Kui client should support self-bootstrapping of Kui ([3bbf8e8](https://github.com/IBM/kui/commit/3bbf8e8)), closes [#4277](https://github.com/IBM/kui/issues/4277)
+* react helpers ([f6bea1f](https://github.com/IBM/kui/commit/f6bea1f))
+* simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+
+
+### BREAKING CHANGES
+
+* `at-kui-shell/react` will now pull in react v18.
+* we now pre-allocate execUUID on when the block is first mounted (these are known as Active blocks, because they have an active input). Previously, we relied on kui core/repl/exec to allocate upon run. This leads to a race condition, where command handlers expect to be able to communicate with the views based on an execUUID... but the views may not be mounted before the command handlers start... An example of this was the PTY. pty/client in plugin-bash-like sends pty streaming output ... the Output component (in plugin-client-common) is supposed to be the receiver, but it only listens after it is mounted). With this PR, we pre-allocate the execUUID, and mount the Output block even on Active blocks.
+* this PR removes plugins/plugin-client-default
+
+
+
+
+
 # [13.0.0](https://github.com/IBM/kui/compare/v4.5.0...v13.0.0) (2023-01-13)
 
 
