@@ -18,7 +18,6 @@ import React from 'react'
 import { Allotment, AllotmentHandle } from 'allotment'
 
 import { Loading } from '@kui-shell/plugin-client-common'
-import { defaultGuidebook as defaultGuidebookFromClient } from '@kui-shell/plugin-madwizard/do'
 
 import NoGuidebook from './NoGuidebook'
 import ProfileExplorer from './ProfileExplorer'
@@ -30,7 +29,7 @@ import '../../web/scss/components/Allotment/_index.scss'
 export type Props = Pick<GuidebookProps, 'extraEnv'> &
   Pick<GuidebookProps['terminalProps'], 'tab' | 'REPL' | 'onExit' | 'searchable' | 'fontSizeAdjust'> & {
     /** Default guidebook (if not given, we will take the value from the client definition); `null` means do not show anything */
-    defaultGuidebook?: string | null
+    defaultGuidebook: string | null
 
     /** Run guidebook in non-interactive mode? */
     defaultNoninteractive?: boolean
@@ -54,6 +53,14 @@ type State = Pick<GuidebookProps, 'noninteractive' | 'ifor' | 'extraEnv'> & {
 
   /** Use this guidebook in the terminal execution */
   guidebook?: string | null
+
+  /** Remember initial values */
+  initial: {
+    guidebook: Props['defaultGuidebook']
+
+    /** Remember props.extraEnv */
+    extraEnv: Props['extraEnv']
+  }
 
   /** Use this profile in the terminal execution */
   selectedProfile?: string
@@ -81,9 +88,14 @@ export default class WorkloadDesigner extends React.PureComponent<Props, State> 
   public constructor(props: Props) {
     super(props)
 
+    const initial = {
+      extraEnv: props.extraEnv,
+      guidebook: props.defaultGuidebook === null ? null : props.defaultGuidebook
+    }
     this.state = {
       initCount: 0,
-      guidebook: props.defaultGuidebook === null ? null : props.defaultGuidebook || defaultGuidebookFromClient()
+      initial,
+      guidebook: initial.guidebook
     }
   }
 
@@ -128,10 +140,19 @@ export default class WorkloadDesigner extends React.PureComponent<Props, State> 
 
   /** Event handler for switching to a different guidebook */
   private readonly onSelectGuidebook = (guidebook: string | null | undefined, ifor = true) =>
-    this.setState({ hideTerminal: false, guidebook, ifor, noninteractive: false })
+    this.setState(curState => ({
+      initCount: curState.initCount + 1,
+      hideTerminal: false,
+      guidebook,
+      ifor,
+      noninteractive: false
+    }))
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if ((props.defaultGuidebook && state.guidebook !== props.defaultGuidebook) || props.extraEnv !== state.extraEnv) {
+    if (
+      (props.defaultGuidebook && props.defaultGuidebook !== state.initial.guidebook) ||
+      props.extraEnv !== state.initial.extraEnv
+    ) {
       // different guidebook or different env vars to be passed to that guidebook
       return {
         ifor: false,
@@ -169,12 +190,11 @@ export default class WorkloadDesigner extends React.PureComponent<Props, State> 
 
   private readonly _gotit = () => this.setState({ hideTerminal: true })
 
-  private readonly _refresh = () =>
-    this.setState({ hideTerminal: false, guidebook: this.props.defaultGuidebook || defaultGuidebookFromClient() })
+  private readonly _refresh = () => this.setState({ hideTerminal: false, guidebook: this.props.defaultGuidebook })
 
   /** Return to top-level guidebook */
   private readonly _home = (noninteractive = false) => {
-    const home = this.props.defaultGuidebook || defaultGuidebookFromClient()
+    const home = this.props.defaultGuidebook
     this.onSelectGuidebook(home, false)
     this.setState(curState => ({ initCount: curState.initCount + 1, noninteractive }))
   }
@@ -206,6 +226,7 @@ export default class WorkloadDesigner extends React.PureComponent<Props, State> 
       this.noGuidebook()
     ) : (
       <GuidebookTerminal
+        key={this.state.initCount + '-' + guidebook}
         initCount={this.state.initCount}
         guidebook={guidebook}
         extraEnv={this.state.extraEnv}
