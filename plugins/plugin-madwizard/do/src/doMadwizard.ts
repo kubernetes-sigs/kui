@@ -142,7 +142,9 @@ export function doMadwizard({ readonlyUI = true, task, withFilepath = true, cb, 
 
     if (!parsedOptions.u && !cb) {
       // CLI path
-      const { guide: cli } = await import('madwizard/dist/fe/cli/index.js')
+      const cli = await (task === 'guide'
+        ? import('madwizard/dist/fe/cli/index.js').then(_ => _.guide)
+        : import('madwizard/dist/fe/cli/index.js').then(_ => _.cli))
 
       if (parsedOptions.q) {
         // TODO add this to madwizard?
@@ -157,11 +159,16 @@ export function doMadwizard({ readonlyUI = true, task, withFilepath = true, cb, 
           (await import('madwizard').then(_ => _.Profiles.lastUsed())) || // last used profile
           'default' // the default, if no lastUsed is found!
 
+      // a bit hacky here, but if the task is e.g. "profile", we want
+      // to avoid constructing an argv `[madwizard, profile, profile,
+      // ...]`
+      const idx = argvNoOptions[1] === task ? 2 : 1
+
       await cli(
         [
           'madwizard',
           task,
-          ...argvNoOptions.slice(1),
+          ...argvNoOptions.slice(idx),
           ...(parsedOptions.n ? ['--no-profile'] : []),
           ...(parsedOptions.i ? ['-i'] : []),
           ...(parsedOptions['--'] ? ['--', ...parsedOptions['--']] : [])
