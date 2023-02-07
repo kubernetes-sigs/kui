@@ -38,7 +38,7 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
     const { srcFilepath } = data
 
     const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json)$/)
-    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json|txt|py)$/)
+    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json|yml|yaml|txt|py)$/)
     const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json)$/)
     const match = match1 || match2 || match3
     if (match) {
@@ -67,6 +67,18 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
                 /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
                   file +
                   '.md'
+              )
+            : extension === 'yml'
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.yml'
+              )
+            : extension === 'yaml'
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.yaml'
               )
             : extension === 'txt'
             ? import(
