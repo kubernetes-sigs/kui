@@ -15,8 +15,7 @@
  */
 
 import { ModeRegistration } from '@kui-shell/core'
-
-import { WithRawData, hasRawData } from '../../model/resource'
+import { WithRawData, hasRawData } from '@kui-shell/plugin-kubectl-core'
 
 /** Mode identifier */
 export const mode = 'raw'

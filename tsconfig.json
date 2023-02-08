@@ -26,6 +26,9 @@
       "path": "plugins/plugin-git"
     },
     {
+      "path": "plugins/plugin-kubectl-core"
+    },
+    {
       "path": "plugins/plugin-kubectl"
     },
     {

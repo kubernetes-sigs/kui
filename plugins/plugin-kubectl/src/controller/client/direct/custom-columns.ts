@@ -16,10 +16,8 @@
 
 import jsonpath from '@kui-shell/jsonpath'
 import { Arguments, Row, Table, encodeComponent } from '@kui-shell/core'
-
-import TrafficLight from '../../../lib/model/traffic-light'
 import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
-import { KubeStatusAny, KubeItems, isKubeItems, KubeResource } from '../../../lib/model/resource'
+import { TrafficLight, KubeStatusAny, KubeItems, isKubeItems, KubeResource } from '@kui-shell/plugin-kubectl-core'
 import {
   computeDurations,
   cssForKey,

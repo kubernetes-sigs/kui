@@ -15,8 +15,7 @@
  */
 
 import type { ModeRegistration, Tab } from '@kui-shell/core'
-
-import { KubeContainerStatus, Pod, isPod } from '../../model/resource'
+import { KubeContainerStatus, Pod, isPod } from '@kui-shell/plugin-kubectl-core'
 
 async function content(_: Tab, resource: Pod) {
   // this module is expensive to load, so we defer that expense

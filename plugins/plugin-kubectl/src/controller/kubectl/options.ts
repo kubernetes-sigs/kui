@@ -14,62 +14,13 @@
  * limitations under the License.
  */
 
-import { Arguments, ExecOptions, ParsedOptions, Util } from '@kui-shell/core'
+import { Arguments, ExecOptions, Util } from '@kui-shell/core'
+import { EntityFormat, OutputFormat, TableFormat, KubeOptions } from '@kui-shell/plugin-kubectl-core'
 
 import { FinalState } from '../../lib/model/states'
 import { getCommandFromArgs } from '../../lib/util/util'
 
-type EntityFormat = 'yaml' | 'json'
-type TableFormat = 'wide' | string // want: 'custom-columns-file=' | 'custom-columns='
-type CustomFormat = string // want: 'go-template' | 'go-template-file' | 'jsonpath' | 'jsonpath-file'
-type OutputFormat = EntityFormat | TableFormat | CustomFormat
-
-/** An incomplete set of kubectl options */
-export interface KubeOptions extends ParsedOptions {
-  A?: boolean
-  'all-namespaces'?: boolean
-
-  cluster?: string
-  context?: string
-  kubeconfig?: string
-
-  'dry-run'?: boolean | string
-
-  n?: string | string[]
-  namespace?: string | string[]
-
-  c?: string
-  container?: string
-
-  o?: OutputFormat
-  output?: OutputFormat
-
-  w?: boolean
-  watch?: boolean
-  'watch-only'?: boolean
-
-  wait?: boolean
-
-  p?: boolean
-  previous?: boolean
-
-  l?: string
-  label?: string
-  selector?: string | string[]
-
-  f?: string | string[]
-  filename?: string | string[]
-
-  k?: string
-  kustomize?: string
-
-  h?: boolean
-  help?: boolean
-
-  limit?: number
-
-  'sort-by'?: string
-}
+export { KubeOptions }
 
 /** @return the -f or --filename option */
 export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string | string[] {

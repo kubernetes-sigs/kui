@@ -16,39 +16,7 @@
 
 // this file defines the external API
 
-export {
-  KubeResource,
-  isKubeResource,
-  isCrudableKubeResource,
-  KubeResourceWithSummary,
-  WithSummary,
-  WithRawData,
-  InvolvedObject,
-  KubeStatus,
-  KubeStatusCondition,
-  Pod,
-  PodStatus,
-  PodLikeSpec,
-  isPod,
-  Deployment,
-  isDeployment,
-  KubeItems,
-  isKubeItems,
-  isKubeItemsOfKind,
-  KubePartial,
-  PodList,
-  isPodList,
-  KubeContext,
-  Secret,
-  isSecret,
-  Job,
-  isJob,
-  Resource
-} from './lib/model/resource'
-
-export { default as TrafficLight } from './lib/model/traffic-light'
-
-export { default as apiVersion } from './controller/kubectl/apiVersion'
+export * from './core'
 
 export { default as doExecWithMarkdown } from './controller/kubectl/exec-to-markdown'
 

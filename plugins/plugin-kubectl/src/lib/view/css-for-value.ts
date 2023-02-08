@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import TrafficLight from '../model/traffic-light'
+import { TrafficLight } from '@kui-shell/plugin-kubectl-core'
 
 /**
  * Decorate certain values specially

@@ -16,10 +16,17 @@
 
 import React from 'react'
 import { i18n, Arguments, ModeDeclaration, ModeRegistration, Tab, ToolbarProps } from '@kui-shell/core'
+import {
+  KubeOptions,
+  Pod,
+  isPod,
+  Deployment,
+  isDeployment,
+  ReplicaSet,
+  isReplicaSet
+} from '@kui-shell/plugin-kubectl-core'
 
 import mode from './logs-mode-id'
-import { KubeOptions } from '../../../controller/kubectl/options'
-import { Pod, isPod, Deployment, isDeployment, ReplicaSet, isReplicaSet } from '../../model/resource'
 
 const Logs = React.lazy(() => import('./Logs'))
 

@@ -23,6 +23,7 @@
  *
  */
 
+import { KubeResource, isKubeResource } from '@kui-shell/plugin-kubectl-core'
 import { Arguments, CodedError, CommandOptions, ViewTransformer, Registrar, i18n } from '@kui-shell/core'
 
 import { flags } from './flags'
@@ -32,7 +33,6 @@ import { getCommandFromArgs } from '../../lib/util/util'
 import { doGetAsMMR as getTransformer } from './get'
 import { editSpec, formatToolbarText } from './edit'
 import { KubeOptions, getNamespaceForArgv } from './options'
-import KubeResource, { isKubeResource } from '../../lib/model/resource'
 import {
   hasLastApplied,
   mode as lastAppliedMode,

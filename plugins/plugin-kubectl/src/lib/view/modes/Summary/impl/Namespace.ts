@@ -21,11 +21,10 @@
  *
  */
 import Debug from 'debug'
-
 import { REPL, Table, isTable } from '@kui-shell/core'
+import { Namespace } from '@kui-shell/plugin-kubectl-core'
 
 import { age } from './Generic'
-import { Namespace } from '../../../../model/resource'
 import toMap from '../../table-to-map'
 import toDescriptionList from './convert'
 

@@ -27,7 +27,7 @@
  */
 
 import { age } from './Generic'
-import { Deployment } from '../../../../model/resource'
+import { Deployment } from '@kui-shell/plugin-kubectl-core'
 import toDescriptionList, { selectorToString } from './convert'
 
 function ready(deployment: Deployment) {

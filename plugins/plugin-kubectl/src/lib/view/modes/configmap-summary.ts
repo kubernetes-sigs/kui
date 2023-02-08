@@ -15,10 +15,10 @@
  */
 
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
+import { KubeResource, ConfigMap, isConfigMap } from '@kui-shell/plugin-kubectl-core'
 
 import toMap from './table-to-map'
 import { fqnOf } from '../../../controller/kubectl/fqn'
-import { KubeResource, ConfigMap, isConfigMap } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
