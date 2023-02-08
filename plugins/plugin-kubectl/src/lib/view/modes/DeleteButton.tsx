@@ -16,9 +16,9 @@
 
 import React from 'react'
 import { i18n, Tab, ParsedOptions, ModeRegistration } from '@kui-shell/core'
-import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
+import { KubeResource, isCrudableKubeResource as when } from '@kui-shell/plugin-kubectl-core'
 
-import { KubeResource, isCrudableKubeResource as when } from '../../model/resource'
+import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
 
 const strings = i18n('plugin-kubectl')
 

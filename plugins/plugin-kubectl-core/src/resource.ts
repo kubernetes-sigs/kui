@@ -18,8 +18,8 @@
 
 import { Arguments, KResponse, ResourceWithMetadata, MultiModalResponse } from '@kui-shell/core'
 
-import KubeOptions from '../../controller/kubectl/options'
-import kubeuiApiVersion from '../../controller/kubectl/apiVersion'
+import KubeOptions from './options'
+import kubeuiApiVersion from './apiVersion'
 
 export interface KubeStatusCondition {
   lastProbeTime?: string

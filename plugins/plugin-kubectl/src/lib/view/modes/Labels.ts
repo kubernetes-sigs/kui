@@ -15,9 +15,9 @@
  */
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
+import { KubeResource, hasLabels } from '@kui-shell/plugin-kubectl-core'
 
 import { tryParse } from './Annotations'
-import { KubeResource, hasLabels } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

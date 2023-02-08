@@ -27,9 +27,10 @@
  *
  */
 
+import { Pod } from '@kui-shell/plugin-kubectl-core'
+
 import { age, none } from './Generic'
 import toDescriptionList from './convert'
-import { Pod } from '../../../../model/resource'
 
 function ready(pod: Pod) {
   const { containerStatuses } = pod.status

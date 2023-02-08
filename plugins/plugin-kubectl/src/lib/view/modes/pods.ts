@@ -15,11 +15,17 @@
  */
 
 import { i18n, Arguments, ModeRegistration } from '@kui-shell/core'
+import {
+  KubeOptions,
+  KubeResource,
+  isJob,
+  isKubeResource,
+  isDeployment,
+  isReplicaSet
+} from '@kui-shell/plugin-kubectl-core'
 
 import kubectl from '../../../controller/cli'
 import { selectorToString } from '../../util/selectors'
-import { KubeOptions } from '../../../controller/kubectl/options'
-import { KubeResource, isJob, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

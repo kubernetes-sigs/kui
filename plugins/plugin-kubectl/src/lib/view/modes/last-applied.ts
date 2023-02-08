@@ -15,8 +15,7 @@
  */
 
 import { i18n, Tab } from '@kui-shell/core'
-
-import { KubeResource } from '../../model/resource'
+import { KubeResource } from '@kui-shell/plugin-kubectl-core'
 
 const strings = i18n('plugin-kubectl')
 

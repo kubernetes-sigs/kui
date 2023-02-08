@@ -15,11 +15,11 @@
  */
 
 import React from 'react'
+import { Pod, isPod, Deployment, ReplicaSet } from '@kui-shell/plugin-kubectl-core'
 import { Arguments, Button, ParsedOptions, Job, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
+
 import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
 import DropDown from '@kui-shell/plugin-client-common/mdist/components/spi/DropDown'
-
-import { Pod, isPod, Deployment, ReplicaSet } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

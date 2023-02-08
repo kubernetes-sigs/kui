@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import { isPod, Pod } from '@kui-shell/plugin-kubectl-core'
 import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
-
-import { isPod, Pod } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

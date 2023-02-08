@@ -28,7 +28,7 @@ import {
   isPod,
   isReplicaSet,
   isSecret
-} from '../../../model/resource'
+} from '@kui-shell/plugin-kubectl-core'
 
 import DeploymentSummary from './impl/Deployment'
 import EventSummary from './impl/Event'

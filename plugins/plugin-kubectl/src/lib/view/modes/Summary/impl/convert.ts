@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { FormMap } from '../../table-to-map'
 import { DescriptionList } from '@kui-shell/core'
-import { Selector } from '../../../../model/resource'
+import { Selector } from '@kui-shell/plugin-kubectl-core'
+
+import { FormMap } from '../../table-to-map'
 
 export default function toDescriptionList(obj: Record<string, number | boolean | string> | FormMap): DescriptionList {
   return {

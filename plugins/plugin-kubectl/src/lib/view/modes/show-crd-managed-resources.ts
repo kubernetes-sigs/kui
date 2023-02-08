@@ -15,9 +15,9 @@
  */
 
 import { i18n, Tab, ModeRegistration, encodeComponent } from '@kui-shell/core'
+import { CustomResourceDefinition, isCustomResourceDefinition } from '@kui-shell/plugin-kubectl-core'
 
 import { fqn } from '../../../controller/kubectl/fqn'
-import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

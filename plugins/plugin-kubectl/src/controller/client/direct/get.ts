@@ -15,6 +15,7 @@
  */
 
 import { Arguments, CodedError, ExecType, Table } from '@kui-shell/core'
+import { isStatus, KubeItems, MetaTable } from '@kui-shell/plugin-kubectl-core'
 
 import makeWatchable from './watch'
 import { Explained } from '../../kubectl/explain'
@@ -38,7 +39,6 @@ import columnsOf from './columns'
 import { urlFormatterFor } from './url'
 import handleErrors, { tryParseAsStatus } from './errors'
 import { headersForPlainRequest, headersForTableRequest } from './headers'
-import { isStatus, KubeItems, MetaTable } from '../../../lib/model/resource'
 
 export async function getTable(
   drilldownCommand: string,

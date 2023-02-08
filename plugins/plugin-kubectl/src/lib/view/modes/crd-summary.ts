@@ -16,9 +16,9 @@
 
 import Debug from 'debug'
 import { i18n, Tab, Table, ModeRegistration } from '@kui-shell/core'
+import { CustomResourceDefinition, isCustomResourceDefinition } from '@kui-shell/plugin-kubectl-core'
 
 import { command } from './show-crd-managed-resources'
-import { CustomResourceDefinition, isCustomResourceDefinition } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/view/modes/crd-summary')
