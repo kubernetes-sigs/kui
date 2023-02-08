@@ -15,6 +15,7 @@
  */
 
 import Debug from 'debug'
+import { KubeResource, TrafficLight } from '@kui-shell/plugin-kubectl-core'
 import {
   Abortable,
   Arguments,
@@ -49,11 +50,9 @@ import KubeOptions, {
   isDryRun
 } from './options'
 import { EventWatcher } from './watch/get-watch'
-import KubeResource from '../../lib/model/resource'
 
 import { fetchKusto, fetchFilesVFS } from '../../lib/util/fetch-file'
 
-import TrafficLight from '../../lib/model/traffic-light'
 import { isDone, FinalState } from '../../lib/model/states'
 
 const strings = i18n('plugin-kubectl')

@@ -15,9 +15,9 @@
  */
 
 import { BadgeRegistration } from '@kui-shell/core'
+import { KubeResource } from '@kui-shell/plugin-kubectl-core'
 
 import cssForValue from '../css-for-value'
-import { KubeResource } from '../../model/resource'
 
 function hasPhase(resource: KubeResource) {
   return typeof resource.status === 'object' && typeof resource.status.phase === 'string'

@@ -25,7 +25,7 @@
  */
 
 import { age } from './Generic'
-import { Job } from '../../../../model/resource'
+import { Job } from '@kui-shell/plugin-kubectl-core'
 import toDescriptionList, { selectorToString } from './convert'
 
 export default function JobSummary(job: Job) {

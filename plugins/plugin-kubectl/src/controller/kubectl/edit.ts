@@ -24,10 +24,10 @@ import {
   SaveError,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
+import { KubeResource, isKubeResource, KubeItems, isKubeItems } from '@kui-shell/plugin-kubectl-core'
 
 import flags from './flags'
 import { KubeOptions, getNamespace } from './options'
-import { KubeResource, isKubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'
 import { label as yamlModeLabel, mode as yamlMode, order as yamlModeOrder } from '../../lib/view/modes/yaml'
 
 const strings = i18n('plugin-kubectl')

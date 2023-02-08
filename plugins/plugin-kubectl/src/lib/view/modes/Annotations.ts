@@ -15,8 +15,7 @@
  */
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
-
-import { KubeResource, hasAnnotations, lastAppliedAnnotationKey } from '../../model/resource'
+import { KubeResource, hasAnnotations, lastAppliedAnnotationKey } from '@kui-shell/plugin-kubectl-core'
 
 const strings = i18n('plugin-kubectl')
 

@@ -16,10 +16,9 @@
 
 import Debug from 'debug'
 import { CodedError, Arguments } from '@kui-shell/core'
+import { KubeOptions, KubeResource } from '@kui-shell/plugin-kubectl-core'
 
 import fqn from '../fqn'
-import { KubeOptions } from '../options'
-import { KubeResource } from '../../../lib/model/resource'
 
 const debug = Debug('plugin-kubeui/controller/watch/poller')
 

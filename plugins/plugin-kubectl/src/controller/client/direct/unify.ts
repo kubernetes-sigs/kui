@@ -15,7 +15,7 @@
  */
 
 import { Cell, Row, Table } from '@kui-shell/core'
-import TrafficLight, { toTrafficLight } from '../../../lib/model/traffic-light'
+import { TrafficLight, toTrafficLight } from '@kui-shell/plugin-kubectl-core'
 
 /** Do not i18n! */
 export const Kind = 'Kind'

@@ -15,8 +15,7 @@
  */
 
 import { i18n, encodeComponent, Tab, ModeRegistration } from '@kui-shell/core'
-
-import { hasInvolvedObject, KubeResourceWithInvolvedObject } from '../../model/resource'
+import { hasInvolvedObject, KubeResourceWithInvolvedObject } from '@kui-shell/plugin-kubectl-core'
 
 const strings = i18n('plugin-kubectl')
 

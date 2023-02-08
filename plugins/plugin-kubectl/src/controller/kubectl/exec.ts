@@ -26,10 +26,9 @@ import {
   MixedResponse,
   KResponse
 } from '@kui-shell/core'
+import { KubeOptions, KubeResource, KubeStatusAny } from '@kui-shell/plugin-kubectl-core'
 
 import RawResponse from './response'
-import KubeResource, { KubeStatusAny } from '../../lib/model/resource'
-import { KubeOptions } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { stringToTable, KubeTableResponse } from '../../lib/view/formatTable'

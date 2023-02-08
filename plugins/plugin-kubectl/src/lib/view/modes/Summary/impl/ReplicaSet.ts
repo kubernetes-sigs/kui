@@ -26,8 +26,9 @@
  *
  */
 
+import { ReplicaSet } from '@kui-shell/plugin-kubectl-core'
+
 import { age } from './Generic'
-import { ReplicaSet } from '../../../../model/resource'
 import toDescriptionList, { selectorToString } from './convert'
 
 export default function ReplicaSetSummary(rs: ReplicaSet) {

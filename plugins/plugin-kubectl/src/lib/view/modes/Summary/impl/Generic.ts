@@ -16,10 +16,10 @@
 
 import prettyPrintDuration from 'pretty-ms'
 import { REPL, Table } from '@kui-shell/core'
+import { KubeResource } from '@kui-shell/plugin-kubectl-core'
 
 import toMap from '../../table-to-map'
 import toDescriptionList from './convert'
-import { KubeResource } from '../../../../model/resource'
 
 export function none() {
   return '<none>'

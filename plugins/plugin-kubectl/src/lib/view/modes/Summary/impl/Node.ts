@@ -29,11 +29,11 @@
  */
 
 import { i18n } from '@kui-shell/core'
+import { AddressType, Node } from '@kui-shell/plugin-kubectl-core'
 
 import { age, none } from './Generic'
 import toDescriptionList from './convert'
 import Parser from '../../../../util/parse'
-import { AddressType, Node } from '../../../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

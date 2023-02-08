@@ -72,6 +72,7 @@
     "@kui-shell/plugin-git": "file:plugins/plugin-git",
     "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8",
     "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
+    "@kui-shell/plugin-kubectl-core": "file:plugins/plugin-kubectl-core",
     "@kui-shell/plugin-kubectl-tray-menu": "file:plugins/plugin-kubectl-tray-menu",
     "@kui-shell/plugin-madwizard": "file:plugins/plugin-madwizard",
     "@kui-shell/plugin-patternfly4-themes": "file:plugins/plugin-patternfly4-themes",

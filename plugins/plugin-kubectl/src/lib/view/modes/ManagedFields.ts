@@ -17,7 +17,7 @@
 /* Not currently in use, but of possible future value */
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
-import { hasManagedFields, KubeResourceWithManagedFields } from '../../model/resource'
+import { hasManagedFields, KubeResourceWithManagedFields } from '@kui-shell/plugin-kubectl-core'
 
 const strings = i18n('plugin-kubectl')
 

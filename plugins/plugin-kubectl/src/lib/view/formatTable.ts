@@ -29,8 +29,7 @@ import {
   i18n
 } from '@kui-shell/core'
 
-import TrafficLight from '../model/traffic-light'
-import { isClusterScoped, KubeResource, MetaTable } from '../model/resource'
+import { TrafficLight, isClusterScoped, KubeResource, MetaTable } from '@kui-shell/plugin-kubectl-core'
 import { getCurrentDefaultNamespace } from '../../'
 import { RawResponse } from '../../controller/kubectl/response'
 import KubeOptions, {

@@ -17,9 +17,7 @@
 import React from 'react'
 
 import { Arguments, ModeRegistration, Tab, ToolbarProps } from '@kui-shell/core'
-
-import { KubeOptions } from '../../../controller/kubectl/options'
-import { KubeResource, Pod, isPod, Deployment, ReplicaSet } from '../../model/resource'
+import { KubeOptions, KubeResource, Pod, isPod, Deployment, ReplicaSet } from '@kui-shell/plugin-kubectl-core'
 
 const Terminal = React.lazy(() => import('./Terminal'))
 

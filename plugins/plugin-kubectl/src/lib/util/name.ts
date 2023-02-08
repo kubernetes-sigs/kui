@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KubeResource, hasInvolvedObject } from '../model/resource'
+import { KubeResource, hasInvolvedObject } from '@kui-shell/plugin-kubectl-core'
 
 /**
  * Separate the app and generated parts of a resource name
