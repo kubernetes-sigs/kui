@@ -15,13 +15,11 @@
  */
 
 import Debug from 'debug'
+import { KubeOptions, apiVersion, KubeContext } from '@kui-shell/plugin-kubectl-core'
 import { REPL as REPLType, Table, Row, RawResponse, Arguments, Registrar, UsageModel, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
-import KubeOptions from './options'
-import apiVersion from './apiVersion'
 import { doExecWithTable } from './exec'
-import { KubeContext } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { onKubectlConfigChangeEvents } from './config'
 

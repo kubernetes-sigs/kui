@@ -16,13 +16,13 @@
 
 import { basename, dirname } from 'path'
 
+import { isKubeResource } from '@kui-shell/plugin-kubectl-core'
 import { Arguments, i18n, Mode, MultiModalResponse, KResponse, Registrar, Util } from '@kui-shell/core'
 import { File } from '@kui-shell/plugin-bash-like/fs'
 
 import { getFileFromArgv, getFileForArgv, KubeOptions, withKubeconfigFrom } from './options'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { removeLastAppliedConfig } from '../../lib/util/util'
-import { isKubeResource } from '../../lib/model/resource'
 import { exec } from './exec'
 
 const strings = i18n('plugin-kubectl')

@@ -15,9 +15,9 @@
  */
 
 import { i18n, encodeComponent, Tab, ModeRegistration } from '@kui-shell/core'
+import { hasSingleOwnerReference, KubeResourceWithOwnerReferences } from '@kui-shell/plugin-kubectl-core'
 
 import { fqn } from '../../../controller/kubectl/fqn'
-import { hasSingleOwnerReference, KubeResourceWithOwnerReferences } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 

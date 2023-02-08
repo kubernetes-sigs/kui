@@ -15,9 +15,9 @@
  */
 
 import { Row, Table } from '@kui-shell/core'
+import { TrafficLight } from '@kui-shell/plugin-kubectl-core'
 
 import { rowWith, standardStatusHeader } from './unify'
-import TrafficLight from '../../../lib/model/traffic-light'
 
 /**
  * @return a Row for the given name in `names` with an Offline status.

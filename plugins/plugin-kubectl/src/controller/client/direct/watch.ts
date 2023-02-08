@@ -15,6 +15,7 @@
  */
 
 import Debug from 'debug'
+import { KubeResource, MetaTable, isMetaTable } from '@kui-shell/plugin-kubectl-core'
 import { Abortable, Arguments, Row, Suspendable, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
 import { Group, isObjectInGroup } from './group'
@@ -25,7 +26,6 @@ import { headersForPlainRequest, headersForTableRequest } from './headers'
 import { FinalState } from '../../../lib/model/states'
 import { toKuiTable } from '../../../lib/view/formatTable'
 import { fetchFile, openStream } from '../../../lib/util/fetch-file'
-import { KubeResource, MetaTable, isMetaTable } from '../../../lib/model/resource'
 
 import { isResourceReady } from '../../kubectl/status'
 import { emitKubectlConfigChangeEvent } from '../../kubectl/config'

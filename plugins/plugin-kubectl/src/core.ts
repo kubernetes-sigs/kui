@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Kubernetes Authors
+ * Copyright 2023 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * Name: all-icr-io
- * Type: kubernetes.io/dockerconfigjson
- * Data: '1'
- * Age: 245d
- *
- */
-
-import { Secret } from '@kui-shell/plugin-kubectl-core'
-
-import { age } from './Generic'
-import toDescriptionList from './convert'
-
-export default function SecretSummary(secret: Secret) {
-  const { metadata, type: Type } = secret
-
-  return toDescriptionList({
-    Name: metadata.name,
-    Type,
-    Age: age(secret)
-  })
-}
+/** Re-export @kui-shell/plugin-kubectl-core API */
+export * from '@kui-shell/plugin-kubectl-core'

@@ -15,11 +15,10 @@
  */
 
 import { Arguments, Registrar, isTable } from '@kui-shell/core'
+import { KubeOptions, TrafficLight } from '@kui-shell/plugin-kubectl-core'
 
-import { KubeOptions } from './options'
 import expound from '../../lib/util/expound'
 import { doGet, getFlags as flags } from './get'
-import TrafficLight from '../../lib/model/traffic-light'
 import { getCommandFromArgs } from '../../lib/util/util'
 import { hideWithSidecar, showAlways } from '../../lib/view/formatTable'
 

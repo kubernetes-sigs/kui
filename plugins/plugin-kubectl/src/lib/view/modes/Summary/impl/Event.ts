@@ -30,9 +30,9 @@
 
 import { i18n } from '@kui-shell/core'
 import prettyPrintMillis from 'pretty-ms'
+import { Event } from '@kui-shell/plugin-kubectl-core'
 
 import toDescriptionList from './convert'
-import { Event } from '../../../../model/resource'
 
 const strings = i18n('plugin-kubectl', 'events')
 

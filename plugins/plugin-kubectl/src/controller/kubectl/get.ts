@@ -26,6 +26,14 @@ import {
   i18n
 } from '@kui-shell/core'
 
+import {
+  KubeResource,
+  isKubeResource,
+  isKubeItems,
+  sameResourceVersion,
+  hasResourceVersion
+} from '@kui-shell/plugin-kubectl-core'
+
 import flags from './flags'
 import { exec } from './exec'
 import RawResponse from './response'
@@ -49,13 +57,6 @@ import {
   getResourceNamesForArgv
 } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse, computeDurations } from '../../lib/view/formatTable'
-import {
-  KubeResource,
-  isKubeResource,
-  isKubeItems,
-  sameResourceVersion,
-  hasResourceVersion
-} from '../../lib/model/resource'
 
 import getDirect from '../client/direct/get'
 

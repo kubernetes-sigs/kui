@@ -16,10 +16,11 @@
 
 import React from 'react'
 import { Arguments, ModeRegistration, i18n } from '@kui-shell/core'
-import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
+import { KubeResource, isCrudableKubeResource } from '@kui-shell/plugin-kubectl-core'
 
-import { KubeResource, isCrudableKubeResource } from '../../model/resource'
 import { isEditable as isAlreadyEditable } from '../../../controller/kubectl/edit'
+
+import Icons from '@kui-shell/plugin-client-common/mdist/components/spi/Icons'
 
 const strings = i18n('plugin-client-common', 'editor')
 

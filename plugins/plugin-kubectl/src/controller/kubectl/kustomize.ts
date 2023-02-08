@@ -16,12 +16,11 @@
 
 import { resolve, basename } from 'path'
 import { Arguments, Menu, Registrar, i18n, Util } from '@kui-shell/core'
+import { KubeOptions, KubeResource } from '@kui-shell/plugin-kubectl-core'
 
 import flags from './flags'
 import { kindPartOf } from './fqn'
-import { KubeOptions } from './options'
 import { doExecWithStdout } from './exec'
-import { KubeResource } from '../../lib/model/resource'
 
 import { isUsage, doHelp } from '../../lib/util/help'
 

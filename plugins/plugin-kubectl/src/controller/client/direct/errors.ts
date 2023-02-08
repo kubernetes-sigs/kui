@@ -15,11 +15,10 @@
  */
 
 import { Arguments, CodedError, isCodedError } from '@kui-shell/core'
+import { KubeOptions, Status, isStatus } from '@kui-shell/plugin-kubectl-core'
 
 import URLFormatter from './url'
-import KubeOptions from '../../kubectl/options'
 import { headersForPlainRequest } from './headers'
-import { Status, isStatus } from '../../../lib/model/resource'
 import { fetchFile, FetchedFile, isReturnedError, ReturnedError } from '../../../lib/util/fetch-file'
 
 type WithErrors = {

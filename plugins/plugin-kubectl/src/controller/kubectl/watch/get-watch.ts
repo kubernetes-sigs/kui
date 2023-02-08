@@ -16,6 +16,7 @@
 
 import Debug from 'debug'
 import prettyPrintDuration from 'pretty-ms'
+import { TrafficLight } from '@kui-shell/plugin-kubectl-core'
 
 import {
   Row,
@@ -52,8 +53,6 @@ import {
   preprocessTable as preFormatTables,
   formatTable
 } from '../../../lib/view/formatTable'
-
-import TrafficLight from '../../../lib/model/traffic-light'
 
 const strings = i18n('plugin-kubectl', 'events')
 const debug = Debug('plugin-kubectl/controller/watch/watcher')

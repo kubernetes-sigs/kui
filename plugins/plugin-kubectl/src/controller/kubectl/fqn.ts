@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KubeResource } from '../../lib/model/resource'
+import { KubeResource } from '@kui-shell/plugin-kubectl-core'
 
 /**
  * A way to uniquely identify a resource in a cluster

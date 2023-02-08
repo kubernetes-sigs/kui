@@ -15,12 +15,18 @@
  */
 
 import { i18n, BadgeRegistration, ParsedOptions, ModeRegistration } from '@kui-shell/core'
+import {
+  TrafficLight,
+  Event,
+  isEvent,
+  KubeResource,
+  isCrudableKubeResource,
+  isNamespaced
+} from '@kui-shell/plugin-kubectl-core'
 
 import cssForValue from '../css-for-value'
 import { getCommandFromArgs } from '../../util/util'
-import TrafficLight from '../../model/traffic-light'
 import { withKubeconfigFrom } from '../../../controller/kubectl/options'
-import { Event, isEvent, KubeResource, isCrudableKubeResource, isNamespaced } from '../../model/resource'
 
 import '../../../../web/scss/components/Events.scss'
 
