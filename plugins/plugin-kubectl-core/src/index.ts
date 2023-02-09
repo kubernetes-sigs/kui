@@ -47,6 +47,7 @@ export {
   KubePartial,
   PodList,
   isPodList,
+  isPVCVolume,
   KubeContext,
   CustomResourceDefinition,
   isCustomResourceDefinition,
@@ -78,6 +79,9 @@ export {
   isMetaTable,
   MetaTable,
   KubeContainerStatus,
+  PVC,
+  isPVC,
+  isBoundPVC,
   Status,
   isStatus
 } from './resource'
