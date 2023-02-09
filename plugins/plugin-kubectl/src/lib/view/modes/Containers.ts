@@ -15,14 +15,17 @@
  */
 
 import type { ModeRegistration, Tab } from '@kui-shell/core'
-import { KubeContainerStatus, Pod, isPod } from '@kui-shell/plugin-kubectl-core'
+import { KubeResource, KubeContainerStatus, Pod, isPod } from '@kui-shell/plugin-kubectl-core'
 
 async function content(_: Tab, resource: Pod) {
   // this module is expensive to load, so we defer that expense
   const { dump } = await import('js-yaml')
 
+  const { containers = [] } = resource.spec
+  const { containerStatuses = [] } = resource.status
+
   // helps with unified just below
-  const statuses = resource.status.containerStatuses.reduce((M, _) => {
+  const statuses = containerStatuses.reduce((M, _) => {
     const status = Object.assign({}, _)
     delete status.name // no need to say this twice, once for spec, once for status
     M[_.name] = status
@@ -30,7 +33,7 @@ async function content(_: Tab, resource: Pod) {
   }, {} as Record<string, KubeContainerStatus>)
 
   // unify spec and status
-  const unified = resource.spec.containers.reduce((M, _) => {
+  const unified = containers.reduce((M, _) => {
     const combo = Object.assign(
       {
         args: _.args,
@@ -50,13 +53,17 @@ async function content(_: Tab, resource: Pod) {
   }
 }
 
+function hasContainers(resource: KubeResource): resource is Pod {
+  return isPod(resource) && resource.spec.containers && resource.spec.containers.length > 0
+}
+
 /**
  * The Summary mode applies to all KubeResources, and uses
  * `renderContent` to render the view.
  *
  */
 const logsReg: ModeRegistration<Pod> = {
-  when: isPod,
+  when: hasContainers,
   mode: {
     mode: 'containers',
     label: 'Containers',
