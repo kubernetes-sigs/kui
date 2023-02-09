@@ -33,18 +33,16 @@ import { age, none } from './Generic'
 import toDescriptionList from './convert'
 
 function ready(pod: Pod) {
-  const { containerStatuses } = pod.status
+  const { containerStatuses = [] } = pod.status
 
-  const numerator = !containerStatuses
-    ? 0
-    : containerStatuses.reduce((count, status) => count + (status.ready ? 1 : 0), 0)
+  const numerator = containerStatuses.reduce((count, status) => count + (status.ready ? 1 : 0), 0)
   const denominator = containerStatuses.length
 
   return `${numerator}/${denominator}`
 }
 
 function restarts(pod: Pod) {
-  const { containerStatuses } = pod.status
+  const { containerStatuses = [] } = pod.status
   return containerStatuses.reduce((count, status) => count + status.restartCount, 0)
 }
 
@@ -59,14 +57,20 @@ function readinessGates(pod: Pod) {
 export default function PodSummary(pod: Pod) {
   const { spec, status } = pod
 
-  const model = {
+  const model: Record<string, number | boolean | string> = {
     // Name: metadata.name,
     Ready: ready(pod),
     // Status: status.phase,
     Restarts: restarts(pod),
-    Age: age(pod),
-    IP: status.podIP,
-    Node: spec.nodeName
+    Age: age(pod)
+  }
+
+  if (status.podIP) {
+    model.IP = status.podIP
+  }
+
+  if (spec.nodeName) {
+    model.Node = spec.nodeName
   }
 
   if (spec.readinessGates) {
