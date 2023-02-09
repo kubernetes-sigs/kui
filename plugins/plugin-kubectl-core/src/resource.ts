@@ -324,6 +324,13 @@ export interface PodStatus extends KubeStatus {
 export interface PodLikeSpec {
   _podName: string // allows pod-like resources to define the actual pod name
 }
+type PVCVolume = {
+  persistentVolumeClaim: { claimName: string }
+}
+type Volume = PVCVolume // or others?
+export function isPVCVolume(volume: Volume): volume is PVCVolume {
+  return typeof volume.persistentVolumeClaim === 'object' && typeof volume.persistentVolumeClaim.claimName === 'string'
+}
 export interface Pod extends KubeResource<PodStatus> {
   apiVersion: 'v1'
   kind: 'Pod'
@@ -332,6 +339,7 @@ export interface Pod extends KubeResource<PodStatus> {
     nominatedNodeName?: string
     readinessGates?: { conditionType: string }[]
     containers: ContainerSpec[]
+    volumes?: Volume[]
   }
 }
 
@@ -786,4 +794,20 @@ export function hasAnnotations(resource: KubeResource): resource is KubeResource
 
 export function hasLabels(resource: KubeResource): resource is KubeResource {
   return isKubeResource(resource) && resource.metadata.labels && Object.keys(resource.metadata.labels).length > 0
+}
+
+/** PersistentVolumeClaim */
+export interface PVC extends KubeResource {
+  kind: 'PersistentVolumeClaim'
+  spec: {
+    volumeName: string
+    volumeMode: string
+    storageClassName: string
+  }
+}
+export function isPVC(resource: KubeResource): resource is PVC {
+  return resource.apiVersion === 'v1' && resource.kind === 'PersistentVolumeClaim'
+}
+export function isBoundPVC(resource: KubeResource): resource is PVC {
+  return isPVC(resource) && typeof resource.spec.volumeName === 'string'
 }

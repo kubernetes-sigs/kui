@@ -27,6 +27,8 @@ import containersMode from './lib/view/modes/Containers'
 import logsMode from './lib/view/modes/logs-mode'
 import ExecIntoPad from './lib/view/modes/ExecIntoPod'
 import lastAppliedMode from './lib/view/modes/last-applied'
+import showPVCsButton from './lib/view/modes/ShowPVCsButton'
+import showBoundVolumeButton from './lib/view/modes/ShowBoundVolumeButton'
 import showOwnerButton from './lib/view/modes/ShowOwnerButton'
 import showNodeButton from './lib/view/modes/ShowNodeOfPodButton'
 import deleteResourceButton from './lib/view/modes/DeleteButton'
@@ -63,6 +65,8 @@ export default async (registrar: PreloadRegistrar) => {
     EditButton,
     // managedFieldsMode,
     showCRDResources,
+    showPVCsButton,
+    showBoundVolumeButton,
     showOwnerButton,
     showNodeButton,
     deleteResourceButton,
