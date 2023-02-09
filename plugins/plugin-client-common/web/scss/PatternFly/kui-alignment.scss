@@ -89,7 +89,7 @@
   --pf-global--BackgroundColor--dark-100: var(--color-ui-01);
   --pf-global--BackgroundColor--dark-200: var(--color-table-border3);
   --pf-global--BackgroundColor--dark-300: var(--color-ui-03);
-  --pf-global--BackgroundColor--dark-400: var(--color-ui-04);
+  --pf-global--BackgroundColor--dark-400: rgba(255, 255, 255, 0.1);
   --pf-global--BackgroundColor--dark-transparent-100: rgba(3, 3, 3, 0.62);
   --pf-global--BackgroundColor--dark-transparent-200: rgba(3, 3, 3, 0.32);
   --pf-global--Color--100: var(--color-ui-01);
@@ -212,6 +212,9 @@
   --pf-global--palette--black-850: var(--color-base05);
   --pf-global--palette--black-900: var(--color-base06);
   --pf-global--palette--black-1000: var(--color-base06);
+
+  /** e.g. background color of selected nav items */
+  --pf-global--BackgroundColor--dark-400: rgba(200, 200, 200, 0.1);
 
   /* .pf-t-dark */
   @include pf-t-dark;
