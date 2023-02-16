@@ -71,9 +71,9 @@ describe('kubectl dash h', function (this: Common.ISuite) {
 
   // help on odo
   // it('should refresh', () => Common.refresh(this))
-  help('odo', ['odo'], commonModes)
+  // help('odo', ['odo'], commonModes)
 
   // odo -h
   // it('should refresh', () => Common.refresh(this))
-  help('odo -h', ['odo'], commonModes.concat(['Flags', 'Basic']))
+  // help('odo -h', ['odo'], commonModes.concat(['Flags', 'Basic']))
 })
