@@ -44,11 +44,6 @@ pushd /tmp
       sudo cp oc /usr/local/bin
       sudo chmod +x /usr/local/bin/oc
       oc version
-
-      echo "Downloading this odo: https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-${PLATFORM}-amd64"
-      sudo sh -c "curl --retry 10 -L https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-${PLATFORM}-amd64 -o /usr/local/bin/odo"
-      sudo chmod +x /usr/local/bin/odo
-      odo version
   fi
 popd
 
