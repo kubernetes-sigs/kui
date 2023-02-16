@@ -34,7 +34,7 @@
     "allotment": "^1.17.1",
     "chalk": "^5.2.0",
     "json-diff": "^1.0.0",
-    "madwizard": "^6.0.0",
+    "madwizard": "^6.1.2",
     "pretty-ms": "^7.0.1",
     "vfile": "^5.3.6",
     "xterm": "^5.1.0",
