@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-use-before-define */
+
 interface ErrorWithResultField {
   error: {
     response: {
@@ -89,6 +91,8 @@ export const oopsMessage = (err: ErrorLike): string => {
   try {
     if (typeof err === 'string') {
       return err
+    } else if (typeof err === 'undefined') {
+      return ''
     } else if (isErrorWithNestedResultField(err)) {
       return err.error.response.result.error.error // feed creation error. nice
     } else if (isErrorWithResultField(err)) {
