@@ -93,6 +93,8 @@ const success = (quit: QuitFunction) => async (out: Entity | Promise<Entity>) =>
 const failure = (quit: QuitFunction, execOptions?: ExecOptions) => async (err: CodedError) => {
   if (execOptions && execOptions.rethrowErrors) {
     throw err
+  } else if (!err) {
+    return
   }
 
   const code = err.code || err.statusCode
