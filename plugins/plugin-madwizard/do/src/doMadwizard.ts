@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MadWizardOptions } from 'madwizard'
 import type { Arguments, ParsedOptions, ReactResponse, Tab } from '@kui-shell/core'
 
 export type Options = ParsedOptions & {
@@ -82,7 +83,7 @@ export type Options = ParsedOptions & {
 type Task = 'profile' | 'guide' | 'plan'
 
 /** Parameters to `doMadwizard` */
-type Params = {
+type Params = Pick<MadWizardOptions, 'appName'> & {
   /** What we should ask madwizard to do for us */
   task: Task
 
@@ -127,7 +128,15 @@ export function defaultGuidebook() {
 }
 
 /** Front end to the `madwizard` CLI api */
-export function doMadwizard({ readonlyUI = true, task, withFilepath = true, cb, envFn, assertionsFn }: Params) {
+export function doMadwizard({
+  readonlyUI = true,
+  task,
+  withFilepath = true,
+  cb,
+  envFn,
+  assertionsFn,
+  appName
+}: Params) {
   return async ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>) => {
     if (withFilepath && !argvNoOptions[1]) {
       argvNoOptions.push(process.env.GUIDEBOOK || defaultGuidebook())
@@ -175,6 +184,7 @@ export function doMadwizard({ readonlyUI = true, task, withFilepath = true, cb, 
         ],
         undefined,
         {
+          appName,
           profile,
           profilesPath: parsedOptions['profiles-path'] || parsedOptions.P,
           store: parsedOptions.s || process.env.GUIDEBOOK_STORE,
