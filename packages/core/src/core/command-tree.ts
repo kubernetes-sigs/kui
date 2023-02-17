@@ -417,7 +417,7 @@ const withEvents = <T extends KResponse, O extends ParsedOptions>(
         }
       }
 
-      if (err.code === 127 && partialMatches) {
+      if (err && err.code === 127 && partialMatches) {
         // command not found
         const suggestions = suggestPartialMatches(command, partialMatches, true, err.hide) // true: don't throw an exception
         return suggestions
