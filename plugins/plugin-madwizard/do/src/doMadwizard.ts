@@ -178,6 +178,10 @@ export function doMadwizard({
           'madwizard',
           task,
           ...argvNoOptions.slice(idx),
+          ...(parsedOptions.v ? ['-v'] : []),
+          ...(parsedOptions.version ? ['--version'] : []),
+          ...(parsedOptions.h ? ['-h'] : []),
+          ...(parsedOptions.help ? ['--help'] : []),
           ...(parsedOptions.n ? ['--no-profile'] : []),
           ...(parsedOptions.i ? ['-i'] : []),
           ...(parsedOptions['--'] ? ['--', ...parsedOptions['--']] : [])
