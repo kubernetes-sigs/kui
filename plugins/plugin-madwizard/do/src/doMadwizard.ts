@@ -83,7 +83,7 @@ export type Options = ParsedOptions & {
 type Task = 'profile' | 'guide' | 'plan'
 
 /** Parameters to `doMadwizard` */
-type Params = Pick<MadWizardOptions, 'appName'> & {
+type Params = Pick<MadWizardOptions, 'appName' | 'appVersion'> & {
   /** What we should ask madwizard to do for us */
   task: Task
 
