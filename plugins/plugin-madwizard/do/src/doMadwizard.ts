@@ -135,7 +135,8 @@ export function doMadwizard({
   cb,
   envFn,
   assertionsFn,
-  appName
+  appName,
+  appVersion
 }: Params) {
   return async ({ tab, argvNoOptions, parsedOptions }: Arguments<Options>) => {
     if (withFilepath && !argvNoOptions[1]) {
@@ -189,6 +190,7 @@ export function doMadwizard({
         undefined,
         {
           appName,
+          appVersion,
           profile,
           profilesPath: parsedOptions['profiles-path'] || parsedOptions.P,
           store: parsedOptions.s || process.env.GUIDEBOOK_STORE,
