@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.1](https://github.com/IBM/kui/compare/v13.1.0...v13.1.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* allow clients to pass through appName to madwizard controller ([91fa031](https://github.com/IBM/kui/commit/91fa031))
+* bump madwizard to pick up security fix ([539ec21](https://github.com/IBM/kui/commit/539ec21))
+* bump to madwizard v6 ([e2592ed](https://github.com/IBM/kui/commit/e2592ed))
+* doMadwizard does not properly pass through profile subcommands ([a7bbb10](https://github.com/IBM/kui/commit/a7bbb10))
+* doMadwizard should pass through `appVersion` option ([0149eaf](https://github.com/IBM/kui/commit/0149eaf))
+* doMadwizard was not passing through -h/-v ([cb64017](https://github.com/IBM/kui/commit/cb64017))
+* ugh, we were not passing through appVersion to madwizard ([3d5f4f9](https://github.com/IBM/kui/commit/3d5f4f9))
+
+
+
+
+
 # [13.1.0](https://github.com/IBM/kui/compare/v4.5.0...v13.1.0) (2023-02-03)
 
 

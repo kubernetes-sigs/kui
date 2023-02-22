@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.1](https://github.com/IBM/kui/compare/v13.1.0...v13.1.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* bump to madwizard v6 ([e2592ed](https://github.com/IBM/kui/commit/e2592ed))
+* completed support for scanning yaml files in client/notebooks ([cca96a5](https://github.com/IBM/kui/commit/cca96a5))
+
+
+
+
+
 # [13.1.0](https://github.com/IBM/kui/compare/v4.5.0...v13.1.0) (2023-02-03)
 
 

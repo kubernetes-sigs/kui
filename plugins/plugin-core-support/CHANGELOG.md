@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.1](https://github.com/IBM/kui/compare/v13.1.0...v13.1.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* pick up yaml files from client/notebooks directory ([ab5a0ea](https://github.com/IBM/kui/commit/ab5a0ea))
+
+
+
+
+
 # [13.1.0](https://github.com/IBM/kui/compare/v4.5.0...v13.1.0) (2023-02-03)
 
 

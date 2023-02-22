@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.1](https://github.com/IBM/kui/compare/v13.1.0...v13.1.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* bump madwizard to pick up security fix ([539ec21](https://github.com/IBM/kui/commit/539ec21))
+* bump to madwizard v6 ([e2592ed](https://github.com/IBM/kui/commit/e2592ed))
+* doMadwizard should pass through `appVersion` option ([0149eaf](https://github.com/IBM/kui/commit/0149eaf))
+* Sidebar selection background can cause low contrast in some themes ([8c97885](https://github.com/IBM/kui/commit/8c97885))
+
+
+
+
+
 # [13.1.0](https://github.com/IBM/kui/compare/v4.5.0...v13.1.0) (2023-02-03)
 
 

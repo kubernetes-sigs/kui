@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.1](https://github.com/IBM/kui/compare/v13.1.0...v13.1.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* plugin-kubectl is missing explicit dep on plugin-kubectl-core ([b5708be](https://github.com/IBM/kui/commit/b5708be))
+* pod Containers tab may spin forever ([3dbe7fb](https://github.com/IBM/kui/commit/3dbe7fb))
+
+
+### Features
+
+* improve Pod->PVC->PV drilldowns ([eb4211b](https://github.com/IBM/kui/commit/eb4211b))
+* new plugin-kubectl-core to allow lightweight import of core kubectl types ([0a4e75c](https://github.com/IBM/kui/commit/0a4e75c))
+
+
+
+
+
 # [13.1.0](https://github.com/IBM/kui/compare/v4.5.0...v13.1.0) (2023-02-03)
 
 

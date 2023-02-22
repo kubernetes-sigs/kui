@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-iter8",
-  "version": "13.1.0",
+  "version": "13.1.1",
   "description": "Kui plugin that offers Iter8 integration",
   "author": "Yan Yan Huang",
   "contributors": [
