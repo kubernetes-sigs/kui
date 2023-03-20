@@ -484,6 +484,7 @@ module.exports = {
       logging: 'none',
       overlay: {
         errors: true,
+        runtimeErrors: false, // see https://github.com/webpack/webpack-dev-server/issues/4771
         warnings: false
       }
     },
