@@ -34,5 +34,14 @@ module.exports = Object.assign(proc, {
 
   stdout: {
     // yargs expects process.stdout to be defined
+    on: () => {
+      /* noop */
+    },
+    once: () => {
+      /* noop */
+    },
+    emit: () => {
+      /* noop */
+    }
   }
 })
