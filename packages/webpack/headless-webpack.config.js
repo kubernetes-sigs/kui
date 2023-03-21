@@ -29,7 +29,6 @@ const ZipPlugin = require('zip-webpack-plugin')
 const terserOptions = process.env.KEEP_CLASSNAMES
   ? {
       terserOptions: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         keep_classnames: true
       }
     }
@@ -79,7 +78,7 @@ plugins.push(new IgnorePlugin({ resourceRegExp: /@kui-shell\/plugin-electron-com
 ;[
   /^d3$/,
   /^elkjs\/lib\/elk.bundled.js$/,
-  /^react(-.*)?$/,
+  /^react-dom?$/,
   /^jquery$/,
   // /^electron$/,
   /^monaco-editor$/,
