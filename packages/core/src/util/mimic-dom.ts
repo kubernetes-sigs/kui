@@ -33,6 +33,20 @@ export default function () {
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:74.0) Gecko/20100101 Firefox/74.0'
     } as any as Window['navigator']
   } as any as Window & typeof globalThis
+
+  // add animation frame mimics
+  let lastAnimationFrame = 0
+  global.window.requestAnimationFrame = function (callback: FrameRequestCallback) {
+    const currTime = new Date().getTime()
+    const timeToCall = Math.max(0, 16 - (currTime - lastAnimationFrame))
+    const id = setTimeout(() => callback(currTime + timeToCall), timeToCall) // eslint-disable-line n/no-callback-literal
+    lastAnimationFrame = currTime + timeToCall
+    return id as unknown as number
+  }
+  global.window.cancelAnimationFrame = function (id: number) {
+    clearTimeout(id)
+  }
+
   try {
     global.localStorage = Store() as any as Storage
     global.sessionStorage = Store() as any as Storage
