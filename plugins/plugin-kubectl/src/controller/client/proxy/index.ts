@@ -125,7 +125,7 @@ async function startProxy(command: SupportedCommand, context: string): Promise<S
     const iter = (port = 8001, retryCount = 0) => {
       try {
         debug(`attempting to spawn kubectl proxy on port=${port} context=${context || 'default'}`)
-        const args = ['proxy', '--keepalive=120s', '--port', port.toString()]
+        const args = ['proxy', '--keepalive=120s', '--port', port.toString(), '--append-server-path']
         if (context) {
           args.push('--context')
           args.push(context)
