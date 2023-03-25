@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.2](https://github.com/IBM/kui/compare/v13.1.1...v13.1.2) (2023-03-25)
+
+
+### Bug Fixes
+
+* macos apple silicon note-pty builds are bogus ([13239b2](https://github.com/IBM/kui/commit/13239b23547c3e60cd498fa70080576ff075c7a1))
+
+
+
+
+
 ## [13.1.1](https://github.com/IBM/kui/compare/v13.1.0...v13.1.1) (2023-02-22)
 
 

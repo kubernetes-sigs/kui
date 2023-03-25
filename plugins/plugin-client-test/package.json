@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-test-client",
-  "version": "13.1.1",
+  "version": "13.1.2",
   "description": "Kui plugin that offers client defintion",
   "main": "dist/index.js",
   "typedocMain": "src/index.ts",
