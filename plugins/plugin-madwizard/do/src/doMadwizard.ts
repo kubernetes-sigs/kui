@@ -48,6 +48,12 @@ export type Options = ParsedOptions & {
   /** Absolute path to profiles directory */
   'profiles-path': string
 
+  /** Force */
+  f: boolean
+
+  /** Force */
+  force: boolean
+
   /** Do not tee logs to the console */
   q: boolean
 
@@ -90,7 +96,7 @@ type Params = Pick<MadWizardOptions, 'appName' | 'appVersion'> & {
   /** UI mode only; should the Kui tab be placed into readonly mode? [default: true] */
   readonlyUI?: boolean
 
-  /** TODO: Oof, I can't remember what this is for [default: true] */
+  /** Add default guidebook to positionals, if needed [default: true] */
   withFilepath?: boolean
 
   /** TODO */
@@ -182,6 +188,7 @@ export function doMadwizard({
           ...(parsedOptions.v ? ['-v'] : []),
           ...(parsedOptions.version ? ['--version'] : []),
           ...(parsedOptions.h ? ['-h'] : []),
+          ...(parsedOptions.f ? ['-f'] : []),
           ...(parsedOptions.help ? ['--help'] : []),
           ...(parsedOptions.n ? ['--no-profile'] : []),
           ...(parsedOptions.i ? ['-i'] : []),
