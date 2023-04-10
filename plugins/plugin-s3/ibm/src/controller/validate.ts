@@ -24,7 +24,7 @@ import Config, { hasEndpoint, hasServiceInstanceName } from '../model/Config'
 
 const strings = i18n('plugin-s3', 'ibm')
 
-interface Options extends ParsedOptions {
+export interface Options extends ParsedOptions {
   output: 'name'
   'cos-instance': string
 }

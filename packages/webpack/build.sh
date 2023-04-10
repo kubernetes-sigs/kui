@@ -73,7 +73,7 @@ function webpack {
     rm -f "$BUILDDIR"/*.js*
 
     if [ -z "$IS_OFFLINE_CLIENT" ]; then
-        echo "Buildinging Kui Headless bundles via webpack"
+        echo "Building Kui Headless bundles via webpack"
 
         KUI_LINK="$CLIENT_HOME"/node_modules/@kui-shell/proxy/kui
         if [ -L "$KUI_LINK" ]; then
@@ -82,6 +82,8 @@ function webpack {
             RESTORE_KUI_LINK=true
         fi
         
+        NEEDS_KUI_PROXY=true npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=$MODE
+        npx kui-prescan
         NEEDS_KUI_PROXY=true npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=$MODE &
     fi
 

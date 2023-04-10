@@ -14,48 +14,20 @@
  * limitations under the License.
  */
 
-import type { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
-
-import Alert from '../components/spi/Alert'
+import type { Arguments, ParsedOptions, ReactResponse } from '@kui-shell/core'
 
 /**
  * alert command parsedOptions type
  */
-interface AlertOptions extends ParsedOptions {
+export interface AlertOptions extends ParsedOptions {
   body: string
-}
-
-/**
- * alert command usage
- */
-const usage: UsageModel = {
-  command: 'alert',
-  strict: 'alert',
-  example: 'alert [<alert type>] [<alert title text>] [--body <alert body text>]',
-  docs: 'Alert',
-  required: [
-    {
-      name: 'type',
-      docs: 'info, success, warning, or error'
-    },
-    {
-      name: 'title',
-      docs: 'alert title text'
-    }
-  ],
-  optional: [
-    {
-      name: '--body',
-      docs: 'alert body text'
-    }
-  ]
 }
 
 /**
  * alert command handler
  *
  */
-async function doAlert(opts: Arguments<AlertOptions>): Promise<ReactResponse> {
+export default async function doAlert(opts: Arguments<AlertOptions>): Promise<ReactResponse> {
   const argv = opts.argvNoOptions
   const option = opts.parsedOptions
   const type = argv[1]
@@ -67,16 +39,9 @@ async function doAlert(opts: Arguments<AlertOptions>): Promise<ReactResponse> {
   ])
 
   if (isSupportedToolbarTextType(type)) {
+    const { default: Alert } = await import('../components/spi/Alert')
     return { react: Alert({ alert: { type, title, body: option.body }, className: 'kui--terminal-alert' }) }
   } else {
     throw new UsageError(`alert type must be: 'info', 'success', 'warning' or 'error'.`)
   }
-}
-
-/**
- * This plugin introduces the /alert command
- *
- */
-export default async (commandTree: Registrar) => {
-  commandTree.listen('/alert', doAlert, { usage })
 }

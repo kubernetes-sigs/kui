@@ -27,6 +27,9 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
+# sigh, for now, we still need to babel the files into CJS :(
+(cd "$SCRIPTDIR"/../../.. && "$SCRIPTDIR"/babel.sh)
+
 if [ -n "$LAYER" ]; then
     # user asked to run tests in just one specified layer, e.g. "07"
 

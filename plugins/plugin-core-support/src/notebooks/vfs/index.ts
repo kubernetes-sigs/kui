@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { TrieVFS, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
+import type { VFS } from '@kui-shell/plugin-bash-like/fs'
+import { TrieVFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
 type NotebookLeaf = TrieVFS.Leaf<{ srcFilepath: string }>
 // type NotebookEntry = TrieVFS.Directory | NotebookLeaf

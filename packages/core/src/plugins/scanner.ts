@@ -16,9 +16,8 @@
 
 import Debug from 'debug'
 const debug = Debug('core/plugins/scanner')
-debug('loading')
 
-import { dirname, join } from 'path'
+import { join } from 'path'
 
 import { pluginRoot } from './plugins'
 import { PrescanModel, PrescanUsage } from './prescan'
@@ -125,12 +124,22 @@ class CommandRegistrarForScan extends ImplForPlugins {
  *
  */
 const loadPlugin = async (route: string, pluginPath: string, scanCache: ScanCache) => {
-  debug('loadPlugin %s', route)
+  debug('loadPlugin %s', route, pluginPath)
 
   // create a CommandRegistrar instance for this one plugin load
   const ctree = new CommandRegistrarForScan(route, scanCache)
 
-  const pluginLoaderRef: PluginRegistration | { default: PluginRegistration } = await import(pluginPath)
+  const pluginLoaderRef: PluginRegistration | { default: PluginRegistration } = /@kui-shell\/client/.test(pluginPath)
+    ? await import(
+        '@kui-shell/client' +
+          pluginPath.replace(/^.*node_modules\/@kui-shell\/client/, '').replace(/plugin\.js$/, '') +
+          'plugin.js'
+      )
+    : await import(
+        '@kui-shell/plugin-' +
+          pluginPath.replace(/^.*node_modules\/@kui-shell\/plugin-/, '').replace(/plugin\.js$/, '') +
+          'plugin.js'
+      )
   function isDirect(loader: PluginRegistration | { default: PluginRegistration }): loader is PluginRegistration {
     return typeof loader === 'function'
   }
@@ -247,7 +256,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     const preloads: Record<string, string> = {}
     const themeSets: ThemeSet[] = []
 
-    const doScan = ({
+    const doScan = async ({
       modules,
       moduleDir,
       parentPath,
@@ -262,134 +271,150 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
     }) => {
       debug('doScan', modules)
 
-      modules.forEach(module => {
-        const modulePath = path.join(moduleDir, module)
-        const name = (parentPath ? `${parentPath}/` : '') + module
+      await Promise.all(
+        modules.map(async module => {
+          const modulePath = path.join(moduleDir, module)
+          const name = (parentPath ? `${parentPath}/` : '') + module
 
-        try {
-          const themePath = path.join(modulePath, 'theme.json')
-          if (fs.existsSync(themePath)) {
-            const themeSet: ThemeSet = require(themePath)
-            const nThemes = !themeSet || !themeSet.themes ? 0 : themeSet.themes.length
-            if (nThemes > 0) {
-              // set these to have the latest apiVersion unless otherwise stated
-              // this decision will be serialized out to the prescan persisted model
-              themeSet.themes.forEach(_ => {
-                if (!_.apiVersion) {
-                  _.apiVersion = defaultThemeApiVersion
-                }
-              })
+          try {
+            const themePath = path.join(modulePath, 'theme.json')
+            if (fs.existsSync(themePath)) {
+              const themeSet: ThemeSet = /@kui-shell\/client/.test(modulePath)
+                ? await import(
+                    '@kui-shell/client' +
+                      themePath.replace(/^.*node_modules\/@kui-shell\/client/, '').replace(/theme\.json$/, '') +
+                      'theme.json'
+                  )
+                : await import(
+                    '@kui-shell/plugin-' +
+                      themePath.replace(/^.*node_modules\/@kui-shell\/plugin-/, '').replace(/theme\.json$/, '') +
+                      'theme.json'
+                  )
+              const nThemes = !themeSet || !themeSet.themes ? 0 : themeSet.themes.length
+              if (nThemes > 0) {
+                // set these to have the latest apiVersion unless otherwise stated
+                // this decision will be serialized out to the prescan persisted model
+                themeSet.themes.forEach(_ => {
+                  if (!_.apiVersion) {
+                    _.apiVersion = defaultThemeApiVersion
+                  }
+                })
 
-              const msg = colors.bold(colors.rainbow('themes')) + colors.dim(` x${nThemes}`)
-              console.log(colors.green('  \u2713 ') + msg + '\t' + path.basename(module))
+                const msg = colors.bold(colors.rainbow('themes')) + colors.dim(` x${nThemes}`)
+                console.log(colors.green('  \u2713 ') + msg + '\t' + path.basename(module))
 
-              // add this plugin's themes onto the full list, across all plugins
-              themeSets.push({ themes: themeSet.themes, plugin: module })
+                // add this plugin's themes onto the full list, across all plugins
+                themeSets.push({ themes: themeSet.themes, plugin: module })
+              }
             }
-          }
-        } catch (err) {
-          console.error('Error registering theme', err)
-        }
-
-        if (module.charAt(0) === '@') {
-          // support for @owner/repo style modules; see shell issue #260
-          return doScan({
-            modules: fs.readdirSync(modulePath),
-            moduleDir: modulePath,
-            parentPath: module
-          })
-        }
-
-        function lookFor(filename: string, destMap: Record<string, string>, colorFn: (str: string) => string) {
-          const pluginPath = path.join(moduleDir, module, filename)
-          debug('lookFor', filename, pluginPath)
-
-          /** report a successful find to the console */
-          const ok = () => {
-            const parent = parentPath ? `${parentPath}/` : ''
-            console.log(
-              colors.green('  \u2713 ') + colorFn(filename.replace(/\..*$/, '')) + '\t' + parent + path.basename(module)
-            )
+          } catch (err) {
+            console.error('Error registering theme', err)
           }
 
-          if (fs.existsSync(pluginPath)) {
-            if (!quiet) {
-              debug('found', name)
-              ok()
-            }
-            destMap[name] = pluginPath
-          } else {
-            const backupPluginPath = path.join(modulePath, 'dist', filename)
-            debug('lookFor2', filename, backupPluginPath)
+          if (module.charAt(0) === '@') {
+            // support for @owner/repo style modules; see shell issue #260
+            return doScan({
+              modules: fs.readdirSync(modulePath),
+              moduleDir: modulePath,
+              parentPath: module
+            })
+          }
 
-            if (fs.existsSync(backupPluginPath)) {
+          async function lookFor(filename: string, destMap: Record<string, string>, colorFn: (str: string) => string) {
+            const pluginPath = path.join(moduleDir, module, filename)
+            debug('lookFor', filename, pluginPath)
+
+            /** report a successful find to the console */
+            const ok = () => {
+              const parent = parentPath ? `${parentPath}/` : ''
+              console.log(
+                colors.green('  \u2713 ') +
+                  colorFn(filename.replace(/\..*$/, '')) +
+                  '\t' +
+                  parent +
+                  path.basename(module)
+              )
+            }
+
+            if (fs.existsSync(pluginPath)) {
               if (!quiet) {
-                debug('found2', name)
+                debug('found', name)
                 ok()
               }
-              destMap[name] = backupPluginPath
+              destMap[name] = pluginPath
             } else {
-              // support for javascript-coded plugins (monorepo)
-              const backupPluginPath = path.join(modulePath, 'src/plugin', filename)
-              debug('lookFor3', filename, backupPluginPath)
+              const backupPluginPath = path.join(modulePath, 'mdist', filename)
+              debug('lookFor2', filename, backupPluginPath)
 
               if (fs.existsSync(backupPluginPath)) {
                 if (!quiet) {
-                  debug('found3', name)
+                  debug('found2', name)
                   ok()
                 }
                 destMap[name] = backupPluginPath
               } else {
-                // support for javascript-coded plugins (external client)
-                const backupPluginPath = path.join(modulePath, 'plugin', filename)
-                debug('lookFor4', filename, backupPluginPath)
+                // support for javascript-coded plugins (monorepo)
+                const backupPluginPath = path.join(modulePath, 'src/plugin', filename)
+                debug('lookFor3', filename, backupPluginPath)
 
                 if (fs.existsSync(backupPluginPath)) {
                   if (!quiet) {
-                    debug('found4', name)
+                    debug('found3', name)
                     ok()
                   }
                   destMap[name] = backupPluginPath
-                  // console.error('Skipping plugin, because it does not have a plugin.js', module)
+                } else {
+                  // support for javascript-coded plugins (external client)
+                  const backupPluginPath = path.join(modulePath, 'plugin', filename)
+                  debug('lookFor4', filename, backupPluginPath)
+
+                  if (fs.existsSync(backupPluginPath)) {
+                    if (!quiet) {
+                      debug('found4', name)
+                      ok()
+                    }
+                    destMap[name] = backupPluginPath
+                    // console.error('Skipping plugin, because it does not have a plugin.js', module)
+                  }
                 }
+              }
+            }
+
+            if (fs.statSync(modulePath).isDirectory()) {
+              const subDirs = fs.readdirSync(modulePath).filter(
+                _ =>
+                  !/(^m?dist)|(bin)|(web)|(src)|(samples)|(i18n)|(tests)|(node_modules)$/.test(_) &&
+                  fs.existsSync(path.join(modulePath, _)) && // see https://github.com/kubernetes-sigs/kui/issues/7326
+                  fs.statSync(path.join(modulePath, _)).isDirectory()
+              )
+
+              if (subDirs.length > 0) {
+                await doScan({
+                  modules: subDirs,
+                  moduleDir: modulePath,
+                  parentPath: module,
+                  lookForPlugin: filename === 'plugin.js',
+                  lookForPrescan: filename === 'preload.js'
+                })
               }
             }
           }
 
-          if (fs.statSync(modulePath).isDirectory()) {
-            const subDirs = fs.readdirSync(modulePath).filter(
-              _ =>
-                !/(^m?dist)|(bin)|(web)|(src)|(samples)|(i18n)|(tests)|(node_modules)$/.test(_) &&
-                fs.existsSync(path.join(modulePath, _)) && // see https://github.com/kubernetes-sigs/kui/issues/7326
-                fs.statSync(path.join(modulePath, _)).isDirectory()
-            )
-
-            if (subDirs.length > 0) {
-              doScan({
-                modules: subDirs,
-                moduleDir: modulePath,
-                parentPath: module,
-                lookForPlugin: filename === 'plugin.js',
-                lookForPrescan: filename === 'preload.js'
-              })
-            }
+          if (lookForPlugin) {
+            await lookFor('plugin.js', plugins, colors.bold)
           }
-        }
 
-        if (lookForPlugin) {
-          lookFor('plugin.js', plugins, colors.bold)
-        }
-
-        if (lookForPrescan) {
-          lookFor('preload.js', preloads, colors.dim)
-        }
-      })
+          if (lookForPrescan) {
+            await lookFor('preload.js', preloads, colors.dim)
+          }
+        })
+      )
     }
 
     // scan the app/plugins/modules directory
     const moduleDir = dir // path.join(dir, 'modules')
     debug('moduleDir', moduleDir)
-    doScan({ modules: fs.readdirSync(moduleDir).filter(filter), moduleDir })
+    await doScan({ modules: fs.readdirSync(moduleDir).filter(filter), moduleDir })
 
     return { plugins, preloads, themeSets }
   } catch (err) {
@@ -419,7 +444,7 @@ async function clientHosted(opts: PrescanOptions) {
  *
  */
 async function clientRequired() {
-  const topOfScan = dirname(require.resolve('@kui-shell/prescan.json'))
+  const topOfScan = join(process.env.CLIENT_HOME, 'node_modules/@kui-shell')
   debug('using clientRequired scan', topOfScan)
   return scanForModules(topOfScan, false, (filename: string) => /^plugin-/.test(filename) || /^client$/.test(filename))
 }
@@ -487,7 +512,7 @@ export const generatePrescanModel = async (
   }
 
   return {
-    preloads: Object.keys(preloads).map(route => ({
+    preloads: Object.keys(preloads || {}).map(route => ({
       route,
       path: preloads[route]
     })),

@@ -16,14 +16,12 @@
 
 import { basename } from 'path'
 
-import type { Arguments, CommentaryResponse, ParsedOptions, Registrar } from '@kui-shell/core'
-
-import fetchMarkdownFile, { join } from './fetch'
+import type { Arguments, CommentaryResponse, ParsedOptions } from '@kui-shell/core'
 
 /**
  * commentary command parsedOptions type
  */
-type CommentaryOptions = ParsedOptions &
+export type CommentaryOptions = ParsedOptions &
   Pick<CommentaryResponse['props'], 'header' | 'edit' | 'preview' | 'receive' | 'send' | 'replace' | 'simple'> & {
     f: string
     file: string
@@ -113,7 +111,7 @@ export async function setTabReadonly({ tab }: Arguments) {
   eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(tab))
 }
 
-async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
+export async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
   const {
     edit: _edit,
     header: _header,
@@ -132,6 +130,8 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
   const edit = receive !== undefined ? false : send !== undefined ? true : _edit
   const header = receive !== undefined || send !== undefined ? false : _header
   const preview = send !== undefined ? false : receive !== undefined ? true : _preview
+
+  const { default: fetchMarkdownFile, join } = await import('./fetch')
 
   // the markdown data either comes from a file, or directly from the
   // command line
@@ -216,7 +216,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
  * `filepath` in a maximized view that is injected as a replacement
  * for the current view.
  */
-function delegate(args: Arguments) {
+export function delegate(args: Arguments) {
   const delegate = args.argvNoOptions[2]
   const filepath = args.argvNoOptions[3]
   if (!delegate || !filepath) {
@@ -249,18 +249,4 @@ ${delegate} ${args.REPL.encodeComponent(filepath)}
       children
     }
   }
-}
-
-/**
- * This plugin introduces the commentary command
- *
- */
-export default function registerCommentaryController(commandTree: Registrar) {
-  const flags = {
-    boolean: ['edit', 'header', 'preview', 'readonly', 'replace', 'simple']
-  }
-
-  commandTree.listen('/commentary', addComment, { outputOnly: true, flags })
-  commandTree.listen('/#', addComment, { outputOnly: true, noCoreRedirect: true, flags })
-  commandTree.listen('/commentary/delegate', delegate, { outputOnly: true, needsUI: true })
 }

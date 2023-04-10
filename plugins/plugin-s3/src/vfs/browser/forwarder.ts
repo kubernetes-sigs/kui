@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
-
-import { responderFor, vfsFor } from '../responders'
+import type { Registrar } from '@kui-shell/core'
 
 export default function (registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/cp',
-    args => {
+    async args => {
       const N = args.argvNoOptions.length
+
+      const { responderFor, vfsFor } = await import('../responders')
 
       return responderFor(args).cp(
         args,
@@ -40,13 +40,16 @@ export default function (registrar: Registrar) {
   )
   registrar.listen(
     '/vfs-s3/rm',
-    args => responderFor(args).rm(args, args.argvNoOptions[3], args.argvNoOptions[4] === 'true'),
+    args =>
+      import('../responders').then(_ =>
+        _.responderFor(args).rm(args, args.argvNoOptions[3], args.argvNoOptions[4] === 'true')
+      ),
     { requiresLocal: true }
   )
   registrar.listen(
     '/vfs-s3/rmdir',
     async args => {
-      await responderFor(args).rmdir(args, args.argvNoOptions[3])
+      await import('../responders').then(_ => _.responderFor(args).rmdir(args, args.argvNoOptions[3]))
       return true
     },
     { requiresLocal: true }
@@ -54,7 +57,9 @@ export default function (registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/fwrite',
     async args => {
-      await responderFor(args).fwrite(args, args.argvNoOptions[3], args.execOptions.data as string | Buffer)
+      await import('../responders').then(_ =>
+        _.responderFor(args).fwrite(args, args.argvNoOptions[3], args.execOptions.data as string | Buffer)
+      )
       return true
     },
     { requiresLocal: true }
@@ -62,7 +67,7 @@ export default function (registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/mkdir',
     async args => {
-      await responderFor(args).mkdir(args, args.argvNoOptions[3])
+      await import('../responders').then(_ => _.responderFor(args).mkdir(args, args.argvNoOptions[3]))
       return true
     },
     { requiresLocal: true }

@@ -17,7 +17,7 @@
 import type { Arguments, ParsedOptions, TabLayoutModificationResponse, NewSplitRequest } from '@kui-shell/core'
 
 type Options = NewSplitRequest['options']
-type CommandLineOptions = ParsedOptions & Omit<Options, 'inverseColors'> & { inverse: boolean }
+export type CommandLineOptions = ParsedOptions & Omit<Options, 'inverseColors'> & { inverse: boolean }
 
 /** For debugging, this returns the tab uuid of the current split */
 export function debug(args: Arguments) {

@@ -17,8 +17,6 @@
 import Debug from 'debug'
 import type { Registrar } from '@kui-shell/core'
 
-const debug = Debug('plugins/core-support/base64')
-
 /**
  * The command usage model
  *
@@ -66,11 +64,11 @@ const breakout = (str: string, options) => {
  *
  */
 export default (commandTree: Registrar) => {
-  debug('init')
-
   commandTree.listen(
     '/base64',
     ({ argvNoOptions, parsedOptions: options }) => {
+      const debug = Debug('plugins/core-support/base64')
+
       const str = argvNoOptions[1]
       debug('str', str, argvNoOptions)
 

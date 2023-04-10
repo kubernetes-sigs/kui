@@ -21,8 +21,6 @@ import { i18n } from '@kui-shell/core/mdist/api/i18n'
 import { Tab as KuiTab } from '@kui-shell/core/mdist/api/Tab'
 import { eventChannelUnsafe } from '@kui-shell/core/mdist/api/Events'
 
-const strings = i18n('plugin-core-support')
-
 interface Props {
   /** tab uuid */
   uuid: string
@@ -87,6 +85,8 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
   private readonly _onSubmit = this.onConfirm.bind(this, true)
   private readonly _onClose = this.onConfirm.bind(this, false)
 
+  private readonly strings = i18n('plugin-core-support')
+
   public render() {
     if (!isActive(this.state)) {
       return <React.Fragment />
@@ -96,17 +96,17 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
           id="confirm-dialog"
           isOpen
           titleIconVariant="danger"
-          title={strings('pleaseConfirm')}
-          primaryButtonText={strings('yesIAmSure')}
-          secondaryButtonText={strings('cancel')}
+          title={this.strings('pleaseConfirm')}
+          primaryButtonText={this.strings('yesIAmSure')}
+          secondaryButtonText={this.strings('cancel')}
           onSubmit={this._onSubmit}
           onClose={this._onClose}
         >
-          <p className="bx--modal-content__text">{strings('aboutToExecute')}</p>
+          <p className="bx--modal-content__text">{this.strings('aboutToExecute')}</p>
           <p className="bx--modal-content__text">
             <strong className="red-text">{this.state.command}</strong>
           </p>
-          <p className="bx--modal-content__text">{this.state.asking || strings('areYouSure')}</p>
+          <p className="bx--modal-content__text">{this.state.asking || this.strings('areYouSure')}</p>
         </Modal>
       )
     }
