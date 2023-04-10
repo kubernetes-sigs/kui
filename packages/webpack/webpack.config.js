@@ -158,7 +158,7 @@ if (process.env.WATCH) {
           // here, we are trying to be careful to avoid an infinite
           // loop: we re-generate prescan.json, which triggers a webpack
           // build, which triggers this script again...
-          'export KUI_PRESCAN=$(mktemp); export KUI_PRESCAN_GUIDEBOOKS=$(mktemp); npx kui-prescan; if [ -n "$(diff $KUI_PRESCAN node_modules/@kui-shell/prescan.json)" ]; then mv $KUI_PRESCAN node_modules/@kui-shell/prescan.json; fi; if [ -n "$(diff $KUI_PRESCAN_GUIDEBOOKS node_modules/@kui-shell/build/client-guidebooks.json)" ]; then mv $KUI_PRESCAN_GUIDEBOOKS node_modules/@kui-shell/build/client-guidebooks.json; fi'
+          'export KUI_PRESCAN=$(mktemp); export KUI_PRESCAN_GUIDEBOOKS=$(mktemp); npx kui-prescan; if [ -n "$(diff $KUI_PRESCAN node_modules/@kui-shell/prescan.json)" ]; then mv $KUI_PRESCAN node_modules/@kui-shell/prescan.json; fi; if [ -f node_modules/@kui-shell/build/client-guidebooks.json ] && [ -f $KUI_PRESCAN_GUIDEBOOKS ] && [ -n "$(diff $KUI_PRESCAN_GUIDEBOOKS node_modules/@kui-shell/build/client-guidebooks.json)" ]; then mv $KUI_PRESCAN_GUIDEBOOKS node_modules/@kui-shell/build/client-guidebooks.json; fi'
         ],
         blocking: false,
         parallel: true

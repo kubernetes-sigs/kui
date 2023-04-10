@@ -17,8 +17,6 @@
 import type { StatusStripeChangeEvent } from '@kui-shell/core/mdist/api/Events'
 import type { KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
-import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
-
 /** For the Kui command registration: enforce one mandatory positional parameter */
 // const required = [{ name: '<filepath>', docs: 'path to saved snapshot' }]
 
@@ -97,6 +95,8 @@ export default function (registrar: Registrar) {
           : ''
 
         const cmdline = (filepath: string) => `commentary --readonly ${snippetBasePath} -f ${encodeComponent(filepath)}`
+
+        const { loadNotebook } = await import('@kui-shell/plugin-client-common/notebook')
 
         await Promise.all([
           parsedOptions.r ? REPL.pexec(cmdline(filepaths[0]), { noHistory: true }) : true,

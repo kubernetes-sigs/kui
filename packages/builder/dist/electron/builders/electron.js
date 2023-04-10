@@ -118,9 +118,9 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
     KUI_BUILDER_HOME: `${CLIENT_HOME}/node_modules/@kui-shell/builder`
   })
 
-  console.log('Building headless bundles via webpack')
-  asyncs.push(
-    new Promise((resolve, reject) => {
+  const buildHeadless = () => {
+    console.log('Building headless bundles via webpack')
+    return new Promise((resolve, reject) => {
       exec(
         `npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
         { env },
@@ -135,7 +135,24 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
         }
       )
     })
-  )
+  }
+
+  // generate prescan model; to do so we need a headless build
+  await buildHeadless()
+  await new Promise((resolve, reject) => {
+    exec(`npx --no-install kui-prescan`, { env, cwd: env.CLIENT_HOME }, (err, stdout, stderr) => {
+      console.log('stdout', stdout)
+      if (err) {
+        console.error(err)
+        reject(stderr)
+      } else {
+        resolve()
+      }
+    })
+  })
+
+  // re-build headless now that we have the prescan
+  asyncs.push(buildHeadless())
 
   console.log('Building electron bundles via webpack')
   asyncs.push(

@@ -14,53 +14,48 @@
  * limitations under the License.
  */
 
-import type { Registrar } from '@kui-shell/core'
+import type { Arguments } from '@kui-shell/core'
 
 /**
  * This plugin introduces the /confirm command
  *
  */
-export default async (commandTree: Registrar) => {
-  commandTree.listen(
-    '/confirm',
-    async ({ tab, argvNoOptions, parsedOptions, execOptions, REPL }) => {
-      const [{ i18n }, { ExecType }, { getPrimaryTabId }, { pexecInCurrentTab }, { eventChannelUnsafe }] =
-        await Promise.all([
-          import('@kui-shell/core/mdist/api/i18n'),
-          import('@kui-shell/core/mdist/api/Command'),
-          import('@kui-shell/core/mdist/api/Tab'),
-          import('@kui-shell/core/mdist/api/Exec'),
-          import('@kui-shell/core/mdist/api/Events')
-        ])
+export default async function confirm(args: Arguments) {
+  const { tab, argvNoOptions, parsedOptions, execOptions, REPL } = args
+  const [{ i18n }, { ExecType }, { getPrimaryTabId }, { pexecInCurrentTab }, { eventChannelUnsafe }] =
+    await Promise.all([
+      import('@kui-shell/core/mdist/api/i18n'),
+      import('@kui-shell/core/mdist/api/Command'),
+      import('@kui-shell/core/mdist/api/Tab'),
+      import('@kui-shell/core/mdist/api/Exec'),
+      import('@kui-shell/core/mdist/api/Events')
+    ])
 
-      const strings = i18n('plugin-core-support')
+  const strings = i18n('plugin-core-support')
 
-      return new Promise((resolve, reject) => {
-        const asking = parsedOptions.asking || strings('areYouSure')
-        const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
-        const { execUUID } = execOptions
+  return new Promise((resolve, reject) => {
+    const asking = parsedOptions.asking || strings('areYouSure')
+    const command = argvNoOptions[argvNoOptions.indexOf('confirm') + 1]
+    const { execUUID } = execOptions
 
-        if (!command) {
-          throw new Error('Usage: confirm command line')
-        }
+    if (!command) {
+      throw new Error('Usage: confirm command line')
+    }
 
-        const requestChannel = `/kui-shell/Confirm/v1/tab/${getPrimaryTabId(tab)}`
-        const responseChannel = `${requestChannel}/execUUID/${execUUID}/confirmed`
+    const requestChannel = `/kui-shell/Confirm/v1/tab/${getPrimaryTabId(tab)}`
+    const responseChannel = `${requestChannel}/execUUID/${execUUID}/confirmed`
 
-        const onConfirm = ({ confirmed }: { confirmed: boolean }) => {
-          if (!confirmed) {
-            reject(strings('operationCancelled'))
-          } else if (execOptions.type === ExecType.Nested) {
-            pexecInCurrentTab(command, tab).then(resolve, reject)
-          } else {
-            REPL.qexec(command, undefined, undefined, { tab }).then(resolve, reject)
-          }
-        }
+    const onConfirm = ({ confirmed }: { confirmed: boolean }) => {
+      if (!confirmed) {
+        reject(strings('operationCancelled'))
+      } else if (execOptions.type === ExecType.Nested) {
+        pexecInCurrentTab(command, tab).then(resolve, reject)
+      } else {
+        REPL.qexec(command, undefined, undefined, { tab }).then(resolve, reject)
+      }
+    }
 
-        eventChannelUnsafe.once(responseChannel, onConfirm)
-        eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
-      })
-    },
-    { incognito: ['popup'] }
-  )
+    eventChannelUnsafe.once(responseChannel, onConfirm)
+    eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
+  })
 }

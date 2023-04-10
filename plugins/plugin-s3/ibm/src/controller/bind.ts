@@ -88,7 +88,7 @@ async function createCredentials(instance: ServiceInstance, args: Arguments): Pr
   return bind(key, instance, args)
 }
 
-interface Options extends ParsedOptions {
+export interface Options extends ParsedOptions {
   'cos-instance': string
 }
 

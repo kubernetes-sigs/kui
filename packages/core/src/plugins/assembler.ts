@@ -33,7 +33,7 @@ const debug = Debug('core/plugins/assembler')
  * model that represents user-installed plugins)
  *
  */
-const prescanned = (): string => require.resolve('@kui-shell/prescan')
+const prescanned = (): string => join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/prescan.json')
 
 /**
  * Serialize a `PrescanModel` to disk

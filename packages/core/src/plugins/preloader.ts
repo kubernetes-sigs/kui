@@ -18,8 +18,6 @@ import Debug from 'debug'
 const debug = Debug('core/plugins/preloader')
 debug('loading')
 
-/* eslint-disable @typescript-eslint/camelcase */
-
 import { PrescanModel } from './prescan'
 
 import { Tab } from '../webapp/tab'
@@ -68,8 +66,9 @@ class PreloaderRegistrarImpl extends ImplForPlugins implements PreloadRegistrar 
 export default async (prescan: PrescanModel) => {
   debug('init')
 
+  const preloads = (prescan && prescan.preloads) || []
   const jobs = Promise.all(
-    prescan.preloads.map(async module => {
+    preloads.map(async module => {
       // extends the capabilities of Kui
       try {
         debug('preloading capabilities.1 %s', module.path)
@@ -104,7 +103,7 @@ export default async (prescan: PrescanModel) => {
     })
     .then(() =>
       Promise.all(
-        prescan.preloads.map(async module => {
+        preloads.map(async module => {
           // FIXME to support field-installed plugin paths
           try {
             debug('preloading misc %s', module.path)

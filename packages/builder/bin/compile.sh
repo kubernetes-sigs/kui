@@ -31,7 +31,7 @@ set -o pipefail
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
-# for compile.js below; give it an absolute path
+# these may no longer be needed, with the non-babel prescan?
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
 export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
 
@@ -47,12 +47,10 @@ else
   # (produced by builder/lib/configure.js, but which cannot be run
   # until after we've compiled the source)
   mkdir -p ./node_modules/@kui-shell
-  touch ./node_modules/@kui-shell/prescan.json
+  echo "{}" > ./node_modules/@kui-shell/prescan.json
 
   # compile the source
   npx tsc -b ${1-.}
-
-  npx kui-babel
 fi
 
 if [ ! -d node_modules/@kui-shell/build ]; then

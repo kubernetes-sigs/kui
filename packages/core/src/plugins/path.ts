@@ -22,7 +22,7 @@
  *
  */
 export function webpackPath(path: string) {
-  return path.replace(/^plugin-/, '').replace(/\/dist\/.*\.js$/, '')
+  return path.replace(/^plugin-/, '').replace(/\/mdist\/.*\.js$/, '')
 }
 
 /**

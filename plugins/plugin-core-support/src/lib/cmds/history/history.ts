@@ -24,8 +24,6 @@ import Debug from 'debug' // the default number of history elements to show with
 
 import type { Arguments, Registrar, Row } from '@kui-shell/core'
 
-const debug = Debug('plugins/core-support/history')
-
 const DEFAULT_HISTORY_N = 20
 
 const parseN = str => {
@@ -73,6 +71,7 @@ const usage = {
  *
  */
 const again = async ({ tab, REPL }: Arguments, N: number, historyEntry) => {
+  const debug = Debug('plugins/core-support/history')
   debug('again', N, historyEntry)
 
   const { History } = await import('@kui-shell/core/mdist/api/History')
@@ -103,6 +102,7 @@ const showHistory = async ({ tab, argv, parsedOptions: options }) => {
   const history = await History(tab)
 
   if (options.c) {
+    const debug = Debug('plugins/core-support/history')
     debug('clearing command history')
     return history.wipe()
   }
@@ -122,6 +122,7 @@ const showHistory = async ({ tab, argv, parsedOptions: options }) => {
   const endIdx = history.cursor - 1
   const recent = history.slice(startIdx, endIdx)
 
+  const debug = Debug('plugins/core-support/history')
   debug('argv', argv)
   debug('Nargs', Nargs)
   debug('Nidx', Nidx)
@@ -166,8 +167,6 @@ const showHistory = async ({ tab, argv, parsedOptions: options }) => {
 }
 
 export default (commandTree: Registrar) => {
-  debug('init')
-
   commandTree.listen('/history', showHistory, {
     usage: usage.history
   })
@@ -180,6 +179,7 @@ export default (commandTree: Registrar) => {
     const { History } = await import('@kui-shell/core/mdist/api/History')
     const history = await History(args.tab)
     const N = args.argv[1] ? parseInt(args.argv[1], 10) : history.cursor - 2 // use the last command, if the user entered only "!!"
+    const debug = Debug('plugins/core-support/history')
     debug('againCmd', args.execOptions)
     return again(args, N, args.execOptions && args.execOptions.history)
   }

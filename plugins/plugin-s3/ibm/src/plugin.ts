@@ -15,32 +15,37 @@
  */
 
 import { isEnabled } from '@kui-shell/plugin-s3'
-import { CommandHandler, KResponse, ParsedOptions, Registrar, UsageModel } from '@kui-shell/core'
+import type { KResponse, Registrar } from '@kui-shell/core'
 
-function On(this: Registrar, command: string, handler: CommandHandler<KResponse, ParsedOptions>, usage?: UsageModel) {
-  ;['cos', 'cloud-object-storage'].forEach(cos => {
-    this.listen(`/ibmcloud/${cos}/${command}`, handler, usage ? { usage } : undefined)
-  })
-}
+import type { Options as BindOptions } from './controller/bind'
+import type { Options as ValidateOptions } from './controller/validate'
 
 export default async (registrar: Registrar) => {
   if (!isEnabled()) {
     return
   }
 
-  const on = On.bind(registrar)
-
-  const [validateConfig, findServiceInstances, findAndBindCredentials, setEndpoint, defaultRegion] = await Promise.all([
-    import('./controller/validate').then(_ => _.default),
-    import('./controller/find').then(_ => _.default),
-    import('./controller/bind').then(_ => _.default),
-    import('./controller/endpoint').then(_ => _.default),
-    import('./controller/defaultRegion').then(_ => _.default)
-  ])
-
-  on('service-instances', findServiceInstances)
-  on('bind', findAndBindCredentials)
-  on('endpoint', setEndpoint)
-  on('validate', validateConfig)
-  on('config/region/default', defaultRegion)
+  ;['cos', 'cloud-object-storage'].forEach(cos => {
+    registrar.listen<KResponse, ValidateOptions>(`/ibmcloud/${cos}/validate`, args =>
+      import('./controller/validate').then(_ => _.default(args) as any)
+    )
+  })
+  ;['cos', 'cloud-object-storage'].forEach(cos => {
+    registrar.listen(`/ibmcloud/${cos}/service-instances`, args =>
+      import('./controller/find').then(_ => _.default(args))
+    )
+  })
+  ;['cos', 'cloud-object-storage'].forEach(cos => {
+    registrar.listen<KResponse, BindOptions>(`/ibmcloud/${cos}/bind`, args =>
+      import('./controller/bind').then(_ => _.default(args) as unknown)
+    )
+  })
+  ;['cos', 'cloud-object-storage'].forEach(cos => {
+    registrar.listen(`/ibmcloud/${cos}/endpoint`, args => import('./controller/endpoint').then(_ => _.default(args)))
+  })
+  ;['cos', 'cloud-object-storage'].forEach(cos => {
+    registrar.listen(`/ibmcloud/${cos}/config/region/default`, args =>
+      import('./controller/defaultRegion').then(_ => _.default(args))
+    )
+  })
 }

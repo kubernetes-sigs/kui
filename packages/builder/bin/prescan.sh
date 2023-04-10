@@ -23,7 +23,7 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
 # for compile.js below; give it an absolute path
 export CLIENT_HOME=${CLIENT_HOME-`pwd`}
-export PLUGIN_ROOT="$(cd "$TOPDIR" && pwd)/plugins"
+export PLUGIN_ROOT="$(cd "$CLIENT_HOME" && pwd)/plugins"
 
 # webpack.config.js may set this in its watcher to ask us to generate
 # the prescan in a specific location
@@ -34,16 +34,26 @@ export KUI_PRESCAN
 # until after we've compiled the source)
 if [ -z "$KUI_PRESCAN" ]; then
     mkdir -p ./node_modules/@kui-shell
-    if [ ! -e ./node_modules/@kui-shell/prescan.json ]; then
-        touch ./node_modules/@kui-shell/prescan.json
+    if [ ! -s ./node_modules/@kui-shell/prescan.json ]; then
+        echo "{}" > ./node_modules/@kui-shell/prescan.json
     fi
 fi
 
-# pre-compile plugin registry
-if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
-    echo "compiling plugin registry $CLIENT_HOME to ${KUI_PRESCAN-default location}"
-    node ./node_modules/@kui-shell/builder/dist/bin/compile.js
+echo "compiling plugin registry $CLIENT_HOME to ${KUI_PRESCAN-default location}"
+MAIN=$(node -e "console.log(require(\"$CLIENT_HOME/package.json\").main)")
+MAIN_PROXY=$(echo "$MAIN" | sed -E 's/\.min\.js/-proxy.min.js/')
+if [ -f "$MAIN" ]
+then KUI_HEADLESS=true node "$MAIN" -- kui internal scan
+elif [ -f "$MAIN_PROXY" ]
+then KUI_HEADLESS=true node "$MAIN_PROXY" -- kui internal scan
+else echo "Deferring prescan"
 fi
+
+# pre-compile plugin registry
+#if [ -f ./node_modules/@kui-shell/builder/dist/bin/compile.js ]; then
+#    echo "compiling plugin registry $CLIENT_HOME to ${KUI_PRESCAN-default location}"
+#    node ./node_modules/@kui-shell/builder/dist/bin/compile.js
+#fi
 
 # generate the index.json in @kui-shell/client/notebooks/index.json
 if [ -d node_modules/@kui-shell/client/notebooks ]; then

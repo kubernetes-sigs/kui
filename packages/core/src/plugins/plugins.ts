@@ -47,7 +47,7 @@ export const registrar: Record<string, KuiPlugin> = {}
 let basePrescan: PrescanModel // without any user-installed plugins
 let prescan: PrescanModel
 try {
-  prescan = require('@kui-shell/prescan.json') as PrescanModel // the result of unify(basePrescan, userPrescan)
+  prescan = (require('@kui-shell/prescan.json') || {}) as PrescanModel // the result of unify(basePrescan, userPrescan)
 
   // populate the typeahead trie from prescan (in command-tree, we
   // register again for dynamic command registrations); but we need
@@ -57,6 +57,17 @@ try {
     Object.keys(prescan.commandToPlugin).forEach(registerTypeahead)
   }
 } catch (err) {
+  prescan = {
+    docs: {},
+    topological: {},
+    flat: [],
+    overrides: {},
+    usage: {},
+    catchalls: [],
+    preloads: [],
+    themeSets: [],
+    commandToPlugin: {}
+  }
   debug(err)
 }
 export function prescanModel(): PrescanModel {

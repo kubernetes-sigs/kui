@@ -146,9 +146,9 @@ export const makeResolver = (prescan: PrescanModel, registrar: Record<string, Ku
 
   /** a plugin resolver impl */
   const resolver = {
-    isOverridden: (route: string): boolean => prescan.overrides[route] !== undefined,
+    isOverridden: (route: string): boolean => (prescan.overrides || {})[route] !== undefined,
     isAlpha: (route: string, plugin: string): boolean =>
-      prescan.overrides[route] === undefined || prescan.overrides[route] === plugin,
+      prescan.overrides[route] === undefined || (prescan.overrides || {})[route] === plugin,
 
     resolveOne,
 

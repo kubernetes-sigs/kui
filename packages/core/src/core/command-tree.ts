@@ -582,6 +582,22 @@ export const read = async <T extends KResponse, O extends ParsedOptions>(
   execOptions: ExecOptions,
   tryCatchalls = true
 ): Promise<CommandTreeResolution<T, O>> => {
+  if (argv[0] === 'kui' && argv[1] === 'internal' && argv[2] === 'scan') {
+    // for bootstrapping the plugin registry
+    return {
+      eval: () => import('../plugins/assembler').then(_ => _.compile()).then(() => true as any as T),
+      subtree: undefined,
+      route: '/kui/internal/scan',
+      options: {},
+      success: () => {
+        /* noop */
+      },
+      error: (a, b, c, err) => {
+        throw err
+      }
+    }
+  }
+
   let cmd: false | CodedError | CommandHandlerWithEvents<T, O>
 
   if (!noRetry) {

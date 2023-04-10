@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, encodeComponent } from '@kui-shell/core'
-
-const opts = { needsUI: true, width: 720, height: 900 }
+import type { Arguments, Registrar } from '@kui-shell/core'
 
 function doBrowse(this: string, { REPL }: Arguments) {
-  return REPL.qexec(`ls ${encodeComponent(this)}`)
+  return REPL.qexec(`ls ${REPL.encodeComponent(this)}`)
 }
 
 export default async function (registrar: Registrar) {
+  const opts = { needsUI: true, width: 720, height: 900 }
+
   registrar.listen('/browse/s3', doBrowse.bind('/s3'), opts)
   registrar.listen('/browse/cc', doBrowse.bind('/s3/aws/commoncrawl'), opts)
   registrar.listen('/browse/commoncrawl', doBrowse.bind('/s3/aws/commoncrawl'), opts)

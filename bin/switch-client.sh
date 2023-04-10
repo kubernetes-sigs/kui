@@ -19,6 +19,8 @@
 set -e
 set -o pipefail
 
+rm -f dist/electron/kui.min.js
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 cd "$SCRIPTDIR"/..
 
