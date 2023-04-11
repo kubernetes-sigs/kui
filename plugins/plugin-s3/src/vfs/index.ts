@@ -17,7 +17,7 @@
 /* eslint-disable array-callback-return */
 
 import Debug from 'debug'
-import minimatch from 'minimatch'
+import { minimatch } from 'minimatch'
 import { createWriteStream } from 'fs'
 import { basename, dirname, join } from 'path'
 import { PassThrough, Readable, Writable } from 'stream'
