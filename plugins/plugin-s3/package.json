@@ -35,14 +35,14 @@
   "devDependencies": {
     "@types/micromatch": "^4.0.2",
     "@types/minimatch": "^5.1.2",
-    "@types/minio": "7.0.7"
+    "@types/minio": "^7.0.18"
   },
   "dependencies": {
     "@patternfly/react-table": "^4.111.45",
     "common-path-prefix": "^3.0.0",
     "ini": "^3.0.1",
     "minimatch": "^5.1.1",
-    "minio": "github:starpit/minio-js#list-buckets-extended"
+    "minio": "^7.0.33"
   },
   "krew": {
     "commandPrefix": "kubeui"
