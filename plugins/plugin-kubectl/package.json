@@ -33,13 +33,13 @@
   ],
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/fs-extra": "^9.0.13",
+    "@types/fs-extra": "^11.0.1",
     "@types/js-yaml": "^4.0.5",
     "@types/needle": "^3.2.0",
     "@types/pluralize": "^0.0.29",
     "@types/resize-observer-browser": "^0.1.7",
     "@types/tmp": "^0.2.3",
-    "@types/uuid": "^9.0.0"
+    "@types/uuid": "^9.0.1"
   },
   "dependencies": {
     "@kui-shell/jsonpath": "^1.1.1",
@@ -47,12 +47,12 @@
     "bytes-iec": "^3.1.1",
     "command-exists": "^1.2.9",
     "debug": "^4.3.4",
-    "fs-extra": "^11.1.0",
+    "fs-extra": "^11.1.1",
     "js-yaml": "^4.1.0",
     "needle": "^3.2.0",
-    "parse-duration": "^1.0.2",
+    "parse-duration": "^1.0.3",
     "pluralize": "^8.0.0",
-    "semver": "^7.3.8",
+    "semver": "^7.4.0",
     "tmp": "^0.2.1",
     "uuid": "^9.0.0",
     "xterm": "^5.1.0",

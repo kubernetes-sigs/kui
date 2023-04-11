@@ -33,17 +33,17 @@
     "@types/properties-parser": "0.3.0",
     "@types/shelljs": "^0.8.11",
     "@types/tmp": "^0.2.3",
-    "@types/uuid": "^9.0.0"
+    "@types/uuid": "^9.0.1"
   },
   "dependencies": {
     "@kui-shell/xterm-helpers": "^2.1.0",
     "cookie": "^0.5.0",
     "debug": "^4.3.4",
-    "globby": "^11.0.4",
+    "globby": "^13.1.4",
     "node-pty": "0.11.0-beta27",
     "properties-parser": "0.3.1",
     "shelljs": "^0.8.5",
-    "slash": "^3.0.0",
+    "slash": "^5.0.0",
     "speed-date": "^1.0.0",
     "tmp": "^0.2.1",
     "uuid": "^9.0.0",

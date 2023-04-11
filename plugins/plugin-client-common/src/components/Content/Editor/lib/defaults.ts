@@ -63,7 +63,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   lineNumbers: !options.showLineNumbers ? 'off' : 'on',
   wordWrap: options.wordWrap || (options.simple ? 'off' : 'on'),
   renderLineHighlight: options.simple ? 'none' : undefined,
-  renderFinalNewline: !options.simple,
+  renderFinalNewline: !options.simple ? 'on' : 'off',
   lineDecorationsWidth: !options.showLineNumbers ? 0 : undefined,
   lineNumbersMinChars: options.lineNumbersMinChars || (!options.showLineNumbers ? 0 : undefined)
 })

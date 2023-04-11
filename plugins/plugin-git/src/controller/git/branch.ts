@@ -17,8 +17,6 @@
 import { Arguments, ParsedOptions, RadioTable, Registrar } from '@kui-shell/core'
 import { doExecWithStdoutViaPty, doExecWithPty } from '@kui-shell/plugin-bash-like'
 
-const stripAnsi = require('strip-ansi')
-
 interface GitBranchOptions extends ParsedOptions {
   a: boolean
   all: boolean
@@ -67,6 +65,8 @@ async function doListBranches(args: Arguments<GitBranchOptions>): Promise<RadioT
   args.argvNoOptions.push('--color=never')
   args.command = args.command.replace('git', 'git --no-pager')
   args.command = `${args.command} --color=never`
+
+  const { default: stripAnsi } = await import('strip-ansi')
   const response = stripAnsi(await doExecWithStdoutViaPty(args))
 
   let defaultSelectedIdx = 0

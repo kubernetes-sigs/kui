@@ -22,5 +22,5 @@ export { promiseEach } from '../util/async'
 export { isHTML, isPromise } from '../util/types'
 
 // pretty printing
-export { prettyPrintTime } from '../webapp/util/time'
+// ESM only... we can restore if kui is ever ESM only export { prettyPrintTime } from '../webapp/util/time'
 export { default as prettyPrintBytes } from '../webapp/util/bytes'
