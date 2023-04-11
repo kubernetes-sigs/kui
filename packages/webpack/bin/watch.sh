@@ -52,6 +52,10 @@ THEME="${MODULE_HOME}"/client
 
 rm -rf "$KUI_BUILDDIR"/dist/webpack/*
 
+# make sure we prime the prescan, even if we cannot fully generate it,
+# yet
+npx kui-prescan
+
 if [ -n "$OPEN" ]; then
     OPEN="--open"
 else
