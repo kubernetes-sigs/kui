@@ -517,7 +517,7 @@ export const main = async (
   if (cachedWss) {
     return cachedPort
   } else {
-    const WebSocket = (await import('ws')).default
+    const { WebSocketServer } = await import('ws')
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async resolve => {
@@ -537,7 +537,7 @@ export const main = async (
         // if we were given a session cookie, then use the
         // verifyClient functionality of WebSocket.Server to enforce
         // the session's validity
-        const wss = new WebSocket.Server({
+        const wss = new WebSocketServer({
           noServer: true,
           verifyClient: expectedCookie && verifySession(expectedCookie)
         })
@@ -561,7 +561,7 @@ export const main = async (
         cachedPort = await getPort()
         const server = createDefaultServer()
         server.listen(cachedPort, async () => {
-          const wss = (cachedWss = new WebSocket.Server({ server }))
+          const wss = (cachedWss = new WebSocketServer({ server }))
           servers.push({ wss: cachedWss, server })
           resolve({ wss, port: cachedPort, exitNow })
         })
