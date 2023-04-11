@@ -20,8 +20,8 @@ import Debug from 'debug'
 import minimatch from 'minimatch'
 import { createWriteStream } from 'fs'
 import { basename, dirname, join } from 'path'
-import { Client, ItemBucketMetadata } from 'minio'
 import { PassThrough, Readable, Writable } from 'stream'
+import { Client, ItemBucketMetadata, UploadedObjectInfo } from 'minio'
 
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, CodedError, REPL, encodeComponent, Util, i18n } from '@kui-shell/core'
@@ -210,10 +210,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   private async listBuckets(): Promise<DirEntry[]> {
     this.failIfPublicOnly()
 
-    const allBuckets = (await this.listBucketsClient['listBuckets2']({ query: 'extended' })) as any as {
-      name: string
-      locationConstraint: string
-    }[]
+    const allBuckets = await this.listBucketsClient.listBuckets()
     const visibleBuckets = this.options.bucketFilter ? allBuckets.filter(_ => this.options.bucketFilter(_)) : allBuckets
 
     return visibleBuckets.map(({ name /* , creationDate */ }) => ({
@@ -553,7 +550,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   /** @return a string that summarizes public files that were just uploaded */
   private async urlForUploadedFiles(
     srcs: GlobStats[],
-    etags: string[],
+    etags: UploadedObjectInfo[],
     bucketName: string,
     fileName: string,
     dstIsFolder: boolean
@@ -605,9 +602,9 @@ class S3VFSResponder extends S3VFS implements VFS {
     if (parsedOptions.P) {
       return this.urlForUploadedFiles((await sources).content, etags, bucketName, fileName, dstIsFolder)
     } else if (etags.length === 1) {
-      return strings('Created object with etag', etags[0])
+      return strings('Created object with etag', etags[0].etag)
     } else {
-      return strings('Created objects with etags', etags.join(', '))
+      return strings('Created objects with etags', etags.map(_ => _.etag).join(', '))
     }
   }
 

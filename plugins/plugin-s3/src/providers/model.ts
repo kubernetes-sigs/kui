@@ -18,7 +18,7 @@ import { ClientOptions } from 'minio'
 import { REPL } from '@kui-shell/core'
 
 /** Providers may want to limit visibility to buckets */
-type BucketFilter = (bucket: { name: string; locationConstraint: string }) => boolean
+type BucketFilter = (bucket: { name: string }) => boolean
 
 type Provider = ClientOptions & {
   /** Optimized path for job execution? */
