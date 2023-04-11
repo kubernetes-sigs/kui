@@ -118,10 +118,7 @@ export async function kuiglob(
   vfs: VFS,
   { tab, argvNoOptions, parsedOptions }: Pick<Arguments<KuiGlobOptions>, 'tab' | 'argvNoOptions' | 'parsedOptions'>
 ): Promise<GlobStats[]> {
-  // Intentional require versus import... some typing issues right
-  // now. Also intentionally lazy here, to avoid complications with
-  // webpack bundling with browser targets.
-  const globby = require('globby')
+  const { globby } = await import('globby')
 
   const [{ expandHomeDir }, { isHeadless }] = await Promise.all([
     import('@kui-shell/core/mdist/api/Util'),

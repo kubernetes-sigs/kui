@@ -147,7 +147,7 @@ new TestStringResponse({
  * Time pretty printing
  *
  */
-new TestStringResponse({
+/* new TestStringResponse({
   command: 'test time1',
   expect: 'Today at',
   exact: false
@@ -166,7 +166,7 @@ new TestStringResponse({
   command: 'test time3',
   expect: '+', // e.g. +102ms
   exact: false
-}).string()
+}).string() */
 
 describe(`experimental command ${process.env.MOCHA_RUN_TARGET || ''}`, function (this: Common.ISuite) {
   before(Common.before(this))

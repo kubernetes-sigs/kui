@@ -32,7 +32,7 @@
     "@types/tmp": "^0.2.3"
   },
   "dependencies": {
-    "@supercharge/promise-pool": "^2.3.2",
+    "@supercharge/promise-pool": "^2.4.0",
     "debug": "^4.3.4",
     "tmp": "^0.2.1"
   },

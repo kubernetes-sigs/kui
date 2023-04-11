@@ -30,12 +30,12 @@
     "@types/resize-observer-browser": "^0.1.7"
   },
   "dependencies": {
-    "@patternfly/react-core": "^4.267.6",
+    "@patternfly/react-core": "^4.276.8",
     "allotment": "^1.18.1",
     "chalk": "^5.2.0",
     "json-diff": "^1.0.3",
-    "madwizard": "^8.0.1",
-    "pretty-ms": "^7.0.1",
+    "madwizard": "^8.0.13",
+    "pretty-ms": "^8.0.0",
     "vfile": "^5.3.7",
     "xterm": "^5.1.0",
     "xterm-addon-fit": "^0.7.0",

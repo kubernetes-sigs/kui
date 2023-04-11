@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, CommandOptions, Registrar, ParsedOptions, KResponse, Util } from '@kui-shell/core'
+import { Arguments, CommandOptions, Registrar, ParsedOptions, KResponse } from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   grumble?: number
@@ -45,19 +45,6 @@ const sayMixed = (args: Arguments<Options>) => {
   return [sayHello(args), { body: [{ name: 'mumble' }] }, sayHtmlDom()]
 }
 
-const sayTime1 = () => {
-  return Util.prettyPrintTime(new Date())
-}
-const sayTime2 = () => {
-  return Util.prettyPrintTime(new Date().toLocaleString())
-}
-const sayTime3 = async () => {
-  const t1 = new Date().getTime()
-  await new Promise(resolve => setTimeout(resolve, 100))
-  const t2 = new Date().getTime()
-  return Util.prettyPrintTime(t2, 'long', t1)
-}
-
 const options: CommandOptions = { isExperimental: true }
 const options2: CommandOptions = Object.assign(
   {
@@ -76,7 +63,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen('/test/html/dom', sayHtmlDom, options)
   commandTree.listen('/test/markdown', sayMarkdown, options)
   commandTree.listen('/test/mixed', sayMixed, options)
-  commandTree.listen('/test/time1', sayTime1, options)
-  commandTree.listen('/test/time2', sayTime2, options)
-  commandTree.listen('/test/time3', sayTime3, options)
+  // commandTree.listen('/test/time1', sayTime1, options)
+  // commandTree.listen('/test/time2', sayTime2, options)
+  // commandTree.listen('/test/time3', sayTime3, options)
 }

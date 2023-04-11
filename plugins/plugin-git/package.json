@@ -32,6 +32,6 @@
   },
   "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32",
   "dependencies": {
-    "strip-ansi": "^6.0.0"
+    "strip-ansi": "^7.0.1"
   }
 }
