@@ -355,6 +355,9 @@ if (inBrowser) {
         case 'readline':
           resource.request = require.resolve('./readline.js')
           break
+        case 'os':
+          resource.request = require.resolve('os-browserify/browser')
+          break
 
         default:
           throw new Error(`Not found ${mod}`)

@@ -75,8 +75,7 @@
     "@kui-shell/plugin-patternfly4-themes": "file:plugins/plugin-patternfly4-themes",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-s3": "file:plugins/plugin-s3",
-    "@kui-shell/react": "file:packages/react",
-    "madwizard": "^8.0.13"
+    "@kui-shell/react": "file:packages/react"
   },
   "devDependencies": {
     "@kui-shell/builder": "file:packages/builder",

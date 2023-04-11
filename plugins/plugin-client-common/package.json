@@ -39,7 +39,7 @@
     "anser": "^2.1.1",
     "ansi-regex": "^6.0.1",
     "entities": "^4.4.0",
-    "madwizard": "^8.0.13",
+    "madwizard": "^9.0.2",
     "monaco-editor": "^0.37.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
     "react-markdown": "^8.0.6",
