@@ -471,7 +471,10 @@ module.exports = {
     alias: {
       'snippet-inliner': require.resolve('@kui-shell/plugin-client-common/dist/controller/snippets-inliner.js')
     }
-  }, */
+    }, */
+  experiments: {
+    topLevelAwait: true
+  },
   watchOptions: {
     // here we ignore changes to any node_modules, except we want to
     // trigger a webpack rebuild when either of these

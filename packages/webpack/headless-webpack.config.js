@@ -198,6 +198,9 @@ const config = (
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
+  experiments: {
+    topLevelAwait: true
+  },
   watchOptions: {
     // here we ignore changes to any node_modules, except we want to
     // trigger a webpack rebuild when either of these
