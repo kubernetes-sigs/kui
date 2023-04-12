@@ -17,6 +17,7 @@
 import Debug from 'debug'
 const debug = Debug('core/plugins/scanner')
 
+import slash from 'slash'
 import { join } from 'path'
 
 import { pluginRoot } from './plugins'
@@ -197,7 +198,7 @@ const topologicalSortForScan = async (
     debug('resolving %s', route)
     try {
       const module = { route, path: pluginPaths[route] }
-      await loadPlugin(route, pluginPaths[route], scanCache)
+      await loadPlugin(route, slash(pluginPaths[route]), scanCache)
       scanCache.flat.push(module)
       delete pluginPaths[route]
     } catch (err) {
@@ -273,7 +274,7 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
 
       await Promise.all(
         modules.map(async module => {
-          const modulePath = path.join(moduleDir, module)
+          const modulePath = slash(path.join(moduleDir, module))
           const name = (parentPath ? `${parentPath}/` : '') + module
 
           try {
