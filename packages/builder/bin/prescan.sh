@@ -40,7 +40,7 @@ if [ -z "$KUI_PRESCAN" ]; then
 fi
 
 echo "compiling plugin registry $CLIENT_HOME to ${KUI_PRESCAN-default location}"
-MAIN=$(node -e "console.log(require(\"$CLIENT_HOME/package.json\").main)")
+MAIN=$(node -e "console.log(require(\"$CLIENT_HOME/package.json\".replace(/^\/c\//, \"c:/\")).main)")
 MAIN_PROXY=$(echo "$MAIN" | sed -E 's/\.min\.js/-proxy.min.js/')
 if [ -f "$MAIN" ]
 then KUI_HEADLESS=true node "$MAIN" -- kui internal scan
