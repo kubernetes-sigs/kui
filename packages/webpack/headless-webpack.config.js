@@ -212,6 +212,12 @@ const config = (
   optimization,
   module: {
     rules: kuiPluginRules.concat([
+      // handle WASM loading
+      {
+        test: /\.wasm$/,
+        type: 'asset/inline'
+      },
+
       {
         test: /\.node$/,
         loader: 'node-loader',
