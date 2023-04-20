@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.4](https://github.com/IBM/kui/compare/v13.1.3...v13.1.4) (2023-04-20)
+
+**Note:** Version bump only for package @kui-shell/plugin-test-client
+
+
+
+
+
 ## [13.1.3](https://github.com/IBM/kui/compare/v13.1.2...v13.1.3) (2023-03-25)
 
 **Note:** Version bump only for package @kui-shell/plugin-test-client

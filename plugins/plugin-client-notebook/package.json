@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-notebooks",
-  "version": "13.1.3",
+  "version": "13.1.4",
   "description": "A Kui client that serves up notebooks",
   "main": "dist/index.js",
   "typedocMain": "src/index.ts",

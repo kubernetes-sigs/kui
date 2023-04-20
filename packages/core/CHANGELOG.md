@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [13.1.4](https://github.com/IBM/kui/compare/v13.1.3...v13.1.4) (2023-04-20)
+
+
+### Bug Fixes
+
+* second-instance additionalData may be null ([ccc802d](https://github.com/IBM/kui/commit/ccc802db44248453563bc6ff159946a2cc4d87e5))
+
+
+
+
+
 ## [13.1.3](https://github.com/IBM/kui/compare/v13.1.2...v13.1.3) (2023-03-25)
 
 **Note:** Version bump only for package @kui-shell/core
