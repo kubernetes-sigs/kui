@@ -734,14 +734,14 @@ export async function initElectron(
         // Someone tried to run a second instance, open a new window
         // to handle it
 
-        const env = !additionalData.env ? process.env : JSON.parse(additionalData.env)
+        const env = !additionalData || !additionalData.env ? process.env : JSON.parse(additionalData.env)
         const {
           argv,
           subwindowPlease,
           subwindowPrefs: defaultSubwindowPrefs
         } = getCommand(commandLine, cwd, env, async () => import('electron'))
 
-        const mySubwindowPrefs = additionalData.subwindowPrefs || defaultSubwindowPrefs
+        const mySubwindowPrefs = (additionalData && additionalData.subwindowPrefs) || defaultSubwindowPrefs
         if (!mySubwindowPrefs.width && widthFromCaller) {
           mySubwindowPrefs.width = widthFromCaller
         }
