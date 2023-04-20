@@ -199,7 +199,9 @@ const config = (
     extensions: ['.tsx', '.ts', '.js']
   },
   experiments: {
-    topLevelAwait: true
+    topLevelAwait: true,
+    asyncWebAssembly: true,
+    syncWebAssembly: true
   },
   watchOptions: {
     // here we ignore changes to any node_modules, except we want to
@@ -212,12 +214,6 @@ const config = (
   optimization,
   module: {
     rules: kuiPluginRules.concat([
-      // handle WASM loading
-      {
-        test: /\.wasm$/,
-        type: 'asset/inline'
-      },
-
       {
         test: /\.node$/,
         loader: 'node-loader',

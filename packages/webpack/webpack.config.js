@@ -473,7 +473,9 @@ module.exports = {
     }
     }, */
   experiments: {
-    topLevelAwait: true
+    topLevelAwait: true,
+    asyncWebAssembly: true,
+    syncWebAssembly: true
   },
   watchOptions: {
     // here we ignore changes to any node_modules, except we want to
@@ -506,12 +508,6 @@ module.exports = {
   optimization,
   module: {
     rules: kuiPluginRules.concat([
-      // handle WASM loading
-      {
-        test: /\.wasm$/,
-        type: 'asset/inline'
-      },
-
       // patternfly has some huge image assets for demos; we can't use IgnorePlugin, because about-modal-box.css uses this demo image. sigh
       {
         test: new RegExp(
