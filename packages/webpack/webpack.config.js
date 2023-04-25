@@ -255,6 +255,15 @@ const pluginEntries = allKuiPlugins.map(dir => {
             })
           })
         }
+        if (kui.webpack.rules['uint8array-loader']) {
+          kui.webpack.rules['uint8array-loader'].forEach(test => {
+            kuiPluginRules.push({
+              test: new RegExp(test.replace(/(\S)\/(\S)/g, `$1\\${path.sep}$2`)),
+              type: 'javascript/auto',
+              loader: 'encoded-uint8array-loader'
+            })
+          })
+        }
       }
     }
 
