@@ -73,7 +73,7 @@ RUN debconf-set-selections /tmp/preseed.txt && \
     apt update && apt install -y --no-install-recommends build-essential python sed git tzdata nginx ca-certificates bash git python build-essential curl upx gettext-base unzip && \
     cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock && \
     (cd /tmp && mkdir npty && cd npty && npm init -y && npm install node-pty@$NODE_PTY_VERSION && cd /usr/share/nginx/html/kui/dist/headless && cp /tmp/npty/node_modules/node-pty/build/Release/pty.node . && cp pty.node pty-proxy.node && mkdir -p ../build/Release && cp /tmp/npty/node_modules/node-pty/build/Release/spawn-helper ../build/Release) && \
-    curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl && upx /usr/local/bin/kubectl && \
+    curl -LO https://dl.k8s.io/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl && upx /usr/local/bin/kubectl && \
     curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zxf - && mv linux-amd64/helm /usr/local/bin/helm && chmod +x /usr/local/bin/helm && upx /usr/local/bin/helm && rm -rf linux-amd64 && \
     curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz | tar zxf - && \
       mv oc /usr/local/bin && \
